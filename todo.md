@@ -1,0 +1,13 @@
+- TRADE COMMAND
+
+[N] - Confirmation
+
+[N] - ITEM MENU
+
+[N] - ITEM LIST
+
+[N] - ADD ITEMS TO EMBED
+
+[N] - CONFIRMATION
+
+[N] - MIDDLE MAN CALL

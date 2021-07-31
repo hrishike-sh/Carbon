@@ -1,0 +1,103 @@
+const {Command} = require('discord.js-commando');
+const {MessageEmbed} = require('discord.js')
+module.exports = class HowGayCommand extends Command {
+  constructor(client){
+    super(client, {
+      name: 'howgay',
+      group: "fights",
+      memberName: 'f2',
+      description: 'Howgay - lowgay/highgay but its automatic!',
+      args: [
+        {
+          key: 'mention',
+          prompt: 'Mention someone to fight with!',
+          type: 'member'
+        },
+        {
+        key: 'horl',
+        prompt: 'Please specify either high or low!',
+        type: 'string',
+        oneOf: ['low', 'high']
+        }
+      ]
+    });
+  }
+    async run(message, {mention, horl}) {
+    // if(message.channel.id === '825672500385153035') return
+    let horll = horl
+    const opponent = message.mentions.users.first() || mention
+    if(!horll || horll.toLowerCase() !== 'low' && horll.toLowerCase() !== 'high'){
+      return message.reply('Please specify high or low\n\nExample: \`fh howgay @user high\`')
+    } 
+    const filter = user => user.id === opponent.id
+    let player1rate = Math.floor(Math.random() * 100);
+    let player2rate = Math.floor(Math.random() * 100);
+
+    let thisMessage = await message.channel.send(`${opponent} react to fight with ${message.author}.`)
+      await thisMessage.react('✔️')
+      await thisMessage.react('❌')
+    const filter2 = (reaction, user) => ['✔️', '❌'].includes(reaction.emoji.name) && user.id === opponent.id;
+    thisMessage.awaitReactions(filter2, { max: 1, time: 3e4 })
+    .then(async responseReaction => {
+      if(responseReaction.first().emoji.name === '❌'){
+            return message.channel.send('Howgay has been cancelled!')
+      }
+
+        let gayBed = {
+            title: 'HOWGAY',
+            description: 'Starting soon',
+            color: 'RANDOM',
+            footer: {
+                text: 'Good Luck'
+            },
+            timestamp: new Date(),
+            thumbnail: {
+                url: 'https://cdn.discordapp.com/avatars/855652438919872552/a3f12433ad44ff43bb9568222b4c4a4b.png?size=1024'
+            },
+        }
+
+        const mainMessage = await message.channel.send({embed: gayBed})
+        await sleep(1000)
+        gayBed.fields = [ { name: message.author.tag, value: `Rate: **${player1rate}**`} ]
+        gayBed.description = 'Good Luck!'
+        mainMessage.edit({embed: gayBed})
+
+        await sleep(1000)
+        gayBed.fields = [{ name: message.author.tag, value: `Rate: **${player1rate}**`, inline: true}, { name: opponent.tag, value: `Rate: **${player2rate}**`, inline: true}]
+        mainMessage.edit({embed: gayBed})
+        
+        let finalD = '';
+        if(horll === 'low'){
+          if(player1rate >= player2rate){
+            finalD = `${opponent} has won the howgay!`
+          } else if(player2rate >= player1rate){
+            finalD = `${message.author} has won the howgay!`
+          } else {
+            finalD = `Its a tie?!`
+          }
+        } else {
+          if(player1rate >= player2rate){
+            finalD = `${message.author} has won the howgay!`
+          } else if(player2rate >= player1rate){
+            finalD = `${opponent} has won the howgay!`
+          } else {
+            finalD = `Its a tie?!`
+          }
+        }
+
+        gayBed.description = finalD
+
+        mainMessage.edit(finalD, {embed: gayBed})
+      })
+      .catch(e => {
+        message.channel.send(`${e}`)    
+      })
+
+   
+
+    }
+}
+
+function sleep(ms){
+  return new Promise(resolve => setTimeout(resolve, ms))
+}
