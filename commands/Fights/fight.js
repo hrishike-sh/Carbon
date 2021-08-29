@@ -1,27 +1,13 @@
-
-const {
-    Command
-} = require('discord.js-commando');
-const {
-    Client
-} = require('discord.js')
-const client = new Client()
-module.exports = class FightCommand extends Command {
-    constructor(client) {
-        super(client, {
-            name: 'fight',
-            group: "fights",
-            memberName: 'ffight',
-            description: 'Fight someone else with Buttons!',
-        });
-    }
-    async run(message) {
-        const prefix = 'fh ';
-        const args = message.content.slice(prefix.length).split(/ +/g);
-        args.shift() // fight removed
+module.exports = {
+    name: 'fight',
+    args: true,
+    usage: '<@USER>',
+    aliases: ['ffight'],
+    execute(message, args) {
         if (!args[0]) return message.channel.send("You must mention someone to fight!")
         const player1 = message.member.id
         const mention = message.mentions.users.size > 0 ? message.mentions.users.first() : false;
+        if(mention.bot) return message.channel.send("Cant fight bots.")
         if (!mention) return message.channel.send("You must mention someone to fight with them.")
         const player2 = mention.id
         const player1username = message.author.username
@@ -37,15 +23,15 @@ module.exports = class FightCommand extends Command {
             max: 100
         })
 
-        message.channel.send(`<@${player1}> what do you want to do?\nReply with \`punch\`, \`kick\`, \`defend\` or \`end\`.`)
+        message.channel.send(`<@${player1}> what do you want to do?\nReply with \`punch\`, \`kick\`, \`heal\` or \`end\`.`)
         collector.on('collect', msg => {
             if (msg.author.id === player1 && turnID === player1) {
-                if(checkDeath(player1hp)){
-                  message.channel.send(`:trophy: | **${player2username}** has won the fight with **${player1hp}** left!`);
-                  collector.stop()
+                if (checkDeath(player1hp)) {
+                    message.channel.send(`:trophy: | **${player2username}** has won the fight with **${player2hp} HP** left!`);
+                    collector.stop()
                 }
-                if (!['defend', 'kick', 'punch', 'end'].includes(msg.content.toLowerCase())) {
-                    message.channel.send(`<@${player1}> thats not a valid option. Try again!`)
+                if (!['heal', 'kick', 'punch', 'end'].includes(msg.content.toLowerCase())) {
+                    message.channel.send(`<@${player1}> thats not a valid option. Try again! \nReply with \`punch\`, \`kick\`, \`heal\` or \`end\`.`)
                 } else {
                     let action = msg.content.toLowerCase()
                     if (action === 'punch') {
@@ -55,10 +41,10 @@ module.exports = class FightCommand extends Command {
                         message.channel.send(`**PUNCH** | **${player1username}** lands a punch on **${player2username}** and deals **${randNum}** damage!\n${player2username} is left with ${player2hp} hp.`)
 
                         message.channel.send(`<@${player2}> its your turn!\nWhat do you want to do?`)
-                        if(checkDeath(player2hp)){
-                  message.channel.send(`:trophy: | **${player1username}** has won the fight with **${player2hp}** left!`);
-                 return collector.stop()
-                }
+                        if (checkDeath(player2hp)) {
+                            message.channel.send(`:trophy: | **${player1username}** has won the fight with **${player1hp}** left!`);
+                            return collector.stop()
+                        }
                         turnID = player2
                     } else if (action === 'kick') {
                         //kick
@@ -76,25 +62,29 @@ module.exports = class FightCommand extends Command {
                             player1hp -= falldmg
 
                             message.channel.send(`**FALL** | **${player1username}** fell and took **${falldmg}** damage!\n${player1username} is left with ${player1hp} hp.`)
-                            if(checkDeath(player1hp)){
-                  message.channel.send(`:trophy: | **${player2username}** has won the fight with **${player2hp}** left!`);
-                 return collector.stop()
-                }
+                            if (checkDeath(player1hp)) {
+                                message.channel.send(`:trophy: | **${player2username}** has won the fight with **${player2hp} HP** left!`);
+                                return collector.stop()
+                            }
                             message.channel.send(`<@${player2}> its your turn!`)
                         } else {
                             randNum = Math.floor(Math.random() * 20) + 20
                             player2hp -= randNum
                             message.channel.send(`**KICK** | **${player1username}** lands a successful kick on **${player2username}** and deals **${randNum}** damage!\n${player2username} is left with ${player2hp} hp.`)
-                            if(checkDeath(player2hp)){
-                  message.channel.send(`:trophy: | **${player1username}** has won the fight with **${player1hp}** left!`);
-                 return collector.stop()
-                }
-                            message.channel.send(`<@${player2}> its your turn!\nWhat do you want to do?`)
+                            if (checkDeath(player2hp)) {
+                                message.channel.send(`:trophy: | **${player1username}** has won the fight with **${player1hp} HP** left!`);
+                                return collector.stop()
+                            }
+                            message.channel.send(`<@${player2}> its your turn!\nWhat do you want to do?\nReply with \`punch\`, \`kick\`, \`heal\` or \`end\`.`)
                         }
                         turnID = player2
 
-                    } else if (action === 'defend') {
-                        //defend
+                    } else if (action === 'heal') {
+                        //heal
+                        randNum = Math.floor(Math.random() * 8) + 8
+                        player1hp += randNum
+                        message.channel.send(`**HEAL** | **${player1username}** healed **${randNum} HP**\n${player1username} is at ${player1hp} hp.`)
+                        turnID = player2
                     } else if (action === 'end') {
                         //end
                         collector.stop()
@@ -102,12 +92,12 @@ module.exports = class FightCommand extends Command {
                     } else;
                 }
             } else if (msg.author.id === player2 && turnID === player2) {
-                if(checkDeath(player2hp)){
-                  message.channel.send(`:trophy: | **${player1username}** has won the fight with **${player1hp}** left!`);
-                 return collector.stop()
+                if (checkDeath(player2hp)) {
+                    message.channel.send(`:trophy: | **${player1username}** has won the fight with **${player1hp} HP** left!`);
+                    return collector.stop()
                 }
-                if (!['defend', 'kick', 'punch', 'end'].includes(msg.content.toLowerCase())) {
-                    message.channel.send(`<@${player2}> thats not a valid option. Try again!`)
+                if (!['heal', 'kick', 'punch', 'end'].includes(msg.content.toLowerCase())) {
+                    message.channel.send(`<@${player2}> thats not a valid option. Try again!\nReply with \`punch\`, \`kick\`, \`heal\` or \`end\`.`)
                 } else {
                     let action = msg.content.toLowerCase()
                     if (action === 'punch') {
@@ -115,11 +105,11 @@ module.exports = class FightCommand extends Command {
                         randNum = Math.floor(Math.random() * 20) + 5
                         player1hp -= randNum
                         message.channel.send(`**PUNCH** | **${player2username}** lands a punch on **${player1username}** and deals **${randNum}** damage!\n${player1username} is left with ${player1hp} hp.`)
-                        if(checkDeath(player1hp)){
-                  message.channel.send(`:trophy: | **${player2username}** has won the fight with **${player2hp}** left!`);
-                 return collector.stop()
-                }
-                        message.channel.send(`<@${player1}> its your turn!\nWhat do you want to do?`)
+                        if (checkDeath(player1hp)) {
+                            message.channel.send(`:trophy: | **${player2username}** has won the fight with **${player2hp} HP** left!`);
+                            return collector.stop()
+                        }
+                        message.channel.send(`<@${player1}> its your turn!\nWhat do you want to do?\nReply with \`punch\`, \`kick\`, \`heal\` or \`end\`.`)
 
                         turnID = player1
                     } else if (action === 'kick') {
@@ -138,25 +128,29 @@ module.exports = class FightCommand extends Command {
                             player2hp -= falldmg
 
                             message.channel.send(`**FALL** | **${player2username}** fell and took **${falldmg}** damage!\n${player2username} is left with ${player2hp} hp.`)
-                            if(checkDeath(player2hp)){
-                  message.channel.send(`:trophy: | **${player1username}** has won the fight with **${player1hp}** left!`);
-                 return collector.stop()
-                }
-                            message.channel.send(`<@${player1}> its your turn!\nWhat do you want to do?`)
+                            if (checkDeath(player2hp)) {
+                                message.channel.send(`:trophy: | **${player1username}** has won the fight with **${player1hp} HP** left!`);
+                                return collector.stop()
+                            }
+                            message.channel.send(`<@${player1}> its your turn!\nWhat do you want to do?\nReply with \`punch\`, \`kick\`, \`heal\` or \`end\`.`)
                         } else {
                             randNum = Math.floor(Math.random() * 20) + 20
                             player1hp -= randNum
                             message.channel.send(`**KICK** | **${player2username}** lands a successful kick on **${player1username}** and deals **${randNum}** damage!\n${player1username} is left with ${player1hp} hp.`)
-if(checkDeath(player1hp)){
-                  message.channel.send(`:trophy: | **${player2username}** has won the fight with **${player2hp}** left!`);
-                 return collector.stop()
-                }
-                            message.channel.send(`<@${player1}> its your turn!\nWhat do you want to do?`)
+                            if (checkDeath(player1hp)) {
+                                message.channel.send(`:trophy: | **${player2username}** has won the fight with **${player2hp} HP** left!`);
+                                return collector.stop()
+                            }
+                            message.channel.send(`<@${player1}> its your turn!\nWhat do you want to do?\nReply with \`punch\`, \`kick\`, \`heal\` or \`end\`.`)
                         }
                         turnID = player1
 
-                    } else if (action === 'defend') {
-                        //defend
+                    } else if (action === 'heal') {
+                        //heal
+                        randNum = Math.floor(Math.random() * 8) + 8
+                        player2hp += randNum
+                        message.channel.send(`**HEAL** | **${player2username}** healed **${randNum} HP**\n${player2username} is at ${player2hp} hp.`)
+                        turnID = player1
                     } else if (action === 'end') {
                         //end
                         collector.stop()
@@ -173,6 +167,6 @@ if(checkDeath(player1hp)){
 }
 
 const checkDeath = (player) => {
-  if(player <= 0) return true
-  else return false
+    if (player <= 0) return true
+    else return false
 }

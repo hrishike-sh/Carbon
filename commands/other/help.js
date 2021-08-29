@@ -1,21 +1,21 @@
-// const {Command} = require('discord.js-commando');
-// const Discord = require('discord.js')
-// module.exports = class HelpCommand extends Command {
-//   constructor(client){
-//     super(client, {
-//       name: 'help',
-//       aliases: ['helpcommand', 'helpme'],
-//       group: "Other",
-//       memberName: 'o3',
-//       description: 'Help Command?',
-//     });
-//   }
-//     run(message) {
-//       const firstEmbed = {
-//         title: "HELP COMMAND",
-//         url: 'https://top.gg/servers/824294231447044197/vote',
-//         description: 'Type \`fh help command\` to get more info about the command.'
-//       }
-//       message.channel.send(firstEmbed)
-//     }
-// }
+const {
+  MessageMenu,
+  MessageMenuOption
+} = require('discord-buttons');
+
+module.exports = {
+  name: 'help',
+  async execute(message, args){
+    const donoOption = new MessageMenuOption()
+      .setLabel("Donations")
+      .setEmoji('💸')
+      .setValue('dono_op')
+      .setDescription("Use this to manage donations in your server!")
+    
+    const fightOption = new MessageMenuOption()
+      .setLabel("Fights")
+      .setEmoji('🤜')
+      .setValue('fight_op')
+
+  }
+}

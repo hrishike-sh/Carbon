@@ -1,27 +1,9 @@
-// :prayge:
-const {
-    Command
-} = require('discord.js-commando');
-const {
-    MessageButton,
-    MessageActionRow
-} = require('discord-buttons')
-const {
-    MessageEmbed
-} = require('discord.js')
-const w = require('weky')
-
-module.exports = class RPSCommand extends Command {
-    constructor(client) {
-        super(client, {
-            name: 'rps',
-            aliases: ['rockpaperscissors'],
-            group: "fights",
-            memberName: 'rps',
-            description: 'RPS (:prayge:)',
-        });
-    }
-    async run(message) {
+module.exports = {
+    name: 'rps',
+    usage: '<@USER>',
+    args: true,
+    async execute(message, args) {
+        if (message.mentions.users.size <= 0) return message.reply("Ping someone.")
         await w.RockPaperScissors({
             message: message,
             opponent: message.mentions.users.first(),

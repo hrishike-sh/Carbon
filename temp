@@ -1,4 +1,3 @@
-const {fight} = require('weky')
 const {Command} = require('discord.js-commando');
 
 module.exports = class FightCommand extends Command {

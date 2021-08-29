@@ -1,24 +1,12 @@
-const {
-    Command
-} = require('discord.js-commando');
+
 const Messages = require('discord-messages')
-const {
-    Client
-} = require('discord.js');
-const client = new Client()
-module.exports = class FightCommand extends Command {
-    constructor(client) {
-        super(client, {
-            name: 'ur',
-            aliases: ['update-roles'],
-            group: "donations",
-            memberName: 'update-roles',
-            description: '-',
-        });
-    }
-    async run(message) {
-        const prefix = 'fh '
-        const args = message.content.slice(prefix.length).split(/ +/g);
+
+module.exports = {
+    name: 'update-roles',
+    aliases: ['ur'],
+    args: true,
+    usage: '',
+   async execute(message, args) {
         if (
             !message.member.roles.cache.some(role => role.id === '824539655134773269') &&
             !message.member.roles.cache.some(role => role.id === '825783847622934549') &&
@@ -36,8 +24,25 @@ module.exports = class FightCommand extends Command {
         if (results === 'false' || results === false) return message.channel.send('No user found.')
 
         const amountDonated = parseInt(results.data.messages)
+        
+        if(
+          amountDonated >= 5000000000
+        ){
+          // donated 5b coins
+          [
+                '876460154705555487', // 5b
+                '826197829126979635', // 2.5b
+                '826197648927227944', // 1b
+                '826197396002177044', // 750m
+                '826197222751862877', // 500m
+                '826196972167757875', // 250m
+            ].forEach(async roleID => {
+                await sleep(500)
+                user.roles.add(roleID)
+            })
 
-        if (
+            message.channel.send(`A total of **6** roles will be added to the user!`)
+        } else if (
             amountDonated >= 2500000000
         ) {
             // donated 2.5b coins
@@ -116,5 +121,3 @@ module.exports = class FightCommand extends Command {
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms))
 }
-
-client.login(process.env.token)
