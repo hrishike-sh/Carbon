@@ -1,31 +1,16 @@
-const {Command} = require('discord.js-commando');
-const {MessageEmbed} = require('discord.js')
-module.exports = class HowGayCommand extends Command {
-  constructor(client){
-    super(client, {
-      name: 'howgay',
-      group: "fights",
-      memberName: 'f2',
-      description: 'Howgay - lowgay/highgay but its automatic!',
-      args: [
-        {
-          key: 'mention',
-          prompt: 'Mention someone to fight with!',
-          type: 'member'
-        },
-        {
-        key: 'horl',
-        prompt: 'Please specify either high or low!',
-        type: 'string',
-        oneOf: ['low', 'high']
-        }
-      ]
-    });
-  }
-    async run(message, {mention, horl}) {
-    // if(message.channel.id === '825672500385153035') return
-    let horll = horl
-    const opponent = message.mentions.users.first() || mention
+const {
+  MessageEmbed
+} = require('discord.js')
+
+module.exports = {
+  name: 'howgay',
+  args: true,
+  usage: '<@USER> high/low',
+  async execute(message, args){
+    const opponent = message.mentions.users.size > 0 ? message.mentions.users.first() : null;
+    args.shift()
+    let horll = args[0]
+    if(!opponent) return message.channel.send("You must mention someone to fight with them.")
     if(!horll || horll.toLowerCase() !== 'low' && horll.toLowerCase() !== 'high'){
       return message.reply('Please specify high or low\n\nExample: \`fh howgay @user high\`')
     } 
@@ -92,12 +77,12 @@ module.exports = class HowGayCommand extends Command {
       .catch(e => {
         message.channel.send(`${e}`)    
       })
-
-   
-
-    }
+  }
 }
 
 function sleep(ms){
   return new Promise(resolve => setTimeout(resolve, ms))
 }
+
+/**
+ */

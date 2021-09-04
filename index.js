@@ -24,7 +24,7 @@ client.cooldowns = new Discord.Collection()
 const {
     cooldowns
 } = client;
-
+let commandsRan = 0;
 const commandFolders = fs.readdirSync('./commands');
 const eventFiles = fs.readdirSync('./events').filter(file => file.endsWith('.js'))
 for (const folder of commandFolders) {
@@ -90,6 +90,7 @@ client.on('message', async message => {
         })
     }
     try {
+      commandsRan++
         command.execute(message, args, client)
     } catch (error) {
         console.log(error)
@@ -102,16 +103,17 @@ client.on('message', async message => {
 const blacklists = require('./database/models/blacklist')
 
 const checkBL = async () => {
-    const now = new Date()
-    const conditional = {
-        expires: {
-            $lt: now
-        },
-    }
-    const results = await blacklists.find(conditional)
-    if (results && results.length) {
-        await blacklists.deleteMany(conditional)
-    }
+    // const now = new Date()
+    // const conditional = {
+    //     expires: {
+    //         $lt: now
+    //     },
+    // }
+    // const results = await blacklists.find(conditional)
+    // if (results && results.length) {
+    //     await blacklists.deleteMany(conditional)
+    // }
+    console.log(`${commandsRan.toLocaleString()} commands have been ran since the bot is alive.`)
     setTimeout(checkBL, 1000 * 60)
 }
 

@@ -1,3 +1,5 @@
+const w = require('weky')
+
 module.exports = {
     name: 'rps',
     usage: '<@USER>',

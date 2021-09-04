@@ -2,7 +2,7 @@ const Discord = require('discord.js')
 const {
   inspect
 } = require('util')
-
+const mongoose = require('mongoose')
 module.exports = {
     name: 'eval',
     aliases: ['e'],
