@@ -1,5 +1,6 @@
 const Messages = require('discord-messages')
 const Heists = require('../../functions/heist-dono')
+const Grinds = require('../../functions/grind-dono')
 const { MessageEmbed } = require('discord.js')
 module.exports = {
     name: 'mydono',
@@ -13,34 +14,50 @@ module.exports = {
         })
         let user = await Messages.fetch(target.id, message.guild.id, true);
         let user2 = await Heists.fetch(target.id, message.guild.id, true);
-
-        if (!user && !user2) return mainMessage.edit({
-            embe: {
+        let user3 = await Grinds.fetch(target.id, message.guild.id, true)
+        if (!user && !user2 && !user3) return mainMessage.edit({
+            embed: {
                 description: 'Either the target has not donated any amount OR your donations are yet to be counted!'
             }
         })
-       // const totalAmount = parseInt(user.data.messages) + parseInt(user2.data.amount)
+       let donationAmount = {
+           amount: user.data ? user.data.messages : 0,
+           position: user.position || null
+       }
+       let heistAmount = {
+           amount: user2.data ? user2.data.amount : 0,
+           position: user2.position || null
+       }
+       let grindAmount = {
+           amount: user3.data ? user3.data.amount : 0,
+           position: user3.position || 0
+       }
+       const totalAmount = grindAmount.amount + donationAmount.amount + heistAmount.amount
         const embed = new MessageEmbed()
             .setTitle("Donations")
-            .setDescription(`Donation info for the user ${target}!`)
+            .setDescription(`Donation info for the user ${target}!\nTotal amount donated towards the server: **${totalAmount.toLocaleString()}** coins`)
             .setThumbnail("https://cdn.discordapp.com/emojis/862774540895125584.png?v=1")
             .addFields([{
                     name: 'Donated amount (Donations)',
-                    value: `> ${user.data.messages ? user.data.messages.toLocaleString() : "None"}`,
+                    value: `> ${donationAmount.amount.toLocaleString()}`,
                     inline: true
                 },
                 {
                     name: "Leaderboard position (Donations)",
-                    value: `> ${user.position ? user.position : "None"}`,
+                    value: `> ${donationAmount.position ? donationAmount.position : "None"}`,
                 },
                 {
                     name: "Donated amount (Heists)",
-                    value: `> ${!user2 ? "None" : user2.data.amount.toLocaleString()}`,
+                    value: `> ${heistAmount.amount.toLocaleString()}`,
                     inline: true
                 },
                 {
                     name: "Leaderboard position (Heists)",
-                    value: `> ${user2 ? user2.position : "None"}`,
+                    value: `> ${heistAmount.position ? heistAmount.position : "None" }`,
+                },
+                {
+                    name: "Grinders Amount",
+                    value: `> ${grindAmount.amount.toLocaleString()}`
                 }
             ])
             .setTimestamp()

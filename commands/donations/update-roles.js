@@ -1,6 +1,6 @@
-
 const Messages = require('discord-messages')
-
+const Heists = require('../../functions/heist-dono')
+const Grinds = require('../../functions/grind-dono')
 module.exports = {
     name: 'update-roles',
     aliases: ['ur'],
@@ -20,10 +20,14 @@ module.exports = {
 
         if (!user) return message.channel.send("No such user found.")
         const results = await Messages.fetch(userid, message.guild.id, false)
+        const results2 = await Heists.fetch(userid, message.guild.id, false) 
+        const results3 = await Grinds.fetch(userid, message.guild.id, false) 
+        if (!results && !results2 && !results3) return message.channel.send('No user found.')
 
-        if (results === 'false' || results === false) return message.channel.send('No user found.')
-
-        const amountDonated = parseInt(results.data.messages)
+        const amount1 = results.data.messages || 0
+        const amount2 = results2.data.amount || 0
+        const amount3 = results3.data.amount || 0
+        const amountDonated = amount1 + amount2 + amount3
         
         if(
           amountDonated >= 5000000000
