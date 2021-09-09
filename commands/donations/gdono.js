@@ -16,7 +16,10 @@ module.exports = {
         }
         if (!args[0]) return message.channel.send("You must either ping someone or you must give their id" + example)
         const mentionID = message.mentions.users.size > 0 ? message.mentions.users.first().id : args[0]
-
+        if(!Messages.fetch(mentionID, message.guild.id)){
+            message.channel.send("That person is not a grinder.\nAdd a grinder using \`fh grinder add @USER\`.")
+            return;
+        }
         const firstArg = args[0]
         if (!firstArg) return message.channel.send("You must tell me what to do" + example)
 
