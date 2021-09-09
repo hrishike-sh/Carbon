@@ -6,7 +6,6 @@ module.exports = {
     args: true,
     execute(message, args) {
       args.shift()
-      let finalNumm;
         const example = `\n\nExample: \`fh g 598918643727990784 add 5e6\` | \`fh g 598918643727990784 remove 5e6\``
         if (
             message.author.id !== '772524332382945292' &&

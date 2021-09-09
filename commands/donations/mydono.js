@@ -21,15 +21,15 @@ module.exports = {
             }
         })
        let donationAmount = {
-           amount: user.data ? user.data.messages : 0,
+           amount: user.data.messages || 0,
            position: user.position || null
        }
        let heistAmount = {
-           amount: user2.data ? user2.data.amount : 0,
+           amount: user2.data.amount || 0,
            position: user2.position || null
        }
        let grindAmount = {
-           amount: user3.data ? user3.data.amount : 0,
+           amount: user3.data.amount || 0,
            position: user3.position || 0
        }
        const totalAmount = grindAmount.amount + donationAmount.amount + heistAmount.amount
