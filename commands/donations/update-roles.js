@@ -24,9 +24,9 @@ module.exports = {
         const results3 = await Grinds.fetch(userid, message.guild.id, false) 
         if (!results && !results2 && !results3) return message.channel.send('No user found.')
 
-        const amount1 = results.data.messages || 0
-        const amount2 = results2.data.amount || 0
-        const amount3 = results3.data.amount || 0
+        const amount1 = results.data ? results.data.messages : 0
+        const amount2 = results2.data ? results2.data.amount : 0
+        const amount3 = results3.data ? results3.data.amount : 0
         const amountDonated = amount1 + amount2 + amount3
         
         if(
