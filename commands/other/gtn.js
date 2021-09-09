@@ -9,11 +9,10 @@ module.exports = {
         const filter = a => parseInt(a.content) === parseInt(finalGuess)
         message.channel.send(`${message.author} I have dmmed you the right number!`)
         message.author.send('The number to be guessed is **' + finalGuess + '**')
-
+        console.log(finalGuess)
         message.channel.send('Now listening to messages, when someone guesses the right number, the channel will be locked!\n\nGood Luck!')
         message.channel.awaitMessages(filter, {
                 max: 1,
-                time: 60000000
             })
             .then(collected => {
                 try {
