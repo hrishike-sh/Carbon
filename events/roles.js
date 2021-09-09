@@ -12,9 +12,7 @@ module.exports = {
        }
     }
     if(button.message.id === '883696224732065822'){
-      const roles = ['826052226514288700', '826044070408617985', '826044013685112888', '826043999659360267', '826043885632749568', '826043828510130186', '826053767371161610', '826054029431799858', '826053825408139265', '866675725381140480']
-
-      await button.clicker.member.roles.remove(roles)
+      
     }
     switch(button.id){
       case 'ann_ping':
@@ -144,65 +142,112 @@ module.exports = {
        }
         break;
       case 'red':
-      
+        if(button.clicker.member.roles.cache.get("826052226514288700")){
+          await button.clicker.member.roles.remove("826052226514288700")
+          button.reply.send(`I have removed <@&826052226514288700> from you.`, true)
+        } else {
+          await removeRoles(button)
          await button.clicker.member.roles.add("826052226514288700")
          button.reply.send(`I have added <@&826052226514288700> to you.`, true)
-       
+       }
         break;
       case 'orange':
-       
+        if(button.clicker.member.roles.cache.get("826044070408617985")){
+          await button.clicker.member.roles.remove("826044070408617985")
+          button.reply.send(`I have removed <@&826044070408617985> from you.`, true)
+        } else {
+          await removeRoles(button)
          await button.clicker.member.roles.add("826044070408617985")
          button.reply.send(`I have added <@&826044070408617985> to you.`, true)
-       
+       }
         break;
       case 'yellow':
-      
+        if(button.clicker.member.roles.cache.get("826044013685112888")){
+          await button.clicker.member.roles.remove("826044013685112888")
+          button.reply.send(`I have removed <@&826044013685112888> from you.`, true)
+        } else {
+          await removeRoles(button)
          await button.clicker.member.roles.add("826044013685112888")
          button.reply.send(`I have added <@&826044013685112888> to you.`, true)
-       
+       }
         break;
       case 'green':
-       
+        if(button.clicker.member.roles.cache.get("826043999659360267")){
+          await button.clicker.member.roles.remove("826043999659360267")
+          button.reply.send(`I have removed <@&826043999659360267> from you.`, true)
+        } else {
+          await removeRoles(button)
          await button.clicker.member.roles.add("826043999659360267")
          button.reply.send(`I have added <@&826043999659360267> to you.`, true)
-       
+       }
         break;
       case 'blue':
-       
+        if(button.clicker.member.roles.cache.get("826043885632749568")){
+          await button.clicker.member.roles.remove("826043885632749568")
+          button.reply.send(`I have removed <@&826043885632749568> from you.`, true)
+        } else {
+          await removeRoles(button)
          await button.clicker.member.roles.add("826043885632749568")
          button.reply.send(`I have added <@&826043885632749568> to you.`, true)
-       
+       }
         break;
       case 'purple':
-       
+        if(button.clicker.member.roles.cache.get("826043828510130186")){
+          await button.clicker.member.roles.remove("826043828510130186")
+          button.reply.send(`I have removed <@&826043828510130186> from you.`, true)
+        } else {
+          await removeRoles(button)
          await button.clicker.member.roles.add("826043828510130186")
          button.reply.send(`I have added <@&826043828510130186> to you.`, true)
-       
+       }
         break;
       case 'pink':
-       
+        if(button.clicker.member.roles.cache.get("826053767371161610")){
+          await button.clicker.member.roles.remove("826053767371161610")
+          button.reply.send(`I have removed <@&826053767371161610> from you.`, true)
+        } else {
+          await removeRoles(button)
          await button.clicker.member.roles.add("826053767371161610")
          button.reply.send(`I have added <@&826053767371161610> to you.`, true)
-       
+       }
         break;
       case 'black':
-       
+        if(button.clicker.member.roles.cache.get("826054029431799858")){
+          await button.clicker.member.roles.remove("826054029431799858")
+          button.reply.send(`I have removed <@&826054029431799858> from you.`, true)
+        } else {
+          await removeRoles(button)
          await button.clicker.member.roles.add("826054029431799858")
          button.reply.send(`I have added <@&826054029431799858> to you.`, true)
-       
+       }
         break;
       case 'white':
-       
+        if(button.clicker.member.roles.cache.get("826053825408139265")){
+          await button.clicker.member.roles.remove("826053825408139265")
+          button.reply.send(`I have removed <@&826053825408139265> from you.`, true)
+        } else {
+          await removeRoles(button)
          await button.clicker.member.roles.add("826053825408139265")
          button.reply.send(`I have added <@&826053825408139265> to you.`, true)
-       
+       }
         break;
       case 'random':
-      
+        if(button.clicker.member.roles.cache.get("866675725381140480")){
+          await button.clicker.member.roles.remove("866675725381140480")
+          button.reply.send(`I have removed <@&866675725381140480> from you.`, true)
+        } else {
+          await removeRoles(button)
          await button.clicker.member.roles.add("866675725381140480")
          button.reply.send(`I have added <@&866675725381140480> to you.`, true)
-       
+       }
         break;
     }
+
+    
   }
 } // 
+const removeRoles = async (button) => {
+      const roles = ['826052226514288700', '826044070408617985', '826044013685112888', '826043999659360267', '826043885632749568', '826043828510130186', '826053767371161610', '826054029431799858', '826053825408139265', '866675725381140480']
+
+      await button.clicker.member.roles.remove(roles)
+}
