@@ -100,20 +100,20 @@ client.on('message', async message => {
     }
 })
 
-const blacklists = require('./database/models/blacklist')
+const grinds = require('./database/models/grindm')
 
 const checkBL = async () => {
-    // const now = new Date()
-    // const conditional = {
-    //     expires: {
-    //         $lt: now
-    //     },
-    // }
-    // const results = await blacklists.find(conditional)
-    // if (results && results.length) {
-    //     await blacklists.deleteMany(conditional)
-    // }
-    console.log(`${commandsRan.toLocaleString()} commands have been ran since the bot is alive.`)
+    const now = new Date().getHours()
+    const conditional = {
+        lastUpdated: {
+            $lt: now
+        },
+    }
+    const results = await blacklists.find(conditional)
+    console.log(results)
+    if(results && results.length){
+        const channel = client.guilds.cache.get("824294231447044197").channels.cache.get("839800222677729310")
+    }
     setTimeout(checkBL, 1000 * 60)
 }
 

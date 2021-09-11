@@ -6,7 +6,7 @@ const GrindersSchema = new mongoose.Schema({
   guildID: { type: String },
   amount: { type: Number, default: 0 },
   days: { type: Number, default: 0},
-  lastUpdated: { type: Date, default: new Date() }
+  lastUpdated: { type: Number }
 });
 
 module.exports = mongoose.model('grinderschema', GrindersSchema);

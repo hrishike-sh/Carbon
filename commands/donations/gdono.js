@@ -10,7 +10,8 @@ module.exports = {
         if (
             message.author.id !== '772524332382945292' &&
             message.author.id !== '264186213848580096' &&
-            message.author.id !== '598918643727990784'
+            message.author.id !== '598918643727990784' && 
+            message.author.id !== '755812617603514439'
         ) {
             return message.channel.send('You can not perform this action.')
         }

@@ -1,4 +1,3 @@
-
 const settingsSchema = require('../../database/models/settingsSchema')
 let mongoURL;
 const mongoose = require('mongoose')

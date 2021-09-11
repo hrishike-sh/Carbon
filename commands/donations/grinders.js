@@ -34,7 +34,6 @@ module.exports = {
         guildID: message.guild.id,
         amount: 0,
         days: 0,
-        lastUpdated: new Date()
       })
       newUser.save()
       message.channel.send("New user has been created.")
