@@ -50,9 +50,9 @@ module.exports = {
                     finalNum = number
                 }
             }
-            Messages.addGrindDono(mentionID, message.guild.id, finalNum)
-            message.channel.send(`Added **${finalNum.toLocaleString()}** coins to <@${mentionID}>(${mentionID})'s profile!`)
             finalNumm = finalNum
+            Messages.addGrindDono(mentionID, message.guild.id, finalNum)
+            message.channel.send(`Added **${finalNumm.toLocaleString()}** coins to <@${mentionID}>(${mentionID})'s profile!`)
         } else if (firstArg === 'subtract' || firstArg === 'remove' || firstArg === '-') {
             let finalNum = 0
             args.shift()
@@ -76,9 +76,9 @@ module.exports = {
                     finalNum = number
                 }
             }
-            Messages.removeGrindDono(mentionID, message.guild.id, finalNum)
-            message.channel.send(`Removed **${finalNum.toLocaleString()}** coins from <@${mentionID}>(${mentionID})'s profile!`)
             finalNumm = finalNum
+            Messages.removeGrindDono(mentionID, message.guild.id, finalNum)
+            message.channel.send(`Removed **${finalNumm.toLocaleString()}** coins from <@${mentionID}>(${mentionID})'s profile!`)
 
         } else;
 

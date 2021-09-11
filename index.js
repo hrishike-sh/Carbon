@@ -108,11 +108,31 @@ const checkBL = async () => {
         lastUpdated: {
             $lt: now
         },
+        days: {
+          $lt: 0
+        }
     }
-    const results = await blacklists.find(conditional)
+    const results = await grinds.find(conditional)
     console.log(results)
     if(results && results.length){
         const channel = client.guilds.cache.get("824294231447044197").channels.cache.get("839800222677729310")
+        for(const result of results){
+          console.log(result.userID)
+        }
+    } else {
+      const condition2 = {
+        lastUpdated:{
+          $lt: now
+        },
+        days: {
+          $gte: 1
+        }
+      }
+      const results2 = await grinds.updateMany(condition2, {
+        $inc: {
+            days: -1,
+        }
+      })
     }
     setTimeout(checkBL, 1000 * 60)
 }
