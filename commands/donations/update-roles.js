@@ -11,6 +11,7 @@ module.exports = {
             !message.member.roles.cache.some(role => role.id === '824539655134773269') &&
             !message.member.roles.cache.some(role => role.id === '825783847622934549') &&
             !message.member.roles.cache.some(role => role.id === '858088054942203945') &&
+            !message.member.roles.cache.some(role => role.id === '824348974449819658') &&
             message.author.id !== '598918643727990784'
         ) {
             return message.channel.send('You must have one of the following roles to register this command: \`Moderator\`, \`Giveaway Manager\` or \`Event Manager\`')

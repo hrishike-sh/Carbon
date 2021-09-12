@@ -16,8 +16,6 @@ module.exports = {
         const code = message.content.replace(`fh e `, '')
         try {
             let evaled = eval(code)
-            console.log(evaled)
-            if(evaled.includes(client.token)) evaled.replace(client.token, "Sike bitch go away.")
             var embed = new Discord.MessageEmbed()
                 .setColor(0xfcfcfc)
                 .setTitle("Evaluated")

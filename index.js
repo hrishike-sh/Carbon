@@ -103,13 +103,23 @@ client.on('message', async message => {
 const grinds = require('./database/models/grindm')
 
 const checkBL = async () => {
+    await grinds.updateMany({}, {
+        $inc: {
+            time: -1,
+        }
+    }, {
+        upsert: true
+    })
     const now = new Date().getHours()
     const conditional = {
         lastUpdated: {
             $lt: now
         },
         days: {
-          $lt: 0
+          $lt: 1
+        },
+        time: {
+            $lt: 1
         }
     }
     const results = await grinds.find(conditional)
@@ -117,7 +127,10 @@ const checkBL = async () => {
     if(results && results.length){
         const channel = client.guilds.cache.get("824294231447044197").channels.cache.get("839800222677729310")
         for(const result of results){
-          console.log(result.userID)
+          // channel.send(`<@${result.userID}>`, { embed: {
+          //   title: "Reminder",
+          //   color: "RED",
+          // }})
         }
     } else {
       const condition2 = {
@@ -131,13 +144,15 @@ const checkBL = async () => {
       const results2 = await grinds.updateMany(condition2, {
         $inc: {
             days: -1,
-        }
+        },
+        lastUpdated: now
       })
+      
     }
     setTimeout(checkBL, 1000 * 60)
 }
 
-checkBL()
+// checkBL()
 client.on('clickMenu', (menu) => {
 	Nuggies.dropclick(client, menu);
 });
