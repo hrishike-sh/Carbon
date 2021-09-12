@@ -3,6 +3,7 @@ const {
   inspect
 } = require('util')
 const mongoose = require('mongoose')
+const grinds = require('../../database/models/grindm')
 module.exports = {
     name: 'eval',
     aliases: ['e'],

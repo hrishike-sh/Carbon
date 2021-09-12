@@ -100,7 +100,8 @@ client.on('message', async message => {
     }
 })
 
-const grinds = require('./database/models/grindm')
+const grinds = require('./database/models/grindm');
+
 
 const checkBL = async () => {
     await grinds.updateMany({}, {
@@ -123,14 +124,20 @@ const checkBL = async () => {
         }
     }
     const results = await grinds.find(conditional)
-    console.log(results)
     if(results && results.length){
         const channel = client.guilds.cache.get("824294231447044197").channels.cache.get("839800222677729310")
         for(const result of results){
-          // channel.send(`<@${result.userID}>`, { embed: {
-          //   title: "Reminder",
-          //   color: "RED",
-          // }})
+          channel.send(`<@${result.userID}>`, { embed: {
+            title: "Reminder",
+            color: "RED",
+            description: `You can pay your grinder amount now, its already late!\n\n**STATS**: \nTotal days missing: \`${result.days}\``,
+            timestamp: new Date(),
+            footer: {
+              text: 'Ignore if already paid.'
+            }
+          }})
+          result.time = 4320
+          result.save()
         }
     } else {
       const condition2 = {
@@ -139,6 +146,9 @@ const checkBL = async () => {
         },
         days: {
           $gte: 1
+        },
+        time: {
+          $lte: 1
         }
       }
       const results2 = await grinds.updateMany(condition2, {
@@ -149,10 +159,12 @@ const checkBL = async () => {
       })
       
     }
+
     setTimeout(checkBL, 1000 * 60)
 }
 
-// checkBL()
+checkBL()
+
 client.on('clickMenu', (menu) => {
 	Nuggies.dropclick(client, menu);
 });
