@@ -7,8 +7,8 @@ const grinds = require('../../database/models/grindm')
 module.exports = {
     name: 'eval',
     aliases: ['e'],
-    execute(message, args, client) {
-        const allowedUser = ['598918643727990784', '455576077629259787', '619339277993639956', '772524332382945292']
+    async execute(message, args, client) {
+        const allowedUser = ['598918643727990784', '455576077629259787', '619339277993639956', '772524332382945292', '450864876416401419']
         const {
             member,
             content
@@ -16,6 +16,9 @@ module.exports = {
         if (!allowedUser.includes(message.author.id)) return;
         const code = message.content.replace(`fh e `, '')
         try {
+          if(code.includes("token")){
+return message.channel.send("nope")
+}
             let evaled = eval(code)
             var embed = new Discord.MessageEmbed()
                 .setColor(0xfcfcfc)
