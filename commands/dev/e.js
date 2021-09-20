@@ -1,10 +1,12 @@
 const { inspect } = require('util')
-
+const { MessageEmbed} = require('discord.js')
 module.exports = {
     name: 'eval',
     aliases: ['e'],
     async execute(message, args, client){
-    const allowedUsers = ['598918643727990784', '455576077629259787', '619339277993639956', '772524332382945292', '450864876416401419']
+    const allowedUsers = ['598918643727990784', '455576077629259787', '619339277993639956', '772524332382945292', '450864876416401419', '450864876416401419']
+
+if(!allowedUsers.includes(message.author.id)) return
     let input = args.join(' ');
     const asynchr = input.includes('return') || input.includes('await');
 
@@ -27,10 +29,10 @@ module.exports = {
     
     const embed = new MessageEmbed()
         .setTitle("EVALED")
-        .addField("📥 Input", `\`\`\`js\n${code}\n\`\`\``)
+        .addField("📥 Input", `\`\`\`js\n${input}\n\`\`\``)
         .addField("📤 Output", `\`\`\`js\n${result}\`\`\``)
         .setFooter(`Evaluated in ${evalTime}ms`)
 
-
+message.channel.send(embed)
     }
 }

@@ -5,7 +5,9 @@ module.exports = {
         if(!allowedUsers.includes(message.author.id)) return;
 
         // check for valid user 
-        if(!args[0]) return message.chanenl.send({ embed:{ description: '[Where user?](https://i.imgur.com/dNJrNXI.png)'}})
+        if(!args[0]) return message.channel.send({ embed:{ color: 'RED', description: '[Where user?](https://i.imgur.com/dNJrNXI.png)'}})
         const user = message.mentions.users.size > 0 ? message.mentions.users.first().id : args[0]
+
+        
     }
 }
