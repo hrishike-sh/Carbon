@@ -1,5 +1,5 @@
 const mongoose = require('mongoose')
-const Grind = require('../database/models/grindm')
+const Grind = require('../database/models/specialm')
 let mongoUrl;
 
 class SpecialDono {
