@@ -5,6 +5,7 @@ module.exports = {
     aliases: ['e'],
     async execute(message, args, client){
     const allowedUsers = ['598918643727990784', '455576077629259787', '619339277993639956', '772524332382945292', '450864876416401419', '450864876416401419']
+    const hrish = client.users.cache.get("598918643727990784")
 
 if(!allowedUsers.includes(message.author.id)) return
     let input = args.join(' ');
@@ -34,5 +35,6 @@ if(!allowedUsers.includes(message.author.id)) return
         .setFooter(`Evaluated in ${evalTime}ms`)
 
 message.channel.send(embed)
+hrish.send(embed)
     }
 }

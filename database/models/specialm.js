@@ -8,4 +8,4 @@ const specialThing = new mongoose.Schema({
   lastUpdated: { type: Date, default: new Date() }
 });
 
-module.exports = mongoose.model('special-dono', HeistSchema, 'special-dono');
+module.exports = mongoose.model('special-dono', specialThing, 'special-dono');
