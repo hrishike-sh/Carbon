@@ -11,9 +11,7 @@ module.exports = {
          return button.reply.send(`I have added <@&826946297151094814> to you.`, true)
        }
     }
-    if(button.message.id === '883696224732065822'){
-      
-    }
+    
     switch(button.id){
       case 'ann_ping':
        if(button.clicker.member.roles.cache.get("824916329848111114")){

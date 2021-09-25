@@ -7,7 +7,7 @@ const {
 } = require('discord-buttons')
 module.exports = {
     name: 'syncban',
-    async execute(message, args){
+    async execute(message, args, client){
         const allowedUsers = ['598918643727990784']
         if(!allowedUsers.includes(message.author.id)) return;
 
@@ -40,19 +40,82 @@ module.exports = {
 
             let yesbut = new MessageButton()
                 .setLabel("Yes")
-                .setStyle("GREEN")
+                .setStyle("green")
                 .setID("globalbanyes")
             let nobut = new MessageButton()
                 .setLabel("No")
-                .setStyle("RED")
+                .setStyle("red")
                 .setID("globalbanno")
-            const row = MessageActionRow().addComponents([yesbut, nobut])
+            const row = new MessageActionRow().addComponents([yesbut, nobut])
             const confirmation = await message.channel.send({embed: {
                 title: 'Are you sure?',
-                description: `This will ban <@${user}>(${finalUser.tag}) from a total of **${cache.size}** servers. \nThis is irreversible.`
-            }})
+                color: "RED",
+                timestamp: new Date(),
+                description: `This will ban <@${user}>(${finalUser.tag}) from a total of **${cache.size}** servers.`
+            }, components: [row]})
+            const collector = confirmation.createButtonCollector(b => b, {time: 3e4})
+
+            collector.on('collect', async (but) => {
+                if(but.clicker.user.id !== message.author.id){
+                    await but.reply.send("This is not for you.", true)
+                    return;
+                }
+
+                if(but.id === 'globalbanno'){
+                    const msg = message.channel.send("You really got my hopes up there, nevermind i guess.")
+                    message.delete()
+                    confirmation.delete()
+                    await sleep(2500)
+                    msg.delete()
+                } else if(but.id === 'globalbanyes'){
+                    await but.reply.send("Banning...", true)
+                    const errorArray = []
+                    let bannedFrom;
+                    try {
+                        cache.forEach(guild => {
+                            guild.members.fetch({ user, force: true }).then(m => {
+                                try {
+                                    m.ban({ reason: "Test global ban"})
+                                    bannedFrom++
+                                } catch(e) {
+                                    --bannedFrom
+                                    errorArray.push(e)
+                                }
+                            })
+                        })
+                    } catch (error) {
+                        message.channel.send("Something went wrong.")
+                        console.log(error)
+                    } finally {
+                        const finalError = errorArray.join("\n")
+
+                        message.channel.send({ 
+                            embed: {
+                                title: "Global ban done",
+                                fields: [
+                                    {
+                                        name: "Successfully banned in:",
+                                        value: `${bannedFrom} servers.`
+                                    },
+                                    {
+                                        name: "Failed in:",
+                                        value: `${errorArray.length} servers.\n\`\`\`${finalError}\`\`\``
+                                    }
+                                ]
+                            }
+                        })
+
+                    }
+
+
+                }
+            })
         }
 
         
     }
+}
+
+function sleep(ms){
+  return new Promise(resolve => setTimeout(resolve, ms))
 }
