@@ -28,11 +28,11 @@ module.exports = {
         })
        let donationAmount = {
            amount: user.data ? user.data.messages : 0,
-           position: user.position || null
+           position: user.position || 0
        }
        let heistAmount = {
            amount: user2.data ? user2.data.amount : 0,
-           position: user2.position || null
+           position: user2.position || 0
        }
        let grindAmount = {
            amount: user3.data ? user3.data.amount : 0,
@@ -147,7 +147,7 @@ module.exports = {
         const dataForS = {
             embed: {
                 title: "Donations ~ FF Dono",
-                description: `Donations from <@${target.id}>\nTotal amount donated by the user: **${totalAmount.toLocaleString}**() coins.`,
+                description: `Donations from <@${target.id}>\nTotal amount donated by the user: **${totalAmount.toLocaleString()}**() coins.`,
                 fields: [
                     {
                         name: "Donated: ",
@@ -197,6 +197,7 @@ module.exports = {
                     embed: dataForD.embed,
                     components: dataForD.components
                 })
+                button.reply.defer()
             } else if (button.id === 'myd-h'){
                 await buttonH.setStyle("green")
 
@@ -208,6 +209,8 @@ module.exports = {
                     embed: dataForH.embed,
                     components: dataForH.components
                 })
+                button.reply.defer()
+
             } else if (button.id === 'myd-g'){
                 await buttonG.setStyle("green")
 
@@ -219,6 +222,8 @@ module.exports = {
                     embed: dataForG.embed,
                     components: dataForG.components
                 })
+                button.reply.defer()
+
             } else if (button.id === 'myd-s'){
                 await buttonS.setStyle("green")
 
@@ -230,7 +235,13 @@ module.exports = {
                     embed: dataForS.embed,
                     components: dataForS.components
                 })
+                button.reply.defer()
+
             } else;
+        })
+
+        collector.on('end', () => {
+            newMessage.edit("This message is now inactive.")
         })
     }
 }
