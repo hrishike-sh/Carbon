@@ -42,7 +42,7 @@ module.exports = {
            amount: user4.data ? user4.data.amount : 0,
            position: user4.position || 0
        }
-       const totalAmount = grindAmount.amount + donationAmount.amount + heistAmount.amount + specialAmount.coins
+       const totalAmount = grindAmount.amount + donationAmount.amount + heistAmount.amount + specialAmount.amount
        
        let buttonD = new MessageButton()
         .setLabel("Donations")
@@ -114,9 +114,9 @@ module.exports = {
                 },
                 timestamp: new Date()
             },
-            components: {
+            components: [
                 row
-            }
+            ]
         }
         const dataForG = {
             embed: {
@@ -140,9 +140,9 @@ module.exports = {
                 },
                 timestamp: new Date()
             },
-            components: {
+            components: [
                 row
-            }
+            ]
         }
         const dataForS = {
             embed: {
@@ -166,9 +166,9 @@ module.exports = {
                 },
                 timestamp: new Date()
             },
-            components: {
+            components: [
                 row
-            }
+            ]
         }
         
 
@@ -176,6 +176,61 @@ module.exports = {
         const newMessage = await message.channel.send("If your donations are not yet counted, please contact a moderator.", {
             embed: dataForD.embed,
             components: dataForD.components
+        })
+
+        const collector = newMessage.createButtonCollector(b => b, { time: 30000 })
+
+        collector.on('collect', async (button) => {
+            if(button.clicker.user.id !== message.author.id){
+                button.reply.send("This is not for you.", true)
+                return;
+            }
+
+            if(button.id === 'myd-d'){
+                await buttonD.setStyle("green")
+
+                await buttonH.setStyle("grey")
+                await buttonG.setStyle("grey")
+                await buttonS.setStyle("grey")
+
+                newMessage.edit("If your donations are not yet counted, please contact a moderator.", {
+                    embed: dataForD.embed,
+                    components: dataForD.components
+                })
+            } else if (button.id === 'myd-h'){
+                await buttonH.setStyle("green")
+
+                await buttonD.setStyle("grey")
+                await buttonG.setStyle("grey")
+                await buttonS.setStyle("grey")
+
+                newMessage.edit("If your donations are not yet counted, please contact a moderator.", {
+                    embed: dataForH.embed,
+                    components: dataForH.components
+                })
+            } else if (button.id === 'myd-g'){
+                await buttonG.setStyle("green")
+
+                await buttonD.setStyle("grey")
+                await buttonH.setStyle("grey")
+                await buttonS.setStyle("grey")
+
+                newMessage.edit("If your donations are not yet counted, please contact a moderator.", {
+                    embed: dataForG.embed,
+                    components: dataForG.components
+                })
+            } else if (button.id === 'myd-s'){
+                await buttonS.setStyle("green")
+
+                await buttonD.setStyle("grey")
+                await buttonG.setStyle("grey")
+                await buttonS.setStyle("grey")
+
+                newMessage.edit("If your donations are not yet counted, please contact a moderator.", {
+                    embed: dataForS.embed,
+                    components: dataForS.components
+                })
+            } else;
         })
     }
 }
