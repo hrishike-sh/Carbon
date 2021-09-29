@@ -49,6 +49,15 @@ module.exports = {
          button.reply.send(`I have added <@&837121985787592704> to you.`, true)
        }
         break;
+        case 'par_ping':
+          if(button.clicker.member.roles.cache.get("826946297151094814")){
+            await button.clicker.member.roles.remove("826946297151094814")
+            button.reply.send(`I have removed <@&826946297151094814> from you.`, true)
+          } else {
+            await button.clicker.member.roles.add("826946297151094814")
+            button.reply.send(`I have added <@&826946297151094814> to you.`, true)
+          }
+           break;
       case 'hes_ping':
        if(button.clicker.member.roles.cache.get("829283902136254497")){
          await button.clicker.member.roles.remove("829283902136254497")
