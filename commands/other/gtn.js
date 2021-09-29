@@ -2,8 +2,9 @@ module.exports = {
     name: 'gtn',
     usage: '<Max Number>',
     execute(message, args) {
-        if (message.author.id !== '755812617603514439' && message.author.id !== '772524332382945292' && message.author.id !== '598918643727990784' && message.author.id !== '264186213848580096' && message.author.id !== '712316272213491824') return;
-        const number = args[0] 
+        if (message.author.id !== '450864876416401419' && message.author.id !== '755812617603514439' && message.author.id !== '772524332382945292' && message.author.id !== '598918643727990784' && message.author.id !== '264186213848580096' && message.author.id !== '712316272213491824') return;
+        const number = args[0]
+        if(!number) number = 100;
         let rawGuess = parseInt(number)
         let finalGuess = Math.floor(Math.random() * rawGuess + 1)
         const filter = a => parseInt(a.content) === parseInt(finalGuess)
