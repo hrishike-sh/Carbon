@@ -22,6 +22,7 @@ mongoose.connect(dbURL, {
 client.commands = new Discord.Collection()
 client.cooldowns = new Discord.Collection()
 client.snipes = new Discord.Collection()
+client.esnipes = new Discord.Collection()
 const {
     cooldowns
 } = client;
@@ -164,7 +165,7 @@ const checkBL = async () => {
     setTimeout(checkBL, 1000 * 60)
 }
 
-checkBL()
+// checkBL()
 
 client.on('clickMenu', (menu) => {
 	Nuggies.dropclick(client, menu);

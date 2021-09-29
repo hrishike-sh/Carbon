@@ -6,7 +6,7 @@ module.exports = {
             !message.member.roles.cache.some(role => role.id === '839803117646512128') &&
             !message.member.roles.cache.some(role => role.id === '826196972167757875') &&
             !message.member.roles.cache.some(role => role.id === '825283097830096908') &&
-            !message.member.roles.cache.some(role => role.id === '824687393868742696') &&
+            !message.member.roles.cache.some(role => role.id === '824687393868742696')
         ){
             return message.channel.send("You do not have permission to use this command, read <#843943148945276949> for more info.")
         }
