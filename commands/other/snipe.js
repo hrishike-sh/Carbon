@@ -22,7 +22,9 @@ module.exports = {
           },
           description: sniped.content ? sniped.content : "Probably an image.",
           color: 'RED',
-          footer: 'sussy baka'
+          footer: {
+              text: `Sniped by: ${message.author.tag}`
+          }
         }})
     }
 }

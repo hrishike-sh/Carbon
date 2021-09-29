@@ -1,3 +1,5 @@
+const ms = require('ms')
+
 module.exports = {
     name: 'esnipe',
     aliases: ['editsnipe'],
@@ -34,7 +36,7 @@ module.exports = {
                 }
             ],
             footer: {
-                text: `Sniped by ${message.author.tag} | Message was edited in ${sniped.editedIn}ms`
+                text: `Sniped by ${message.author.tag} | Message was edited in ${ms(sniped.editedIn, { long: true })}`
             }
         }})
     }
