@@ -101,14 +101,6 @@ client.on('message', async message => {
     }
 })
 
-const colorArray = ['#00fffd', '#ff0000', '#09ff00', '#0013ff', '#17ff00', '#fffa00', '#000000']
-
-const changeColor = async () => {
-
-  client.guilds.cache.get("824294231447044197").roles.cache.get("857817197417594921").setColor(colorArray[Math.floor(Math.random() * colorArray.length)])
-  setTimeout(changeColor, 10 * 1000)
-}
-changeColor()
 const grinds = require('./database/models/grindm');
 
 
