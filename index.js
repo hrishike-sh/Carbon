@@ -21,6 +21,7 @@ mongoose.connect(dbURL, {
 })
 client.commands = new Discord.Collection()
 client.cooldowns = new Discord.Collection()
+client.snipes = new Discord.Collection()
 const {
     cooldowns
 } = client;
