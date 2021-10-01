@@ -4,6 +4,8 @@ module.exports = {
     name: 'gdono',
     aliases: ['g'],
     args: true,
+    usage: 'd <@USER | USER_ID> <Subtract | Add> <Amount>',
+    description: 'Grinder donos.',
     execute(message, args) {
       args.shift()
         const example = `\n\nExample: \`fh g 598918643727990784 add 5e6\` | \`fh g 598918643727990784 remove 5e6\``

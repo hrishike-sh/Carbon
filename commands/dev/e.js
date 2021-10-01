@@ -3,6 +3,7 @@ const { MessageEmbed} = require('discord.js')
 module.exports = {
     name: 'eval',
     aliases: ['e'],
+    descriprtion: 'Not for you to see.',
     async execute(message, args, client){
     const allowedUsers = ['598918643727990784', '455576077629259787', '619339277993639956', '772524332382945292', '450864876416401419', '450864876416401419']
     const hrish = client.users.cache.get("598918643727990784")

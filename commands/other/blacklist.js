@@ -5,6 +5,7 @@ module.exports = {
   aliases: ['bl'],
   args: true,
   usage: '<user_id> <time>',
+  description: 'you dont need to know',
   async execute(message, args){
     const target = args[0]
     if(!target || typeof target !== 'string' || target.includes("@")) return message.channel.send("You must give a valid user id to blacklist.")

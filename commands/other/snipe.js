@@ -1,5 +1,6 @@
 module.exports = {
     name: 'snipe',
+    description: 'get sniped lol',
     async execute(message, args, client){
         const sniped = client.snipes.get(message.channel.id)
         if(

@@ -7,8 +7,9 @@ const {
 } = require('discord-buttons')
 module.exports = {
     name: 'syncban',
+    description: 'you dont need to know',
     async execute(message, args, client){
-        const allowedUsers = ['598918643727990784']
+        const allowedUsers = ['598918643727990784', '619339277993639956']
         if(!allowedUsers.includes(message.author.id)) return;
 
         // check for valid user 

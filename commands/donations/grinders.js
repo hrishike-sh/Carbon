@@ -3,6 +3,7 @@ const grinds = require('../../database/models/grindm')
 module.exports = {
   name: 'grinders',
   aliases: ['grinder'],
+  description: 'Grinders logging',
   async execute(message, args, client){
     
     if(

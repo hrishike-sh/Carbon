@@ -4,6 +4,7 @@ const mongoose = require('mongoose')
 module.exports = {
         name: 'serverConfig',
         aliases: ['config', 'serverconf'],
+        description: 'The only command the bot dev doesnt care about, change the server config.',
         args: true,
        async execute(message, args){
                 if (!mongoURL) {

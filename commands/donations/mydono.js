@@ -10,6 +10,8 @@ const {
 module.exports = {
     name: 'mydono',
     aliases: ['myd'],
+    description: 'Check your donations',
+    usage: 'myd',
    async execute(message, args) {
         let target = message.mentions.users.first() || message.author
         const mainMessage = await message.channel.send({

@@ -6,6 +6,7 @@ const {
   module.exports = {
       name: 'nop',
       aliases: ['noping', 'nopings'],
+      description: 'you dont need to know',
       async execute(message, args){
           if(!message.member.roles.cache.some(role => role.id === '824348974449819658') && message.author.id !== '598918643727990784'){
               message.channel.send("You need the \`・ Administrator\` role to perform this action.")

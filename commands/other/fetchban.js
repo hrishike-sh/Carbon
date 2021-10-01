@@ -3,6 +3,7 @@ module.exports = {
   aliases: ['fetchbans', 'baninfo'],
   args: true,
   usage: '<id>',
+  description: 'Check ban info about a certain user.',
   async execute(message, args){
     const id = args[0]
     let banInfo = await message.guild.fetchBan(id).catch(e => {return message.channel.send("Either the user is not banned or the user id provided is not valid.")})

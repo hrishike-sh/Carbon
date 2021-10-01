@@ -5,7 +5,8 @@ module.exports = {
     name: 'update-roles',
     aliases: ['ur'],
     args: true,
-    usage: '',
+    usage: '<user_id>',
+    description: 'Give dono roles to users automatically',
    async execute(message, args) {
         if (
             !message.member.roles.cache.some(role => role.id === '824539655134773269') &&

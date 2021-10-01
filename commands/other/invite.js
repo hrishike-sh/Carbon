@@ -5,6 +5,7 @@ const {
 module.exports = {
   name: 'invite',
   aliases: ['inv'],
+  description: 'Invite the bot.',
   execute(message, args){
     const but = new MessageButton()
       .setLabel('Invite')

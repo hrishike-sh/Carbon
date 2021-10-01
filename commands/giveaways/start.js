@@ -3,6 +3,7 @@ const ms = require('ms')
 module.exports = {
     name: 'gstart',
     alises: ['g', 'giveaway', 'gaw'],
+    description: 'start giveaways (testing only)',
     async execute(message, args, client){
         if(message.author.id !== '598918643727990784') return;
 

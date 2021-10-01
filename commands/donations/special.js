@@ -4,6 +4,7 @@ module.exports = {
     name: 'sdono',
     aliases: ['ff', 'fd'],
     args: true,
+    description: 'Special dono thing.',
     execute(message, args) {
       args.shift()
         const example = `\n\nExample: \`fh ff 598918643727990784 add 5e6\` | \`fh ff 598918643727990784 remove 5e6\``

@@ -3,6 +3,7 @@ const ms = require('ms')
 module.exports = {
     name: 'esnipe',
     aliases: ['editsnipe'],
+    description: 'Dank Memer esnipe but better',
     execute(message, args, client){
         const sniped = client.esnipes.get(message.channel.id)
         if(

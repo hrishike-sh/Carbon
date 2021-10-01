@@ -2,6 +2,7 @@ const prefix = 'fh '
 
 module.exports = {
     name: 'help',
+    description: 'Please send help',
     async execute(message, args, client) {
         const data = []
         const {

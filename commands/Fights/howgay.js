@@ -6,6 +6,7 @@ module.exports = {
   name: 'howgay',
   args: true,
   usage: '<@USER> high/low',
+  description: 'gay',
   async execute(message, args){
     const opponent = message.mentions.users.size > 0 ? message.mentions.users.first() : null;
     args.shift()

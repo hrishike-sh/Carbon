@@ -6,7 +6,7 @@ module.exports = {
     name: 'lb',
     aliases: ['lb'],
     args: true,
-    usage: '',
+    description: 'Check leaderboard for donations',
     async execute(message, args, client) {
         if (!args[0]) return message.channel.send("Which leaderboard would you like to see?\n\nExample: \`fh lb h\`, \`fh lb d\`")
         if (message.guild.id !== '824294231447044197') {

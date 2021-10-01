@@ -6,6 +6,7 @@ const {
 const grinds = require('../../database/models/grindm')
 module.exports = {
   name: 'test',
+  descriprtion: 'Not for you to see.',
   async execute(message, args){
     const all = await grindm.find({ guildID: '824294231447044197' })
 
