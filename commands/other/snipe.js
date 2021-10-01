@@ -20,10 +20,10 @@ module.exports = {
               name: sniped.author,
               icon_url: sniped.member.user.displayAvatarURL({ dynamic: false })
           },
-          description: sniped.content ? sniped.content : "Probably an image.",
+          description: sniped.content ? sniped.content : `[One attachment found.](${sniped.attachments})`,
           color: 'RED',
           footer: {
-              text: `Sniped by: ${message.author.tag}`
+              text: `Sniped by ${message.author.tag} | Deleted ${sniped.deletedAt}`
           }
         }})
     }

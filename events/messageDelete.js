@@ -7,6 +7,8 @@ module.exports = {
             content: message.content,
             author: message.author.tag,
             member: message.member,
+            deletedAt: new Date(),
+            attachments: message.attachments.size > 0 ? message.attachments.first().url : null
         })
     }
 }
