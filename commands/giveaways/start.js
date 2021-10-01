@@ -27,5 +27,20 @@ module.exports = {
             description: `React with 🎉 to enter.\nTime: **${ms(time, { long: true })}**\nHosted by: ${message.member}`
         }})
         sussy.react('🎉')
+
+        await sleep(time)
+        const winner = sussy.reactions.cache.random()
+        console.log(winner)
+        sussy.edit({ embed: {
+            title: `Giveaway for ${prize} has ended!`,
+            description: `Winner: <@${winner.id}>`
+        }})
+        message.channel.send(`The winner for **${prize}** is <@${winner.id}>`, {embed: {
+            description: `[Jump](https://discord.com/channels/${message.guild.id}/${message.channel.id}/${message.id})`
+        }})
     }
+}
+
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms))
 }
