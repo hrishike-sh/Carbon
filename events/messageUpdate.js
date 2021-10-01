@@ -2,9 +2,9 @@ module.exports = {
     name: 'messageUpdate',
     once: false,
     execute(oldMessage, newMessage, client){
-        if(message.author.bot) return;
+        if(newMessage.author.bot) return;
 
-        client.esnipes.set(message.channel.id, {
+        client.esnipes.set(newMessage.channel.id, {
             oldContent: oldMessage.content,
             newContent: newMessage.content,
             editedIn: oldMessage.createdAt - newMessage.editedAt,
