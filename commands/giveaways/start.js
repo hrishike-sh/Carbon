@@ -25,19 +25,21 @@ module.exports = {
 
         const sussy = await message.channel.send({embed: {
             title: prize,
-            description: `React with 🎉 to enter.\nTime: **${ms(time, { long: true })}**\nHosted by: ${message.member}`
+            description: `React with 🎉 to enter.\nTime: **${ms(time, { long: true })}**\nHosted by: ${message.member}`,
+            color: "GREEN"
         }})
         sussy.react('🎉')
 
         await sleep(time)
-        const winner = sussy.reactions.cache.random()
+        const winner = sussy.reactions.cache.first().users.cache.random()
         console.log(winner)
         sussy.edit({ embed: {
             title: `Giveaway for ${prize} has ended!`,
-            description: `Winner: <@${winner.id}>`
+            description: `Winner: <@${winner.id}>`,
+            color: "RED"
         }})
         message.channel.send(`The winner for **${prize}** is <@${winner.id}>`, {embed: {
-            description: `[Jump](https://discord.com/channels/${message.guild.id}/${message.channel.id}/${message.id})`
+            description: `[Jump](https://discord.com/channels/${message.guild.id}/${message.channel.id}/${sussy.id})`
         }})
     }
 }
