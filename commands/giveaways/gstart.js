@@ -31,14 +31,20 @@ module.exports = {
         sussy.react('🎉')
 
         await sleep(time)
-        const winner = sussy.reactions.cache.first().users.cache.random()
-        console.log(winner)
+        let winner = '';
+        if(winners > 1){
+            winner = `<@${sussy.reactions.cache.first().users.cache.filter(u => !u.bot).random().id}>`
+        } else {
+            for(i = 0; i < winners; i++){
+                winner += `<@${sussy.reactions.cache.first().users.cache.filter(u => !u.bot && !winner.includes(u.id)).random().id}>, `
+            }
+        }
         sussy.edit({ embed: {
             title: `Giveaway for ${prize} has ended!`,
-            description: `Winner: <@${winner.id}>`,
+            description: `Winner: ${winner}`,
             color: "RED"
         }})
-        message.channel.send(`The winner for **${prize}** is <@${winner.id}>`, {embed: {
+        message.channel.send(`The winner for **${prize}** is ${winner}`, {embed: {
             description: `[Jump](https://discord.com/channels/${message.guild.id}/${message.channel.id}/${sussy.id})`
         }})
     }
