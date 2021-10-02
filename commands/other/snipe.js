@@ -24,8 +24,9 @@ module.exports = {
           description: sniped.content ? sniped.content : `[One attachment found.](${sniped.attachments})`,
           color: 'RED',
           footer: {
-              text: `Sniped by ${message.author.tag} | Deleted ${sniped.deletedAt}`
-          }
+              text: `Sniped by ${message.author.tag}`
+          },
+          timestamp: sniped.deletedAt
         }})
     }
 }
