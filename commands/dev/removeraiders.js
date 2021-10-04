@@ -6,5 +6,9 @@ module.exports = {
         if(!['598918643727990784', '619339277993639956'].includes(message.author.id)) return;
         if(!args[0]) return message.channel.send("You have to provide valid time.")
         const time = ms(args[0])
+        
+        message.guild.members.cache.filter(mem => mem.createdTimestamp - mem.joinedTimestamp < time).forEach(mem => {
+            mem.kick(`Raider. Action requested by ${message.author.tag}`)
+        })
     }
 }
