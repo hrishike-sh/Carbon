@@ -8,3 +8,5 @@ const CandyNomy = new mongoose.Schema({
     userId: reqString,
     candies: Number,
 })
+
+module.exports = mongoose.model('candies', CandyNomy)
