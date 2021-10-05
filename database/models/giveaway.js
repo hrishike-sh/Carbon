@@ -17,4 +17,4 @@ const GiveawaySchema = new mongoose.Schema({
     hasEnded: Boolean
 });
 
-module.exports = mongoose.model('giveaways', GiveawaySchema)
+module.exports = mongoose.model('giveaway', GiveawaySchema, 'giveaway')
