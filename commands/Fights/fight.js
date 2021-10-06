@@ -4,6 +4,7 @@ module.exports = {
     usage: '<@USER>',
     aliases: ['ffight'],
     description: 'Fight others ig?',
+    disabledChannels: ['870240187198885888'],
     execute(message, args) {
         if (!args[0]) return message.channel.send("You must mention someone to fight!")
         const player1 = message.member.id

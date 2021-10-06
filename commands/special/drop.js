@@ -3,6 +3,7 @@ const deez = require('../../database/models/candies')
 let cooldown = []
 module.exports = {
     name: 'drop',
+    disabledChannels: ['870240187198885888'],
     async execute(message, args){
         const user = await deez.findOne({ userId: message.author.id })
         let candDrop;
@@ -45,7 +46,7 @@ module.exports = {
                   })
                   collector.on('end', async () => {
                       const payouts = (willDrop / peopleWhoEntered.length).toFixed(0)
-                    message.channel.send(`:no_entry: The drop has ended! A total of ${peopleWhoEntered.length} users collected the drop and got **${parseInt(payouts).toLocaleString()}** candeez each!!\nType \`fh candy\` in <#824312952752570368> to check how many candeez you have!`)
+                    message.channel.send(`:no_entry: The drop has ended! A total of ${peopleWhoEntered.length} users collected the drop and got **${payouts.toLocaleString()}** candeez each!!\nType \`fh candy\` in <#824312952752570368> to check how many candeez you have!`)
                     peopleWhoEntered.forEach(async value => {
                         let user = await deez.findOne({ userId: value })
                         if(!user){

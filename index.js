@@ -59,7 +59,7 @@ client.on('message', async message => {
     const command = client.commands.get(commandName) || client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName))
 
     if (!command) return;
-
+    if(command.disabledChannels && command.disabledChannels.includes(message.channel.id)) return;
     if (!cooldowns.has(command.name)) {
         cooldowns.set(command.name, new Discord.Collection());
     }
@@ -166,9 +166,5 @@ const checkBL = async () => {
 }
 
 // checkBL()
-
-client.on('clickMenu', (menu) => {
-	Nuggies.dropclick(client, menu);
-});
 
 client.login(process.env.token)
