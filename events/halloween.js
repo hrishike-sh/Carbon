@@ -45,7 +45,6 @@ module.exports = {
             })
             setTimeout(() => {
                 cooldown = cooldown.filter(e => e !== message.channel.id)
-                console.log(cooldown)
             }, 60 * 1000)
           })
         } else if (type === 'scramble'){
@@ -58,7 +57,28 @@ module.exports = {
             'hrish',
             'apt',
             'tobokoala',
-            'zombie'
+            'zombie',
+            'dark',
+            'venom',
+            'orion',
+            'memertsu',
+            'sunny',
+            'yassin',
+            'ace',
+            'hemly',
+            'xan',
+            'mirror',
+            'naomi',
+            'rk',
+            'psalm',
+            'luz',
+            'bread',
+            'skybye',
+            'xyz',
+            'thunder',
+            'lyra',
+            'deep',
+            'ayyy',
           ]
           const randomWord = words[Math.floor(Math.random() * words.length)]
           const toGuess = getRandom(randomWord)
@@ -66,7 +86,7 @@ module.exports = {
           await message.channel.send(`:ghost: Halloween Event :ghost:\nUnscarmble the word to gain candeez!\n\nWord: \`${toGuess}\`\nTime: 20 seconds`)
           const collector = message.channel.createMessageCollector(m => m.content.toLowerCase() === randomWord, { time: 20000, max: 1 })
           collector.on('collect', async msg => {
-            message.channel.send(`:tada: **${msg.author.username}** guessed the correct word and got **${randomAmount.toLocaleString()}** candeez!`)
+            message.channel.send(`:tada: **${msg.author.username}** guessed the correct word and got **${randomAmount.toLocaleString()}** candeez!\nThe word was **${randomWord}**`)
             
             let user = await candeez.findOne({ userId: msg.author.id })
                 if(!user){
