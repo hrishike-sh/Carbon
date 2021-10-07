@@ -1,11 +1,14 @@
 let cooldown = []
 const candeez = require('../database/models/candies')
+const settings = require('../databse/models/settingsSchema')
 module.exports = {
     name: 'message',
     async execute(message, client){
       if(!message.guild) return
        if(message.guild.id !== '824294231447044197') return;
-       if(message.author.bot) return
+       if(message.author.bot) return;
+       const channelSettings = await settings.findOne({ guildID: message.guild.id })
+       if(channelSettings.disabledDrop && channelSettings.disabledDrop.includes(message.channel.id)) return;
        const drop = Math.floor(Math.random() * 100) === 5 ? true : false
        const randomAmount = Math.floor(Math.random() * 2500)
        const canType = [
