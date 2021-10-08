@@ -1,6 +1,6 @@
 let cooldown = []
 const candeez = require('../database/models/candies')
-const settings = require('../databse/models/settingsSchema')
+const settings = require('../database/models/settingsSchema')
 module.exports = {
     name: 'message',
     async execute(message, client){
@@ -31,10 +31,10 @@ module.exports = {
           collector.on('collect', async msg => {
               if(peopleWhoEntered.includes(msg.author.id)) return;
             peopleWhoEntered.push(msg.author.id)
-            message.channel.send(`:tada: **${msg.author.username}** collected **${randomAmount.toLocaleString()}** candeez!`)
+            message.channel.send(`:tada: **${msg.author.username}** collected **${randomAmount.toLocaleString()}** candies!`)
           })
           collector.on('end', async () => {
-            message.channel.send(`:no_entry: The drop has ended! A total of ${peopleWhoEntered.length} users completed the event!\nType \`fh candy\` in <#824312952752570368> to check how many candeez you have!`)
+            message.channel.send(`:no_entry: The drop has ended! A total of ${peopleWhoEntered.length} users completed the event!\nType \`fh candy\` in <#824312952752570368> to check how many candies you have!`)
             peopleWhoEntered.forEach(async value => {
                 let user = await candeez.findOne({ userId: value })
                 if(!user){
@@ -68,6 +68,7 @@ module.exports = {
             'memertsu',
             'sunny',
             'yassin',
+            'ina',
             'ace',
             'hemly',
             'xan',
@@ -87,10 +88,10 @@ module.exports = {
           const randomWord = words[Math.floor(Math.random() * words.length)]
           const toGuess = getRandom(randomWord)
           const randomAmount = Math.floor(Math.random() * 2500) + 7500
-          await message.channel.send(`:ghost: Halloween Event :ghost:\nUnscarmble the word to gain candeez!\n\nWord: \`${toGuess}\`\nTime: 20 seconds`)
+          await message.channel.send(`:ghost: Halloween Event :ghost:\nUnscarmble the word to gain candies!\n\nWord: \`${toGuess}\`\nTime: 20 seconds`)
           const collector = message.channel.createMessageCollector(m => m.content.toLowerCase() === randomWord, { time: 20000, max: 1 })
           collector.on('collect', async msg => {
-            message.channel.send(`:tada: **${msg.author.username}** guessed the correct word and got **${randomAmount.toLocaleString()}** candeez!\nThe word was **${randomWord}**`)
+            message.channel.send(`:tada: **${msg.author.username}** guessed the correct word and got **${randomAmount.toLocaleString()}** candies!\nThe word was **${randomWord}**`)
             
             let user = await candeez.findOne({ userId: msg.author.id })
                 if(!user){

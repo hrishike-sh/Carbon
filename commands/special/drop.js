@@ -22,7 +22,7 @@ module.exports = {
             const willDrop = parseInt(msg.content)
 
             if(willDrop > candDrop) return message.channel.send(`You do not have ${willDrop} candies.`)
-            if(willDrop <= 1000) return message.channel.send("You cant drop less than 1000 candeez")
+            if(willDrop <= 1000) return message.channel.send("You cant drop less than 1000 candies")
             user.candies -= willDrop
             user.save()
 
@@ -46,7 +46,7 @@ module.exports = {
                   })
                   collector.on('end', async () => {
                       const payouts = (willDrop / peopleWhoEntered.length).toFixed(0)
-                    message.channel.send(`:no_entry: The drop has ended! A total of ${peopleWhoEntered.length} users collected the drop and got **${payouts.toLocaleString()}** candeez each!!\nType \`fh candy\` in <#824312952752570368> to check how many candeez you have!`)
+                    message.channel.send(`:no_entry: The drop has ended! A total of ${peopleWhoEntered.length} users collected the drop and got **${payouts.toLocaleString()}** candies each!!\nType \`fh candy\` in <#824312952752570368> to check how many candies you have!`)
                     peopleWhoEntered.forEach(async value => {
                         let user = await deez.findOne({ userId: value })
                         if(!user){

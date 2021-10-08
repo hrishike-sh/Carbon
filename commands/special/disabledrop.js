@@ -1,5 +1,5 @@
 
-const settings = require('../../databse/models/settingsSchema')
+const settings = require('../../database/models/settingsSchema')
 
 module.exports = {
     name: 'disablechannel',
@@ -13,6 +13,7 @@ module.exports = {
         if(dis.disabledDrop){
             dis.disabledDrop.push(channelId)
         } else dis.disabledDrop = [channelId]
+        dis.save()
 
         return message.channel.send(`Done! This channel wont get any drops from now on!`)
 

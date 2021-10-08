@@ -10,9 +10,9 @@ module.exports = {
           '🥈',
           '🥉',
         ]
-        const finalLb = rawLb.map(value => `${a[rawLb.indexOf(value)] || ':poop:'} - <@${rawLb[rawLb.indexOf(value)].userId}> with **${rawLb[rawLb.indexOf(value)].candies.toLocaleString()}** candeez`).join('\n')
+        const finalLb = rawLb.map(value => `${a[rawLb.indexOf(value)] || ':poop:'} - <@${rawLb[rawLb.indexOf(value)].userId}> with **${rawLb[rawLb.indexOf(value)].candies.toLocaleString()}** candies`).join('\n')
         message.channel.send({ embed: {
-          title: "Candeez Leaderboard :ghost:",
+          title: "Candies Leaderboard :ghost:",
           description: finalLb,
           footer: {
             text: 'imagine not being on here'
