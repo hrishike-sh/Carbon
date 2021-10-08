@@ -5,7 +5,7 @@ module.exports = {
     name: 'setcandy',
     aliases: ['setcandies'],
     async execute(message, args){
-        const allowed = ['598918643727990784', '619339277993639956']
+        const allowed = ['598918643727990784', '619339277993639956', '455576077629259787']
 
         if(!allowed.includes(message.author.id)) return
 

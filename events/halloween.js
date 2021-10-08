@@ -88,7 +88,7 @@ module.exports = {
           const randomWord = words[Math.floor(Math.random() * words.length)]
           const toGuess = getRandom(randomWord)
           const randomAmount = Math.floor(Math.random() * 2500) + 7500
-          await message.channel.send(`:ghost: Halloween Event :ghost:\nUnscarmble the word to gain candies!\n\nWord: \`${toGuess}\`\nTime: 20 seconds`)
+          await message.channel.send(`:ghost: Halloween Event :ghost:\nUnscramble the word to gain candies!\n\nWord: \`${toGuess}\`\nTime: 20 seconds`)
           const collector = message.channel.createMessageCollector(m => m.content.toLowerCase() === randomWord, { time: 20000, max: 1 })
           collector.on('collect', async msg => {
             message.channel.send(`:tada: **${msg.author.username}** guessed the correct word and got **${randomAmount.toLocaleString()}** candies!\nThe word was **${randomWord}**`)

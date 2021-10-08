@@ -45,6 +45,11 @@ module.exports = {
                     message.channel.send(`:tada: **${msg.author.username}** collected the drop!`)
                   })
                   collector.on('end', async () => {
+                      if(peopleWhoEntered.length === 0){
+                          message.channel.send("Get some friends before dropping again. I am keeping 25% of the drop")
+                          user.candies = willDrop * 0.25
+                          user.save()
+                      }
                       const payouts = (willDrop / peopleWhoEntered.length).toFixed(0)
                     message.channel.send(`:no_entry: The drop has ended! A total of ${peopleWhoEntered.length} users collected the drop and got **${payouts.toLocaleString()}** candies each!!\nType \`fh candy\` in <#824312952752570368> to check how many candies you have!`)
                     peopleWhoEntered.forEach(async value => {
