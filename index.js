@@ -47,6 +47,29 @@ for (const file of eventFiles){
 
 client.on('ready', () => {
     console.log("Logged in.")
+    let counter = 0;
+    const presences = [
+      {
+        name: `${client.users.cache.size} fighters!`,
+        type: `WATCHING`
+      },
+      {
+        name: `in ${client.guilds.cache.size} servers!`,
+        type: 'COMPETING'
+      }
+    ]
+    const updateStatus = () => {
+      client.user.setPresence({
+        activity: presences[counter]
+      })
+
+      if(++counter >= presences.length){
+        counter = 0
+      }
+
+      setTimeout(updateStatus, 60000)
+    }
+    updateStatus()
 })
 
 client.on('message', async message => {
@@ -59,7 +82,9 @@ client.on('message', async message => {
     const command = client.commands.get(commandName) || client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName))
 
     if (!command) return;
+    if(message.guild && message.guild.id !== '824294231447044197' && command.fhOnly) return message.channel.send(`This command can only be run in FightHub.`)
     if(command.disabledChannels && command.disabledChannels.includes(message.channel.id)) return;
+
     if (!cooldowns.has(command.name)) {
         cooldowns.set(command.name, new Discord.Collection());
     }
@@ -102,69 +127,6 @@ client.on('message', async message => {
     }
 })
 
-const grinds = require('./database/models/grindm');
 
-
-const checkBL = async () => {
-    await grinds.updateMany({}, {
-        $inc: {
-            time: -1,
-        }
-    }, {
-        upsert: true
-    })
-    const now = new Date().getHours()
-    const conditional = {
-        lastUpdated: {
-            $lt: now
-        },
-        days: {
-          $lt: 1
-        },
-        time: {
-            $lt: 1
-        }
-    }
-    const results = await grinds.find(conditional)
-    if(results && results.length){
-        const channel = client.guilds.cache.get("824294231447044197").channels.cache.get("839800222677729310")
-        for(const result of results){
-          channel.send(`<@${result.userID}>`, { embed: {
-            title: "Reminder",
-            color: "RED",
-            description: `You can pay your grinder amount now, its already late!\n\n**STATS**: \nTotal days missing: \`${result.days}\``,
-            timestamp: new Date(),
-            footer: {
-              text: 'Ignore if already paid.'
-            }
-          }})
-          result.time = 4320
-          result.save()
-        }
-    } else {
-      const condition2 = {
-        lastUpdated:{
-          $lt: now
-        },
-        days: {
-          $gte: 1
-        },
-        time: {
-          $lte: 1
-        }
-      }
-      const results2 = await grinds.updateMany(condition2, {
-        $inc: {
-            days: -1,
-        },
-        lastUpdated: now
-      })
-      
-    }
-
-    setTimeout(checkBL, 1000 * 60)
-}
-
-// checkBL()
 
 client.login(process.env.token)

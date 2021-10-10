@@ -10,7 +10,7 @@ module.exports = {
   async execute(message, args){
     const opponent = message.mentions.users.size > 0 ? message.mentions.users.first() : null;
     args.shift()
-    let horll = args[0].toLowerCase()
+    let horll = args[0]
     if(!opponent) return message.channel.send("You must mention someone to fight with them.")
     if(!horll || horll.toLowerCase() !== 'low' && horll.toLowerCase() !== 'high'){
       return message.reply('Please specify high or low\n\nExample: \`fh howgay @user high\`')
@@ -18,7 +18,7 @@ module.exports = {
     const filter = user => user.id === opponent.id
     let player1rate = Math.floor(Math.random() * 100);
     let player2rate = Math.floor(Math.random() * 100);
-
+    horll = horll.toLowerCase()
     let thisMessage = await message.channel.send(`${opponent} react to fight with ${message.author}.`)
       await thisMessage.react('✔️')
       await thisMessage.react('❌')

@@ -3,7 +3,7 @@ const deez = require('../../database/models/candies')
 
 module.exports = {
     name: 'rich',
-    async execute(message, args, client){
+    async execute(message, args){
         const rawLb = await deez.find({}).sort({ candies: -1 }).limit(10)
         const a = [
           '👑',
