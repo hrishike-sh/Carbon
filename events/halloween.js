@@ -75,6 +75,7 @@ module.exports = {
             'mirror',
             'naomi',
             'rk',
+            'lake',
             'psalm',
             'luz',
             'bread',

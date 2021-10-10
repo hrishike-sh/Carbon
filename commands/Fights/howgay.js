@@ -10,7 +10,7 @@ module.exports = {
   async execute(message, args){
     const opponent = message.mentions.users.size > 0 ? message.mentions.users.first() : null;
     args.shift()
-    let horll = args[0]
+    let horll = args[0].toLowerCase()
     if(!opponent) return message.channel.send("You must mention someone to fight with them.")
     if(!horll || horll.toLowerCase() !== 'low' && horll.toLowerCase() !== 'high'){
       return message.reply('Please specify high or low\n\nExample: \`fh howgay @user high\`')

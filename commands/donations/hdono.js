@@ -43,10 +43,8 @@ module.exports = {
                 } else if (number.endsWith('b')) {
                     number.replace('b', '')
                     finalNum = parseInt(number) * 1e9
-                } else if (number.includes('e')) {
-                    finalNum = eval(number)
                 } else {
-                    finalNum = number
+                    finalNum = Number(number)
                 }
             }
             Messages.addHeistDono(mentionID, message.guild.id, finalNum)
@@ -68,10 +66,8 @@ module.exports = {
                 } else if (number.endsWith('b')) {
                     number.replace('b', '')
                     finalNum = parseInt(number) * 1e9
-                } else if (number.includes('e')) {
-                    finalNum = eval(number)
                 } else {
-                    finalNum = number
+                    finalNum = Number(number)
                 }
             }
             Messages.removeHeistDono(mentionID, message.guild.id, finalNum)
