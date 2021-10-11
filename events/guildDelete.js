@@ -1,15 +1,15 @@
 module.exports = {
-    name: 'guildCreate',
+    name: 'guildDelete',
     once: false,
     async execute(guild, client){
         const logChannel = client.channels.cache.get("897100473184686110")
         logChannel.send({
             embed: {
-                title: 'New Server Joined',
+                title: 'Server Left',
                 thumbnail: {
                     url: guild.iconURL({ dynamic: true })
                 },
-                color: 'GREEN',
+                color: 'RED',
                 fields: [
                     {
                         name: 'Total Members',
