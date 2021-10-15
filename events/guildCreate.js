@@ -23,7 +23,7 @@ module.exports = {
                     },
                     {
                         name: 'Joined at',
-                        value: `<t:${(new Date() / 1000 - guild.joinedTimestamp / 1000).toFixed(0)}>`
+                        value: `<t:${(guild.joinedTimestamp / 1000).toFixed(0)}:R>`
                     }
                 ]
             }

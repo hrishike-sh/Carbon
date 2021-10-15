@@ -1,10 +1,11 @@
 
 const deez = require('../../database/models/candies')
-let cooldown = []
+
 module.exports = {
     name: 'drop',
     disabledChannels: ['870240187198885888'],
-    async execute(message, args){
+    async execute(message, args, client){
+        if(client.dropCD.includes(message.channel.id)) return messsage.channel.send("This channel or you are in a cooldown!")
         const user = await deez.findOne({ userId: message.author.id })
         let candDrop;
         if(!user){
@@ -26,7 +27,7 @@ module.exports = {
             user.candies -= willDrop
             user.save()
 
-            cooldown.push(message.channel.id)
+            client.dropCD.push(message.channel.id)
             const canType = [
                 'trick or treats',
                 'steal',
@@ -64,8 +65,7 @@ module.exports = {
                         user.save()
                     })
                     setTimeout(() => {
-                        cooldown = cooldown.filter(e => e !== message.channel.id)
-                        console.log(cooldown)
+                        client.dropCD = client.dropCD.filter(e => e !== message.channel.id)
                     }, 60 * 1000)
                   })
         })

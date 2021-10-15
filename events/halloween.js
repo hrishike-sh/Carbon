@@ -1,4 +1,4 @@
-let cooldown = []
+client.dropCD = []
 const candeez = require('../database/models/candies')
 const settings = require('../database/models/settingsSchema')
 module.exports = {
@@ -20,9 +20,9 @@ module.exports = {
        ]
        const types = ['scramble', 'spam', 'scramble']
        const type = types[Math.floor(Math.random() * types.length)]
-       if(!cooldown.includes(message.channel.id) && drop){
+       if(!client.dropCD.includes(message.channel.id) && drop){
         if(type === 'spam'){
-          cooldown.push(message.channel.id)
+          client.dropCD.push(message.channel.id)
         const toType = canType[Math.floor(Math.random() * canType.length)]
         const mainMessage = await message.channel.send(`:ghost: **Halloween Drop** :ghost:\n\nEvery user that types **\`${toType}\`** in 30 seconds gets a reward!`)
         const peopleWhoEntered = []
@@ -47,11 +47,11 @@ module.exports = {
                 user.save()
             })
             setTimeout(() => {
-                cooldown = cooldown.filter(e => e !== message.channel.id)
+                client.dropCD = client.dropCD.filter(e => e !== message.channel.id)
             }, 60 * 1000)
           })
         } else if (type === 'scramble'){
-          cooldown.push(message.channel.id)
+          client.dropCD.push(message.channel.id)
           const words = [
             'snack',
             'tee',
@@ -104,7 +104,7 @@ module.exports = {
                 user.candies += randomAmount
                 user.save()
             setTimeout(() => {
-              cooldown = cooldown.filter(e => e !== message.channel.id)
+              client.dropCD = client.dropCD.filter(e => e !== message.channel.id)
             }, 300 * 1000)
           })
         }
