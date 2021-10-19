@@ -23,8 +23,10 @@ client.commands = new Discord.Collection()
 client.cooldowns = new Discord.Collection()
 client.snipes = new Discord.Collection()
 client.esnipes = new Discord.Collection()
+client.dropCD = []
 client.options.allowedMentions = {
-  roles: []
+  roles: [],
+  parse: 'users'
 }
 const {
     cooldowns

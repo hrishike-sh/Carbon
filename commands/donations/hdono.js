@@ -6,6 +6,7 @@ module.exports = {
     args: true,
     description: 'Heist donation logging.',
     usage: 'h <@USER | USER_ID> <Subtract | Add> <Amount>',
+    fhOnly: true,
     execute(message, args) {
       args.shift()
         const example = `\n\nExample: \`fh h 598918643727990784 add 5e6\` | \`fh h 598918643727990784 remove 5e6\``

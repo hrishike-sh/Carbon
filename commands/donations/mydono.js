@@ -149,7 +149,7 @@ module.exports = {
         const dataForS = {
             embed: {
                 title: "Donations ~ FF Dono",
-                description: `Donations from <@${target.id}>\nTotal amount donated by the user: **${totalAmount.toLocaleString()}**() coins.`,
+                description: `Donations from <@${target.id}>\nTotal amount donated by the user: **${totalAmount.toLocaleString()}** coins.`,
                 fields: [
                     {
                         name: "Donated: ",

@@ -8,6 +8,7 @@ module.exports = {
     args: true,
     usage: '<user_id>',
     description: 'Give dono roles to users automatically',
+    fhOnly: true,
    async execute(message, args) {
         if (
             !message.member.roles.cache.some(role => role.id === '824539655134773269') &&
