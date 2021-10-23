@@ -3,10 +3,10 @@ const {
 } = require("discord.js")
 
 module.exports = {
-  name: 'uptime',
-  aliases: ['ut'],
-  description: 'Bot Uptime, yeahhhhhhhhh',
-  execute(message, args, client){
+  name: 'ping',
+  aliases: ['ut', 'uptime'],
+  description: 'Bot Uptime and ping',
+  async execute(message, args, client){
     const uptime = (new Date() / 1000 - client.uptime / 1000).toFixed();
 
     await message.channel.send({

@@ -26,7 +26,7 @@ client.esnipes = new Discord.Collection()
 client.dropCD = []
 client.options.allowedMentions = {
   roles: [],
-  parse: 'users'
+  parse: ['users']
 }
 const {
     cooldowns
@@ -59,7 +59,7 @@ client.on('ready', () => {
         type: `WATCHING`
       },
       {
-        name: `in ${client.guilds.cache.size} servers!`,
+        name: `${client.guilds.cache.size} servers!`,
         type: 'COMPETING'
       }
     ]
@@ -75,6 +75,18 @@ client.on('ready', () => {
       setTimeout(updateStatus, 60000)
     }
     updateStatus()
+
+    const updateColor = () => {
+      const random_hex_color_code = () => { 
+        // https://www.w3resource.com/javascript-exercises/fundamental/javascript-fundamental-exercise-11.php
+        let n = (Math.random() * 0xfffff * 1000000).toString(16);
+        return '#' + n.slice(0, 6);
+       };
+  
+       client.guilds.cache.get("817734579246071849").roles.cache.get('900274849153445918').setColor(random_hex_color_code())
+       setTimeout(updateColor, 10 * 60 * 1000)
+    }
+    updateColor()
 })
 
 client.on('message', async message => {
