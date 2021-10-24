@@ -1,4 +1,3 @@
-client.dropCD = []
 const candeez = require('../database/models/candies')
 const settings = require('../database/models/settingsSchema')
 module.exports = {

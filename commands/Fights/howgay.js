@@ -21,6 +21,7 @@ module.exports = {
     horll = horll.toLowerCase()
     let thisMessage = await message.channel.send(`${opponent} react to fight with ${message.author}.`)
       await thisMessage.react('✔️')
+      await sleep(800)
       await thisMessage.react('❌')
     const filter2 = (reaction, user) => ['✔️', '❌'].includes(reaction.emoji.name) && user.id === opponent.id;
     thisMessage.awaitReactions(filter2, { max: 1, time: 3e4 })
