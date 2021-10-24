@@ -76,6 +76,12 @@ client.on('ready', () => {
     }
     updateStatus()
 
+    client.channels.cache.get("901739465406566400").send({
+      embed: {
+        description: `Bot restarted <t:${(new Date() / 1000).toFixed(0)}:R>`
+      }
+    })
+
     const updateColor = () => {
       const random_hex_color_code = () => { 
         // https://www.w3resource.com/javascript-exercises/fundamental/javascript-fundamental-exercise-11.php

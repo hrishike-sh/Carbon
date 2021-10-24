@@ -66,9 +66,9 @@ module.exports = {
         .setID("myd-s")
         .setStyle("grey")
 
-        const row = new MessageActionRow().addComponents([buttonD, buttonH, buttonG, buttonS])
+        let row = new MessageActionRow().addComponents([buttonD, buttonH, buttonG, buttonS])
 
-        const dataForD = {
+        let dataForD = {
             embed: {
                 title: "Donations ~ Regular",
                 description: `Donations from <@${target.id}>\nTotal amount donated by the user: **${totalAmount.toLocaleString()}** coins.`,
@@ -94,7 +94,7 @@ module.exports = {
                 row
             ]
         }
-        const dataForH = {
+        let dataForH = {
             embed: {
                 title: "Donations ~ Heists",
                 description: `Donations from <@${target.id}>\nTotal amount donated by the user: **${totalAmount.toLocaleString()}** coins.`,
@@ -120,7 +120,7 @@ module.exports = {
                 row
             ]
         }
-        const dataForG = {
+        let dataForG = {
             embed: {
                 title: "Donations ~ Grinders",
                 description: `Donations from <@${target.id}>\nTotal amount donated by the user: **${totalAmount.toLocaleString()}** coins.`,
@@ -146,7 +146,7 @@ module.exports = {
                 row
             ]
         }
-        const dataForS = {
+        let dataForS = {
             embed: {
                 title: "Donations ~ FF Dono",
                 description: `Donations from <@${target.id}>\nTotal amount donated by the user: **${totalAmount.toLocaleString()}** coins.`,
@@ -189,23 +189,28 @@ module.exports = {
             }
 
             if(button.id === 'myd-d'){
-                await buttonD.setStyle("green")
+                buttonD = buttonD.setStyle("green").setDisabled()
 
-                await buttonH.setStyle("grey")
-                await buttonG.setStyle("grey")
-                await buttonS.setStyle("grey")
+                buttonH = buttonH.setStyle("grey").setDisabled(false)
+                buttonG = buttonG.setStyle("grey").setDisabled(false)
+                buttonS = buttonS.setStyle("grey").setDisabled(false)
 
+                row = new MessageActionRow().addComponents([buttonD, buttonH, buttonG, buttonS])
+                dataForD.components = row
                 newMessage.edit("If your donations are not yet counted, please contact a moderator.", {
                     embed: dataForD.embed,
                     components: dataForD.components
                 })
                 button.reply.defer()
             } else if (button.id === 'myd-h'){
-                await buttonH.setStyle("green")
+                buttonH = buttonH.setStyle("green").setDisabled()
 
-                await buttonD.setStyle("grey")
-                await buttonG.setStyle("grey")
-                await buttonS.setStyle("grey")
+                buttonD = buttonD.setStyle("grey").setDisabled(false)
+                buttonG = buttonG.setStyle("grey").setDisabled(false)
+                buttonS = buttonS.setStyle("grey").setDisabled(false)
+
+                row = new MessageActionRow().addComponents([buttonD, buttonH, buttonG, buttonS])
+                dataForH.components = row
 
                 newMessage.edit("If your donations are not yet counted, please contact a moderator.", {
                     embed: dataForH.embed,
@@ -214,11 +219,14 @@ module.exports = {
                 button.reply.defer()
 
             } else if (button.id === 'myd-g'){
-                await buttonG.setStyle("green")
+                buttonG = buttonG.setStyle("green").setDisabled()
 
-                await buttonD.setStyle("grey")
-                await buttonH.setStyle("grey")
-                await buttonS.setStyle("grey")
+                buttonD = buttonD.setStyle("grey").setDisabled(false)
+                buttonH = buttonH.setStyle("grey").setDisabled(false)
+                buttonS = buttonS.setStyle("grey").setDisabled(false)
+
+                row = new MessageActionRow().addComponents([buttonD, buttonH, buttonG, buttonS])
+                dataForG.components = row
 
                 newMessage.edit("If your donations are not yet counted, please contact a moderator.", {
                     embed: dataForG.embed,
@@ -227,11 +235,14 @@ module.exports = {
                 button.reply.defer()
 
             } else if (button.id === 'myd-s'){
-                await buttonS.setStyle("green")
+                buttonS = buttonS.setStyle("green").setDisabled()
 
-                await buttonD.setStyle("grey")
-                await buttonG.setStyle("grey")
-                await buttonS.setStyle("grey")
+                buttonD = buttonD.setStyle("grey").setDisabled(false)
+                buttonG = buttonG.setStyle("grey").setDisabled(false)
+                buttonH = buttonH.setStyle("grey").setDisabled(false)
+
+                row = new MessageActionRow().addComponents([buttonD, buttonH, buttonG, buttonS])
+                dataForS.components = row
 
                 newMessage.edit("If your donations are not yet counted, please contact a moderator.", {
                     embed: dataForS.embed,
@@ -243,7 +254,14 @@ module.exports = {
         })
 
         collector.on('end', () => {
-            newMessage.edit("This message is now inactive.")
+                buttonS = buttonS.setStyle("grey").setDisabled()
+                buttonD = buttonD.setStyle("grey").setDisabled()
+                buttonG = buttonG.setStyle("grey").setDisabled()
+                buttonH = buttonH.setStyle("grey").setDisabled()
+
+                row = new MessageActionRow().addComponents([buttonD, buttonH, buttonG, buttonS])
+
+                newMessage.edit("This message is now inactive.", {embed: dataForD.embed ,components: row})
         })
     }
 }

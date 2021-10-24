@@ -7,5 +7,11 @@ module.exports = {
 
         const args = message.content.slice('fh '.length).trim().split('--')
         console.log(args)
+
+        if(args[0][0].toLowerCase() === 'h'){
+            const newArgs = args.split(/ +/g)
+
+            console.log(args)
+        }
     }
 }
