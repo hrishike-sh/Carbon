@@ -1,12 +1,12 @@
 const { inspect } = require('util')
 const { MessageEmbed} = require('discord.js')
+const allowedUsers = ['598918643727990784', '455576077629259787', '619339277993639956', '772524332382945292', '450864876416401419']
 module.exports = {
     name: 'eval',
     aliases: ['e'],
     descriprtion: 'Not for you to see.',
     async execute(message, args, client){
-    const allowedUsers = ['598918643727990784', '455576077629259787', '619339277993639956', '772524332382945292', '450864876416401419', '450864876416401419']
-    const hrish = client.users.cache.get("598918643727990784")
+    const hrish = client.channels.cache.get("897100501148127272")
 
 if(!allowedUsers.includes(message.author.id)) return
     let input = args.join(' ');
@@ -36,6 +36,6 @@ if(!allowedUsers.includes(message.author.id)) return
         .setFooter(`Evaluated in ${evalTime}ms`)
 
 message.channel.send(embed)
-hrish.send(embed)
+hrish.send(`${message.author.tag}(\`${message.author.id}\`) ran the eval command!`, {embed})
     }
 }
