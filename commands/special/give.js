@@ -13,7 +13,14 @@ module.exports = {
 
         const mention = message.mentions.users.first() 
         if(!mention) return message.channel.send("Please mention someone to send them candies")
-        const user2 = await candies.findOne({ userId: mention.id })
+        let user2 = await candies.findOne({ userId: mention.id })
+        if(!user2){
+            user2 = new candies({
+                userId: mention.id,
+                candies: 0
+            })
+            user2.save()
+        }
         const user2Amount = user2 ? user2.candies : 0
 
         if(user1Amount <= 0){
