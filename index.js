@@ -87,8 +87,10 @@ client.on('ready', async () => {
     let peopleWhoAreAFK = await afks.find({})
     peopleWhoAreAFK = peopleWhoAreAFK.filter(u => u.afk.afk == true)
 
-    client.afks = peopleWhoAreAFK
-    
+    for(const afk of peopleWhoAreAFK){
+      client.afks.push(afk.userId)
+    }
+
     console.log(peopleWhoAreAFK + '\n' + 'AFK LIST ^^')
     const updateColor = () => {
       const random_hex_color_code = () => { 

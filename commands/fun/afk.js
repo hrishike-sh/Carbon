@@ -16,6 +16,7 @@ module.exports = {
                 }
             })
             newUser.save()
+            user = newUser
         }
 
         const reason = args.join(" ") || 'AFK'
@@ -27,5 +28,7 @@ module.exports = {
         }
         client.afks.push(message.author.id)
         user.save()
+
+        return message.channel.send(`${message.member}, I have set your afk: ${reason}`)
     }
 }

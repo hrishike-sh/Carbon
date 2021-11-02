@@ -6,6 +6,7 @@ module.exports = {
     once: false,
     async execute(message, client){
         if(client.afks.includes(message.author.id)){
+            client.afks = client.afks.filter(u => u !== message.author.id)
             message.channel.send(`Welcome back ${message.member}! I have removed your AFK.`).then((msg) => {
                 setTimeout(() => {
                     msg.delete()
