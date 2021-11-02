@@ -6,3 +6,5 @@ const UserSchema = new mongoose.Schema({
     commandsRan: { type: Number, default: 0 },
     afk: Object,
 })
+
+module.exports = mongoose.model('user', UserSchema)
