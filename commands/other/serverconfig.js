@@ -2,7 +2,7 @@ const settingsSchema = require('../../database/models/settingsSchema')
 let mongoURL;
 const mongoose = require('mongoose')
 module.exports = {
-        name: 'serverConfig',
+        name: 'serverconfig',
         aliases: ['config', 'serverconf'],
         description: 'The only command the bot dev doesnt care about, change the server config.',
         args: true,
@@ -15,14 +15,14 @@ module.exports = {
                         useFindAndModify: false
                     })
                 }
-                const hasRole = message.member.roles.cache.find(role => role.permissions.has("ADMINISTRATOR")) ? true : false
+                const hasRole = message.member.permissions.has("ADMINISTRATOR")
 
                 if (!hasRole) return message.channel.send("You must have the \`ADMINISTRATOR\` permission to change the server config.")
 
                 args.shift()
                 if (!args[0]) return message.channel.send("Please specify which setting you would like to change.")
                 const setting = args[0]
-                const possibleSettings = ["donorole", 'logchannel', 'gtnrole'];
+                const possibleSettings = ["donorole", 'logchannel', 'gtnrole', 'snipes'];
                 const example = `Example: \`fh config donorole add role_id\` | \`fh config logchannel channel_id\``
                 if (!possibleSettings.includes(setting.toLowerCase())) {
                     return message.channel.send("That is not a valid setting.\n\n" + example)
@@ -92,6 +92,18 @@ module.exports = {
                     guild.save()
 
                     message.channel.send(`Okay, the logs will be sent in <#${channel}>`)
+                } else if (setting === 'snipes'){
+                    args.shift()
+                    const yesno = args[0]
+
+                    if(!['true', 'fakse'].includes(yesno)) return message.channel.send(`Please specify either true or false`)
+
+                    if(yesno === 'true'){
+                        guild.snipes = true
+                    } else if (yesno === 'false'){
+                        guild.snipes = false
+                    }
+                    guild.save()
                 }
             }
         }

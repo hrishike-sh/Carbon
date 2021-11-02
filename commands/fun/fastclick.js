@@ -5,6 +5,7 @@ module.exports = {
     async execute(message, args){
         const user1 = message.member
         const user2 = message.mentions.members.first() || message.guild.members.cache.get(args[0])
+        return message.channel.send("This command is temporarily disabled.")
 
         if(!user2) return message.channel.send(`You must mention someone to play with them!\n\nExample: \`fh fastclick @Hrishikesh#0369\``)
         
@@ -69,7 +70,7 @@ module.exports = {
                     mainCollector.stop()
 
                     const loser = button.clicker.user.id
-                    const winner = loser === user1 ? user2 : user1
+                    const winner = loser === user1 ? user1 : user2
                     mainButton = mainButton.setDisabled()
                     baitButton1 = baitButton1.setDisabled()
                     baitButton2 = baitButton2.setDisabled()
@@ -78,15 +79,16 @@ module.exports = {
                     array = array
                     mainRow = new MessageActionRow().addComponents(array)
                     button.reply.defer()
-                    mainMessage.edit(`:trophy: <@${winner}> has won!`, { components: mainRow })
-                    mainMessage.edit(`:trophy: <@${winner}> won because <@${loser}> clicked the wrong button!`, { components: mainRow })
-                    
+                    mainMessage.edit(`:trophy: <@${winner.id}> won because <@${loser}> clicked the wrong button!`, { components: mainRow })
+                    return;
                 }
 
                 if(![user1.id, user2.id].includes(button.clicker.user.id)){
                     await button.reply.send("This is not for you", true)
                     return
                 }
+                const now = new Date()
+                const clickedIn = `${now - mainMessage.editedAt}`
                 mainCollector.stop()
                 const winner = button.clicker.user.id
                 mainButton = mainButton.setDisabled()
@@ -97,7 +99,7 @@ module.exports = {
                 array = array
                 mainRow = new MessageActionRow().addComponents(array)
                 button.reply.defer()
-                mainMessage.edit(`:trophy: <@${winner}> has won!`, { components: mainRow })
+                mainMessage.edit(`:trophy: <@${winner}> has won! The button was clicked in ${clickedIn[0]}.${clickedIn[1]}s!`, { components: mainRow })
                 return;
             })
             } else {

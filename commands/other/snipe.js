@@ -1,8 +1,14 @@
+const settings = require('../../database/models/settingsSchema')
+
 module.exports = {
     name: 'snipe',
     description: 'get sniped lol',
+    disabledChannels: ['874330931752730674'],
     async execute(message, args, client){
         const sniped = client.snipes.get(message.channel.id)
+        const guild = await settings.findOne({ guildID: message.guild.id }) || null
+
+        if(guild.snipes == false) return message.channel.send(`This server has snipes disabled!`)
         if(message.guild.id === '824294231447044197'){
           if(
             !message.member.roles.cache.some(role => role.id === '839803117646512128') &&

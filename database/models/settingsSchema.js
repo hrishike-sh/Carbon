@@ -5,7 +5,8 @@ const SettingsSchema = new mongoose.Schema({
   donationRoles: { type: [String] },
   logChannel: { type: String },
   gtnRole: { type: [String] },
-  disabledDrop: { type: [String] }
+  disabledDrop: { type: [String] },
+  snipes: { type: Boolean }
 });
 
 module.exports = mongoose.model('SettingsSchema', SettingsSchema);
