@@ -8,11 +8,11 @@ module.exports = {
         if(message.mentions.users.size < 1) return;
         if(message.guild.id !== '824294231447044197') return;
         const mention = message.mentions.users.first().id
-        const user = await db.findOne({ userId: mention })
+        const user1 = await db.findOne({ userId: mention })
 
-        if(!user) return;
-        if(!user.afk.afk) return;
+        if(!user1) return;
+        if(!user1.afk.afk) return;
 
-        console.log("AFK user pinged!")
+        return message.channel.send(`${message.mentions.users.first().username} is currently afk: ${user1.afk.reason} - <t:${(user.afk.time / 1000).toFixed(0)}:R>`)
     }
 }

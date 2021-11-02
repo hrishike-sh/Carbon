@@ -4,6 +4,7 @@ const db = require('../../database/models/user')
 module.exports = {
     name: "afk",
     cooldown: 10,
+    fhOnly: true,
     async execute(message, args){
         let user = await db.findOne({ userId: message.author.id })
         if(!user){
@@ -17,7 +18,8 @@ module.exports = {
 
         user.afk = {
             afk: true,
-            reason: reason
+            reason: reason,
+            time: new Date()
         }
         user.save()
     }

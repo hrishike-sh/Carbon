@@ -25,6 +25,7 @@ client.cooldowns = new Discord.Collection()
 client.snipes = new Discord.Collection()
 client.esnipes = new Discord.Collection()
 client.dropCD = []
+client.afks = []
 client.options.allowedMentions = {
   roles: [],
   parse: ['users']
@@ -82,7 +83,9 @@ client.on('ready', () => {
         description: `Bot restarted <t:${(new Date() / 1000).toFixed(0)}:R>`
       }
     })
-
+    const afks = require('./database/models/user')
+    const peopleWhoAreAFK = await afks.find({ afk: { afk: true } })
+    console.log(peopleWhoAreAFK + '\n' + 'AFK LIST ^^')
     const updateColor = () => {
       const random_hex_color_code = () => { 
         // https://www.w3resource.com/javascript-exercises/fundamental/javascript-fundamental-exercise-11.php
