@@ -52,7 +52,7 @@ for (const file of eventFiles){
   }
 }
 
-client.on('ready', () => {
+client.on('ready', async () => {
     console.log("Logged in.")
     let counter = 0;
     const presences = [
@@ -84,7 +84,11 @@ client.on('ready', () => {
       }
     })
     const afks = require('./database/models/user')
-    const peopleWhoAreAFK = await afks.find({ afk: { afk: true } })
+    let peopleWhoAreAFK = await afks.find({})
+    peopleWhoAreAFK = peopleWhoAreAFK.filter(u => u.afk.afk == true)
+
+    client.afks = peopleWhoAreAFK
+    
     console.log(peopleWhoAreAFK + '\n' + 'AFK LIST ^^')
     const updateColor = () => {
       const random_hex_color_code = () => { 
