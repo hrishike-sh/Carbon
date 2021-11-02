@@ -7,6 +7,7 @@ const client = new Discord.Client({
     }
 })
 require('discord-buttons')(client);
+const user = require('./database/models/user')
 const http = require('http')
 http.createServer((_, res) => res.end("Hi")).listen(8080)
 const fs = require('fs')
@@ -55,11 +56,11 @@ client.on('ready', () => {
     let counter = 0;
     const presences = [
       {
-        name: `${client.users.cache.size} fighters!`,
+        name: `${client.users.cache.size.toLocaleString()} fighters!`,
         type: `WATCHING`
       },
       {
-        name: `${client.guilds.cache.size} servers!`,
+        name: `${client.guilds.cache.size.toLocaleString()} servers!`,
         type: 'COMPETING'
       }
     ]
@@ -90,6 +91,7 @@ client.on('ready', () => {
        };
   
        client.guilds.cache.get("817734579246071849").roles.cache.get('900274849153445918').setColor(random_hex_color_code())
+       client.channels.cache.get("897100842216357889").send(`A total of **${commandsRan.toLocaleString()}** commands have been ran since the bot is up!`)
        setTimeout(updateColor, 10 * 60 * 1000)
     }
     updateColor()

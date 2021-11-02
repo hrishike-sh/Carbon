@@ -5,7 +5,7 @@ module.exports = {
     aliases: ['deleteraiders', 'fuckraid', 'HELPIMGETTINGRAIDEDAA'],
     description: 'Kicks all the new members who have joined in the last __x__ minutes/hours.',
     async execute(message, args, client){
-        if(!['598918643727990784', '619339277993639956', '264186213848580096'].includes(message.author.id)) return;
+        if(!['598918643727990784', '619339277993639956', '264186213848580096', '450864876416401419'].includes(message.author.id)) return;
         if(!args[0]) return message.channel.send("You have to provide valid time.")
         const time = ms(args[0])
         
