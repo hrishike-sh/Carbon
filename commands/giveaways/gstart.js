@@ -16,8 +16,8 @@ module.exports = {
         args.shift()
         time = ms(time)
         let winners = args[0]
-        if(!winners || isNaN(Number(winners))) return message.channel.send("You must specify the number of winners.")
-        winners = Number(winners)
+        if(!winners || isNaN(parseInt(winners))) return message.channel.send("You must specify the number of winners.")
+        winners = parseInt(winners)
 
         args.shift()
         let prize = args.join(" ")
@@ -25,13 +25,13 @@ module.exports = {
 
         if(time > 1){
             // database giveaway
-            const enterBut = new MessageButton().setLabel("Enter").setStyle("GREEN").setID("giveaway-join")
+            const enterBut = new MessageButton().setLabel("Enter").setStyle("green").setID("giveaway-join")
             const row = new MessageActionRow().addComponents([enterBut])
             const hrish = await message.channel.send({
                 embed: {
                     title: prize,
                     color: 'RANDOM',
-                    description: `Click the button to enter!\nTime: ${ms(time, { long: true })}(ends <t:${((new Date().getTime() + time) / 1000).toFixed(0)}:R>)\nHosted by: ${message.member}`
+                    description: `Use the button to enter!!\nTime: **${ms(time, { long: true })}** (ends <t:${((new Date().getTime() + time) / 1000).toFixed(0)}:R>)\nHosted by: ${message.member}`
                 },
                 components: [row]
             })
@@ -45,6 +45,7 @@ module.exports = {
                 },
                 hasEnded: false
             })
+            gaw.save()
         } else {
             // regular giveaway
         }
