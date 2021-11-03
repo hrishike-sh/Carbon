@@ -7,7 +7,7 @@ module.exports = {
     async execute(button, client){
         if(button.id !== 'giveaway-join') return;
 
-        const gaw = await giveaway.findOne({ messageId: button.message.id })
+        const gaw = await giveawayModel.findOne({ messageId: button.message.id })
 
         if(!gaw) return;
 

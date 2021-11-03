@@ -8,6 +8,7 @@ const client = new Discord.Client({
 })
 require('discord-buttons')(client);
 const user = require('./database/models/user')
+const giveawayModel = require('./database/models/giveaway')
 const http = require('http')
 http.createServer((_, res) => res.end("Hi")).listen(8080)
 const fs = require('fs')
@@ -54,6 +55,7 @@ for (const file of eventFiles){
 
 client.on('ready', async () => {
     console.log("Logged in.")
+    // PRESENCE
     let counter = 0;
     const presences = [
       {
@@ -77,12 +79,15 @@ client.on('ready', async () => {
       setTimeout(updateStatus, 60000)
     }
     updateStatus()
-
+    // PRESENCE
+    // LOGS
     client.channels.cache.get("901739465406566400").send({
       embed: {
         description: `Bot restarted <t:${(new Date() / 1000).toFixed(0)}:R>`
       }
     })
+    //LOGS
+    //AFKS
     const afks = require('./database/models/user')
     let peopleWhoAreAFK = await afks.find({})
     peopleWhoAreAFK = peopleWhoAreAFK.filter(u => u.afk.afk == true)
@@ -90,8 +95,24 @@ client.on('ready', async () => {
     for(const afk of peopleWhoAreAFK){
       client.afks.push(afk.userId)
     }
+    //AFKS
+    //GIVEAWAYS
+    const checkForGaw = async () => {
 
-    console.log(peopleWhoAreAFK + '\n' + 'AFK LIST ^^')
+      const gaws = await giveawayModel.find({
+        endsAt: { $lte: new Date().getTime() },
+        hasEnded: false
+      })
+      if(!gaws || !gaws.length) return;
+
+      for(const giveaway in gaws){
+        const channel = client.guilds.cache.get(giveaway.guildId).channels.cache.get(giveaway.channelId)
+        const message = await channel.messages.fetch(`${giveaway.messageId}`)
+        message.edit("THis giveaway has ended  lo l  tes t AAAAAAAAAAAAAAAAAA")
+      }
+    }
+    //GIVEAWAYS
+    //MIKO
     const updateColor = () => {
       const random_hex_color_code = () => { 
         // https://www.w3resource.com/javascript-exercises/fundamental/javascript-fundamental-exercise-11.php
@@ -104,6 +125,7 @@ client.on('ready', async () => {
        setTimeout(updateColor, 10 * 60 * 1000)
     }
     updateColor()
+    //MIKO
 })
 
 client.on('message', async message => {

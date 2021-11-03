@@ -40,9 +40,7 @@ module.exports = {
                 channelId: message.channel.id,
                 messageId: hrish.id,
                 hosterId: message.author.id,
-                endsAt: {
-                    time: new Date().getTime() + time
-                },
+                endsAt: new Date().getTime() + time,
                 hasEnded: false
             })
             gaw.save()

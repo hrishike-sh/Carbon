@@ -10,8 +10,9 @@ const GiveawaySchema = new mongoose.Schema({
     messageId: reqString,
     hosterId: reqString,
     entries: [String],
-    endsAt: Object,
-    hasEnded: Boolean
+    endsAt: Number,
+    hasEnded: Boolean,
+    requirements: [String]
 });
 
 module.exports = mongoose.model('giveaway', GiveawaySchema, 'giveaway')
