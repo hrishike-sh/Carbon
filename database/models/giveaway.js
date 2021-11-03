@@ -10,10 +10,7 @@ const GiveawaySchema = new mongoose.Schema({
     messageId: reqString,
     hosterId: reqString,
     entries: [String],
-    endsAt: {
-        type: Date,
-        required: true,
-    },
+    endsAt: Object,
     hasEnded: Boolean
 });
 
