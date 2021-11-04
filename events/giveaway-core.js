@@ -53,7 +53,8 @@ module.exports = {
                             value: info.ended
                         }
                     ]
-                }
+                },
+                ephemeral: true
             })
         }
     }
