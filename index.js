@@ -104,17 +104,19 @@ client.on('ready', async () => {
       });
 
       if(!gaws || !gaws.length){
-        setTimeout(checkForGaw, 30000)
+        setTimeout(checkForGaw, 5000)
         return;
       }
       console.log(gaws)
       for(const giveaway of gaws){
+        if(giveaway.hasEnded == true) return;
+        giveaway.hasEnded = true;
         const channel = await client.channels.cache.get(`${giveaway.channelId}`)
         const message = await channel.messages.fetch(`${giveaway.messageId}`)
         const winner = `<@${giveaway.entries[Math.floor(Math.random() * giveaway.entries.length)]}>`
         await message.edit("This giveaway has ended.", {
           embed: {
-            title: giveaway.prize,
+            title: giveaway.prize || '',
             description: `Winner: ${winner}\nHosted By: <@${giveaway.hosterId}>`,
             color: 'black',
             footer: {
@@ -124,17 +126,32 @@ client.on('ready', async () => {
           },
           components: new MessageActionRow().addComponents([ new MessageButton().setStyle("green").setID('whydodisabledbuttonsneedanid').setLabel("Enter").setDisabled()])
         })
-        channel.send(`The giveaway for **${giveaway.prize}** has ended and the winner is ${winner}!`, {
+        await channel.send(`The giveaway for **${giveaway.prize}** has ended and the winner is ${winner}!`, {
           embed: {
             title: 'Giveaway Info',
-            description: `Entries: **${giveaway.entries.length.toLocaleString()}**\nChances of winning: **${ 1/giveaway.entries.length * 100}%**`,
+            description: `Entries: **${giveaway.entries.length.toLocaleString()}**\nChances of winning: **${(1/giveaway.entries.length * 100).toFixed(3)}%**`,
             footer: {
               text: "Congrats!"
             },
             timestamp: new Date()
           }
         })
-        giveaway.hasEnded = true;
+        client.users.cache.get(`${giveaway.hosterId}`).send({
+          embed: {
+            title: "Giveaway Result",
+            description: `The giveaway you hosted has ended!`,
+            embed: [
+              {
+                name: "Winner",
+                value: winner,
+              },
+              {
+                name: 'Link',
+                value: `[Jump](https://discord.com/channels/${giveaway.guildId}/${giveaway.channelId}/${giveaway.messageId})`
+              }
+            ]
+          }
+        })
         giveaway.save()
       }
       setTimeout(checkForGaw, 5000)
@@ -211,7 +228,5 @@ client.on('message', async message => {
         })
     }
 })
-
-
 
 client.login(process.env.token)

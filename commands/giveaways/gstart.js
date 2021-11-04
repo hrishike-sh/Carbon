@@ -26,7 +26,8 @@ module.exports = {
         if(time > 1){
             // database giveaway
             const enterBut = new MessageButton().setLabel("Enter").setStyle("green").setID("giveaway-join")
-            const row = new MessageActionRow().addComponents([enterBut])
+            const infoBut = new MessageButton().setLabel("View Info").setStyle("grey").setID("giveaway-info")
+            const row = new MessageActionRow().addComponents([enterBut, infoBut])
             const hrish = await message.channel.send({
                 embed: {
                     title: prize,
