@@ -40,6 +40,8 @@ module.exports = {
                 channelId: message.channel.id,
                 messageId: hrish.id,
                 hosterId: message.author.id,
+                winners: winners,
+                prize: prize,
                 endsAt: new Date().getTime() + time,
                 hasEnded: false
             })

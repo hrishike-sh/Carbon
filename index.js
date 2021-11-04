@@ -1,6 +1,4 @@
 const Discord = require("discord.js");
-const Nuggies = require('nuggies')
-Nuggies.connect(process.env.mongopath)
 const client = new Discord.Client({
     ws: {
         intents: 32767
@@ -21,6 +19,7 @@ mongoose.connect(dbURL, {
     useUnifiedTopology: true,
     useFindAndModify: false
 })
+const { MessageButton, MessageActionRow } = require('discord-buttons')
 client.commands = new Discord.Collection()
 client.cooldowns = new Discord.Collection()
 client.snipes = new Discord.Collection()
@@ -90,7 +89,7 @@ client.on('ready', async () => {
     //AFKS
     const afks = require('./database/models/user')
     let peopleWhoAreAFK = await afks.find({})
-    peopleWhoAreAFK = peopleWhoAreAFK.filter(u => u.afk.afk == true)
+    peopleWhoAreAFK = peopleWhoAreAFK.filter(u => u.afk.afk === true)
 
     for(const afk of peopleWhoAreAFK){
       client.afks.push(afk.userId)
@@ -102,15 +101,45 @@ client.on('ready', async () => {
       const gaws = await giveawayModel.find({
         endsAt: { $lte: new Date().getTime() },
         hasEnded: false
-      })
-      if(!gaws || !gaws.length) return;
+      });
 
-      for(const giveaway in gaws){
-        const channel = client.guilds.cache.get(giveaway.guildId).channels.cache.get(giveaway.channelId)
-        const message = await channel.messages.fetch(`${giveaway.messageId}`)
-        message.edit("THis giveaway has ended  lo l  tes t AAAAAAAAAAAAAAAAAA")
+      if(!gaws || !gaws.length){
+        setTimeout(checkForGaw, 30000)
+        return;
       }
+      console.log(gaws)
+      for(const giveaway of gaws){
+        const channel = await client.channels.cache.get(`${giveaway.channelId}`)
+        const message = await channel.messages.fetch(`${giveaway.messageId}`)
+        const winner = `<@${giveaway.entries[Math.floor(Math.random() * giveaway.entries.length)]}>`
+        await message.edit("This giveaway has ended.", {
+          embed: {
+            title: giveaway.prize,
+            description: `Winner: ${winner}\nHosted By: <@${giveaway.hosterId}>`,
+            color: 'black',
+            footer: {
+              text: `Winners: ${giveaway.winners}`,
+            },
+            timestamp: new Date(),
+          },
+          components: new MessageActionRow().addComponents([ new MessageButton().setStyle("green").setID('whydodisabledbuttonsneedanid').setLabel("Enter").setDisabled()])
+        })
+        channel.send(`The giveaway for **${giveaway.prize}** has ended and the winner is ${winner}!`, {
+          embed: {
+            title: 'Giveaway Info',
+            description: `Entries: **${giveaway.entries.length.toLocaleString()}**\nChances of winning: **${ 1/giveaway.entries.length * 100}%**`,
+            footer: {
+              text: "Congrats!"
+            },
+            timestamp: new Date()
+          }
+        })
+        giveaway.hasEnded = true;
+        giveaway.save()
+      }
+      setTimeout(checkForGaw, 5000)
     }
+    checkForGaw()
     //GIVEAWAYS
     //MIKO
     const updateColor = () => {
