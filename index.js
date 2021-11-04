@@ -140,7 +140,7 @@ client.on('ready', async () => {
           embed: {
             title: "Giveaway Result",
             description: `The giveaway you hosted has ended!`,
-            embed: [
+            fields: [
               {
                 name: "Winner",
                 value: winner,
