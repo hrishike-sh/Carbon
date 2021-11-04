@@ -124,7 +124,7 @@ client.on('ready', async () => {
             },
             timestamp: new Date(),
           },
-          components: new MessageActionRow().addComponents([ new MessageButton().setStyle("green").setID('whydodisabledbuttonsneedanid').setLabel("Enter").setDisabled()])
+          components: new MessageActionRow().addComponents([ new MessageButton().setStyle("green").setID('whydodisabledbuttonsneedanid').setLabel("Enter").setDisabled(), new MessageButton().setStyle("grey").setID("giveaway-info").setLabel("View Info")])
         })
         await channel.send(`The giveaway for **${giveaway.prize}** has ended and the winner is ${winner}!`, {
           embed: {
