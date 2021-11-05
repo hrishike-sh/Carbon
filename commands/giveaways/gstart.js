@@ -8,7 +8,7 @@ module.exports = {
     async execute(message, args, client){
         if(message.author.id !== '598918643727990784') return;
 
-        //fh gstart 10s 1w prize
+        //fh gstart 10s 1w [requirements] prize
 
         let time = args[0]
         if(!time) return message.channel.send("You must specify time.")
@@ -18,7 +18,18 @@ module.exports = {
         let winners = args[0]
         if(!winners || isNaN(parseInt(winners))) return message.channel.send("You must specify the number of winners.")
         winners = parseInt(winners)
+        //requirements
+        const rawquirement = args[0]
+        if(!rawquirement) return message.channel.send(`You must specify a requirement or \`none\`.`)
+        let requirement;
+        if(rawquirement.toLowerCase() === 'none'){
+            requirement = null;
+        } else {
+            const reqs = rawquirement.split('.')
+            console.log(reqs)
+        }
 
+        //requirements
         args.shift()
         let prize = args.join(" ")
         if(!prize) prize = 'Prize'
