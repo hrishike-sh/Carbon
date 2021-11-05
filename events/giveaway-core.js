@@ -16,7 +16,15 @@ module.exports = {
                 button.reply.send("You have already entered this giveaway.", true)
                 return;
             }
-    
+            if(gaw.requirements){
+                const requirements = gaw.requirements
+                let canJoin = true;
+                for(const req of requirements){
+                    if(!canJoin) continue
+                    if(!button.clicker.member._roles.includes(req)) canJoin = false
+                }
+                if(!canJoin) return button.reply.send(`You do not meet the requirements to join the giveaway!`, true)
+            }
             gaw.entries.push(button.clicker.user.id)
             gaw.save()
     
