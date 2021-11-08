@@ -6,7 +6,13 @@ module.exports = {
     alises: ['g', 'giveaway', 'gaw'],
     description: 'start giveaways (testing only)',
     async execute(message, args, client){
-        if(message.author.id !== '598918643727990784') return;
+        if(
+          !message.member.roles.cache.some(role => role.id === '824348974449819658') &&
+          !message.member.roles.cache.some(role => role.id === '825783847622934549') &&
+          !message.member.roles.cache.some(role => role.id === '858088054942203945')
+        ){
+          return message.channel.send(`You do not have perms to run this command.`)
+        }
 
         //fh gstart 10s 1w [requirements] prize
 
@@ -15,7 +21,7 @@ module.exports = {
             embed: {
                 title: "Giveaway Help",
                 description: 'Here is some help:',
-                feilds: [
+                fields: [
                     {
                         name: 'Arguments',
                         value: `fh gstart <Time> <No. of winners (Currently 1 Max)> <Requirements> <Prize>`,
