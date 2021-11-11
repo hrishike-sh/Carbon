@@ -34,7 +34,7 @@ module.exports = {
                 const channels = server.lockdownSet.channels
 
                 for(const channel of channels){
-                    const toLockChannel = message.guilds.channels.cache.get(channel)
+                    const toLockChannel = message.guild.channels.cache.get(channel)
 
                     toLockChannel.updateOverwrite(message.channel.guild.roles.everyone, {
                         SEND_MESSAGES: null
