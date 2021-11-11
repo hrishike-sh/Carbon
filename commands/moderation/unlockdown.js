@@ -3,7 +3,7 @@ const db = require('../../database/models/settingsSchema')
 const { MessageButton, MessageActionRow } = require('discord-buttons')
 
 module.exports = {
-    name: 'lockdown',
+    name: 'unlockdown',
     async execute(message, args){
         if(!message.member.permissions.has("ADMINISTRATOR")) return message.channel.send(`You must have the ADMINISTATOR permission to run this command`)
 
@@ -15,7 +15,7 @@ module.exports = {
         const nobut = new MessageButton().setLabel("No").setStyle("red").setID("lock-no")
         const row1 = new MessageActionRow().addComponents([yesbut, nobut])
 
-        const confirm = await message.channel.send(`Are you sure you want to lockdown?`, { components: row1 })
+        const confirm = await message.channel.send(`Are you sure you want to unlock the server?`, { components: row1 })
 
         const collectorC = confirm.createButtonCollector(b => b, { time: 30000, max: 1 })
 
@@ -37,20 +37,20 @@ module.exports = {
                     const toLockChannel = message.guilds.channels.cache.get(channel)
 
                     toLockChannel.updateOverwrite(message.channel.guild.roles.everyone, {
-                        SEND_MESSAGES: false
+                        SEND_MESSAGES: null
                     })
 
                     toLockChannel.send({
                         embed: {
-                            title: ':lock: **SERVER LOCKDOWN**',
-                            description: server.lockdownSet.message || "The server is under lockdown.",
-                            color: "RED",
+                            title: ':unlock: **SERVER UNLOCKED**',
+                            description: `The server is now unlocked.`,
+                            color: "GREEN",
                             timestamp: new Date()
                         }
                     })
                 }
 
-                message.channel.send(`Done, the server is now lock downed!`)
+                message.channel.send(`Done, the server is now unlocked!`)
 
                 
             }
