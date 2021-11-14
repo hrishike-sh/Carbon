@@ -11,10 +11,7 @@ module.exports = {
       args.shift()
         const example = `\n\nExample: \`fh g 598918643727990784 add 5e6\` | \`fh g 598918643727990784 remove 5e6\``
         if (
-            message.author.id !== '772524332382945292' &&
-            message.author.id !== '264186213848580096' &&
-            message.author.id !== '598918643727990784' && 
-            message.author.id !== '755812617603514439'
+            !message.member.roles.cache.some(role => role.id === '824348974449819658')
         ) {
             return message.channel.send('You can not perform this action.')
         }
