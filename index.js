@@ -156,7 +156,7 @@ client.on('ready', async () => {
       }
       setTimeout(checkForGaw, 5000)
     }
-    checkForGaw()
+    // checkForGaw()
     //GIVEAWAYS
     //MIKO
     const updateColor = () => {
