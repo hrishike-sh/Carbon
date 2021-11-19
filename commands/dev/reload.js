@@ -3,11 +3,11 @@ const fs = require('fs')
 module.exports = {
     name: 'reload',
     description: 'reloads a command',
-    async execute(message, args){
+    async execute(message, args) {
         const commandName = args[0].toLowerCase()
         const command = message.client.commands.get(commandName) || message.client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName))
-        
-        if(!command){
+
+        if (!command) {
             return message.channel.send("No such command was found.")
         }
 
@@ -16,11 +16,11 @@ module.exports = {
 
         delete require.cache[require.resolve(`../${folderName}/${command.name}.js`)]
 
-        try{
+        try {
             const newCommand = require(`../${folderName}/${command.name}.js`);
             message.client.commands.set(newCommand.name, newCommand)
             message.channel.send(`Command \`${newCommand.name}\` was reloaded!`)
-        } catch(error){
+        } catch (error) {
             console.error(error)
             message.channel.send(`There was an error.`)
         }
