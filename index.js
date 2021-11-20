@@ -5,8 +5,9 @@ const client = new Discord.Client({
   }
 })
 require('discord-buttons')(client);
-const user = require('./database/models/user')
 const giveawayModel = require('./database/models/giveaway')
+const { DiscordTogether } = require('discord-together')
+client.discordTogether = DiscordTogether(client)
 const http = require('http')
 http.createServer((_, res) => res.end("Hi")).listen(8080)
 const fs = require('fs')
