@@ -2,13 +2,13 @@ const { MessageButton, MessageActionRow } = require('discord-buttons')
 
 module.exports = {
     name: 'fastclick',
-    async execute(message, args){
+    async execute(message, args) {
         const user1 = message.member
         const user2 = message.mentions.members.first() || message.guild.members.cache.get(args[0])
         return message.channel.send("This command is temporarily disabled.")
 
-        if(!user2) return message.channel.send(`You must mention someone to play with them!\n\nExample: \`fh fastclick @Hrishikesh#0369\``)
-        
+        if (!user2) return message.channel.send(`You must mention someone to play with them!\n\nExample: \`fh fastclick @Hrishikesh#0369\``)
+
         let yesButton = new MessageButton().setStyle("green").setID('yes_fc').setLabel("Accept")
         let noButton = new MessageButton().setStyle("red").setID('no_fc').setLabel("Decline")
         let row = new MessageActionRow().addComponents([noButton, yesButton])
@@ -31,46 +31,68 @@ module.exports = {
         )
 
         confirmationCollector.on('collect', async button => {
-            if(button.clicker.id !== user2.id){
-               return button.reply.send('This is not for you.', true)
+            if (button.clicker.id !== user2.id) {
+                return button.reply.send('This is not for you.', true)
             }
 
-            if(button.id === 'yes_fc'){
+            if (button.id === 'yes_fc') {
                 button.reply.defer()
                 yesButton = yesButton.setDisabled()
                 noButton = noButton.setStyle("grey").setID('no_fc').setDisabled()
                 row = new MessageActionRow().addComponents([yesButton, noButton])
-                confirmation.edit({ embed: {
-                title: 'Challenge Accepted',
-                color: 'GREEN',
-                description: `${user2}, ${user1} has challenged you for a game of fast click.\nWhat do you say?`,
-                timestamp: new Date(),
-            }, components: row })
+                confirmation.edit({
+                    embed: {
+                        title: 'Challenge Accepted',
+                        color: 'GREEN',
+                        description: `${user2}, ${user1} has challenged you for a game of fast click.\nWhat do you say?`,
+                        timestamp: new Date(),
+                    }, components: row
+                })
 
-            const mainMessage = await message.channel.send(`Alright! The button will appear in a few seconds, good luck!`)
-            let mainButton = new MessageButton().setStyle('green').setLabel('This one').setID("correct-fc")
-            let baitButton1 = new MessageButton().setStyle('grey').setLabel('No not this').setID("wrong1-fc")
-            let baitButton2 = new MessageButton().setStyle('grey').setLabel('No not this').setID("wrong2-fc")
-            let baitButton3 = new MessageButton().setStyle('grey').setLabel('No not this').setID("wrong3-fc")
-            let baitButton4 = new MessageButton().setStyle('grey').setLabel('No not this').setID("wrong4-fc")
-            let array = [mainButton, baitButton1, baitButton2, baitButton3, baitButton4].sort(() => Math.random() - 0.5)
-            let mainRow = new MessageActionRow().addComponents(array)
-            await sleep(2500)
-            mainMessage.edit("Click the green one", { components: mainRow })
+                const mainMessage = await message.channel.send(`Alright! The button will appear in a few seconds, good luck!`)
+                let mainButton = new MessageButton().setStyle('green').setLabel('This one').setID("correct-fc")
+                let baitButton1 = new MessageButton().setStyle('grey').setLabel('No not this').setID("wrong1-fc")
+                let baitButton2 = new MessageButton().setStyle('grey').setLabel('No not this').setID("wrong2-fc")
+                let baitButton3 = new MessageButton().setStyle('grey').setLabel('No not this').setID("wrong3-fc")
+                let baitButton4 = new MessageButton().setStyle('grey').setLabel('No not this').setID("wrong4-fc")
+                let array = [mainButton, baitButton1, baitButton2, baitButton3, baitButton4].sort(() => Math.random() - 0.5)
+                let mainRow = new MessageActionRow().addComponents(array)
+                await sleep(2500)
+                mainMessage.edit("Click the green one", { components: mainRow })
 
-            const mainCollector = mainMessage.createButtonCollector(b => b, { time: 30000 })
-            mainCollector.on('collect', async button => {
-                if(![user1.id, user2.id].includes(button.clicker.user.id)){
-                    await button.reply.send("This is not for you", true)
-                    return
-                }
+                const mainCollector = mainMessage.createButtonCollector(b => b, { time: 30000 })
+                mainCollector.on('collect', async button => {
+                    if (![user1.id, user2.id].includes(button.clicker.user.id)) {
+                        await button.reply.send("This is not for you", true)
+                        return
+                    }
 
-                if(button.id !== 'correct-fc'){
+                    if (button.id !== 'correct-fc') {
 
+                        mainCollector.stop()
+
+                        const loser = button.clicker.user.id
+                        const winner = loser === user1 ? user1 : user2
+                        mainButton = mainButton.setDisabled()
+                        baitButton1 = baitButton1.setDisabled()
+                        baitButton2 = baitButton2.setDisabled()
+                        baitButton3 = baitButton3.setDisabled()
+                        baitButton4 = baitButton4.setDisabled()
+                        array = array
+                        mainRow = new MessageActionRow().addComponents(array)
+                        button.reply.defer()
+                        mainMessage.edit(`:trophy: <@${winner.id}> won because <@${loser}> clicked the wrong button!`, { components: mainRow })
+                        return;
+                    }
+
+                    if (![user1.id, user2.id].includes(button.clicker.user.id)) {
+                        await button.reply.send("This is not for you", true)
+                        return
+                    }
+                    const now = new Date()
+                    const clickedIn = `${now - mainMessage.editedAt}`
                     mainCollector.stop()
-
-                    const loser = button.clicker.user.id
-                    const winner = loser === user1 ? user1 : user2
+                    const winner = button.clicker.user.id
                     mainButton = mainButton.setDisabled()
                     baitButton1 = baitButton1.setDisabled()
                     baitButton2 = baitButton2.setDisabled()
@@ -79,41 +101,23 @@ module.exports = {
                     array = array
                     mainRow = new MessageActionRow().addComponents(array)
                     button.reply.defer()
-                    mainMessage.edit(`:trophy: <@${winner.id}> won because <@${loser}> clicked the wrong button!`, { components: mainRow })
+                    mainMessage.edit(`:trophy: <@${winner}> has won! The button was clicked in ${clickedIn[0]}.${clickedIn[1]}s!`, { components: mainRow })
                     return;
-                }
-
-                if(![user1.id, user2.id].includes(button.clicker.user.id)){
-                    await button.reply.send("This is not for you", true)
-                    return
-                }
-                const now = new Date()
-                const clickedIn = `${now - mainMessage.editedAt}`
-                mainCollector.stop()
-                const winner = button.clicker.user.id
-                mainButton = mainButton.setDisabled()
-                baitButton1 = baitButton1.setDisabled()
-                baitButton2 = baitButton2.setDisabled()
-                baitButton3 = baitButton3.setDisabled()
-                baitButton4 = baitButton4.setDisabled()
-                array = array
-                mainRow = new MessageActionRow().addComponents(array)
-                button.reply.defer()
-                mainMessage.edit(`:trophy: <@${winner}> has won! The button was clicked in ${clickedIn[0]}.${clickedIn[1]}s!`, { components: mainRow })
-                return;
-            })
+                })
             } else {
                 button.reply.defer()
                 yesButton = yesButton.setStyle("grey").setID('yes_fc').setDisabled()
                 noButton = noButton.setDisabled()
                 row = new MessageActionRow().addComponents([yesButton, noButton])
-                confirmation.edit({ embed: {
-                title: 'Challenge Declined',
-                color: 'RED',
-                description: `${user2}, ${user1} has challenged you for a game of fast click.\nWhat do you say?`,
-                timestamp: new Date(),
-            }, components: row })
-            return;
+                confirmation.edit({
+                    embed: {
+                        title: 'Challenge Declined',
+                        color: 'RED',
+                        description: `${user2}, ${user1} has challenged you for a game of fast click.\nWhat do you say?`,
+                        timestamp: new Date(),
+                    }, components: row
+                })
+                return;
             }
         })
     }
