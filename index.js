@@ -7,7 +7,7 @@ const client = new Discord.Client({
 require('discord-buttons')(client);
 const giveawayModel = require('./database/models/giveaway')
 const { DiscordTogether } = require('discord-together')
-client.discordTogether = DiscordTogether(client)
+client.discordTogether = new DiscordTogether(client)
 const http = require('http')
 http.createServer((_, res) => res.end("Hi")).listen(8080)
 const fs = require('fs')
@@ -56,6 +56,9 @@ for (const file of eventFiles) {
 
 client.on('ready', async () => {
   console.log("Logged in.")
+  //COMMAND DISABLES
+
+  //COMMAND DISABLES
   // PRESENCE
   let counter = 0;
   const presences = [
@@ -188,10 +191,9 @@ client.on('message', async message => {
   if (!command) return;
   if (message.guild && message.guild.id !== '824294231447044197' && command.fhOnly) return message.channel.send(`This command can only be run in FightHub.`)
 
-  if (client.disabledCommands.get(message.channel.id).commands.includes(command.name)) { // command.disabledChannels && command.disabledChannels.includes(message.channel.id)
-    message.react("❌")
-    return;
-  }
+  // if (client.disabledCommands.has(message.channel.id) && client.disabledCommands.get(message.channel.id).commands.includes(commandName)) { // command.disabledChannels && command.disabledChannels.includes(message.channel.id)
+  //   return;
+  // }
 
   if (!cooldowns.has(command.name)) {
     cooldowns.set(command.name, new Discord.Collection());

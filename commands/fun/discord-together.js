@@ -1,4 +1,3 @@
-const { execute } = require("../other/blacklist");
 
 module.exports = {
     name: 'discord-together',

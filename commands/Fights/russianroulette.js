@@ -3,9 +3,15 @@ const {
     MessageButton,
     MessageActionRow
 } = require('discord-buttons')
+const { Client, Message, MessageEmbed } = require('discord.js');
 module.exports = {
     name: 'russianroulette',
     aliases: ['rr'],
+    /**
+     * @param {Client} client
+     * @param {Message} message
+     * @param {String[]} args
+     */
     async execute(message, args) {
         if (channels.includes(message.channel.id)) {
             return message.channel.send(`This channel already has a game active.`)
@@ -78,6 +84,38 @@ module.exports = {
                     color: "YELLOW"
                 }
             })
+
+            const mainEmbed = await message.channel.send(new MessageEmbed().setDescription("Initialising game..."))
+
+            let deathNumber = Math.floor(Math.random() * gameData.length)
+
+            if (deathNumber == gameData.length) deathNumber = gameData.length - 1
+
+            let winner;
+            let deathMap;
+            let deaths = [];
+
+            await sleep(2500)
+
+            mainEmbed.edit(new MessageEmbed().setDescription(`**${deathNumber} shots** were fired...`))
+
+            for (i = 0; i < deathNumber; i++) {
+                const death = gameData[Math.floor(Math.random() * gameData.length)]
+
+                if (deaths.includes(death)) {
+                    --i
+                    continue
+                }
+
+                deaths.push(death)
+            }
+            console.log(deaths)
+
+
         })
     }
+}
+
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms))
 }
