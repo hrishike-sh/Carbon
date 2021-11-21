@@ -1,8 +1,6 @@
 const Discord = require("discord.js");
 const client = new Discord.Client({
-  ws: {
-    intents: 32767
-  }
+  intents: [Discord.Intents.FLAGS.GUILDS, Discord.Intents.FLAGS.GUILD_MESSAGES]
 })
 require('discord-buttons')(client);
 const giveawayModel = require('./database/models/giveaway')
