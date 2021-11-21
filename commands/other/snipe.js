@@ -1,10 +1,17 @@
-const { MessageEmbed } = require('discord.js')
+const { MessageEmbed, Client, Message, MessageButton, MessageActionRow } = require('discord.js')
 const settings = require('../../database/models/settingsSchema')
 
 module.exports = {
   name: 'snipe',
   description: 'get sniped lol',
   disabledChannels: ['874330931752730674'],
+  /**
+   * 
+   * @param {Message} message 
+   * @param {String[]} args 
+   * @param {Client} client 
+   * @returns 
+   */
   async execute(message, args, client) {
     const sniped = client.snipes.get(message.channel.id)
     // const guild = await settings.findOne({ guildID: message.guild.id }) || null
@@ -25,13 +32,20 @@ module.exports = {
       return;
     }
 
-    const snipe = +args[0] - 1 || 0
-    const target = sniped[snipe]
+    let snipe = +args[0] - 1 || 0;
 
-    if (!target) return message.channel.send(`There are only ${sniped.length} messages to be sniped.`)
+    const target = sniped[snipe]
 
     const { msg, time, image } = target;
 
-    return message.channel.send(new MessageEmbed().setAuthor(msg.author.tag, msg.author.displayAvatarURL()).setImage(image).setTimestamp(time).setFooter(`${snipe + 1}/${sniped.length}`).setDescription(msg.content).setColor("RANDOM"))
+    let snipeBed = new MessageEmbed().setAuthor(msg.author.tag, msg.member.displayAvatarURL()).setDescription(msg.content).setColor("RANDOM").setFooter(`${snipe + 1}/${sniped.length}`).setImage(image).setTimestamp(time)
+    const prevBut = new MessageButton().setEmoji("911971090954326017").setCustomId("prev-snipe").setStyle("SUCCESS")
+    const nextBut = new MessageButton().setEmoji("911971202048864267").setCustomId("next-snipe").setStyle("SUCCESS")
+    const row = new MessageActionRow().addComponents([prevBut, nextBut])
+    const mainMessage = await message.channel.send({
+      embeds: [snipeBed],
+      components: [row]
+    });
+
   }
 }
