@@ -45,7 +45,7 @@ module.exports = {
     const row = new MessageActionRow().addComponents([prevBut, nextBut])
     const mainMessage = await message.channel.send({
       content: "Use the buttons to navigate.",
-      embeds: [snipeBed],
+      embed: snipeBed,
       components: [row]
     });
 
