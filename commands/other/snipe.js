@@ -35,19 +35,56 @@ module.exports = {
 
     let snipe = +args[0] - 1 || 0;
 
-    const target = sniped[snipe]
+    let target = sniped[snipe]
 
-    const { msg, time, image } = target;
+    let { msg, time, image } = target;
 
     let snipeBed = new MessageEmbed().setAuthor(msg.author.tag, msg.author.displayAvatarURL() || null).setDescription(msg.content).setColor("RANDOM").setFooter(`${snipe + 1}/${sniped.length}`).setImage(image).setTimestamp(time)
     const prevBut = new MessageButton().setEmoji("911971090954326017").setID("prev-snipe").setStyle("green")
     const nextBut = new MessageButton().setEmoji("911971202048864267").setID("next-snipe").setStyle("green")
     const row = new MessageActionRow().addComponents([prevBut, nextBut])
+
     const mainMessage = await message.channel.send({
       content: "Use the buttons to navigate.",
       embed: snipeBed,
       components: [row]
     });
+
+    const collector = mainMessage.createButtonCollector(b => b, { time: 30000 })
+
+    collector.on('collect', async button => {
+      const id = button.id
+
+      if (id === 'prev-snipe') {
+        snipe--
+        if (snipe < 0) {
+          snipe = 0
+        }
+        target = sniped[snipe]
+        snipeBed = new MessageEmbed().setAuthor(msg.author.tag, msg.author.displayAvatarURL() || null).setDescription(msg.content).setColor("RANDOM").setFooter(`${snipe + 1}/${sniped.length}`).setImage(image).setTimestamp(time)
+
+        return mainMessage.edit({
+          content: "Use the buttons to navigate.",
+          embed: snipeBed,
+          components: [row]
+        })
+      } else {
+        snipe++
+        if (snipe > sniped.length || snipe == sniped.length) {
+          snipe = sniped.length - 1
+        }
+        target = sniped[snipe]
+        snipeBed = new MessageEmbed().setAuthor(msg.author.tag, msg.author.displayAvatarURL() || null).setDescription(msg.content).setColor("RANDOM").setFooter(`${snipe + 1}/${sniped.length}`).setImage(image).setTimestamp(time)
+
+        return mainMessage.edit({
+          content: "Use the buttons to navigate.",
+          embed: snipeBed,
+          components: [row]
+        })
+      }
+
+    })
+
 
   }
 }
