@@ -38,7 +38,7 @@ module.exports = {
 
     const { msg, time, image } = target;
 
-    let snipeBed = new MessageEmbed().setAuthor(msg.author.tag, msg.member.displayAvatarURL()).setDescription(msg.content).setColor("RANDOM").setFooter(`${snipe + 1}/${sniped.length}`).setImage(image).setTimestamp(time)
+    let snipeBed = new MessageEmbed().setAuthor(msg.author.tag, msg.user.displayAvatarURL()).setDescription(msg.content).setColor("RANDOM").setFooter(`${snipe + 1}/${sniped.length}`).setImage(image).setTimestamp(time)
     const prevBut = new MessageButton().setEmoji("911971090954326017").setCustomId("prev-snipe").setStyle("SUCCESS")
     const nextBut = new MessageButton().setEmoji("911971202048864267").setCustomId("next-snipe").setStyle("SUCCESS")
     const row = new MessageActionRow().addComponents([prevBut, nextBut])
