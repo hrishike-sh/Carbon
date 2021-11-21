@@ -40,9 +40,9 @@ module.exports = {
     let { msg, time, image } = target;
 
     let snipeBed = new MessageEmbed().setAuthor(msg.author.tag, msg.author.displayAvatarURL() || null).setDescription(msg.content).setColor("RANDOM").setFooter(`${snipe + 1}/${sniped.length}`).setImage(image).setTimestamp(time)
-    const prevBut = new MessageButton().setEmoji("911971090954326017").setID("prev-snipe").setStyle("green")
-    const nextBut = new MessageButton().setEmoji("911971202048864267").setID("next-snipe").setStyle("green")
-    const row = new MessageActionRow().addComponents([prevBut, nextBut])
+    let prevBut = new MessageButton().setEmoji("911971090954326017").setID("prev-snipe").setStyle("green")
+    let nextBut = new MessageButton().setEmoji("911971202048864267").setID("next-snipe").setStyle("green")
+    let row = new MessageActionRow().addComponents([prevBut, nextBut])
 
     const mainMessage = await message.channel.send({
       content: "Use the buttons to navigate.",
@@ -53,8 +53,11 @@ module.exports = {
     const collector = mainMessage.createButtonCollector(b => b, { time: 30000 })
 
     collector.on('collect', async button => {
+      if (button.clicker.user.id !== message.author.id) {
+        return button.reply.send("This is not for you.")
+      }
       const id = button.id
-
+      button.reply.defer()
       if (id === 'prev-snipe') {
         snipe--
         if (snipe < 0) {
@@ -85,6 +88,20 @@ module.exports = {
         })
       }
 
+    })
+
+    collector.on('end', () => {
+      prevBut = prevBut.setDisabled()
+      nextBut = nextBut.setDisabled()
+      row = new MessageActionRow().addComponents([prevBut, nextBut])
+      target = sniped[snipe]
+      let { msg, time, image } = target
+      snipeBed = new MessageEmbed().setAuthor(msg.author.tag, msg.author.displayAvatarURL() || null).setDescription(msg.content).setColor("RANDOM").setFooter(`${snipe + 1}/${sniped.length}`).setImage(image).setTimestamp(time)
+      return mainMessage.edit({
+        content: "Use the buttons to navigate.",
+        embed: snipeBed,
+        components: [row]
+      })
     })
 
 
