@@ -44,6 +44,7 @@ module.exports = {
     const nextBut = new MessageButton().setEmoji("911971202048864267").setID("next-snipe").setStyle("green")
     const row = new MessageActionRow().addComponents([prevBut, nextBut])
     const mainMessage = await message.channel.send({
+      content: "Use the buttons to navigate.",
       embeds: [snipeBed],
       components: [row]
     });
