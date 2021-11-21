@@ -16,6 +16,9 @@
     "type": "git",
     "url": "git+https://github.com/HrishikeshS123/FightHub.git"
   },
+  "engines": {
+    "node": "16.5.0"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
