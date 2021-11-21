@@ -40,8 +40,8 @@ module.exports = {
     const { msg, time, image } = target;
 
     let snipeBed = new MessageEmbed().setAuthor(msg.author.tag, msg.author.displayAvatarURL() || null).setDescription(msg.content).setColor("RANDOM").setFooter(`${snipe + 1}/${sniped.length}`).setImage(image).setTimestamp(time)
-    const prevBut = new MessageButton().setEmoji("911971090954326017").setID("prev-snipe").setStyle("SUCCESS")
-    const nextBut = new MessageButton().setEmoji("911971202048864267").setID("next-snipe").setStyle("SUCCESS")
+    const prevBut = new MessageButton().setEmoji("911971090954326017").setID("prev-snipe").setStyle("green")
+    const nextBut = new MessageButton().setEmoji("911971202048864267").setID("next-snipe").setStyle("green")
     const row = new MessageActionRow().addComponents([prevBut, nextBut])
     const mainMessage = await message.channel.send({
       embeds: [snipeBed],

@@ -225,14 +225,14 @@ client.on('message', async message => {
     })
   }
   try {
-    commandsRan++
     command.execute(message, args, client)
+    commandsRan++
   } catch (error) {
     console.log(error)
-    return message.reply({
-      content: "An error occured while executing the command!"
-    })
+    message.reply("An error occured while running this command.")
   }
 })
-client.on('error', console.error)
+client.on("error", (error) => {
+  console.log(error)
+})
 client.login(process.env.token)
