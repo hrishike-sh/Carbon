@@ -61,6 +61,7 @@ module.exports = {
           snipe = 0
         }
         target = sniped[snipe]
+        let { msg, time, image } = target
         snipeBed = new MessageEmbed().setAuthor(msg.author.tag, msg.author.displayAvatarURL() || null).setDescription(msg.content).setColor("RANDOM").setFooter(`${snipe + 1}/${sniped.length}`).setImage(image).setTimestamp(time)
 
         return mainMessage.edit({
@@ -74,6 +75,7 @@ module.exports = {
           snipe = sniped.length - 1
         }
         target = sniped[snipe]
+        let { msg, time, image } = target
         snipeBed = new MessageEmbed().setAuthor(msg.author.tag, msg.author.displayAvatarURL() || null).setDescription(msg.content).setColor("RANDOM").setFooter(`${snipe + 1}/${sniped.length}`).setImage(image).setTimestamp(time)
 
         return mainMessage.edit({
