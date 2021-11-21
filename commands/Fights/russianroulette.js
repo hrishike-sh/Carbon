@@ -16,23 +16,24 @@ module.exports = {
         if (channels.includes(message.channel.id)) {
             return message.channel.send(`This channel already has a game active.`)
         }
+        if (message.author.id !== '598918643727990784') return;
 
         const joinBut = new MessageButton().setLabel("Join").setEmoji("⚔️").setID("join-rr").setStyle('green')
         const infoBut = new MessageButton().setLabel("Info").setEmoji("ℹ️").setID("info-rr").setStyle('grey')
         const row = new MessageActionRow().addComponents([joinBut, infoBut])
         const joined = []
-        const gameData = []
+        let gameData = []
         const joinMessage = await message.channel.send({
             embed: {
                 title: 'Russian Roulette',
-                description: 'Click the button to join the game!\nThe game begins in **30 seconds**.',
+                description: 'Click the button to join the game!\nThe game begins in **15 seconds**.',
                 color: 'GREEN',
             },
             components: row
         })
 
         const joinCollector = joinMessage.createButtonCollector(b => b, {
-            time: 5000
+            time: 15000
         })
 
         joinCollector.on('collect', async button => {
@@ -97,7 +98,7 @@ module.exports = {
 
             await sleep(2500)
 
-            mainEmbed.edit(new MessageEmbed().setDescription(`**${deathNumber} shots** were fired...`))
+            mainEmbed.edit(new MessageEmbed().setDescription(`**${deathNumber} shot(s)** were fired...`))
 
             for (i = 0; i < deathNumber; i++) {
                 const death = gameData[Math.floor(Math.random() * gameData.length)]
@@ -109,9 +110,18 @@ module.exports = {
 
                 deaths.push(death)
             }
-            console.log(deaths)
 
+            deathMap = deaths.map(value => `<@${value.member.id}>`).join(', ')
 
+            await sleep(2000)
+
+            mainEmbed.edit(new MessageEmbed().setDescription(`People who tried their luck, and unfortunately died were: \n${deathMap}`).setColor("RED"))
+
+            gameData = gameData.filter(a => !deaths.includes(a));
+
+            await sleep(2000)
+
+            mainEmbed.edit(new MessageEmbed().setDescription(`People that survived are:\n${gameData.map(u => `<@${u.member.id}>`).join(', ')}`).setColor("GREEN"))
         })
     }
 }

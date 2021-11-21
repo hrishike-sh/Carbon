@@ -1,8 +1,16 @@
 
+const { Message, Client } = require('discord.js')
 const db = require('../../database/models/settingsSchema')
 
 module.exports = {
     name: 'disable',
+    /**
+     * 
+     * @param {Message} message 
+     * @param {String[]} args 
+     * @param {Client} client 
+     * @returns 
+     */
     async execute(message, args, client) {
         let server = await db.findOne({ guildID: message.guild.id })
 
