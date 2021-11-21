@@ -8,8 +8,8 @@ require('discord-buttons')(client);
 const giveawayModel = require('./database/models/giveaway')
 const { DiscordTogether } = require('discord-together')
 client.discordTogether = new DiscordTogether(client)
-const http = require('http')
-http.createServer((_, res) => res.end("Hi")).listen(8080)
+// const http = require('http')
+// http.createServer((_, res) => res.end("Hi")).listen(8080)
 const fs = require('fs')
 const prefix = 'fh '
 require('dotenv').config()
