@@ -1,5 +1,9 @@
 {
+<<<<<<< HEAD
   "name": "fighthub",
+=======
+  "name": "FightHub",
+>>>>>>> 86a4c064d347369fb0cb3f915278c344b5e4f491
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
