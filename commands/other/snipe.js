@@ -26,12 +26,12 @@ module.exports = {
     }
 
     const snipe = +args[0] - 1 || 0
-    const target = snipes[snipe]
+    const target = sniped[snipe]
 
     if (!target) return message.channel.send(`There are only ${sniped.length} messages to be sniped.`)
 
     const { msg, time, image } = target;
 
-    return message.channel.send(new MessageEmbed().setAuthor(msg.author.tag, msg.author.displayAvatarURL()).setImage(image).setTimestamp(time).setFooter(`${sniped + 1}/${sniped.length}`))
+    return message.channel.send(new MessageEmbed().setAuthor(msg.author.tag, msg.author.displayAvatarURL()).setImage(image).setTimestamp(time).setFooter(`${snipe + 1}/${sniped.length}`).setDescription(msg.content).setColor("RANDOM"))
   }
 }

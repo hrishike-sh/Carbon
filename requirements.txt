@@ -1,0 +1,13 @@
+@weky/inlinereply
+common-tags
+discord-buttons
+discord-messages
+discord-reply
+discord-together
+discord.js
+dotenv
+lodash
+mongoose
+ms 
+node-fetch
+ws

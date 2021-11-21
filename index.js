@@ -236,5 +236,5 @@ client.on('message', async message => {
     })
   }
 })
-
+client.on('error', console.error)
 client.login(process.env.token)

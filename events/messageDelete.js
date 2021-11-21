@@ -9,6 +9,7 @@ module.exports = {
      * @param {Client} client 
      */
     execute(message, client) {
+        if (message.author.bot) return;
         let snipes = client.snipes.get(message.channel.id) || []
 
         if (snipes.length > 5) snipes = snipes.slice(0, 4);
