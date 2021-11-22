@@ -90,8 +90,10 @@ module.exports = {
 
             for (a = 0; a > -1; i++) {
                 let deathNumber = Math.floor(Math.random() * gameData.length)
-
-                if (deathNumber == gameData.length || deathNumber == 0) deathNumber = gameData.length - 1
+                if (deathNumber == 1) {
+                    await message.channel.send(`The winner is ${gameData[0].member}`)
+                }
+                if (deathNumber == 0) deathNumber = gameData.length - 1
 
                 let winner;
                 let deathMap;
