@@ -88,40 +88,43 @@ module.exports = {
 
             const mainEmbed = await message.channel.send(new MessageEmbed().setDescription("Initialising game..."))
 
-            let deathNumber = Math.floor(Math.random() * gameData.length)
+            for (a = 0; a > -1; i++) {
+                let deathNumber = Math.floor(Math.random() * gameData.length)
 
-            if (deathNumber == gameData.length) deathNumber = gameData.length - 1
+                if (deathNumber == gameData.length || deathNumber == 0) deathNumber = gameData.length - 1
 
-            let winner;
-            let deathMap;
-            let deaths = [];
+                let winner;
+                let deathMap;
+                let deaths = [];
 
-            await sleep(2500)
+                await sleep(2500)
 
-            mainEmbed.edit(new MessageEmbed().setDescription(`**${deathNumber} shot(s)** were fired...`))
+                mainEmbed.edit(new MessageEmbed().setDescription(`**${deathNumber} shot(s)** were fired...`))
 
-            for (i = 0; i < deathNumber; i++) {
-                const death = gameData[Math.floor(Math.random() * gameData.length)]
+                for (i = 0; i < deathNumber; i++) {
+                    if (gameData.length == 1) return;
+                    const death = gameData[Math.floor(Math.random() * gameData.length)]
 
-                if (deaths.includes(death)) {
-                    --i
-                    continue
+                    if (deaths.includes(death)) {
+                        --i
+                        continue
+                    }
+
+                    deaths.push(death)
                 }
 
-                deaths.push(death)
+                deathMap = deaths.map(value => `<@${value.member.id}>`).join(', ')
+
+                await sleep(2000)
+
+                mainEmbed.edit(new MessageEmbed().setDescription(`People who tried their luck, and unfortunately died were: \n${deathMap}`).setColor("RED"))
+
+                gameData = gameData.filter(a => !deaths.includes(a));
+
+                await sleep(2000)
+
+                mainEmbed.edit(new MessageEmbed().setDescription(`People that survived are:\n${gameData.map(u => `<@${u.member.id}>`).join(', ')}`).setColor("GREEN"))
             }
-
-            deathMap = deaths.map(value => `<@${value.member.id}>`).join(', ')
-
-            await sleep(2000)
-
-            mainEmbed.edit(new MessageEmbed().setDescription(`People who tried their luck, and unfortunately died were: \n${deathMap}`).setColor("RED"))
-
-            gameData = gameData.filter(a => !deaths.includes(a));
-
-            await sleep(2000)
-
-            mainEmbed.edit(new MessageEmbed().setDescription(`People that survived are:\n${gameData.map(u => `<@${u.member.id}>`).join(', ')}`).setColor("GREEN"))
         })
     }
 }
