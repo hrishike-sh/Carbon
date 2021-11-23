@@ -54,7 +54,7 @@ for (const file of eventFiles) {
 
 process.on('uncaughtException', (err) => {
   console.log(err)
-  client.channels.cache.get('').send({
+  client.channels.cache.get('912715570070294599').send({
     embed: {
       title: 'The bot almost crashed. (uncaughtException)',
       description: err.message || 'No message data, Check the console'
@@ -65,7 +65,7 @@ process.on('uncaughtException', (err) => {
 
 process.on('unhandledRejection', (err) => {
   console.log(err)
-  client.channels.cache.get('').send({
+  client.channels.cache.get('912715570070294599').send({
     embed: {
       title: 'The bot almost crashed. (unhandledRejection)',
       description: err.message || 'No message data, Check the console'
