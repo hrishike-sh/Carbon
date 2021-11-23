@@ -52,6 +52,29 @@ for (const file of eventFiles) {
   }
 }
 
+process.on('uncaughtException', (err) => {
+  console.log(err)
+  client.channels.cache.get('').send({
+    embed: {
+      title: 'The bot almost crashed. (uncaughtException)',
+      description: err.message || 'No message data, Check the console'
+    },
+    content: '<@598918643727990784>'
+  })
+})
+
+process.on('unhandledRejection', (err) => {
+  console.log(err)
+  client.channels.cache.get('').send({
+    embed: {
+      title: 'The bot almost crashed. (unhandledRejection)',
+      description: err.message || 'No message data, Check the console'
+    },
+    content: '<@598918643727990784>'
+  })
+})
+
+
 client.on('ready', async () => {
   console.log("Logged in.")
   //COMMAND DISABLES
