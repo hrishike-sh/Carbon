@@ -16,7 +16,7 @@ module.exports = {
         // Incrementing everything
         presenceCounter1++
         // Incrementing everything
-
+        console.log('tick')
         // Presence
         const presences = [
             {
