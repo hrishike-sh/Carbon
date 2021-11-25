@@ -12,13 +12,13 @@ const fs = require('fs')
 const prefix = 'fh '
 require('dotenv').config()
 const mongoose = require('mongoose')
+const { MessageButton, MessageActionRow } = require('discord-buttons')
 let dbURL = process.env.mongopath
 mongoose.connect(dbURL, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
   useFindAndModify: false
 })
-const { MessageButton, MessageActionRow } = require('discord-buttons')
 client.commands = new Discord.Collection()
 client.cooldowns = new Discord.Collection()
 client.snipes = new Discord.Collection()
@@ -77,34 +77,11 @@ process.on('unhandledRejection', (err) => {
 
 client.on('ready', async () => {
   console.log("Logged in.")
+  client.emit('tick')
   //COMMAND DISABLES
 
   //COMMAND DISABLES
-  // PRESENCE
-  let counter = 0;
-  const presences = [
-    {
-      name: `${client.users.cache.size.toLocaleString()} fighters!`,
-      type: `WATCHING`
-    },
-    {
-      name: `${client.guilds.cache.size.toLocaleString()} servers!`,
-      type: 'COMPETING'
-    }
-  ]
-  const updateStatus = () => {
-    client.user.setPresence({
-      activity: presences[counter]
-    })
 
-    if (++counter >= presences.length) {
-      counter = 0
-    }
-
-    setTimeout(updateStatus, 60000)
-  }
-  updateStatus()
-  // PRESENCE
   // LOGS
   client.channels.cache.get("901739465406566400").send({
     embed: {
@@ -199,6 +176,7 @@ client.on('ready', async () => {
   updateColor()
   //MIKO
 })
+
 
 client.on('message', async message => {
   if (!message.content.toLowerCase().startsWith(prefix)) return;
