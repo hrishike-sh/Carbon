@@ -8,7 +8,6 @@ module.exports = {
     name: 'tick',
     once: false,
     /**
-     * 
      * @param {Client} client 
      */
     async execute(client) {
@@ -16,7 +15,7 @@ module.exports = {
         // Incrementing everything
         presenceCounter1++
         // Incrementing everything
-        console.log('tick')
+        console.log(presenceCounter1)
         // Presence
         const presences = [
             {
@@ -34,7 +33,7 @@ module.exports = {
                 presenceCounter2 = 0
             }
 
-            client.user.setStatus({
+            client.user.setActivity({
                 activity: presences[presenceCounter2]
             })
         }
