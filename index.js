@@ -212,9 +212,10 @@ client.on('message', async message => {
   if (!command) return;
   if (message.guild && message.guild.id !== '824294231447044197' && command.fhOnly) return message.channel.send(`This command can only be run in FightHub.`)
 
-  // if (client.disabledCommands.has(message.channel.id) && client.disabledCommands.get(message.channel.id).commands.includes(commandName)) { // command.disabledChannels && command.disabledChannels.includes(message.channel.id)
-  //   return;
-  // }
+  if (command.disabledChannels && command.disabledChannels.includes(message.channel.id)) { //
+    message.react('❌')
+    return;
+  }
 
   if (!cooldowns.has(command.name)) {
     cooldowns.set(command.name, new Discord.Collection());
