@@ -15,7 +15,7 @@ module.exports = {
         // Incrementing everything
         presenceCounter1++
         // Incrementing everything
-        console.log(presenceCounter1)
+
         // Presence
         const presences = [
             {
@@ -34,7 +34,8 @@ module.exports = {
             }
 
             client.user.setActivity({
-                activity: presences[presenceCounter2]
+                name: presences[presenceCounter2].name,
+                type: presences[presenceCounter2].type
             })
         }
         // Presence
