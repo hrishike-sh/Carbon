@@ -17,7 +17,8 @@ module.exports = {
         presenceCounter1++
         gawCounter1++
         // Incrementing everything
-
+        console.log(`Presence ${presenceCounter1}`)
+        console.log(`Gaw ${gawCounter1}`)
         // Presence
         const presences = [
             {
