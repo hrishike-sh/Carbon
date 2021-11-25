@@ -54,20 +54,32 @@ module.exports = {
             });
 
             if (!gaws || !gaws.length) {
+                setTimeout(() => {
+                    client.emit('tick')
+                }, 1000)
                 return;
             }
 
             for (const giveaway of gaws) {
 
-                if (giveaway.hasEnded == true) return;
                 giveaway.hasEnded = true;
                 giveaway.save()
 
                 const channel = await client.channels.cache.get(`${giveaway.channelId}`)
-                if (!channel) return;
+                if (!channel) {
+                    setTimeout(() => {
+                        client.emit('tick')
+                    }, 1000)
+                    return
+                }
 
                 const message = await channel.messages.fetch(`${giveaway.messageId}`)
-                if (!message) return;
+                if (!message) {
+                    setTimeout(() => {
+                        client.emit('tick')
+                    }, 1000)
+                    return
+                }
 
                 const winner = `<@${giveaway.entries[Math.floor(Math.random() * giveaway.entries.length)]}>`
 
