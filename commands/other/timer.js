@@ -1,5 +1,5 @@
 const { Client, Message, MessageEmbed } = require('discord.js');
-const ms = require('ms');
+const ms = require('pretty-ms');
 const db = require('../../database/models/timer')
 module.exports = {
     name: 'timer',
@@ -36,7 +36,7 @@ module.exports = {
             new MessageEmbed()
                 .setAuthor(message.member.displayName, message.author.displayAvatarURL())
                 .setTitle(reason)
-                .setDescription(`${ms(time - new Date().getTime())} left...`)
+                .setDescription(`${ms(time - new Date().getTime(), { verbose: true })} left...`)
                 .setFooter("Click the button to be reminded", client.user.displayAvatarURL())
         )
     }
