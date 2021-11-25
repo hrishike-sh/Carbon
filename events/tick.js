@@ -20,8 +20,7 @@ module.exports = {
         gawCounter1++
         randomColorCounter++
         // Incrementing everything
-        console.log(`Presence ${presenceCounter1}`)
-        console.log(`Gaw ${gawCounter1}`)
+
         // Presence
         const presences = [
             {

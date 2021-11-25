@@ -36,7 +36,7 @@ module.exports = {
             new MessageEmbed()
                 .setAuthor(message.member.displayName, message.author.displayAvatarURL())
                 .setTitle(reason)
-                .setDescription(`${ms(time - new Date().getTime(), { long: true })} left...`)
+                .setDescription(`${ms(time - new Date().getTime())} left...`)
                 .setFooter("Click the button to be reminded", client.user.displayAvatarURL())
         )
     }
