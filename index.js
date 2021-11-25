@@ -98,69 +98,7 @@ client.on('ready', async () => {
     client.afks.push(afk.userId)
   }
   //AFKS
-  //GIVEAWAYS
-  const checkForGaw = async () => {
 
-    const gaws = await giveawayModel.find({
-      endsAt: { $lte: new Date().getTime() },
-      hasEnded: false
-    });
-
-    if (!gaws || !gaws.length) {
-      setTimeout(checkForGaw, 5000)
-      return;
-    }
-    console.log(gaws)
-    for (const giveaway of gaws) {
-      if (giveaway.hasEnded == true) return;
-      giveaway.hasEnded = true;
-      const channel = await client.channels.cache.get(`${giveaway.channelId}`)
-      const message = await channel.messages.fetch(`${giveaway.messageId}`)
-      const winner = `<@${giveaway.entries[Math.floor(Math.random() * giveaway.entries.length)]}>`
-      await message.edit("This giveaway has ended.", {
-        embed: {
-          title: giveaway.prize || '',
-          description: `Winner: ${winner}\nHosted By: <@${giveaway.hosterId}>`,
-          color: 'black',
-          footer: {
-            text: `Winners: ${giveaway.winners}`,
-          },
-          timestamp: new Date(),
-        },
-        components: new MessageActionRow().addComponents([new MessageButton().setStyle("green").setID('whydodisabledbuttonsneedanid').setLabel("Enter").setDisabled(), new MessageButton().setStyle("grey").setID("giveaway-info").setLabel("View Info")])
-      })
-      await channel.send(`The giveaway for **${giveaway.prize}** has ended and the winner is ${winner}!`, {
-        embed: {
-          title: 'Giveaway Info',
-          description: `Entries: **${giveaway.entries.length.toLocaleString()}**\nChances of winning: **${(1 / giveaway.entries.length * 100).toFixed(3)}%**`,
-          footer: {
-            text: "Congrats!"
-          },
-          timestamp: new Date()
-        }
-      })
-      client.users.cache.get(`${giveaway.hosterId}`).send({
-        embed: {
-          title: "Giveaway Result",
-          description: `The giveaway you hosted has ended!`,
-          fields: [
-            {
-              name: "Winner",
-              value: winner,
-            },
-            {
-              name: 'Link',
-              value: `[Jump](https://discord.com/channels/${giveaway.guildId}/${giveaway.channelId}/${giveaway.messageId})`
-            }
-          ]
-        }
-      })
-      giveaway.save()
-    }
-    setTimeout(checkForGaw, 5000)
-  }
-  // checkForGaw()
-  //GIVEAWAYS
   //MIKO
   const updateColor = () => {
     const random_hex_color_code = () => {
