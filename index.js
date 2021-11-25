@@ -99,20 +99,6 @@ client.on('ready', async () => {
   }
   //AFKS
 
-  //MIKO
-  const updateColor = () => {
-    const random_hex_color_code = () => {
-      // https://www.w3resource.com/javascript-exercises/fundamental/javascript-fundamental-exercise-11.php
-      let n = (Math.random() * 0xfffff * 1000000).toString(16);
-      return '#' + n.slice(0, 6);
-    };
-
-    client.guilds.cache.get("817734579246071849").roles.cache.get('900274849153445918').setColor(random_hex_color_code())
-    client.channels.cache.get("897100842216357889").send(`A total of **${commandsRan.toLocaleString()}** commands have been ran since the bot is up!`)
-    setTimeout(updateColor, 10 * 60 * 1000)
-  }
-  updateColor()
-  //MIKO
 })
 
 
@@ -166,7 +152,13 @@ client.on('message', async message => {
   }
   try {
     command.execute(message, args, client)
-    commandsRan++
+    commandsRan++;
+    (await client.fetchWebhook('913360972842930176')).send(
+      new Discord.MessageEmbed()
+        .setAuthor(message.author.tag, message.author.displayAvatarURL())
+        .setTitle(command.name)
+        .setTimestamp()
+    )
   } catch (error) {
     console.log(error)
     message.reply("An error occured while running this command.")

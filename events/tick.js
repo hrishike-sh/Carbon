@@ -1,11 +1,12 @@
 const { Client } = require("discord.js");
 const giveawayModel = require('../database/models/giveaway')
-
 const { MessageActionRow, MessageButton } = require('discord-buttons')
+
 let i = 0;
 let presenceCounter1 = 0;
 let presenceCounter2 = 0;
 let gawCounter1 = 0;
+let randomColorCounter = 0;
 module.exports = {
     name: 'tick',
     once: false,
@@ -17,6 +18,7 @@ module.exports = {
         // Incrementing everything
         presenceCounter1++
         gawCounter1++
+        randomColorCounter++
         // Incrementing everything
         console.log(`Presence ${presenceCounter1}`)
         console.log(`Gaw ${gawCounter1}`)
@@ -127,6 +129,21 @@ module.exports = {
             }
         }
         // Giveaways
+
+        // Random Color
+        if (randomColorCounter == 600) {
+            randomColorCounter = 0;
+
+            const random_hex_color_code = () => {
+                // https://www.w3resource.com/javascript-exercises/fundamental/javascript-fundamental-exercise-11.php
+                let n = (Math.random() * 0xfffff * 1000000).toString(16);
+                return '#' + n.slice(0, 6);
+            };
+
+            client.guilds.cache.get("817734579246071849").roles.cache.get('900274849153445918').setColor(random_hex_color_code())
+
+        }
+        // Random Color
 
 
         setTimeout(() => {
