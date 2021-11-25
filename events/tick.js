@@ -39,6 +39,8 @@ module.exports = {
             })
         }
         // Presence
-
+        setTimeout(() => {
+            client.emit('tick')
+        }, 1000)
     }
 }
