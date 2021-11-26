@@ -1,4 +1,5 @@
 const { Client, Message, MessageEmbed } = require('discord.js');
+const { MessageButton, MessageActionRow } = require('discord-buttons');
 const ms = require('pretty-ms');
 const ms2 = require('ms');
 const db = require('../../database/models/timer')
@@ -35,14 +36,16 @@ module.exports = {
             reason
         })
         message.delete()
-        const msg = await message.channel.send(
-            new MessageEmbed()
+        const RemindBut = new MessageButton().setLabel("Remind me!").setEmoji("🔔").setStyle("green").setID("remind_me")
+        const msg = await message.channel.send({
+            embed: new MessageEmbed()
                 .setAuthor(message.member.displayName, message.author.displayAvatarURL())
                 .setTitle(reason)
                 .setDescription(`${ms(time - new Date().getTime(), { verbose: true })} left...`)
                 .setTimestamp()
-            // .setFooter("Click the button to be reminded", client.user.displayAvatarURL())
-        );
+                .setFooter("Click the button to be reminded", client.user.displayAvatarURL()),
+            components: RemindBut
+        });
 
         timer.messageId = msg.id;
         timer.save();

@@ -168,16 +168,11 @@ module.exports = {
             if (!timers || !timers.length) {
 
             } else {
+                const RemindBut = new MessageButton().setLabel("Remind me!").setEmoji("🔔").setStyle("green").setID("remind_me")
 
-
-                console.log(timers)
 
                 for (const timer of timers) {
                     const time = timer.time - new Date().getTime()
-                    if (time < 0) {
-                        timer.ended = true
-                        timer.save()
-                    }
 
                     const channel = client.channels.cache.get(timer.channelId)
                     if (!channel) {
@@ -190,15 +185,38 @@ module.exports = {
 
                         } else {
 
-
-                            message.edit(
-                                new MessageEmbed()
-                                    .setAuthor(client.users.cache.get(timer.member).username, client.users.cache.get(timer.member).displayAvatarURL())
-                                    .setTitle(timer.reason)
-                                    .setColor("RANDOM")
-                                    .setDescription(`${ms(time, { verbose: true })}`)
-                            )
-
+                            if (time < 0) {
+                                message.channel.send(timer.reminders || "No people that wanted to be reminded moment.").then(async msg => {
+                                    setTimeout(() => {
+                                        msg.delete()
+                                    }, 2500)
+                                })
+                                message.edit({
+                                    embed: new MessageEmbed()
+                                        .setAuthor(client.users.cache.get(timer.member).username, client.users.cache.get(timer.member).displayAvatarURL())
+                                        .setTitle(timer.reason)
+                                        .setColor("RANDOM")
+                                        .setDescription(`The timer has ended!`)
+                                        .setFooter("Click the button to be reminded.", client.user.displayAvatarURL()),
+                                    components: RemindBut
+                                })
+                                message.channel.send(`The timer for **${timer.reason}** has ended!\nhttps://discord.com/channels/${message.guild.id}/${message.channel.id}/${message.id}`)
+                                timerModel.deleteMany({
+                                    time: {
+                                        $lt: new Date().getTime()
+                                    },
+                                })
+                            } else {
+                                message.edit({
+                                    embed: new MessageEmbed()
+                                        .setAuthor(client.users.cache.get(timer.member).username, client.users.cache.get(timer.member).displayAvatarURL())
+                                        .setTitle(timer.reason)
+                                        .setColor("RANDOM")
+                                        .setDescription(`${ms(time, { verbose: true })} left...`)
+                                        .setFooter("Click the button to be reminded.", client.user.displayAvatarURL()),
+                                    components: RemindBut
+                                })
+                            }
 
 
                         }
