@@ -30,6 +30,10 @@ module.exports = {
 
         const timer = new db({
             time,
+            channelId: message.channel.id,
+            messageId: message.id,
+            member: message.member,
+            reason
         })
         timer.save()
         message.delete()
@@ -38,7 +42,8 @@ module.exports = {
                 .setAuthor(message.member.displayName, message.author.displayAvatarURL())
                 .setTitle(reason)
                 .setDescription(`${ms(time - new Date().getTime(), { verbose: true })} left...`)
-                .setFooter("Click the button to be reminded", client.user.displayAvatarURL())
+                .setTimestamp()
+            // .setFooter("Click the button to be reminded", client.user.displayAvatarURL())
         )
     }
 }

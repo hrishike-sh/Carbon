@@ -1,12 +1,14 @@
-const { Client } = require("discord.js");
+const { Client, MessageEmbed } = require("discord.js");
 const giveawayModel = require('../database/models/giveaway')
 const { MessageActionRow, MessageButton } = require('discord-buttons')
-
+const timerModel = require('../../database/models/timer')
+const ms = require('pretty-ms')
 let i = 0;
 let presenceCounter1 = 0;
 let presenceCounter2 = 0;
 let gawCounter1 = 0;
 let randomColorCounter = 0;
+let timerCounter = 0;
 module.exports = {
     name: 'tick',
     once: false,
@@ -19,6 +21,7 @@ module.exports = {
         presenceCounter1++
         gawCounter1++
         randomColorCounter++
+        timerCounter++
         // Incrementing everything
 
         // Presence
@@ -143,6 +146,54 @@ module.exports = {
 
         }
         // Random Color
+
+        // Timer
+        if (timerCounter == 10) {
+            const timers = timerModel.find({
+                time: { $gte: new Date().getTime() },
+                ended: false,
+            })
+
+            if (!timers || !timers.length) {
+                setTimeout(() => {
+                    client.emit('tick')
+                }, 1000)
+                return;
+            }
+
+            for (const timer of timers) {
+                const time = timer.time - new Date().getTime()
+                if (time < 0) {
+                    timer.ended = true
+                    timer.save()
+                }
+
+                const channel = client.channels.cache.get(timer.channelId)
+                if (!channel) {
+                    setTimeout(() => {
+                        client.emit('tick')
+                    }, 1000)
+                    return
+                }
+
+                const message = await channel.messages.fetch(timer.messageId)
+                if (!message) {
+                    setTimeout(() => {
+                        client.emit('tick')
+                    }, 1000)
+                    return
+                }
+
+                message.edit(
+                    new MessageEmbed()
+                        .setAuthor(timer.member.displayName, timer.member.user.displayAvatarURL())
+                        .setTitle(timer.reason)
+                        .setColor("RANDOM")
+                        .setDescription(`${ms(time, { verbose: true })}`)
+                )
+            }
+        }
+        // Timer
 
 
         setTimeout(() => {
