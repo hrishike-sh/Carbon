@@ -256,7 +256,7 @@ module.exports = {
         if (timer.reminders.includes(button.clicker.user.id)) {
           timer.reminders = timer.reminders.filter(u => u !== button.clicker.user.id)
           timer.save()
-          button.reply.send("You will no longer be reminded.")
+          button.reply.send("You will no longer be reminded.", true)
           break;
         }
         timer.reminders.push(button.clicker.user.id)
