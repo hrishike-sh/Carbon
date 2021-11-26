@@ -169,7 +169,7 @@ module.exports = {
 
             } else {
                 const RemindBut = new MessageButton().setLabel("Remind me!").setEmoji("🔔").setStyle("green").setID("remind_me")
-
+                const row = new MessageActionRow().addComponents([RemindBut])
 
                 for (const timer of timers) {
                     const time = timer.time - new Date().getTime()
@@ -197,8 +197,7 @@ module.exports = {
                                         .setTitle(timer.reason)
                                         .setColor("RANDOM")
                                         .setDescription(`The timer has ended!`)
-                                        .setFooter("Click the button to be reminded.", client.user.displayAvatarURL()),
-                                    components: RemindBut
+                                        .setFooter("Hmm.", client.user.displayAvatarURL()),
                                 })
                                 message.channel.send(`The timer for **${timer.reason}** has ended!\nhttps://discord.com/channels/${message.guild.id}/${message.channel.id}/${message.id}`)
                                 timerModel.deleteMany({
@@ -214,7 +213,7 @@ module.exports = {
                                         .setColor("RANDOM")
                                         .setDescription(`${ms(time, { verbose: true })} left...`)
                                         .setFooter("Click the button to be reminded.", client.user.displayAvatarURL()),
-                                    components: RemindBut
+                                    components: [row]
                                 })
                             }
 

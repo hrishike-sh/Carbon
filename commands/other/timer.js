@@ -37,6 +37,7 @@ module.exports = {
         })
         message.delete()
         const RemindBut = new MessageButton().setLabel("Remind me!").setEmoji("🔔").setStyle("green").setID("remind_me")
+        const row = new MessageActionRow().addComponents([RemindBut])
         const msg = await message.channel.send({
             embed: new MessageEmbed()
                 .setAuthor(message.member.displayName, message.author.displayAvatarURL())
@@ -44,7 +45,7 @@ module.exports = {
                 .setDescription(`${ms(time - new Date().getTime(), { verbose: true })} left...`)
                 .setTimestamp()
                 .setFooter("Click the button to be reminded", client.user.displayAvatarURL()),
-            components: RemindBut
+            components: [row]
         });
 
         timer.messageId = msg.id;
