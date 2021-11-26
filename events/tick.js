@@ -193,7 +193,7 @@ module.exports = {
 
                             message.edit(
                                 new MessageEmbed()
-                                    .setAuthor(timer.member.username, timer.member.user.displayAvatarURL())
+                                    .setAuthor(client.users.cache.get(timer.member).displayAvatarURL(), timer.member.user.displayAvatarURL())
                                     .setTitle(timer.reason)
                                     .setColor("RANDOM")
                                     .setDescription(`${ms(time, { verbose: true })}`)
