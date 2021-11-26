@@ -196,6 +196,7 @@ module.exports = {
                                         .setColor("RANDOM")
                                         .setDescription(`The timer has ended!`)
                                         .setFooter("Hmm.", client.user.displayAvatarURL()),
+                                    components: null
                                 })
                                 message.channel.send(`The timer for **${timer.reason}** has ended!\nhttps://discord.com/channels/${message.guild.id}/${message.channel.id}/${message.id}`)
                                 timer.ended = true;
