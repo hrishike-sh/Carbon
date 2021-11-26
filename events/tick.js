@@ -149,6 +149,8 @@ module.exports = {
 
         // Timer
         if (timerCounter == 10) {
+            timerCounter = 0
+            console.log("timer thing ran")
             const timers = timerModel.find({
                 time: { $gte: new Date().getTime() },
                 ended: false,
