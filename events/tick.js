@@ -52,9 +52,7 @@ module.exports = {
                 type: presences[presenceCounter2].type
             })
 
-            setTimeout(() => {
-                client.emit('tick')
-            }, 1000)
+
         }
         // Presence
 
@@ -70,9 +68,7 @@ module.exports = {
             });
 
             if (!gaws || !gaws.length) {
-                setTimeout(() => {
-                    client.emit('tick')
-                }, 1000)
+
             } else {
 
                 for (const giveaway of gaws) {
@@ -82,15 +78,11 @@ module.exports = {
 
                     const channel = await client.channels.cache.get(`${giveaway.channelId}`)
                     if (!channel) {
-                        setTimeout(() => {
-                            client.emit('tick')
-                        }, 1000)
+
                     } else {
                         const message = await channel.messages.fetch(`${giveaway.messageId}`)
                         if (!message) {
-                            setTimeout(() => {
-                                client.emit('tick')
-                            }, 1000)
+
                         } else {
                             const winner = `<@${giveaway.entries[Math.floor(Math.random() * giveaway.entries.length)]}>`
 
@@ -134,9 +126,7 @@ module.exports = {
                                 }
                             })
 
-                            setTimeout(() => {
-                                client.emit('tick')
-                            }, 1000)
+
                         }
 
                     }
@@ -160,9 +150,7 @@ module.exports = {
 
             client.guilds.cache.get("817734579246071849").roles.cache.get('900274849153445918').setColor(random_hex_color_code())
 
-            setTimeout(() => {
-                client.emit('tick')
-            }, 1000)
+
 
         }
         // Random Color
@@ -179,9 +167,7 @@ module.exports = {
             })
 
             if (!timers || !timers.length) {
-                setTimeout(() => {
-                    client.emit('tick')
-                }, 1000)
+
             } else {
 
 
@@ -196,17 +182,13 @@ module.exports = {
 
                     const channel = client.channels.cache.get(timer.channelId)
                     if (!channel) {
-                        setTimeout(() => {
-                            client.emit('tick')
-                        }, 1000)
+
                     } else {
 
 
                         const message = await channel.messages.fetch(timer.messageId)
                         if (!message) {
-                            setTimeout(() => {
-                                client.emit('tick')
-                            }, 1000)
+
                         } else {
 
 
@@ -218,9 +200,7 @@ module.exports = {
                                     .setDescription(`${ms(time, { verbose: true })}`)
                             )
 
-                            setTimeout(() => {
-                                client.emit('tick')
-                            }, 1000)
+
 
                         }
                     }
