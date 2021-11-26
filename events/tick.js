@@ -28,7 +28,6 @@ module.exports = {
         gawCounter1++
         randomColorCounter++
         timerCounter++
-        console.log(presenceCounter1, gawCounter1, timerCounter, randomColorCounter)
         // Incrementing everything
 
         // Presence
@@ -158,7 +157,7 @@ module.exports = {
         // Timer
         if (timerCounter == 10) {
             timerCounter = 0
-
+            console.log("Timer ran.")
             const timers = timerModel.find({
                 time: {
                     $gte: new Date().getTime()
