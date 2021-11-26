@@ -255,7 +255,7 @@ module.exports = {
         if (!timer) break;
         if (timer.reminders.includes(button.clicker.user.id)) {
           const sTring = `<@${button.clicker.user.id}>`
-          timer.reminders = timer.reminders.replace(new RegExp(sTring, 'g'))
+          timer.reminders = timer.reminders.replace(new RegExp(sTring, 'g'), '')
           timer.save()
           button.reply.send("You won't be reminded.", true)
         }
