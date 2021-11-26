@@ -46,11 +46,7 @@ module.exports = {
                 name: presences[presenceCounter2].name,
                 type: presences[presenceCounter2].type
             })
-        }
-        // Presence
-
-        // Giveaways
-        if (gawCounter1 == 5) {
+        } else if (gawCounter1 == 5) {
             gawCounter1 = 0;
 
             const gaws = await giveawayModel.find({
@@ -130,11 +126,7 @@ module.exports = {
                 })
 
             }
-        }
-        // Giveaways
-
-        // Random Color
-        if (randomColorCounter == 600) {
+        } else if (randomColorCounter == 600) {
             randomColorCounter = 0;
 
             const random_hex_color_code = () => {
@@ -145,13 +137,9 @@ module.exports = {
 
             client.guilds.cache.get("817734579246071849").roles.cache.get('900274849153445918').setColor(random_hex_color_code())
 
-        }
-        // Random Color
-
-        // Timer
-        if (timerCounter == 10) {
+        } else if (timerCounter == 10) {
             timerCounter = 0
-            console.log("timer thing ran")
+
             const timers = timerModel.find({
                 time: { $gte: new Date().getTime() },
                 ended: false,
