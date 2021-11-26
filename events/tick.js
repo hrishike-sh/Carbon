@@ -1,7 +1,7 @@
 const { Client, MessageEmbed } = require("discord.js");
 const giveawayModel = require('../database/models/giveaway')
 const { MessageActionRow, MessageButton } = require('discord-buttons')
-const timerModel = require('../../database/models/timer')
+const timerModel = require('../database/models/timer')
 const ms = require('pretty-ms')
 let i = 0;
 let presenceCounter1 = 0;
