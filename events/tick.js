@@ -200,11 +200,7 @@ module.exports = {
                                         .setFooter("Hmm.", client.user.displayAvatarURL()),
                                 })
                                 message.channel.send(`The timer for **${timer.reason}** has ended!\nhttps://discord.com/channels/${message.guild.id}/${message.channel.id}/${message.id}`)
-                                timerModel.deleteMany({
-                                    time: {
-                                        $lt: new Date().getTime()
-                                    },
-                                })
+
                             } else {
                                 message.edit({
                                     embed: new MessageEmbed()

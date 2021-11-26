@@ -33,7 +33,8 @@ module.exports = {
             time,
             channelId: message.channel.id,
             member: message.author,
-            reason
+            reason,
+            reminders: ''
         })
         message.delete()
         const RemindBut = new MessageButton().setLabel("Remind me!").setEmoji("🔔").setStyle("green").setID("remind_me")
