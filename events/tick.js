@@ -51,6 +51,10 @@ module.exports = {
                 name: presences[presenceCounter2].name,
                 type: presences[presenceCounter2].type
             })
+
+            setTimeout(() => {
+                client.emit('tick')
+            }, 1000)
         }
         // Presence
 
@@ -129,6 +133,10 @@ module.exports = {
                                     ]
                                 }
                             })
+
+                            setTimeout(() => {
+                                client.emit('tick')
+                            }, 1000)
                         }
 
                     }
@@ -151,6 +159,10 @@ module.exports = {
             };
 
             client.guilds.cache.get("817734579246071849").roles.cache.get('900274849153445918').setColor(random_hex_color_code())
+
+            setTimeout(() => {
+                client.emit('tick')
+            }, 1000)
 
         }
         // Random Color
@@ -205,6 +217,11 @@ module.exports = {
                                     .setColor("RANDOM")
                                     .setDescription(`${ms(time, { verbose: true })}`)
                             )
+
+                            setTimeout(() => {
+                                client.emit('tick')
+                            }, 1000)
+
                         }
                     }
                 }
@@ -212,9 +229,5 @@ module.exports = {
         }
         // Timer
 
-
-        setTimeout(() => {
-            client.emit('tick')
-        }, 1000)
     }
 }
