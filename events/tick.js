@@ -161,6 +161,8 @@ module.exports = {
                 return;
             }
 
+            console.log(timers)
+
             for (const timer of timers) {
                 const time = timer.time - new Date().getTime()
                 if (time < 0) {
