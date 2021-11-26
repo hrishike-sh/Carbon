@@ -159,7 +159,9 @@ module.exports = {
             timerCounter = 0
             console.log("Timer ran.")
             const timers = await timerModel.find({
-                ended: false,
+                time: {
+                    $gte: new Date().getTime()
+                },
             })
             console.log(timers)
 
