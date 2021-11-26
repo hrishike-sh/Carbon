@@ -229,5 +229,8 @@ module.exports = {
         }
         // Timer
 
+        setTimeout(() => {
+            client.emit('tick')
+        }, 1000)
     }
 }
