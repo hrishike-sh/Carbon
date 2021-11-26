@@ -184,7 +184,7 @@ module.exports = {
                         } else {
 
                             if (time < 0) {
-                                message.channel.send(timer.reminders || "No people that wanted to be reminded moment.").then(async msg => {
+                                message.channel.send(timer.reminders.map(u => `<@${u}>`).join('') || "No people that wanted to be reminded moment.").then(async msg => {
                                     setTimeout(() => {
                                         msg.delete()
                                     }, 2500)

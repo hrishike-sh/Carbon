@@ -34,7 +34,7 @@ module.exports = {
             channelId: message.channel.id,
             member: message.author,
             reason,
-            reminders: '',
+            reminders: [],
             ended: false
         })
         message.delete()

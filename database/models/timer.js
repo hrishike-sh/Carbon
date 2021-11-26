@@ -6,7 +6,7 @@ const timerSchema = new mongoose.Schema({
     messageId: String,
     member: Object,
     time: Number,
-    reminders: String,
+    reminders: [String],
     reason: String,
     ended: Boolean,
 });

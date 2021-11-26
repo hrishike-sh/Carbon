@@ -254,12 +254,12 @@ module.exports = {
         const timer = await reminder.findOne({ messageId: button.message.id })
         if (!timer) break;
         if (timer.reminders.includes(button.clicker.user.id)) {
-          const sTring = `<@${button.clicker.user.id}>`
-          timer.reminders = timer.reminders.replace(new RegExp(sTring, 'g'), '')
+          timer.reminders = timer.reminders.filter(u => u !== button.clicker.user.id)
           timer.save()
-          button.reply.send("You won't be reminded.", true)
+          button.reply.send("You will no longer be reminded.")
+          break;
         }
-        timer.reminders += `<@${button.clicker.user.id}>`
+        timer.reminders.push(button.clicker.user.id)
         timer.save();
         button.reply.send(`You will be reminded.`, true)
         break;
