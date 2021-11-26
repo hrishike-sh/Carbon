@@ -31,19 +31,21 @@ module.exports = {
         const timer = new db({
             time,
             channelId: message.channel.id,
-            messageId: message.id,
             member: message.member,
             reason
         })
-        timer.save()
         message.delete()
-        return message.channel.send(
+        const msg = await message.channel.send(
             new MessageEmbed()
                 .setAuthor(message.member.displayName, message.author.displayAvatarURL())
                 .setTitle(reason)
                 .setDescription(`${ms(time - new Date().getTime(), { verbose: true })} left...`)
                 .setTimestamp()
             // .setFooter("Click the button to be reminded", client.user.displayAvatarURL())
-        )
+        );
+
+        timer.messageId = msg.id;
+        timer.save();
+        return;
     }
 }
