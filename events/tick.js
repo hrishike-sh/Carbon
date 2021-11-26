@@ -22,6 +22,7 @@ module.exports = {
         gawCounter1++
         randomColorCounter++
         timerCounter++
+        console.log(presenceCounter1, gawCounter1, timerCounter, randomColorCounter)
         // Incrementing everything
 
         // Presence
