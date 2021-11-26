@@ -31,7 +31,7 @@ module.exports = {
         const timer = new db({
             time,
             channelId: message.channel.id,
-            member: message.member,
+            member: message.author,
             reason
         })
         message.delete()
