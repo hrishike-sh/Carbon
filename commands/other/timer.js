@@ -34,10 +34,11 @@ module.exports = {
             channelId: message.channel.id,
             member: message.author,
             reason,
-            reminders: ''
+            reminders: '',
+            ended: false
         })
         message.delete()
-        const RemindBut = new MessageButton().setLabel("Remind me!").setEmoji("🔔").setStyle("green").setID("remind_me")
+        const RemindBut = new MessageButton().setEmoji("🔔").setStyle("green").setID("remind_me")
         const row = new MessageActionRow().addComponents([RemindBut])
         const msg = await message.channel.send({
             embed: new MessageEmbed()

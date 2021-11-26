@@ -159,16 +159,14 @@ module.exports = {
             timerCounter = 0
             console.log("Timer ran.")
             const timers = await timerModel.find({
-                time: {
-                    $gte: new Date().getTime()
-                },
+                ended: false
             })
             console.log(timers)
 
             if (!timers || !timers.length) {
 
             } else {
-                const RemindBut = new MessageButton().setLabel("Remind me!").setEmoji("🔔").setStyle("green").setID("remind_me")
+                const RemindBut = new MessageButton().setEmoji("🔔").setStyle("green").setID("remind_me")
                 const row = new MessageActionRow().addComponents([RemindBut])
 
                 for (const timer of timers) {
@@ -200,7 +198,8 @@ module.exports = {
                                         .setFooter("Hmm.", client.user.displayAvatarURL()),
                                 })
                                 message.channel.send(`The timer for **${timer.reason}** has ended!\nhttps://discord.com/channels/${message.guild.id}/${message.channel.id}/${message.id}`)
-
+                                timer.ended = true;
+                                timer.save()
                             } else {
                                 message.edit({
                                     embed: new MessageEmbed()
