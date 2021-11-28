@@ -93,7 +93,7 @@ client.on('ready', async () => {
   let peopleWhoAreAFK = await afks.find({})
   peopleWhoAreAFK = peopleWhoAreAFK.filter(u => u.afk.afk === true)
   let channelIgnores = await serverIgnores.find({ afkIgnore })
-  channelIgnores = channelIgnores.filter(s => s.afkIgnore.length > 0)
+  channelIgnores = channelIgnores.filter(s => s.afkIgnore && s.afkIgnore.length > 0)
 
   for (const channel of channelIgnores) {
     client.afkIgnore.push(channel)
