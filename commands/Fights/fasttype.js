@@ -60,10 +60,12 @@ module.exports = {
                 sentence = sentence.split(" ")
                 sentence = sentence.join(" ")
 
-                const embed = new MessageEmbed()    
+                const embed = new MessageEmbed()
                     .setTitle("Type Racing")
                     .setDescription("Rules:\n\n  1) Copy Pasting **does not** work.\n\n2) No malpractice\n\nGood luck!")
                     .addField("Sentence:", sentence, true)
+
+                message.channel.send("This does not work btw", { embed })
             }
         })
 
