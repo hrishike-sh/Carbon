@@ -89,9 +89,9 @@ module.exports = {
                         mainCollector.stop()
                         const now = new Date().getTime()
                         const timetaken = now - then
-                        const wpm = (rawSentence.split(" ").length / (timetaken * 60 * 1000)).toFixed(1)
+                        const wpm = (rawSentence.split(" ").length / (timetaken * 60)).toFixed(1)
 
-                        msg.reply(`:trophy: | ${msg.author} has won the game! Stats:\n${blank}WPM: **${wpm}**\n${blank}Time taken: **${ms(timetaken, { verbose: true })}**`)
+                        msg.channel.send(`:trophy: | ${msg.author} has won the game! Stats:\n${blank}WPM: **${wpm}**\n${blank}Time taken: **${ms(timetaken, { verbose: true })}**`)
                     } else {
                         return msg.reply("Nice try, but you didn\'t get it right.\nYou can still try.")
                     }
