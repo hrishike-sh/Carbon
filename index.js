@@ -26,6 +26,7 @@ client.esnipes = new Discord.Collection()
 client.disabledCommands = new Discord.Collection()
 client.dropCD = []
 client.afks = []
+client.afkIgnore = []
 client.options.allowedMentions = {
   roles: [],
   parse: ['users']
@@ -78,9 +79,6 @@ process.on('unhandledRejection', (err) => {
 client.on('ready', async () => {
   console.log("Logged in.")
   client.emit('tick')
-  //COMMAND DISABLES
-
-  //COMMAND DISABLES
 
   // LOGS
   client.channels.cache.get("901739465406566400").send({
@@ -91,8 +89,15 @@ client.on('ready', async () => {
   //LOGS
   //AFKS
   const afks = require('./database/models/user')
+  const serverIgnores = require('./database/models/settingsSchema')
   let peopleWhoAreAFK = await afks.find({})
   peopleWhoAreAFK = peopleWhoAreAFK.filter(u => u.afk.afk === true)
+  let channelIgnores = await serverIgnores.find({ afkIgnore })
+  channelIgnores = channelIgnores.filter(s => s.afkIgnore.length > 0)
+
+  for (const channel of channelIgnores) {
+    client.afkIgnore.push(channel)
+  }
 
   for (const afk of peopleWhoAreAFK) {
     client.afks.push(afk.userId)

@@ -12,7 +12,8 @@ const SettingsSchema = new mongoose.Schema({
     lockDowned: Boolean,
     issuedBy: String,
     message: String
-  }
+  },
+  afkIgnore: [String]
 });
 
 module.exports = mongoose.model('SettingsSchema', SettingsSchema);
