@@ -71,8 +71,8 @@ module.exports = {
                 message.channel.send({ embed })
 
                 const mainCollector = message.channel.createMessageCollector(
+                    m => [message.author.id, target.id].includes(m.author.id),
                     {
-                        filter: m => [message.author.id, target.id].includes(m.author.id),
                         time: 30000,
                     }
                 )
