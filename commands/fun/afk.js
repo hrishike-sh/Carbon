@@ -15,7 +15,7 @@ module.exports = {
      */
     async execute(message, args, client) {
         const admin = message.member.permissions.has("ADMINISTRATOR")
-        let server = dbServer.findOne({ guildID: message.guild.id })
+        let server = await dbServer.findOne({ guildID: message.guild.id })
         if (!server) {
             server = new dbServer({
                 guildID: message.guild.id,
