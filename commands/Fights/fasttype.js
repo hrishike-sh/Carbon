@@ -58,8 +58,12 @@ module.exports = {
                 sentence = sentence.split("")
                 sentence = sentence.join(emptychar)
                 sentence = sentence.split(" ")
+                sentence = sentence.join(" ")
 
-                await message.channel.send(sentence)
+                const embed = new MessageEmbed()    
+                    .setTitle("Type Racing")
+                    .setDescription("Rules:\n\n  1) Copy Pasting **does not** work.\n\n2) No malpractice\n\nGood luck!")
+                    .addField("Sentence:", sentence, true)
             }
         })
 
