@@ -12,7 +12,7 @@ module.exports = {
      */
     async execute(message, args, client) {
         const target = message.mentions.users.first() || null
-
+        const blank = '<:blank:914473340129906708>'
         if (!target) return message.channel.send(`You will have to ping someone to play with them bozo`)
 
         const yesBut = new MessageButton()
@@ -62,8 +62,10 @@ module.exports = {
 
                 const embed = new MessageEmbed()
                     .setTitle("Type Racing")
-                    .setDescription("Rules:\n\n  1) Copy Pasting **does not** work.\n\n2) No malpractice\n\nGood luck!")
+                    .setDescription(`Rules:\n\n${blank}1) Copy Paste **does not** work.\n2) Any form of malpractice is not allowed.`)
                     .addField("Sentence:", sentence, true)
+                    .setColor("GREEN")
+                    .setFooter("Good Luck.", client.user.displayAvatarURL())
 
                 message.channel.send("This does not work btw", { embed })
             }
