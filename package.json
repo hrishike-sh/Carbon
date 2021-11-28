@@ -92,6 +92,7 @@
     "string.prototype.trimstart": "^1.0.4",
     "string_decoder": "^1.1.1",
     "tweetnacl": "^1.0.3",
+    "txtgen": "^2.2.8",
     "unbox-primitive": "^1.0.1",
     "util": "^0.12.4",
     "util-deprecate": "^1.0.2",

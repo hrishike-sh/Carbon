@@ -157,11 +157,9 @@ module.exports = {
         // Timer
         if (timerCounter == 10) {
             timerCounter = 0
-            console.log("Timer ran.")
             const timers = await timerModel.find({
                 ended: false
             })
-            console.log(timers)
 
             if (!timers || !timers.length) {
 
