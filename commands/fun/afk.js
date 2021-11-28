@@ -26,7 +26,11 @@ module.exports = {
         if (args[0] == 'ignore' && admin) {
             const channel = message.mentions.channels.first() || message.channel
 
-            server.afkIgnore = [channel.id, ...server.afkIgnore]
+            if (server.afkIgnore) {
+                server.afkIgnore.push(channel.id)
+            } else {
+                server.afkIgnore = [channel.id]
+            }
             server.save()
             client.afkIgnore.push(channel.id)
             return message.channel.send(`Done! <#${channel.id}> is now AFK ignored.`)
