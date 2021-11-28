@@ -62,12 +62,12 @@ module.exports = {
 
                 const embed = new MessageEmbed()
                     .setTitle("Type Racing")
-                    .setDescription(`Rules:\n\n${blank}1) Copy Paste **does not** work.\n2) Any form of malpractice is not allowed.`)
+                    .setDescription(`**Rules:**\n${blank}1) Copy Paste **does not** work.\n${blank}2) Any form of malpractice is not allowed.`)
                     .addField("Sentence:", sentence, true)
                     .setColor("GREEN")
                     .setFooter("Good Luck.", client.user.displayAvatarURL())
 
-                message.channel.send("This does not work btw", { embed })
+                message.channel.send({ embed })
             }
         })
 
