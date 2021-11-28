@@ -5,6 +5,7 @@ module.exports = {
     name: 'message',
     once: false,
     async execute(message, client) {
+        if (!message.guild) return;
         if (message.guild.id !== '824294231447044197') return;
         if (message.author.bot) return;
         if (client.afkIgnore.includes(message.channel.id)) return;
