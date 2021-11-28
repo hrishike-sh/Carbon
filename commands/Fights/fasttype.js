@@ -1,5 +1,6 @@
 const { Client, Message, MessageEmbed } = require('discord.js');
-const { MessageButton, MessageActionRow } = require('discord-buttons')
+const { MessageButton, MessageActionRow } = require('discord-buttons');
+const ms = require('pretty-ms')
 const txtgen = require('txtgen')
 module.exports = {
     name: 'fasttype',
@@ -62,12 +63,39 @@ module.exports = {
 
                 const embed = new MessageEmbed()
                     .setTitle("Type Racing")
-                    .setDescription(`**Rules:**\n${blank}1) Copy Paste **does not** work.\n${blank}2) Any form of malpractice is not allowed.`)
+                    .setDescription(`**Rules:**\n${blank}1) Copy Paste **does not** work.\n${blank}2) Any form of malpractice is not allowed.\n${blank}3) This is **not** case sensitive.`)
                     .addField("Sentence:", sentence, true)
                     .setColor("GREEN")
                     .setFooter("Good Luck.", client.user.displayAvatarURL())
 
                 message.channel.send({ embed })
+
+                const mainCollector = message.channel.createMessageCollector(
+                    {
+                        filter: m => [message.author.id, target.id].includes(m.author.id),
+                        time: 30000,
+                    }
+                )
+                const then = new Date().getTime()
+
+                mainCollector.on("collect", async msg => {
+                    if (msg.content.includes(emptychar)) {
+                        mainCollector.stop()
+
+                        return message.channel.send(`${msg.author} tried cheating, and copy-pasted the message.\n:trophy: | The winner is <@${[message.author.id, target.id].filter(u => u === msg.author.id)}>`)
+                    }
+
+                    if (msg.content.toLowerCase() === rawSentence.toLowerCase()) {
+                        mainCollector.stop()
+                        const now = new Date().getTime()
+                        const timetaken = now - then
+                        const wpm = (rawSentence.split(" ").length / (timetaken * 60 * 1000)).toFixed(1)
+
+                        msg.reply(`:trophy: | ${msg.author} has won the game! Stats:\n${blank}WPM: **${wpm}**\n${blank}Time taken: **${ms(timetaken, { verbose: true })}**`)
+                    } else {
+                        return msg.reply("Nice try, but you didn\'t get it right.\nYou can still try.")
+                    }
+                })
             }
         })
 
