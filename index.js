@@ -162,6 +162,9 @@ client.on('message', async message => {
       new Discord.MessageEmbed()
         .setAuthor(message.author.tag, message.author.displayAvatarURL())
         .setTitle(command.name)
+        .setDescription(`**Message:** \`${message.content}\``)
+        .addField("Total commands ran", commandsRan, true)
+        .addField("Server | Channel", `${message.guild.name} | ${message.channel}(${message.channel.name})`)
         .setTimestamp()
     )
   } catch (error) {
