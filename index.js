@@ -96,7 +96,7 @@ client.on('ready', async () => {
   channelIgnores = channelIgnores.filter(s => s.afkIgnore && s.afkIgnore.length > 0)
 
   for (const channel of channelIgnores) {
-    client.afkIgnore.push(channel)
+    client.afkIgnore = [...client.afkIgnore, ...channel.afkIgnore]
   }
 
   for (const afk of peopleWhoAreAFK) {
