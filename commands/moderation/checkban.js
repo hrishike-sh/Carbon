@@ -10,10 +10,9 @@ module.exports = {
         const id = message.mentions.users.size > 0 ? message.mentions.users.first().id : args[0]
 
         let ban = await fh.fetchBan(id).catch(e => {
-            ban = null
             message.channel.send(`Either the provided user is not banned or the user id is invalid.`)
             return;
-        })
+        }) || null
 
         if (!ban) return;
 

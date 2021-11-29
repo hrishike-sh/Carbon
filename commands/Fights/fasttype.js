@@ -82,7 +82,7 @@ module.exports = {
                     if (msg.content.includes(emptychar)) {
                         mainCollector.stop()
 
-                        return message.channel.send(`${msg.author} tried cheating, and copy-pasted the message.\n:trophy: | The winner is <@${[message.author.id, target.id].filter(u => u === msg.author.id)}>`)
+                        return message.channel.send(`${msg.author} tried cheating, and copy-pasted the message.\n:trophy: | The winner is <@${[message.author.id, target.id].filter(u => u !== msg.author.id)}>`)
                     }
 
                     if (msg.content.toLowerCase() === rawSentence.toLowerCase()) {
