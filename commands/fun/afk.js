@@ -74,6 +74,7 @@ module.exports = {
         user.save()
 
         message.channel.send(`${message.member}, I have set your afk: ${reason}`)
+        message.member.setNickname(`${message.member.displayName} ~ AFK`)
         setTimeout(() => {
             client.afks.push(message.author.id)
         }, 5000)
