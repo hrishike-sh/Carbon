@@ -11,6 +11,7 @@ module.exports = {
         if (client.afkIgnore.includes(message.channel.id)) return;
         if (client.afks.includes(message.author.id)) {
             client.afks = client.afks.filter(u => u !== message.author.id)
+            message.member.setNickname(message.member.displayName.replace(/~ AFK/, ""));
             message.channel.send(`Welcome back ${message.member}! I have removed your AFK.`).then((msg) => {
                 setTimeout(() => {
                     msg.delete()
