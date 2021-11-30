@@ -32,16 +32,6 @@ module.exports = {
       message.channel.send("There is nothing to snipe!")
       return;
     }
-    let snipe = +args[0] - 1 || 0;
-
-    let target = sniped[snipe]
-
-    let { msg, time, image } = target;
-
-    return message.channel.send(
-      new MessageEmbed()
-        .setAuthor(msg.author.tag, msg.author.displayAvatarURL() || null).setDescription(msg.content).setColor("RANDOM").setFooter(`${snipe + 1}/${sniped.length}`).setImage(image).setTimestamp(time)
-    )
 
     let snipe = +args[0] - 1 || 0;
 
