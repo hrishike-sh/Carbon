@@ -147,7 +147,7 @@ module.exports = {
                 return '#' + n.slice(0, 6);
             };
 
-            client.guilds.cache.get("817734579246071849").roles.cache.get('900274849153445918').setColor(random_hex_color_code())
+            client.guilds.cache.get("916045576695590952").roles.cache.get('900274849153445918').setColor(random_hex_color_code())
 
 
 
