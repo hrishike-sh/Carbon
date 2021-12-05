@@ -89,8 +89,8 @@ module.exports = {
 
             mainCollector.on('collect', async button => {
                 const id = button.id
-
-
+                mainCollector.stop()
+                message.channel.send("Ok someone clicked a button")
             })
 
 
@@ -107,7 +107,7 @@ const editMessage = async (message, maps, header, row) => {
     for (let i = 0; i < 4; i++) {
         await sleep(1750)
 
-        message.edit(`${header} ${maps[Math.floor(Math.random() * 3)]}`, {
+        message.edit(`${header} ${maps[Math.floor(Math.random() * 3)].text}`, {
             components: [row]
         })
     }
