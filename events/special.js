@@ -77,6 +77,8 @@ module.exports = {
                 components: [row]
             });
 
+            editMessage(mainMessage, maps, header, row);
+
             const mainCollector = mainMessage.createButtonCollector(
                 b => b,
                 {
@@ -101,7 +103,7 @@ module.exports = {
     }
 }
 
-const editMessage = (message, maps, header, row) => {
+const editMessage = async (message, maps, header, row) => {
     for (let i = 0; i < 4; i++) {
         await sleep(1750)
 
