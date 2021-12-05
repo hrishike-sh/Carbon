@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-
+const color
 const SettingsSchema = new mongoose.Schema({
   guildID: { type: String, required: true },
   donationRoles: { type: [String] },
@@ -12,6 +12,12 @@ const SettingsSchema = new mongoose.Schema({
     lockDowned: Boolean,
     issuedBy: String,
     message: String
+  },
+  heistMode: {
+    enabled: Boolean,
+    joined: Number,
+    left: Number,
+    startedOn: Number,
   },
   afkIgnore: [String]
 });
