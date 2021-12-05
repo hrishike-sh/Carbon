@@ -110,7 +110,7 @@ client.on('ready', async () => {
   }
   //AFKS
 
-  client.storage.disabledDrops = await serverIgnores.findOne({ guildID: client.storage.fighthub.id }).disabledDrop
+  client.storage.disabledDrops = (await serverIgnores.findOne({ guildID: client.storage.fighthub.id })).disabledDrop
 
 })
 

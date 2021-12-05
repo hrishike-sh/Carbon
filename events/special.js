@@ -14,7 +14,7 @@ module.exports = {
         //Checks
         if (message.guild.id !== client.storage.fighthub.id) return; // Returns if the server is not fighthub
 
-        if (client.storage.disabledDrop.includes(message.channel.id)) return; // Returns if the channel is disabled
+        // if (client.storage.disabledDrop.includes(message.channel.id)) return; // Returns if the channel is disabled
 
         if (client.dropCD.includes(message.channel.id)) return; // Returns if the channel has already had a drop recently
 
