@@ -22,7 +22,7 @@ module.exports = {
 
         if (message.author.id !== '598918643727990784' && message.content !== 'Hm..') return; // test lol
 
-        if (!randomNum) return; // 1/100 chance for the event to spawn
+        // if (!randomNum) return; // 1/100 chance for the event to spawn
         //Checks
 
         /**
