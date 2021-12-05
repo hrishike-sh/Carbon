@@ -48,7 +48,7 @@ module.exports = {
 ⛄
 
 
-<:blank:914473340129906708><:snowball:917049050929455144>`,
+<:blank:914473340129906708><:snowball:917049050929455144><:blank:914473340129906708>`,
                     yes: 1
                 },
                 {
@@ -56,7 +56,7 @@ module.exports = {
 <:blank:914473340129906708>⛄
 
 
-<:blank:914473340129906708><:snowball:917049050929455144>`,
+<:blank:914473340129906708><:snowball:917049050929455144><:blank:914473340129906708>`,
                     yes: 2
                 },
                 {
@@ -64,7 +64,7 @@ module.exports = {
 <:blank:914473340129906708><:blank:914473340129906708>⛄
 
 
-<:blank:914473340129906708><:snowball:917049050929455144>`,
+<:blank:914473340129906708><:snowball:917049050929455144><:blank:914473340129906708>`,
                     yes: 3
                 }
             ]
@@ -74,7 +74,8 @@ module.exports = {
             const rightButton = new MessageButton().setLabel("Right").setStyle("gray").setID('cevent-r1')
             const row = new MessageActionRow().addComponents([leftButton, middleButton, rightButton])
 
-            const mainMessage = await message.channel.send(`${header} ${maps[Math.floor(Math.random() * 3)].text}`, {
+            await message.channel.send(header)
+            const mainMessage = await message.channel.send(`${maps[Math.floor(Math.random() * 3)].text}`, {
                 components: [row]
             });
 
@@ -108,7 +109,7 @@ const editMessage = async (message, maps, header, row) => {
     for (let i = 0; i < 4; i++) {
         await sleep(1750)
 
-        message.edit(`${header} ${maps[Math.floor(Math.random() * 3)].text}`, {
+        message.edit(`${maps[Math.floor(Math.random() * 3)].text}`, {
             components: [row]
         })
     }
