@@ -31,6 +31,11 @@ client.options.allowedMentions = {
   roles: [],
   parse: ['users']
 }
+client.storage = {
+  fighthub: null,
+  disabledDrops: null
+}
+
 const {
   cooldowns
 } = client;
@@ -80,6 +85,7 @@ client.on('ready', async () => {
   console.log("Logged in.")
   client.emit('tick')
 
+  client.storage.fighthub = client.guilds.cache.get("824294231447044197")
   // LOGS
   client.channels.cache.get("901739465406566400").send({
     embed: {
@@ -103,6 +109,8 @@ client.on('ready', async () => {
     client.afks.push(afk.userId)
   }
   //AFKS
+
+  client.storage.disabledDrops = await serverIgnores.findOne({ guildID: client.storage.fighthub.id }).disabledDrop
 
 })
 
