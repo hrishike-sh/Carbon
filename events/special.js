@@ -73,7 +73,7 @@ module.exports = {
             const rightButton = new MessageButton().setLabel("Right").setStyle("gray").setID('cevent-r1')
             const row = new MessageActionRow().addComponents([leftButton, middleButton, rightButton])
 
-            const mainMessage = await message.channel.send(`${header} ${maps[Math.floor(Math.random() * 3)]}`, {
+            const mainMessage = await message.channel.send(`${header} ${maps[Math.floor(Math.random() * 3)].text}`, {
                 components: [row]
             });
 
