@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const color
+
 const SettingsSchema = new mongoose.Schema({
   guildID: { type: String, required: true },
   donationRoles: { type: [String] },
