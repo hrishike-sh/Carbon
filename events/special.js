@@ -20,7 +20,8 @@ module.exports = {
 
         // const randomNum = Math.floor(Math.random() * 100) == 69; // Generates a random number and checks if it is 69
 
-        if (message.author.id !== '598918643727990784' && message.content !== 'Hm..') return; // test lol
+        if (message.author.id !== '598918643727990784') return; // test lol
+        if (message.content !== 'Hm..') return;
 
         // if (!randomNum) return; // 1/100 chance for the event to spawn
         //Checks
