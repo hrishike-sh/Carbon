@@ -69,9 +69,9 @@ module.exports = {
                 }
             ]
 
-            const leftButton = new MessageButton().setLabel("Left").setStyle("gray").setID('cevent-l1')
-            const middleButton = new MessageButton().setLabel("Middle").setStyle("gray").setID('cevent-m1')
-            const rightButton = new MessageButton().setLabel("Right").setStyle("gray").setID('cevent-r1')
+            const leftButton = new MessageButton().setEmoji("⬅️").setStyle("gray").setID('cevent-l1')
+            const middleButton = new MessageButton().setEmoji("🔼").setStyle("gray").setID('cevent-m1')
+            const rightButton = new MessageButton().setEmoji("➡️").setStyle("gray").setID('cevent-r1')
             const row = new MessageActionRow().addComponents([leftButton, middleButton, rightButton])
 
             await message.channel.send(header)
