@@ -107,7 +107,7 @@ module.exports = {
                 const answerChose = id.replace(/[^0-9]/g, '')
                 const correctOne = correctInfo.get(button.message.id).correctAnswer
 
-                console.log(`Correct answer: ${correctOne}\nAnswer chose: ${answerChose}`)
+                console.log(`Correct answer: ${correctOne}\nAnswer chose: ${answerChose}         ${correctOne === answerChose}`)
 
                 if (correctOne === answerChose) {
 
