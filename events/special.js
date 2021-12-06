@@ -209,12 +209,14 @@ module.exports = {
                                             .setID(emoji[i])
                                             .setEmoji(emoji[i])
                                             .setStyle('green')
+                                            .setDisabled()
                                     )
                                 } else {
                                     row = row.addComponent(
                                         new MessageButton()
                                             .setID(emoji[i])
                                             .setEmoji(emoji[i])
+                                            .setDisabled()
                                             .setStyle('grey')
                                     )
                                 }
@@ -224,6 +226,7 @@ module.exports = {
                                         new MessageButton()
                                             .setID(emoji[i])
                                             .setEmoji(emoji[i])
+                                            .setDisabled()
                                             .setStyle('green')
                                     )
                                 } else {
@@ -231,6 +234,7 @@ module.exports = {
                                         new MessageButton()
                                             .setID(emoji[i])
                                             .setEmoji(emoji[i])
+                                            .setDisabled()
                                             .setStyle('grey')
                                     )
                                 }
@@ -240,6 +244,12 @@ module.exports = {
                         mainMessage.edit(`${mainMessage.content}`, {
                             components: [row, row2]
                         })
+                        guessedButFailed = []
+                    } else {
+
+                        guessedButFailed.push(button.clicker.user.id)
+                        button.reply.send("That was not the emoji.", true)
+
                     }
                 }
 
