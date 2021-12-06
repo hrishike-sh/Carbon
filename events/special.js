@@ -99,7 +99,7 @@ module.exports = {
             mainCollector.on('collect', async button => {
 
                 if (correctInfo.get(button.message.id).triedAndFailed.includes(button.clicker.user.id)) {
-                    button.reply.send("You already gave your answer, stfu.", true)
+                    button.reply.send("You're out of snowballs lol, you only have one chance.", true)
                     return
                 }
 
@@ -107,11 +107,9 @@ module.exports = {
                 const answerChose = parseInt(id.replace(/[^0-9]/g, ''))
                 const correctOne = parseInt(correctInfo.get(button.message.id).correctAnswer)
 
-                console.log(`Correct answer: ${correctOne}\nAnswer chose: ${answerChose}         ${correctOne === answerChose}`)
-
                 if (correctOne === answerChose) {
 
-                    button.reply.send(`${button.clicker.member} got the correct answer!`)
+                    button.reply.send(`${button.clicker.member} hit the snowman first!`)
                     correctInfo.get(button.message.id).ended = true
 
                     leftButton = leftButton.setDisabled()
@@ -127,7 +125,7 @@ module.exports = {
                 } else {
 
                     correctInfo.get(button.message.id).triedAndFailed.push(button.clicker.user.id)
-                    button.reply.send("Better luck next time, you failed.", true)
+                    button.reply.send("Your aim is trash, you hit one of the tree.", true)
 
                 }
 
