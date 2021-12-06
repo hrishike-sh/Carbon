@@ -109,16 +109,18 @@ module.exports = {
 
                 console.log(`Correct answer: ${correctOne}\nAnswer chose: ${answerChose}`)
 
-                if (correctOne !== answerChose) {
-
-                    correctInfo.get(button.message.id).triedAndFailed.push(button.clicker.user.id)
-                    button.reply.send("Better luck next time, you failed.", true)
-
-                } else {
+                if (correctOne === answerChose) {
 
                     button.reply.send(`${button.clicker.member} got the correct answer!`)
                     correctInfo.get(button.message.id).ended = true
                     mainCollector.stop()
+
+                } else {
+
+
+                    correctInfo.get(button.message.id).triedAndFailed.push(button.clicker.user.id)
+                    button.reply.send("Better luck next time, you failed.", true)
+
 
                 }
 
