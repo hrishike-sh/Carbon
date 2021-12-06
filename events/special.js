@@ -110,11 +110,11 @@ module.exports = {
                     correctInfo.get(button.message.id).triedAndFailed.push(button.clicker.user.id)
                     button.reply.send("Better luck next time, you failed.", true)
                     return
-                } else {
-                    button.reply.send(`${button.clicker.member} got the correct answer!`)
-                    correctInfo.get(button.message.id).ended = true
-                    mainCollector.stop()
                 }
+                console.log("Correct answer was chosen.")
+                button.reply.send(`${button.clicker.member} got the correct answer!`)
+                correctInfo.get(button.message.id).ended = true
+                mainCollector.stop()
 
             })
 
@@ -131,7 +131,7 @@ module.exports = {
 const editMessage = async (message, maps, header, row) => {
     for (let i = 0; i < 4; i++) {
         if (correctInfo.get(message.id).ended) break;
-        await sleep(1750)
+        await sleep(2500)
 
         const random = maps[Math.floor(Math.random() * 3)]
         message.edit(`${random.text}`, {
