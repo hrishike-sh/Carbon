@@ -98,8 +98,23 @@ module.exports = {
 
             mainCollector.on('collect', async button => {
 
+                if (correctInfo.get(button.message.id).triedAndFailed.includes(button.clicker.user.id)) {
+                    button.reply.send("You already gave your answer, stfu.", true)
+                    return
+                }
                 const id = button.id
                 const answerChose = id.replace(/[^0-9]/g, '')
+                const correctOne = correctInfo.get(button.message.id).correctAnswer
+
+                if (answerChose !== correctOne) {
+                    correctInfo.get(button.message.id).triedAndFailed.push(button.clicker.user.id)
+                    button.reply.send("Better luck next time, you failed.", true)
+                    return
+                } else {
+                    button.reply.send(`${button.clicker.member} got the correct answer!`)
+                    correctInfo.get(button.message.id).ended = true
+                    mainCollector.stop()
+                }
 
             })
 
