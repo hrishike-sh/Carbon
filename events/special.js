@@ -69,10 +69,10 @@ module.exports = {
                 }
             ]
 
-            const leftButton = new MessageButton().setEmoji("917049050929455144").setStyle("gray").setID('cevent-l1')
-            const middleButton = new MessageButton().setEmoji("917049050929455144").setStyle("gray").setID('cevent-m2')
-            const rightButton = new MessageButton().setEmoji("917049050929455144").setStyle("gray").setID('cevent-r3')
-            const row = new MessageActionRow().addComponents([leftButton, middleButton, rightButton])
+            let leftButton = new MessageButton().setEmoji("917049050929455144").setStyle("gray").setID('cevent-l1')
+            let middleButton = new MessageButton().setEmoji("917049050929455144").setStyle("gray").setID('cevent-m2')
+            let rightButton = new MessageButton().setEmoji("917049050929455144").setStyle("gray").setID('cevent-r3')
+            let row = new MessageActionRow().addComponents([leftButton, middleButton, rightButton])
 
             await message.channel.send(header)
             const firstCorrect = maps[Math.floor(Math.random() * 3)]
@@ -113,14 +113,21 @@ module.exports = {
 
                     button.reply.send(`${button.clicker.member} got the correct answer!`)
                     correctInfo.get(button.message.id).ended = true
+
+                    leftButton = leftButton.setDisabled()
+                    middleButton = middleButton.setDisabled()
+                    rightButton = rightButton.setDisabled()
+                    row = new MessageActionRow().addComponents([leftButton, middleButton, rightButton])
+
+                    await mainMessage.edit(`${mainMessage.content}`, {
+                        components: [row]
+                    })
                     mainCollector.stop()
 
                 } else {
 
-
                     correctInfo.get(button.message.id).triedAndFailed.push(button.clicker.user.id)
                     button.reply.send("Better luck next time, you failed.", true)
-
 
                 }
 
@@ -138,8 +145,8 @@ module.exports = {
 
 const editMessage = async (message, maps, header, row) => {
     for (let i = 0; i < 4; i++) {
-        if (correctInfo.get(message.id).ended) break;
         await sleep(2500)
+        if (correctInfo.get(message.id).ended) break;
 
         const random = maps[Math.floor(Math.random() * 3)]
         message.edit(`${random.text}`, {
