@@ -38,7 +38,7 @@ module.exports = {
          *      # Number: 3
          */
 
-        const randomEvent = [1, 2, 3][Math.floor(Math.random() * 3)]
+        const randomEvent = 2 //[1, 2, 3][Math.floor(Math.random() * 3)]
 
         if (randomEvent == 1) {
             const header = `**:snowman: Christmas Event :snowman:**\nHit the snowman with the snowball for presents!\n`;
@@ -133,6 +133,32 @@ module.exports = {
 
 
         } else if (randomEvent == 2) {
+
+            const emoji = [
+                '🎅', '⛄', '🎄',
+                '🎁', '🦌', '🧣',
+                '🌨️', '❄️'
+            ]
+            const toGuess = emoji[Math.floor(Math.random() * emoji.length)]
+
+            await message.channel.send(`**⛄ Christmas Event ⛄**\nMemorize & Guess the emoji to get some presents!`)
+            const mainMessage = await message.channel.send(toGuess)
+            await sleep(3000)
+
+            let row = new MessageActionRow()
+
+            for (let i = 0; i < emoji.length; i++) {
+                row = row.addComponent(
+                    new MessageButton()
+                        .setID(emoji[i])
+                        .setEmoji(emoji[i])
+                        .setStyle('grey')
+                )
+            }
+
+            mainMessage.edit("Which emoji was displayed?", {
+                components: [row]
+            })
 
         } else if (randomEvent == 3) {
 
