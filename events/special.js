@@ -143,7 +143,7 @@ module.exports = {
 
 const editMessage = async (message, maps, header, row) => {
     for (let i = 0; i < 4; i++) {
-        await sleep(2500)
+        await sleep(3500)
         if (correctInfo.get(message.id).ended) break;
 
         const random = maps[Math.floor(Math.random() * 3)]
