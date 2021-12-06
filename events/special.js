@@ -70,8 +70,8 @@ module.exports = {
             ]
 
             const leftButton = new MessageButton().setEmoji("⬅️").setStyle("gray").setID('cevent-l1')
-            const middleButton = new MessageButton().setEmoji("🔼").setStyle("gray").setID('cevent-m1')
-            const rightButton = new MessageButton().setEmoji("➡️").setStyle("gray").setID('cevent-r1')
+            const middleButton = new MessageButton().setEmoji("🔼").setStyle("gray").setID('cevent-m2')
+            const rightButton = new MessageButton().setEmoji("➡️").setStyle("gray").setID('cevent-r3')
             const row = new MessageActionRow().addComponents([leftButton, middleButton, rightButton])
 
             await message.channel.send(header)
