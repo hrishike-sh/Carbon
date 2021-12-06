@@ -1,9 +1,17 @@
 
 const db = require('../database/models/user')
 
+const { Message, Client } = require('discord.js')
+
 module.exports = {
     name: 'message',
     once: false,
+    /**
+     * 
+     * @param {Message} message 
+     * @param {Client} client 
+     * @returns 
+     */
     async execute(message, client) {
         if (!message.guild) return;
         if (message.guild.id !== '824294231447044197') return;
@@ -34,6 +42,10 @@ module.exports = {
         if (!user1) return;
         if (!user1.afk.afk) return;
 
-        return message.channel.send(`${message.mentions.users.first().username} is currently afk: ${user1.afk.reason} - <t:${(user1.afk.time / 1000).toFixed(0)}:R>`)
+        return message.channel.send(`${message.mentions.users.first().username} is currently afk: ${user1.afk.reason} - <t:${(user1.afk.time / 1000).toFixed(0)}:R>`, {
+            allowedMentions: {
+                users: []
+            }
+        })
     }
 }

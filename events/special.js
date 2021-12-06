@@ -48,7 +48,7 @@ module.exports = {
 ⛄
 
 
-<:blank:914473340129906708><:snowball:917049050929455144><:blank:914473340129906708>`,
+<:blank:914473340129906708>`,
                     yes: 1
                 },
                 {
@@ -56,7 +56,7 @@ module.exports = {
 <:blank:914473340129906708>⛄
 
 
-<:blank:914473340129906708><:snowball:917049050929455144><:blank:914473340129906708>`,
+<:blank:914473340129906708>`,
                     yes: 2
                 },
                 {
@@ -64,14 +64,14 @@ module.exports = {
 <:blank:914473340129906708><:blank:914473340129906708>⛄
 
 
-<:blank:914473340129906708><:snowball:917049050929455144><:blank:914473340129906708>`,
+<:blank:914473340129906708>`,
                     yes: 3
                 }
             ]
 
-            const leftButton = new MessageButton().setEmoji("⬅️").setStyle("gray").setID('cevent-l1')
-            const middleButton = new MessageButton().setEmoji("🔼").setStyle("gray").setID('cevent-m2')
-            const rightButton = new MessageButton().setEmoji("➡️").setStyle("gray").setID('cevent-r3')
+            const leftButton = new MessageButton().setEmoji("917049050929455144").setStyle("gray").setID('cevent-l1')
+            const middleButton = new MessageButton().setEmoji("917049050929455144").setStyle("gray").setID('cevent-m2')
+            const rightButton = new MessageButton().setEmoji("917049050929455144").setStyle("gray").setID('cevent-r3')
             const row = new MessageActionRow().addComponents([leftButton, middleButton, rightButton])
 
             await message.channel.send(header)
@@ -109,7 +109,7 @@ module.exports = {
 
                 console.log(`Correct answer: ${correctOne}\nAnswer chose: ${answerChose}`)
 
-                if (answerChose !== correctOne) {
+                if (correctOne !== answerChose) {
 
                     correctInfo.get(button.message.id).triedAndFailed.push(button.clicker.user.id)
                     button.reply.send("Better luck next time, you failed.", true)
