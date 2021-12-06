@@ -146,18 +146,28 @@ module.exports = {
             await sleep(3000)
 
             let row = new MessageActionRow()
+            let row2 = new MessageActionRow()
 
             for (let i = 0; i < emoji.length; i++) {
-                row = row.addComponent(
-                    new MessageButton()
-                        .setID(emoji[i])
-                        .setEmoji(emoji[i])
-                        .setStyle('grey')
-                )
+                if (i < 4) {
+                    row = row.addComponent(
+                        new MessageButton()
+                            .setID(emoji[i])
+                            .setEmoji(emoji[i])
+                            .setStyle('grey')
+                    )
+                } else {
+                    row2 = row2.addComponent(
+                        new MessageButton()
+                            .setID(emoji[i])
+                            .setEmoji(emoji[i])
+                            .setStyle('grey')
+                    )
+                }
             }
 
             mainMessage.edit("Which emoji was displayed?", {
-                components: [row]
+                components: [row, row2]
             })
 
         } else if (randomEvent == 3) {
