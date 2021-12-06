@@ -38,7 +38,7 @@ module.exports = {
          *      # Number: 3
          */
 
-        const randomEvent = 2 //[1, 2, 3][Math.floor(Math.random() * 3)]
+        const randomEvent = 1 //[1, 2, 3][Math.floor(Math.random() * 3)]
 
         if (randomEvent == 1) {
             const header = `**:snowman: Christmas Event :snowman:**\nHit the snowman with the snowball for presents!\n`;
@@ -115,6 +115,13 @@ module.exports = {
                     leftButton = leftButton.setDisabled()
                     middleButton = middleButton.setDisabled()
                     rightButton = rightButton.setDisabled()
+                    if (correctOne == 1) {
+                        leftButton = leftButton.setStyle('green')
+                    } else if (correctOne == 2) {
+                        middleButton = middleButton.setStyle('green')
+                    } else {
+                        rightButton = rightButton.setStyle('green')
+                    }
                     row = new MessageActionRow().addComponents([leftButton, middleButton, rightButton])
 
                     await mainMessage.edit(`${mainMessage.content}`, {
