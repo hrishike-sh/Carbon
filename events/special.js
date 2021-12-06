@@ -38,7 +38,7 @@ module.exports = {
          *      # Number: 3
          */
 
-        const randomEvent = 1 //[1, 2, 3][Math.floor(Math.random() * 3)]
+        const randomEvent = 2 //[1, 2, 3][Math.floor(Math.random() * 3)]
 
         if (randomEvent == 1) {
             const header = `**:snowman: Christmas Event :snowman:**\nHit the snowman with the snowball for presents!\n`;
@@ -175,6 +175,75 @@ module.exports = {
 
             mainMessage.edit("Which emoji was displayed?", {
                 components: [row, row2]
+            })
+
+            const mainCollector = await mainMessage.createButtonCollector(
+                b => b,
+                {
+                    time: 30 * 1000,
+                    errors: ['time']
+                }
+            )
+            const guessedButFailed = []
+            mainCollector.on('collect', async button => {
+
+                const id = button.id
+                const correct = toGuess
+
+                if (guessedButFailed.includes(button.clicker.user.id)) {
+                    button.reply.send("You can only guess once.", true)
+                    return
+                } else {
+                    if (id === correct) {
+                        button.reply.send(`${button.clicker.member} guessed the emoji!`)
+                        mainCollector.stop()
+
+                        row = new MessageActionRow()
+                        row2 = new MessageActionRow()
+
+                        for (let i = 0; i < emoji.length; i++) {
+                            if (i < 4) {
+                                if (emoji[i] === correct) {
+                                    row = row.addComponent(
+                                        new MessageButton()
+                                            .setID(emoji[i])
+                                            .setEmoji(emoji[i])
+                                            .setStyle('green')
+                                    )
+                                } else {
+                                    row = row.addComponent(
+                                        new MessageButton()
+                                            .setID(emoji[i])
+                                            .setEmoji(emoji[i])
+                                            .setStyle('grey')
+                                    )
+                                }
+                            } else {
+                                if (emoji[i] === correct) {
+                                    row2 = row2.addComponent(
+                                        new MessageButton()
+                                            .setID(emoji[i])
+                                            .setEmoji(emoji[i])
+                                            .setStyle('green')
+                                    )
+                                } else {
+                                    row2 = row2.addComponent(
+                                        new MessageButton()
+                                            .setID(emoji[i])
+                                            .setEmoji(emoji[i])
+                                            .setStyle('grey')
+                                    )
+                                }
+                            }
+                        }
+
+                        mainMessage.edit(`${mainMessage.content}`, {
+                            components: [row, row2]
+                        })
+                    }
+                }
+
+
             })
 
         } else if (randomEvent == 3) {
