@@ -1,7 +1,7 @@
 
-const { Message, Client } = require('discord.js');
+const { Message, Client, Collection } = require('discord.js');
 const { MessageButton, MessageActionRow } = require('discord-buttons');
-
+const correctInfo = new Collection()
 module.exports = {
     name: 'message',
     once: false,
@@ -12,7 +12,7 @@ module.exports = {
     async execute(message, client) {
 
         //Checks
-        if (message.guild.id !== client.storage.fighthub.id) return; // Returns if the server is not fighthub
+        // if (message.guild.id !== client.storage.fighthub.id) return; // Returns if the server is not fighthub
 
         // if (client.storage.disabledDrop.includes(message.channel.id)) return; // Returns if the channel is disabled
 
@@ -75,9 +75,16 @@ module.exports = {
             const row = new MessageActionRow().addComponents([leftButton, middleButton, rightButton])
 
             await message.channel.send(header)
-            const mainMessage = await message.channel.send(`${maps[Math.floor(Math.random() * 3)].text}`, {
+            const firstCorrect = maps[Math.floor(Math.random() * 3)]
+            const mainMessage = await message.channel.send(`${firstCorrect.text}`, {
                 components: [row]
             });
+
+            correctInfo.set(mainMessage.id, {
+                ended: false,
+                correctAnswer: firstCorrect.yes,
+                triedAndFailed: []
+            })
 
             editMessage(mainMessage, maps, header, row);
 
@@ -90,9 +97,10 @@ module.exports = {
             )
 
             mainCollector.on('collect', async button => {
+
                 const id = button.id
-                mainCollector.stop()
-                message.channel.send("Ok someone clicked a button")
+                const answerChose = id.replace(/[^0-9]/g, '')
+
             })
 
 
@@ -107,10 +115,19 @@ module.exports = {
 
 const editMessage = async (message, maps, header, row) => {
     for (let i = 0; i < 4; i++) {
+        if (correctInfo.get(message.id).ended) break;
         await sleep(1750)
 
-        message.edit(`${maps[Math.floor(Math.random() * 3)].text}`, {
+        const random = maps[Math.floor(Math.random() * 3)]
+        message.edit(`${random.text}`, {
             components: [row]
+        })
+
+        const oldInfo = correctInfo.get(message.id)
+        correctInfo.set(message.id, {
+            ended: false,
+            correctAnswer: random.yes,
+            triedAndFailed: oldInfo.triedAndFailed
         })
     }
 }

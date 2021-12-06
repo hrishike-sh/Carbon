@@ -138,7 +138,7 @@ module.exports = {
         // Giveaways
 
         // Random Color
-        if (randomColorCounter == 600) {
+        if (randomColorCounter == 300) {
             randomColorCounter = 0;
 
             const random_hex_color_code = () => {
@@ -148,8 +148,6 @@ module.exports = {
             };
 
             client.guilds.cache.get("916045576695590952").roles.cache.get('900274849153445918').setColor(random_hex_color_code())
-
-
 
         }
         // Random Color
