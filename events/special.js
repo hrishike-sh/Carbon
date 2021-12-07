@@ -289,14 +289,6 @@ module.exports = {
 
             })
 
-            mainCollector.on('end', (reason) => {
-                if (reason === 'dont_check_for_this') {
-                    return
-                } else {
-                    return message.channel.send("No one got the correct answer.")
-                }
-            })
-
         } else;
 
     }
