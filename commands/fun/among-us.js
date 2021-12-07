@@ -87,7 +87,7 @@ module.exports = {
 
         takePlayersCollector.on('end', async collected => {
             const amountOfPlayers = gamedata.length
-
+            console.log(gamedata)
             // if(amountOfPlayers < 4){
             //     message.channel.send(`You need atleast **4 players** to play the game, get more friends lol.`)
             //     return
@@ -142,6 +142,7 @@ module.exports = {
             let meetings = 5;
             mainCol.on('collect', async msg => {
                 const user = gamedata.filter(value => value.member.id === msg.author.id)
+                console.log(user)
                 if (user.impostor && impostorMessages > 15) {
                     mainCol.stop("impostor")
 
