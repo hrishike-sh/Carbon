@@ -126,8 +126,30 @@ module.exports = {
                 }
             }
 
-            await message.channel.send("**How does the impostor win?**\n> The impostor has to send **15** messages in order to win.\n\n**How do the crewmates win?**\n> The crewmates will have to work together to find out who the impostor is!\n\n**How do I call an emergency meeting?**\n> IDK either, its not coded yet...", {
+            await message.channel.send("**How does the impostor win?**\n> The impostor has to send **15** messages in order to win or they have to not get caught for 2 minutes.\n\n**How do the crewmates win?**\n> The crewmates will have to work together to find out who the impostor is!\n\n**How do I call an emergency meeting?**\n> IDK either, its not coded yet...", {
                 components: [row1, row2]
+            })
+
+            const mainCol = message.channel.createMessageCollector(
+                m => joined.includes(m.author.id),
+                {
+                    time: 120 * 1000
+                }
+            )
+            let impostorMessages = 0;
+            let meetings = 5;
+            mainCol.on('collect', async msg => {
+                const user = gamedata.filter(value => value.member.id === msg.author.id)
+                if (user.impostor && impostorMessages > 15) {
+                    mainCol.stop("impostor")
+
+                    return message.channel.send(`After baiting a lot, and managing to not get caught, ${user.member} managed to send more than 15 messages...\n\nAll of the crewmates get killed and the ultimate winner is the impostor, which is ${user.member}!`)
+                }
+                if (user.impostor) {
+                    impostorMessages++
+                }
+
+
             })
         })
     }
