@@ -281,8 +281,8 @@ module.exports = {
             )
 
             mainCollector.on('collect', async msg => {
-                console.log("collected", msg.content, scrambledWord)
-                if (msg.content.toLowerCase() === scrambledWord) {
+
+                if (msg.content.toLowerCase() === randomWord) {
                     mainCollector.stop('dont_check_for_this')
                     return message.channel.send(`${msg.member} guessed the right word`)
                 }
