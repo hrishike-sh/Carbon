@@ -41,6 +41,43 @@ module.exports = {
             return message.channel.send({ embed: helpBed })
         }
 
+        const firstArg = args[0]
+
+        if (firstArg === 'on' || firstArg === 'enable') {
+            if (heistMode.enabled) {
+                message.channel.send("Heist mode for this server is already \`enabled\`.")
+                return
+            } else {
+                heistMode.enabled = true
+                heistMode.joined = 0
+                heistMode.left = 0
+                heistMode.startedOn = new Date().getTime()
+                server.save()
+
+                return message.channel.send(`✅ | Heist Mode is now enabled for this server.`)
+            }
+        } else if (firstArg === 'off' || firstArg === 'disable') {
+            if (!heistMode.enabled) {
+                message.channel.send(`Heist mode for this server is already \`disabled\`.`)
+                return
+            } else {
+                heistMode.enabled = false
+
+                const embed = new MessageEmbed()
+                    .setTitle("HeistMode Stats")
+                    .setDescription(`The stats for the heist (from <t:${(heistMode.startedOn / 1000).toFixed(0)}:>) are:`)
+                    .addField("Members joined", heistMode.joined.toLocaleString())
+                    .addField("Members left", heistMode.left.toLocaleString())
+                    .setTimestamp()
+
+                server.save()
+
+                return message.channel.send(`The HeistMode for this server was disabled.`, {
+                    embed
+                })
+            }
+        }
+
 
     }
 }
