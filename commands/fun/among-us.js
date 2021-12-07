@@ -105,8 +105,8 @@ module.exports = {
 
             let row1 = new MessageActionRow()
             let row2 = new MessageActionRow()
-
-            for (let m = 0; m < gamedata.length; m++) {
+            let m;
+            for (m = 0; m < gamedata.length; m++) {
                 if (m < 5) {
                     row1 = row1.addComponent(
                         new MessageButton()
@@ -126,8 +126,10 @@ module.exports = {
                 }
             }
 
+            const components = m < 5 ? [row1] : [row1, row2]
+
             await message.channel.send("**How does the impostor win?**\n> The impostor has to send **15** messages in order to win or they have to not get caught for 2 minutes.\n\n**How do the crewmates win?**\n> The crewmates will have to work together to find out who the impostor is!\n\n**How do I call an emergency meeting?**\n> IDK either, its not coded yet...", {
-                components: [row1, row2]
+                components
             })
 
             const mainCol = message.channel.createMessageCollector(
