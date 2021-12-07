@@ -17,16 +17,16 @@ module.exports = {
         }
 
         const emojis = [
-            '<:amongus_red:917726679214985246>',
-            '<:amongus_orange:917726744457383936>',
-            '<:amongus_yellow:917726831485026314>',
-            '<:amongus_green:917726919062077490>',
-            '<:amongus_lime:917726981964058624>',
-            '<:amongus_blue:917727061651640350>',
-            '<:amongus_cyan:917727115183530044>',
-            '<:amongus_purple:917727205453365278>',
-            '<:amongus_white:917727491660083220>',
-            '<:amongus_black:917727535704457237>'
+            client.emojis.cache.get("917726679214985246").toString(),
+            client.emojis.cache.get("917726744457383936").toString(),
+            client.emojis.cache.get("917726831485026314").toString(),
+            client.emojis.cache.get("917726919062077490").toString(),
+            client.emojis.cache.get("917726981964058624").toString(),
+            client.emojis.cache.get("917727061651640350").toString(),
+            client.emojis.cache.get("917727115183530044").toString(),
+            client.emojis.cache.get("917727205453365278").toString(),
+            client.emojis.cache.get("917727491660083220").toString(),
+            client.emojis.cache.get("917727535704457237").toString()
         ]
         const emojiArray = [
             '917726679214985246',
@@ -81,7 +81,7 @@ module.exports = {
                 impostor: false,
                 id: `${emojiArray[i]}_${Math.floor(Math.random() * 1_000_000)}`
             })
-            button.reply.send(`You have successfully joined the game and you are: ${emojis[i]}`)
+            button.reply.send(`You have successfully joined the game and you are: ${emojis[i]}`, true)
         })
 
         takePlayersCollector.on('end', async collected => {
@@ -99,7 +99,7 @@ module.exports = {
 
             for (let z = 0; z < gamedata.length; z++) {
                 await sleep(500)
-                gamedata[i].member.send(`Your role is: **${gamedata[i].impostor ? "Impostor" : "Crewmate"}**`)
+                gamedata[z].member.send(`Your role is: **${gamedata[i].impostor ? "Impostor" : "Crewmate"}**`)
             }
 
             let row1 = new MessageActionRow()
@@ -111,14 +111,14 @@ module.exports = {
                         new MessageButton()
                             .setLabel(gamedata[m].member.user.username)
                             .setStyle("grey")
-                            .setID(gamedata[i].id)
+                            .setID(gamedata[m].id)
                     )
                 } else {
                     row2 = row2.addComponent(
                         new MessageButton()
                             .setLabel(gamedata[m].member.user.username)
                             .setStyle("grey")
-                            .setID(gamedata[i].id)
+                            .setID(gamedata[m].id)
                     )
                 }
             }
