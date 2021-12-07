@@ -123,6 +123,10 @@ module.exports = {
                     )
                 }
             }
+
+            await message.channel.send("Here are all the colors.", {
+                components: [row1, row2]
+            })
         })
     }
 }
