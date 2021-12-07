@@ -113,6 +113,7 @@ module.exports = {
                             .setLabel(gamedata[m].member.user.username)
                             .setStyle("grey")
                             .setID(gamedata[m].id)
+                            .setEmoji(gamedata[m].color)
                     )
                 } else {
                     row2 = row2.addComponent(
@@ -120,6 +121,7 @@ module.exports = {
                             .setLabel(gamedata[m].member.user.username)
                             .setStyle("grey")
                             .setID(gamedata[m].id)
+                            .setEmoji(gamedata[m].color)
                     )
                 }
             }
