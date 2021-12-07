@@ -274,7 +274,7 @@ module.exports = {
             await message.channel.send(`**⛄ Christmas Event ⛄**\nGuess the scrambled word for presents!\n\nWord: **\`${scrambledWord}\`**`)
 
             const mainCollector = message.channel.createMessageCollector(
-                m => m,
+                m => m.content.toLowerCase() == scrambledWord,
                 {
                     time: 10 * 1000,
                 }
