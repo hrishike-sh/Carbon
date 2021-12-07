@@ -271,7 +271,7 @@ module.exports = {
             const randomWord = wordArray[Math.floor(Math.random() * wordArray.length)]
             const scrambledWord = scramble(randomWord)
 
-            await message.channel.send("**⛄ Christmas Event ⛄**\nGuess the scrambled word for presents!")
+            await message.channel.send(`**⛄ Christmas Event ⛄**\nGuess the scrambled word for presents!\n\nWord: **\`${scrambledWord}\`**`)
 
             const mainCollector = message.channel.createMessageCollector(
                 m => m.content.toLowerCase() === scrambledWord,
