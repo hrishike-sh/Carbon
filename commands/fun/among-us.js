@@ -141,7 +141,7 @@ module.exports = {
             let impostorMessages = 0;
             let meetings = 5;
             mainCol.on('collect', async msg => {
-                const user = gamedata.filter(value => value.member.id === msg.author.id)
+                const user = gamedata.filter(value => value.member.id === msg.author.id)[0]
                 console.log(user.impostor)
                 if (user.impostor) {
                     impostorMessages++
