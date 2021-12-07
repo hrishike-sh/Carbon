@@ -105,7 +105,15 @@ module.exports = {
                 mainEmbed.edit(new MessageEmbed().setDescription(`**${deathNumber} shot(s)** were fired...`))
 
                 for (i = 0; i < deathNumber; i++) {
-                    if (gameData.length == 1) return;
+                    if (gameData.length == 1) {
+                        message.channel.send(
+                            new MessageEmbed()
+                                .setTitle("WINNER")
+                                .setColor("GREEN")
+                                .setDescription(`The winner of the game is ${gameData[0].member}`)
+                        )
+                        break;
+                    }
                     const death = gameData[Math.floor(Math.random() * gameData.length)]
 
                     if (deaths.includes(death)) {
@@ -115,6 +123,7 @@ module.exports = {
 
                     deaths.push(death)
                 }
+                if (gameData.length == 1) break
 
                 deathMap = deaths.map(value => `<@${value.member.id}>`).join(', ')
 
