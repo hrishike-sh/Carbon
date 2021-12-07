@@ -140,19 +140,43 @@ module.exports = {
             )
             let impostorMessages = 0;
             let meetings = 5;
+            let inMeeting = false;
             mainCol.on('collect', async msg => {
                 const user = gamedata.filter(value => value.member.id === msg.author.id)[0]
-                console.log(user.impostor)
+
                 if (user.impostor) {
                     impostorMessages++
                 }
-                if (user.impostor && impostorMessages > 3) {
+
+                if (user.impostor && impostorMessages > 15) {
                     mainCol.stop("impostor")
 
                     return message.channel.send(`After baiting a lot, and managing to not get caught, ${user.member} managed to send more than 15 messages...\n\nAll of the crewmates get killed and the ultimate winner is the impostor, which is ${user.member}!`)
                 }
 
+                if (msg.content.toLowerCase() === 'emergency') {
+                    inMeeting = true
 
+                    const meetingMessage = await message.channel.send(`${gamedata.map(m => m.member).join(" ")}\n\n**__EMERGENCY MEETING__**\nThe impostor's messages __won't__ be counted while the meeting is going on.\n\nYou have 30 seconds to vote someone out, good luck.`, {
+                        components
+                    })
+
+                    const voteCollector = meetingMessage.createButtonCollector(
+                        b => b,
+                        {
+                            time: 30000,
+                        }
+                    )
+
+                    voteCollector.on('collect', async button => {
+                        if (!joined.includes(button.clicker.user.id)) {
+                            button.reply.send("You are not even in the game, wtf are you trying to do??", true)
+                            return
+                        }
+
+                        const buttonId = button.id
+                    })
+                }
 
             })
         })
