@@ -274,16 +274,20 @@ module.exports = {
             await message.channel.send(`**⛄ Christmas Event ⛄**\nGuess the scrambled word for presents!\n\nWord: **\`${scrambledWord}\`**`)
 
             const mainCollector = message.channel.createMessageCollector(
-                m => m.content.toLowerCase() === scrambledWord,
+                m => m,
                 {
-                    time: 30 * 1000,
+                    time: 10 * 1000,
                 }
             )
 
             mainCollector.on('collect', async msg => {
-                mainCollector.stop("dont_check_for_this")
 
-                await message.channel.send(`${msg.member} guessed the word!`)
+                if (msg.content.toLowerCase() === scrambledWord) {
+                    return message.channel.send(`${msg.member} guessed the right word`)
+                } else {
+                    message.reply("No.")
+                }
+
             })
 
             mainCollector.on('end', (reason) => {
