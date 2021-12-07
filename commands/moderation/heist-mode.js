@@ -12,6 +12,8 @@ module.exports = {
      */
     async execute(message, args, client) {
 
+
+
         let server = await db.findOne({ guildID: message.guild.id })
 
         if (!server) {
@@ -28,7 +30,7 @@ module.exports = {
 
         const { heistMode } = server
 
-        if (!args) {
+        if (!args[0]) {
             const helpBed = new MessageEmbed()
                 .setAuthor(message.author.tag, message.author.displayAvatarURL())
                 .setTitle("Heist Mode")
@@ -65,10 +67,12 @@ module.exports = {
 
                 const embed = new MessageEmbed()
                     .setTitle("HeistMode Stats")
-                    .setDescription(`The stats for the heist (from <t:${(heistMode.startedOn / 1000).toFixed(0)}:>) are:`)
-                    .addField("Members joined", heistMode.joined.toLocaleString())
-                    .addField("Members left", heistMode.left.toLocaleString())
+                    .setDescription(`The stats for the heist (from <t:${(heistMode.startedOn / 1000).toFixed(0)}:R>) are:`)
+                    .addField("Members joined", heistMode.joined.toLocaleString(), true)
+                    .addField("Members left", heistMode.left.toLocaleString(), true)
+                    .addField("Net Growth", (heistMode.joined - heistMode.left).toLocaleString(), false)
                     .setTimestamp()
+                    .setColor('GREEN')
 
                 server.save()
 
