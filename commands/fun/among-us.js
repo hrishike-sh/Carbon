@@ -143,7 +143,7 @@ module.exports = {
             mainCol.on('collect', async msg => {
                 const user = gamedata.filter(value => value.member.id === msg.author.id)
                 console.log(user)
-                if (user.impostor && impostorMessages > 15) {
+                if (user.impostor && impostorMessages > 3) {
                     mainCol.stop("impostor")
 
                     return message.channel.send(`After baiting a lot, and managing to not get caught, ${user.member} managed to send more than 15 messages...\n\nAll of the crewmates get killed and the ultimate winner is the impostor, which is ${user.member}!`)
