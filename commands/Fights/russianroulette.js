@@ -104,13 +104,13 @@ module.exports = {
 
                 mainEmbed.edit(new MessageEmbed().setDescription(`**${deathNumber} shot(s)** were fired...`))
 
-                for (i = 0; i < deathNumber; i++) {
+                for (i = 0; i < deathNumber + 1; i++) {
                     if (gameData.length == 1) {
                         message.channel.send(
                             new MessageEmbed()
                                 .setTitle("WINNER")
                                 .setColor("GREEN")
-                                .setDescription(`The winner of the game is ${gameData[0].member}`)
+                                .setDescription(`The winner of the game is ${gameData[0].member.member}`)
                         )
                         break;
                     }
