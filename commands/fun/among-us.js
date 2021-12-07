@@ -74,6 +74,7 @@ module.exports = {
                 return
             }
             i++
+            joined.push(button.clicker.user.id)
             gamedata.push({
                 member: button.clicker.member,
                 color: emojiArray[i],
@@ -81,7 +82,7 @@ module.exports = {
                 impostor: false,
                 id: `${emojiArray[i]}_${Math.floor(Math.random() * 1_000_000)}`
             })
-            button.reply.send(`You have successfully joined the game and you are: ${emojis[i]}`, true)
+            button.reply.send(`You have successfully joined the game and you are: ${client.emojis.cache.get(emojiArray[i]).toString()}`, true)
         })
 
         takePlayersCollector.on('end', async collected => {
@@ -99,7 +100,7 @@ module.exports = {
 
             for (let z = 0; z < gamedata.length; z++) {
                 await sleep(500)
-                gamedata[z].member.send(`Your role is: **${gamedata[i].impostor ? "Impostor" : "Crewmate"}**`)
+                gamedata[z].member.send(`Your role is: **${gamedata[z].impostor ? "Impostor" : "Crewmate"}**`)
             }
 
             let row1 = new MessageActionRow()
