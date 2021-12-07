@@ -126,7 +126,7 @@ module.exports = {
                 }
             }
 
-            await message.channel.send("Here are all the colors.", {
+            await message.channel.send("**How does the impostor win?**\n> The impostor has to send **15** messages in order to win.\n\n**How do the crewmates win?**\n> The crewmates will have to work together to find out who the impostor is!\n\n**How do I call an emergency meeting?**\n> IDK either, its not coded yet...", {
                 components: [row1, row2]
             })
         })
