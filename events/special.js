@@ -276,12 +276,12 @@ module.exports = {
             const mainCollector = message.channel.createMessageCollector(
                 m => m,
                 {
-                    time: 10 * 1000,
+                    time: 30 * 1000,
                 }
             )
 
             mainCollector.on('collect', async msg => {
-
+                console.log("collected", msg.content.toLowerCase() == scrambledWord)
                 if (msg.content.toLowerCase() === scrambledWord) {
                     mainCollector.stop('dont_check_for_this')
                     return message.channel.send(`${msg.member} guessed the right word`)
