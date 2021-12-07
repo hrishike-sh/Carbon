@@ -2,7 +2,7 @@
 const { GuildMember, Client } = require("discord.js");
 const serverSettings = require('../database/models/settingsSchema')
 
-moculd.exports = {
+module.exports = {
     name: 'guildMemberAdd',
     once: false,
     /**
