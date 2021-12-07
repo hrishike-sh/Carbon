@@ -12,7 +12,10 @@ module.exports = {
      */
     async execute(message, args, client) {
 
-
+        if (!message.member.permissions.has("ADMINISTRATOR")) {
+            message.channel.send("You need the \`ADMINISTRATOR\` permission to run this command.")
+            return
+        }
 
         let server = await db.findOne({ guildID: message.guild.id })
 
