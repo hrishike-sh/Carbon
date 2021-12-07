@@ -73,7 +73,6 @@ module.exports = {
                 button.reply.send("The game is already full, too late.", true)
                 return
             }
-            i++
             joined.push(button.clicker.user.id)
             gamedata.push({
                 member: button.clicker.member,
@@ -82,6 +81,7 @@ module.exports = {
                 impostor: false,
                 id: `${emojiArray[i]}_${Math.floor(Math.random() * 1_000_000)}`
             })
+            i++
             button.reply.send(`You have successfully joined the game and you are: ${client.emojis.cache.get(emojiArray[i]).toString()}`, true)
         })
 
@@ -142,15 +142,16 @@ module.exports = {
             let meetings = 5;
             mainCol.on('collect', async msg => {
                 const user = gamedata.filter(value => value.member.id === msg.author.id)
-                console.log(impostorMessages)
+                console.log(user.impostor)
+                if (user.impostor) {
+                    impostorMessages++
+                }
                 if (user.impostor && impostorMessages > 3) {
                     mainCol.stop("impostor")
 
                     return message.channel.send(`After baiting a lot, and managing to not get caught, ${user.member} managed to send more than 15 messages...\n\nAll of the crewmates get killed and the ultimate winner is the impostor, which is ${user.member}!`)
                 }
-                if (user.impostor) {
-                    impostorMessages++
-                }
+
 
 
             })
