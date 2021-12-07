@@ -38,7 +38,7 @@ module.exports = {
          *      # Number: 3
          */
 
-        const randomEvent = 2 //[1, 2, 3][Math.floor(Math.random() * 3)]
+        const randomEvent = 3 //[1, 2, 3][Math.floor(Math.random() * 3)]
 
         if (randomEvent == 1) {
             const header = `**:snowman: Christmas Event :snowman:**\nHit the snowman with the snowball for presents!\n`;
@@ -184,7 +184,7 @@ module.exports = {
                     errors: ['time']
                 }
             )
-            const guessedButFailed = []
+            let guessedButFailed = []
             mainCollector.on('collect', async button => {
 
                 const id = button.id
@@ -257,6 +257,42 @@ module.exports = {
             })
 
         } else if (randomEvent == 3) {
+            const wordArray = [
+                'santa',
+                'chimney',
+                'snowball',
+                'snow',
+                'sleigh',
+                'reindeer',
+                'presents',
+                'bells'
+            ]
+
+            const randomWord = wordArray[Math.floor(Math.random() * wordArray.length)]
+            const scrambledWord = scramble(randomWord)
+
+            await message.channel.send("**⛄ Christmas Event ⛄**\nGuess the scrambled word for presents!")
+
+            const mainCollector = message.channel.createMessageCollector(
+                m => m.content.toLowerCase() === scrambledWord,
+                {
+                    time: 30 * 1000,
+                }
+            )
+
+            mainCollector.on('collect', async msg => {
+                mainCollector.stop("dont_check_for_this")
+
+                await message.channel.send(`${msg.member} guessed the word!`)
+            })
+
+            mainCollector.on('end', (reason) => {
+                if (reason === 'dont_check_for_this') {
+                    return
+                } else {
+                    return message.channel.send("No one got the correct answer.")
+                }
+            })
 
         } else;
 
@@ -284,4 +320,16 @@ const editMessage = async (message, maps, header, row) => {
 
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms))
+}
+
+function scramble(w) {
+    let help = `${w}`;
+    let results = '';
+    let randomLetter = ''
+    for (i = 0; i < w.length; i++) {
+        randomLetter = help.charAt(Math.floor(Math.random() * help.length))
+        help = help.replace(randomLetter, '')
+        results += randomLetter
+    }
+    return results
 }
