@@ -142,7 +142,7 @@ module.exports = {
             let meetings = 5;
             mainCol.on('collect', async msg => {
                 const user = gamedata.filter(value => value.member.id === msg.author.id)
-                console.log(user)
+                console.log(impostorMessages)
                 if (user.impostor && impostorMessages > 3) {
                     mainCol.stop("impostor")
 
