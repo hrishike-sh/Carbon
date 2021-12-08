@@ -12,6 +12,8 @@ module.exports = {
      * @param {String[]} args 
      */
     async execute(message, args, client) {
+
+        return message.channel.send("This command is disabled.")
         const target = message.mentions.users.first() || null
         const blank = '<:blank:914473340129906708>'
         if (!target) return message.channel.send(`You will have to ping someone to play with them bozo`)
