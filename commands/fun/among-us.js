@@ -161,6 +161,8 @@ module.exports = {
                     meetings--
                     if (meetings < 0) {
                         message.channel.send(`The game has ended. After repeatedly using the Emergency button... it broke.\n\nResulting in the impostor killing everyone! The winner is ${gamedata.filter(u => u.impostor)[0].member}`)
+                        mainCol.stop()
+                        return;
                     }
                     inMeeting = true
                     const row3 = new MessageActionRow().addComponent(
