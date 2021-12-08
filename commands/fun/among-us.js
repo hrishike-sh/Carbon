@@ -96,7 +96,7 @@ module.exports = {
 
             const randomNumber = Math.floor(Math.random() * gamedata.length)
             gamedata[randomNumber].impostor = true;
-            console.log(`The impostor is ${gamedata[randomNumber]}`)
+            console.log(gamedata[randomnumber])
 
             await message.channel.send("I will now be DM'ing all of you with your role in the game, and shush, no snitching!")
 
@@ -128,7 +128,7 @@ module.exports = {
                 }
             }
 
-            let components = m < 5 ? [row1] : [row1, row2]
+            let components = gamedata.length < 6 ? [row1] : [row1, row2]
 
             await message.channel.send("**How does the impostor win?**\n> The impostor has to send **15** messages in order to win or they have to not get caught for 2 minutes.\n\n**How do the crewmates win?**\n> The crewmates will have to work together to find out who the impostor is!\n\n**How do I call an emergency meeting?**\n> IDK either, its not coded yet...", {
                 components
