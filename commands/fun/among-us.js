@@ -169,7 +169,7 @@ module.exports = {
                                         .setLabel(gamedata[a].member.user.username)
                                         .setStyle("red")
                                         .setID(gamedata[a].id)
-                                        .setEmoji(gamedata[a].emoji)
+                                        .setEmoji(gamedata[a].color)
                                         .setDisabled()
                                 )
                             } else {
@@ -178,7 +178,7 @@ module.exports = {
                                         .setLabel(gamedata[a].member.user.username)
                                         .setStyle("grey")
                                         .setID(gamedata[a].id)
-                                        .setEmoji(gamedata[a].emoji)
+                                        .setEmoji(gamedata[a].color)
                                 )
                             }
                         } else {
@@ -188,7 +188,7 @@ module.exports = {
                                         .setLabel(gamedata[a].member.user.username)
                                         .setStyle("red")
                                         .setID(gamedata[a].id)
-                                        .setEmoji(gamedata[a].emoji)
+                                        .setEmoji(gamedata[a].color)
                                         .setDisabled()
                                 )
                             } else {
@@ -197,7 +197,7 @@ module.exports = {
                                         .setLabel(gamedata[a].member.user.username)
                                         .setStyle("grey")
                                         .setID(gamedata[a].id)
-                                        .setEmoji(gamedata[a].emoji)
+                                        .setEmoji(gamedata[a].color)
                                 )
                             }
                         }
