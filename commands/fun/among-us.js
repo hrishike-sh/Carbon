@@ -158,6 +158,43 @@ module.exports = {
                 if (msg.content.toLowerCase() === 'emergency' && !inMeeting) {
                     inMeeting = true
 
+                    row1 = new MessageActionRow()
+                    row2 = new MessageActionRow()
+
+                    for (let a = 0; a < gamedata.length - 1; a++) {
+                        if (a < 5) {
+                            if (gamedata[a].dead) {
+                                row1 = row1.addComponent()
+                                    .setLabel(gamedata[a].member.user.username)
+                                    .setStyle("red")
+                                    .setID(gamedata[a].id)
+                                    .setEmoji(gamedata[a].emoji)
+                                    .setDisabled()
+                            } else {
+                                row1 = row1.addComponent()
+                                    .setLabel(gamedata[a].member.user.username)
+                                    .setStyle("grey")
+                                    .setID(gamedata[a].id)
+                                    .setEmoji(gamedata[a].emoji)
+                            }
+                        } else {
+                            if (gamedata[a].dead) {
+                                row2 = row2.addComponent()
+                                    .setLabel(gamedata[a].member.user.username)
+                                    .setStyle("red")
+                                    .setID(gamedata[a].id)
+                                    .setEmoji(gamedata[a].emoji)
+                                    .setDisabled()
+                            } else {
+                                row2 = row2.addComponent()
+                                    .setLabel(gamedata[a].member.user.username)
+                                    .setStyle("grey")
+                                    .setID(gamedata[a].id)
+                                    .setEmoji(gamedata[a].emoji)
+                            }
+                        }
+                    }
+
                     const meetingMessage = await message.channel.send(`${gamedata.map(m => m.member).join(" ")}\n\n**__EMERGENCY MEETING__**\nThe impostor's messages __won't__ be counted while the meeting is going on.\n\nYou have 15 seconds to vote someone out, good luck.`, {
                         components
                     })
@@ -176,7 +213,11 @@ module.exports = {
                             button.reply.send("You are not even in the game, wtf are you trying to do??", true)
                             return
                         }
-
+                        const voter = gamedata.filter(u => u.member.id === button.clicker.id)[0]
+                        if (voter.dead) {
+                            button.reply.send("You're already dead, why're voting?", true)
+                            return
+                        }
                         const buttonId = button.id
 
                         if (voted.includes(button.clicker.user.id)) {
@@ -201,7 +242,7 @@ module.exports = {
                         await sleep(1000)
 
                         const votedOut = gamedata.sort((a, b) => b.gotVoted - a.gotVoted)[0]
-
+                        votedOut.dead = true;
                         if (votedOut.impostor) {
                             message.channel.send(`${votedOut.member} was voted out. And they were the impostor.`)
                         } else {
