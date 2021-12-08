@@ -107,7 +107,7 @@ module.exports = {
             let row1 = new MessageActionRow()
             let row2 = new MessageActionRow()
             let m;
-            for (m = 0; m < gamedata.length; m++) {
+            for (m = 0; m < gamedata.length - 1; m++) {
                 if (m < 5) {
                     row1 = row1.addComponent(
                         new MessageButton()
