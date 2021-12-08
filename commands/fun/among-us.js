@@ -82,8 +82,8 @@ module.exports = {
                 id: `${emojiArray[i]}_${Math.floor(Math.random() * 1_000_000)}`,
                 gotVoted: 0
             })
-            i++
             button.reply.send(`You have successfully joined the game and you are: ${client.emojis.cache.get(emojiArray[i]).toString()}`, true)
+            i++
         })
 
         takePlayersCollector.on('end', async collected => {
@@ -158,14 +158,14 @@ module.exports = {
                 if (msg.content.toLowerCase() === 'emergency' && !inMeeting) {
                     inMeeting = true
 
-                    const meetingMessage = await message.channel.send(`${gamedata.map(m => m.member).join(" ")}\n\n**__EMERGENCY MEETING__**\nThe impostor's messages __won't__ be counted while the meeting is going on.\n\nYou have 30 seconds to vote someone out, good luck.`, {
+                    const meetingMessage = await message.channel.send(`${gamedata.map(m => m.member).join(" ")}\n\n**__EMERGENCY MEETING__**\nThe impostor's messages __won't__ be counted while the meeting is going on.\n\nYou have 15 seconds to vote someone out, good luck.`, {
                         components
                     })
                     const meetingMessageContent = meetingMessage.content
                     const voteCollector = meetingMessage.createButtonCollector(
                         b => b,
                         {
-                            time: 30000,
+                            time: 15000,
                         }
                     )
                     let votes = []
@@ -191,6 +191,21 @@ module.exports = {
                         voted.push(button.clicker.user.id)
 
                         meetingMessage.edit(`${meetingMessageContent}\n\nVoted: ${voted.map(u => `<@${u}>`).join(" ")}`)
+                    })
+
+                    voteCollector.on('end', () => {
+                        inMeeting = false;
+
+                        const mm = await message.channel.send("The voting has ended and...")
+                        await sleep(1000)
+
+                        const votedOut = gamedata.sort((a, b) => b.gotVoted - a.gotVoted)[0]
+
+                        if (votedOut.impostor) {
+                            message.channel.send(`${votedOut.member} was voted out. And they were the impostor.`)
+                        } else {
+                            message.channel.send(`${votedOut.member} was voted out. And they were not the impostor.`)
+                        }
                     })
                 }
 
