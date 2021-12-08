@@ -227,7 +227,7 @@ module.exports = {
                     voteCollector.on('collect', async button => {
 
                         if (button.id === 'message-am') {
-                            const map = gamedata.sort((a, b) => b.messages - a.messages).map((value, i) => `**${i + 1}**. **${value.user.tag}**`).join('\n')
+                            const map = gamedata.sort((a, b) => b.messages - a.messages).map((value, i) => `**${i + 1}**. **${value.member.user.tag}**`).join('\n')
 
                             button.reply.send({
                                 embed: new MessageEmbed()
