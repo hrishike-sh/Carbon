@@ -96,7 +96,7 @@ module.exports = {
 
             const randomNumber = Math.floor(Math.random() * gamedata.length)
             gamedata[randomNumber].impostor = true;
-            console.log(gamedata[randomnumber])
+            console.log(gamedata[randomNumber])
 
             await message.channel.send("I will now be DM'ing all of you with your role in the game, and shush, no snitching!")
 
