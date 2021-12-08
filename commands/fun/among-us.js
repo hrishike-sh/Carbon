@@ -193,7 +193,8 @@ module.exports = {
                         meetingMessage.edit(`${meetingMessageContent}\n\nVoted: ${voted.map(u => `<@${u}>`).join(" ")}`)
                     })
 
-                    voteCollector.on('end', () => {
+                    voteCollector.on('end', async () => {
+
                         inMeeting = false;
 
                         const mm = await message.channel.send("The voting has ended and...")
