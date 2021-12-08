@@ -186,7 +186,7 @@ module.exports = {
 
                         const votedTo = gamedata.filter(user => user.id === buttonId)[0]
                         button.reply.send(`You voted for ${votedTo.member}.`, true)
-                        gamedata[votedTo].gotVoted++
+                        votedTo.gotVoted++
 
                         voted.push(button.clicker.user.id)
 
