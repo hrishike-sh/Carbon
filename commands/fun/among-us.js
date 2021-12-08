@@ -252,7 +252,7 @@ module.exports = {
 
                         const votedOut = gamedata.sort((a, b) => b.gotVoted - a.gotVoted)[0]
                         votedOut.dead = true;
-
+                        console.log(votedOut)
                         if (votedOut.impostor) {
                             message.channel.send(`${votedOut.member} was voted out. And they were the impostor.`)
                         } else {
