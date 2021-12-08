@@ -137,7 +137,7 @@ module.exports = {
             const mainCol = message.channel.createMessageCollector(
                 m => joined.includes(m.author.id),
                 {
-                    time: 120 * 1000
+                    // time: 120 * 1000
                 }
             )
             let impostorMessages = 0;
@@ -255,7 +255,8 @@ module.exports = {
                         votedOut.dead = true;
                         console.log(votedOut)
                         if (votedOut.impostor) {
-                            message.channel.send(`${votedOut.member} was voted out. And they were the impostor.`)
+                            message.channel.send(`${votedOut.member} was voted out. And they were the impostor.\n\nCongrats to all the crewmates that survived!`)
+                            mainCol.stop()
                         } else {
                             message.channel.send(`${votedOut.member} was voted out. And they were not the impostor.`)
                         }
