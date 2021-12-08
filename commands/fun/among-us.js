@@ -131,7 +131,7 @@ module.exports = {
 
             let components = gamedata.length < 5 ? [row1] : [row1, row2]
 
-            await message.channel.send("**How does the impostor win?**\n> The impostor has to send **15** messages in order to win or they have to not get caught for 2 minutes.\n\n**How do the crewmates win?**\n> The crewmates will have to work together to find out who the impostor is!\n\n**How do I call an emergency meeting?**\n> IDK either, its not coded yet...", {
+            await message.channel.send("**How does the impostor win?**\n> The impostor has to send **15** messages in order to win or they have to not get caught for 2 minutes.\n\n**How do the crewmates win?**\n> The crewmates will have to work together to find out who the impostor is!\n\n**How do I call an emergency meeting?**\n> Type \`emergency\` to call a meeting. **NOTE** Only 3 meetings are allowed each game.", {
                 components
             })
 
@@ -142,7 +142,7 @@ module.exports = {
                 }
             )
             let impostorMessages = 0;
-            let meetings = 5;
+            let meetings = 3;
             let inMeeting = false;
             mainCol.on('collect', async msg => {
                 const user = gamedata.filter(value => value.member.id === msg.author.id)[0]
@@ -158,6 +158,10 @@ module.exports = {
                 }
 
                 if (msg.content.toLowerCase() === 'emergency' && !inMeeting) {
+                    meetings--
+                    if (meetings < 0) {
+                        message.channel.send(`The game has ended. After repeatedly using the Emergency button... it broke.\n\nResulting in the impostor killing everyone! The winner is ${gamedata.filter(u => u.impostor)[0].member}`)
+                    }
                     inMeeting = true
                     const row3 = new MessageActionRow().addComponent(
                         new MessageButton()
