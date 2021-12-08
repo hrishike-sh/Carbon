@@ -164,33 +164,41 @@ module.exports = {
                     for (let a = 0; a < gamedata.length - 1; a++) {
                         if (a < 5) {
                             if (gamedata[a].dead) {
-                                row1 = row1.addComponent()
-                                    .setLabel(gamedata[a].member.user.username)
-                                    .setStyle("red")
-                                    .setID(gamedata[a].id)
-                                    .setEmoji(gamedata[a].emoji)
-                                    .setDisabled()
+                                row1 = row1.addComponent(
+                                    new MessageButton()
+                                        .setLabel(gamedata[a].member.user.username)
+                                        .setStyle("red")
+                                        .setID(gamedata[a].id)
+                                        .setEmoji(gamedata[a].emoji)
+                                        .setDisabled()
+                                )
                             } else {
-                                row1 = row1.addComponent()
-                                    .setLabel(gamedata[a].member.user.username)
-                                    .setStyle("grey")
-                                    .setID(gamedata[a].id)
-                                    .setEmoji(gamedata[a].emoji)
+                                row1 = row1.addComponent(
+                                    new MessageButton()
+                                        .setLabel(gamedata[a].member.user.username)
+                                        .setStyle("grey")
+                                        .setID(gamedata[a].id)
+                                        .setEmoji(gamedata[a].emoji)
+                                )
                             }
                         } else {
                             if (gamedata[a].dead) {
-                                row2 = row2.addComponent()
-                                    .setLabel(gamedata[a].member.user.username)
-                                    .setStyle("red")
-                                    .setID(gamedata[a].id)
-                                    .setEmoji(gamedata[a].emoji)
-                                    .setDisabled()
+                                row2 = row2.addComponent(
+                                    new MessageButton()
+                                        .setLabel(gamedata[a].member.user.username)
+                                        .setStyle("red")
+                                        .setID(gamedata[a].id)
+                                        .setEmoji(gamedata[a].emoji)
+                                        .setDisabled()
+                                )
                             } else {
-                                row2 = row2.addComponent()
-                                    .setLabel(gamedata[a].member.user.username)
-                                    .setStyle("grey")
-                                    .setID(gamedata[a].id)
-                                    .setEmoji(gamedata[a].emoji)
+                                row2 = row2.addComponent(
+                                    new MessageButton()
+                                        .setLabel(gamedata[a].member.user.username)
+                                        .setStyle("grey")
+                                        .setID(gamedata[a].id)
+                                        .setEmoji(gamedata[a].emoji)
+                                )
                             }
                         }
                     }
