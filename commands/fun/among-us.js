@@ -79,7 +79,8 @@ module.exports = {
                 color: emojiArray[i],
                 dead: false,
                 impostor: false,
-                id: `${emojiArray[i]}_${Math.floor(Math.random() * 1_000_000)}`
+                id: `${emojiArray[i]}_${Math.floor(Math.random() * 1_000_000)}`,
+                gotVoted: 0
             })
             i++
             button.reply.send(`You have successfully joined the game and you are: ${client.emojis.cache.get(emojiArray[i]).toString()}`, true)
@@ -144,7 +145,7 @@ module.exports = {
             mainCol.on('collect', async msg => {
                 const user = gamedata.filter(value => value.member.id === msg.author.id)[0]
 
-                if (user.impostor) {
+                if (user.impostor && !inMeeting) {
                     impostorMessages++
                 }
 
@@ -154,27 +155,42 @@ module.exports = {
                     return message.channel.send(`After baiting a lot, and managing to not get caught, ${user.member} managed to send more than 15 messages...\n\nAll of the crewmates get killed and the ultimate winner is the impostor, which is ${user.member}!`)
                 }
 
-                if (msg.content.toLowerCase() === 'emergency') {
+                if (msg.content.toLowerCase() === 'emergency' && !inMeeting) {
                     inMeeting = true
 
                     const meetingMessage = await message.channel.send(`${gamedata.map(m => m.member).join(" ")}\n\n**__EMERGENCY MEETING__**\nThe impostor's messages __won't__ be counted while the meeting is going on.\n\nYou have 30 seconds to vote someone out, good luck.`, {
                         components
                     })
-
+                    const meetingMessageContent = meetingMessage.content
                     const voteCollector = meetingMessage.createButtonCollector(
                         b => b,
                         {
                             time: 30000,
                         }
                     )
-
+                    let votes = []
+                    let voted = []
                     voteCollector.on('collect', async button => {
+
                         if (!joined.includes(button.clicker.user.id)) {
                             button.reply.send("You are not even in the game, wtf are you trying to do??", true)
                             return
                         }
 
                         const buttonId = button.id
+
+                        if (voted.includes(button.clicker.user.id)) {
+                            button.reply.send("You have already voted.", true)
+                            return
+                        }
+
+                        const votedTo = gamedata.filter(user => user.id === buttonId)[0]
+                        button.reply.send(`You voted for ${votedTo.member}.`, true)
+                        gamedata[votedTo].votes++
+
+                        voted.push(button.clicker.user.id)
+
+                        meetingMessage.edit(`${meetingMessageContent}\n\nVoted: ${voted.map(u => `<@${u}>`).join(" ")}`)
                     })
                 }
 
