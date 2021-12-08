@@ -127,7 +127,7 @@ module.exports = {
                 }
             }
 
-            const components = m < 6 ? [row1] : [row1, row2]
+            let components = m < 6 ? [row1] : [row1, row2]
 
             await message.channel.send("**How does the impostor win?**\n> The impostor has to send **15** messages in order to win or they have to not get caught for 2 minutes.\n\n**How do the crewmates win?**\n> The crewmates will have to work together to find out who the impostor is!\n\n**How do I call an emergency meeting?**\n> IDK either, its not coded yet...", {
                 components
@@ -202,6 +202,7 @@ module.exports = {
                             }
                         }
                     }
+                    components = m < 6 ? [row1] : [row1, row2]
 
                     const meetingMessage = await message.channel.send(`${gamedata.map(m => m.member).join(" ")}\n\n**__EMERGENCY MEETING__**\nThe impostor's messages __won't__ be counted while the meeting is going on.\n\nYou have 15 seconds to vote someone out, good luck.`, {
                         components
@@ -251,10 +252,15 @@ module.exports = {
 
                         const votedOut = gamedata.sort((a, b) => b.gotVoted - a.gotVoted)[0]
                         votedOut.dead = true;
+
                         if (votedOut.impostor) {
                             message.channel.send(`${votedOut.member} was voted out. And they were the impostor.`)
                         } else {
                             message.channel.send(`${votedOut.member} was voted out. And they were not the impostor.`)
+                        }
+
+                        for (let amogus = 0; amogus < gamedata.length - 1; amogus++) {
+                            gamedata[amogus].gotVoted = 0
                         }
                     })
                 }
