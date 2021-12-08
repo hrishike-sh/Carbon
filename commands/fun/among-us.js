@@ -80,7 +80,8 @@ module.exports = {
                 dead: false,
                 impostor: false,
                 id: `${emojiArray[i]}_${Math.floor(Math.random() * 1_000_000)}`,
-                gotVoted: 0
+                gotVoted: 0,
+                messages: 0
             })
             button.reply.send(`You have successfully joined the game and you are: ${client.emojis.cache.get(emojiArray[i]).toString()}`, true)
             i++
@@ -145,7 +146,7 @@ module.exports = {
             let inMeeting = false;
             mainCol.on('collect', async msg => {
                 const user = gamedata.filter(value => value.member.id === msg.author.id)[0]
-
+                user.messages++
                 if (user.impostor && !inMeeting) {
                     impostorMessages++
                 }
@@ -158,7 +159,13 @@ module.exports = {
 
                 if (msg.content.toLowerCase() === 'emergency' && !inMeeting) {
                     inMeeting = true
-
+                    const row3 = new MessageActionRow().addComponent(
+                        new MessageButton()
+                            .setStyle('blurple')
+                            .setLabel("Messages")
+                            .setEmoji('📖')
+                            .setID("message-am")
+                    )
                     row1 = new MessageActionRow()
                     row2 = new MessageActionRow()
 
@@ -203,7 +210,7 @@ module.exports = {
                             }
                         }
                     }
-                    components = m < 5 ? [row1] : [row1, row2]
+                    components = m < 5 ? [row1, row3] : [row1, row2, row3]
 
                     const meetingMessage = await message.channel.send(`${gamedata.map(m => m.member).join(" ")}\n\n**__EMERGENCY MEETING__**\nThe impostor's messages __won't__ be counted while the meeting is going on.\n\nYou have 15 seconds to vote someone out, good luck.`, {
                         components
@@ -219,6 +226,16 @@ module.exports = {
                     let voted = []
                     voteCollector.on('collect', async button => {
 
+                        if (button.id === 'message-am') {
+                            const map = gamedata.sort((a, b) => b.messages - a.messages).map((value, i) => `**${i + 1}**. **${value.user.tag}**`).join('\n')
+
+                            button.reply.send({
+                                embed: new MessageEmbed()
+                                    .setTitle("Most Messages")
+                                    .setDescription(map),
+                                ephemeral: true
+                            }, true)
+                        }
                         if (!joined.includes(button.clicker.user.id)) {
                             button.reply.send("You are not even in the game, wtf are you trying to do??", true)
                             return
