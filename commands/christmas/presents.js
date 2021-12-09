@@ -11,7 +11,7 @@ module.exports = {
      * @param {String[]} args 
      */
     async execute(message, args, client) {
-        const userId = message.mentions.users.first() || message.member
+        const userId = message.mentions.users.size > 0 ? message.mentions.users.first().id : message.member.id
         const user = await db.findOne({ userId })
         const lb = await db.find({}).sort({
             presents: -1
@@ -22,7 +22,7 @@ module.exports = {
         message.channel.send(
             new MessageEmbed()
                 .setTitle("Presents")
-                .setDescription(`**Your presents:** ${presents.toLocaleString()}`)
+                .setDescription(`**Your presents:** ${presents.toLocaleString()}\n**Leaderboard top:** ${lb[0].presents.toLocaleString()}`)
                 .setColor("WHITE")
         )
     }
