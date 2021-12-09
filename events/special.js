@@ -160,7 +160,7 @@ module.exports = {
                         dbUser = new presentSchema({
                             userId,
                             presents: 0
-                        }).save()
+                        })
                     }
 
                     dbUser.presents = dbUser.presents + randomPresents
@@ -290,7 +290,7 @@ module.exports = {
                             dbUser = new presentSchema({
                                 userId,
                                 presents: 0
-                            }).save()
+                            })
                         }
 
                         dbUser.presents = dbUser.presents + randomPresents
@@ -344,7 +344,7 @@ module.exports = {
                         dbUser = new presentSchema({
                             userId,
                             presents: 0
-                        }).save()
+                        })
                     }
 
                     dbUser.presents = dbUser.presents + randomPresents
