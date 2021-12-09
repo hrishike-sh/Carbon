@@ -22,7 +22,7 @@ module.exports = {
         message.channel.send(
             new MessageEmbed()
                 .setTitle("Presents")
-                .setDescription(`**Your presents:** ${presents.toLocaleString()}`)
+                .setDescription(`**Your presents:** ${presents.toLocaleString()}\n**Leaderboard top:** ${lb[0].presents.toLocaleString()}`)
                 .setColor("WHITE")
         )
     }
