@@ -52,17 +52,17 @@ module.exports = {
          *      # Number: 3
          */
 
-        const randomPresents = Math.floor(Math.random() * 40) + 10
-        addChannelToCD(message.channel.id, 60 * 1000)
-            (await client.fetchWebhook("918444980517867530")).send(
-                {
-                    embed: {
-                        title: "New Drop",
-                        description: `Dropped in <#${message.channel.id}> for ${randomPresents} presents.\n\nTime: <t:${(new Date().getTime() / 1000).toFixed(0)}>`
-                    },
-                    content: `<#${message.channel.id}>`
-                }
-            )
+        const randomPresents = Math.floor(Math.random() * 40) + 10;
+        addChannelToCD(message.channel.id, 60 * 1000);
+        (await client.fetchWebhook("918444980517867530")).send(
+            {
+                embed: {
+                    title: "New Drop",
+                    description: `Dropped in <#${message.channel.id}> for ${randomPresents} presents.\n\nTime: <t:${(new Date().getTime() / 1000).toFixed(0)}>`
+                },
+                content: `<#${message.channel.id}>`
+            }
+        )
         const randomEvent = [1, 2, 3][Math.floor(Math.random() * 3)]
         if (randomEvent == 1) {
             const header = `**:snowman: Christmas Event :snowman:**\nHit the snowman with the snowball for presents!\n`;
