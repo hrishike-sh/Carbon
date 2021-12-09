@@ -18,10 +18,11 @@ module.exports = {
         }).limit(1)
         const presents = user ? user.presents : 0
 
+        console.log(lb)
         message.channel.send(
             new MessageEmbed()
                 .setTitle("Presents")
-                .setDescription(`**Your presents:** ${presents.toLocaleString()}\n**Leaderboard top:** ${lb[0].presents.toLocaleString()}`)
+                .setDescription(`**Your presents:** ${presents.toLocaleString()}`)
                 .setColor("WHITE")
         )
     }
