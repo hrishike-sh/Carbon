@@ -40,7 +40,7 @@ module.exports = {
          */
 
         const randomEvent = 3 //[1, 2, 3][Math.floor(Math.random() * 3)]
-
+        const randomPresents = Math.floor(Math.random() * 40) + 10
         if (randomEvent == 1) {
             const header = `**:snowman: Christmas Event :snowman:**\nHit the snowman with the snowball for presents!\n`;
             const maps = [
@@ -110,7 +110,7 @@ module.exports = {
 
                 if (correctOne === answerChose) {
 
-                    button.reply.send(`${button.clicker.member} hit the snowman first!`)
+                    button.reply.send(`${button.clicker.member} hit the snowman first.\n\n:gift: You got **${randomPresents}** presents!`)
                     correctInfo.get(button.message.id).ended = true
 
                     leftButton = leftButton.setDisabled()
@@ -129,6 +129,18 @@ module.exports = {
                         components: [row]
                     })
                     mainCollector.stop()
+
+                    const userId = button.clicker.user.id
+
+                    presentSchema.updateOne({
+                        userId
+                    }, {
+                        $inc: {
+                            presents: randomPresents
+                        }
+                    }, {
+                        upsert: true
+                    })
 
                 } else {
 
@@ -196,7 +208,7 @@ module.exports = {
                     return
                 } else {
                     if (id === correct) {
-                        button.reply.send(`${button.clicker.member} guessed the emoji!`)
+                        button.reply.send(`${button.clicker.member} guessed the emoji.\n\n:gift: You got **${randomPresents}** presents!`)
                         mainCollector.stop()
 
                         row = new MessageActionRow()
@@ -246,6 +258,19 @@ module.exports = {
                             components: [row, row2]
                         })
                         guessedButFailed = []
+
+                        const userId = button.clicker.user.id
+
+                        presentSchema.updateOne({
+                            userId
+                        }, {
+                            $inc: {
+                                presents: randomPresents
+                            }
+                        }, {
+                            upsert: true
+                        })
+
                     } else {
 
                         guessedButFailed.push(button.clicker.user.id)
@@ -285,7 +310,19 @@ module.exports = {
 
                 if (msg.content.toLowerCase() === randomWord) {
                     mainCollector.stop('dont_check_for_this')
-                    return message.channel.send(`${msg.member} guessed the right word`)
+                    message.channel.send(`${msg.member} guessed the right word.\n\n:gift: You got **${randomPresents}** presents!`)
+
+                    const userId = msg.author.id
+
+                    presentSchema.updateOne({
+                        userId
+                    }, {
+                        $inc: {
+                            presents: randomPresents
+                        }
+                    }, {
+                        upsert: true
+                    })
                 }
 
             })
