@@ -19,7 +19,7 @@ module.exports = {
             '🦌'
         ]
 
-        const finalLb = rawLb.map(value => `${a[rawLb.indexOf(value)] || '<:blank:914473340129906708>'} - <@${rawLb[rawLb.indexOf(value)].userId}> [-](https://discord.gg/fight) **${rawLb[rawLb.indexOf(value)].presents.toLocaleString()}** presents`).join('\n')
+        const finalLb = rawLb.map(value => `${a[rawLb.indexOf(value)] || '<:blank:914473340129906708>'} - <@${rawLb[rawLb.indexOf(value)].userId}>[:](https://discord.gg/fight) **${rawLb[rawLb.indexOf(value)].presents.toLocaleString()}** presents`).join('\n')
 
         return message.channel.send(
             new MessageEmbed()
