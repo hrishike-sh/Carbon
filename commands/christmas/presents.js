@@ -13,8 +13,8 @@ module.exports = {
     async execute(message, args, client) {
         const userId = message.mentions.users.first() || message.member
         const user = await db.findOne({ userId })
-        const lb = await db.find({}).limit(1)
-        const presents = user.presents || 0
+        const lb = await db.find({}).sort((a, b) => b.presents - a.presents).limit(1)
+        const presents = user ? user.presents : 0
 
         message.channel.send(
             new MessageEmbed()
