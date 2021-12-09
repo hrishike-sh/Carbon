@@ -4,22 +4,18 @@ module.exports = {
   args: true,
   usage: "<id>",
   description: "Check ban info about a certain user.",
+  fhOnly: true,
   async execute(message, args) {
     const id = args[0];
     // daunt: move to config
-    const roles = {
-      mod: "824348974449819658",
-      admin: "824539655134773269",
-    };
-
     if (
-      !message.member.roles.cache.some(
-        (r) => r === roles.mod || r === roles.admin
-      )
+      !message.member.roles.cache.some((r) => r.id === "824348974449819658") &&
+      !message.member.roles.cache.some((r) => r.id === "824539655134773269")
     ) {
-      return;
+      return message.channel.send("You can't use this");
     }
-    let banInfo = await message.guild.fetchBan(id).catch(() => {
+
+    const banInfo = await message.guild.fetchBan(id).catch(() => {
       return message.channel.send(
         "Either the user is not banned or the user ID provided is not valid."
       );
