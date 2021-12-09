@@ -131,21 +131,17 @@ module.exports = {
                     mainCollector.stop()
 
                     const userId = button.clicker.user.id
-                    if (!(await presentSchema.findOne({ userId }))) {
-                        new presentSchema({
+                    let dbUser = await presentSchema.findOne({ userId })
+
+                    if (!dbUser) {
+                        dbUser = new presentSchema({
                             userId,
                             presents: 0
                         }).save()
                     }
-                    presentSchema.updateOne({
-                        userId
-                    }, {
-                        $inc: {
-                            presents: randomPresents
-                        }
-                    }, {
-                        upsert: true
-                    }).save()
+
+                    dbUser.presents = dbUser.presents + randomPresents
+                    dbUser.save()
 
                 } else {
 
@@ -265,21 +261,17 @@ module.exports = {
                         guessedButFailed = []
 
                         const userId = button.clicker.user.id
-                        if (!(await presentSchema.findOne({ userId }))) {
-                            new presentSchema({
+                        let dbUser = await presentSchema.findOne({ userId })
+
+                        if (!dbUser) {
+                            dbUser = new presentSchema({
                                 userId,
                                 presents: 0
                             }).save()
                         }
-                        presentSchema.updateOne({
-                            userId
-                        }, {
-                            $inc: {
-                                presents: randomPresents
-                            }
-                        }, {
-                            upsert: true
-                        }).save()
+
+                        dbUser.presents = dbUser.presents + randomPresents
+                        dbUser.save()
 
                     } else {
 
@@ -323,23 +315,18 @@ module.exports = {
                     message.channel.send(`${msg.member} guessed the right word.\n\n:gift: You got **${randomPresents}** presents!`)
 
                     const userId = msg.author.id
+                    let dbUser = await presentSchema.findOne({ userId })
 
-                    if (!(await presentSchema.findOne({ userId }))) {
-                        new presentSchema({
+                    if (!dbUser) {
+                        dbUser = new presentSchema({
                             userId,
                             presents: 0
                         }).save()
                     }
 
-                    presentSchema.updateOne({
-                        userId
-                    }, {
-                        $inc: {
-                            presents: randomPresents
-                        }
-                    }, {
-                        upsert: true
-                    }).save()
+                    dbUser.presents = dbUser.presents + randomPresents
+                    dbUser.save()
+
                 }
 
             })
