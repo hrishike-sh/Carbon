@@ -83,6 +83,20 @@ module.exports = {
                     embed
                 })
             }
+        } else if (firstArg === 'stats' || firstArg === 'stat') {
+            const embed = new MessageEmbed()
+                .setTitle("HeistMode Stats")
+                .setDescription(`The stats for the heist (from <t:${(heistMode.startedOn / 1000).toFixed(0)}:R>) are:`)
+                .addField("Members joined", heistMode.joined.toLocaleString(), true)
+                .addField("Members left", heistMode.left.toLocaleString(), true)
+                .addField("Net Growth", (heistMode.joined - heistMode.left).toLocaleString(), false)
+                .setTimestamp()
+                .setColor('YELLOW')
+
+            return message.channel.send(`Stats for the last/current heist mode.`, {
+                embed
+            })
+
         }
 
 
