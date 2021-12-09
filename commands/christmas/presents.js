@@ -11,7 +11,7 @@ module.exports = {
      * @param {String[]} args 
      */
     async execute(message, args, client) {
-        const userId = message.mentions.users.first().id || message.member.id
+        const userId = message.mentions.users.size > 0 ? message.mentions.users.first().id : message.member.id
         const user = await db.findOne({ userId })
         const lb = await db.find({}).sort({
             presents: -1
