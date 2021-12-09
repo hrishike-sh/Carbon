@@ -145,7 +145,7 @@ module.exports = {
                         }
                     }, {
                         upsert: true
-                    })
+                    }).save()
 
                 } else {
 
@@ -279,7 +279,7 @@ module.exports = {
                             }
                         }, {
                             upsert: true
-                        })
+                        }).save()
 
                     } else {
 
@@ -339,7 +339,7 @@ module.exports = {
                         }
                     }, {
                         upsert: true
-                    })
+                    }).save()
                 }
 
             })
