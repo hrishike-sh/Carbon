@@ -1,5 +1,5 @@
 const { Client, Message, MessageEmbed } = require('discord.js');
-const db = require('../../database/models/presentSchema')
+const db = require('../../database/models/settingsSchema')
 module.exports = {
     name: 'disabledDrop',
     aliases: 'disablehere',
@@ -19,7 +19,7 @@ module.exports = {
 
         const server = await db.findOne({ guildID: message.guild.id })
 
-        if (!server.disabledDrop) server.disableDrop = []
+        if (!server.disabledDrop) server.disabledDrop = []
 
         const channel = message.channel
 
