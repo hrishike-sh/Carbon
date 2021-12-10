@@ -2,22 +2,6 @@ const { Message, Client, Collection } = require('discord.js');
 const { MessageButton, MessageActionRow } = require('discord-buttons');
 const presentSchema = require('../database/models/presentSchema')
 const correctInfo = new Collection()
-let disabledDrop = [
-    '824313123728261150',
-    '870240187198885888',
-    '828078502422642769',
-    '834394537249996810',
-    '847859324138946560',
-    '885623476470308926',
-    '874330931752730674',
-    '832937227360665620',
-    '824899782187286538',
-    '824319140763795457',
-    '857223712193511434',
-    '869217430533206027',
-    '858295915428315136',
-    '826065190973210634'
-]
 let dropCD = []
 module.exports = {
     name: 'message',
@@ -27,7 +11,7 @@ module.exports = {
      * @param {Client} client 
      */
     async execute(message, client) {
-
+        let disabledDrop = client.storage.disabledDrops
         //Checks
         if (message.guild.id !== client.storage.fighthub.id) return; // Returns if the server is not fighthub
 

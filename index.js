@@ -25,7 +25,6 @@ client.snipes = new Collection();
 client.esnipes = new Collection();
 client.disabledCommands = new Collection();
 client.config = config;
-client.dropCD = [];
 client.afks = [];
 client.afkIgnore = [];
 client.options.allowedMentions = {
@@ -34,8 +33,9 @@ client.options.allowedMentions = {
 };
 client.storage = {
   fighthub: null,
-  disabledDrops: null,
+  disabledDrops: []
 };
+
 
 const { cooldowns } = client;
 let commandsRan = 0;
