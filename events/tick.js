@@ -27,7 +27,7 @@ module.exports = {
         presenceCounter1++
         gawCounter1++
         randomColorCounter++
-        timerCounter++
+        // timerCounter++
         // Incrementing everything
 
         // Presence
