@@ -114,7 +114,7 @@ module.exports = {
             collector.stop()
             return message.channel.send("No such user found in the grinders team.")
           }
-
+          collector.stop()
           dbUserr.time = dbUserr.time + ms(`${args[0]}d`)
           dbUserr.save()
 
@@ -142,8 +142,8 @@ module.exports = {
 
       const embed2 = new MessageEmbed()
         .setTitle("Grinder Pendings")
-        .setDescription(`${q.map(v => `=> <@${v.userID}>(${client.users.fetch(v.userID).tag || "dumbkesh"}) pending for <t:${(v.time / 1000).toFixed(0)}:R>`).join('\n')}`)
-        .setColor("GREEN")
+        .setDescription(`${q.map(v => `=> <@${v.userID}>(${client.users.fetch(v.userID).tag || "dumbkesh"}) pending since <t:${(v.time / 1000).toFixed(0)}:R>`).join('\n')}`)
+        .setColor("RED")
         .setTimestamp()
 
       message.channel.send({ embed: embed2 })
