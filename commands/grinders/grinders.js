@@ -1,4 +1,4 @@
-const { Client, Message, MessageEmbed } = require('discord.js');
+const { Client, Message, MessageEmbed, splitMessage } = require('discord.js');
 const db = require('../../database/models/grindm');
 const ms = require("ms");
 module.exports = {
@@ -105,7 +105,8 @@ module.exports = {
       collector.on("collect", async msg => {
 
         if (msg.mentions.users.size < 1) {
-          message.channel.send("You have to actually ping someone lol")
+          collector.stop()
+          message.channel.send("You have to actually ping someone lol. The command is cancelled")
         } else {
           const mention = msg.mentions.users.first().id
 
@@ -139,10 +140,14 @@ module.exports = {
 
         return message.channel.send({ embed })
       }
+      const mapp = q.map(v => `=> <@${v.userID}>(${client.users.fetch(v.userID).tag || "dumbkesh"}) pending since <t:${(v.time / 1000).toFixed(0)}:R>`).join('\n')
 
+      if (mapp.length > 5500) {
+        const messages;
+      }
       const embed2 = new MessageEmbed()
         .setTitle("Grinder Pendings")
-        .setDescription(`${q.map(v => `=> <@${v.userID}>(${client.users.fetch(v.userID).tag || "dumbkesh"}) pending since <t:${(v.time / 1000).toFixed(0)}:R>`).join('\n')}`)
+        .setDescription(`${mapp}`)
         .setColor("RED")
         .setTimestamp()
 
