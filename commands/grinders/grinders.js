@@ -146,7 +146,11 @@ module.exports = {
         await message.channel.send("A lot of pendings, the embed wont work.\nSending not-so-fancy messages...")
         const messages = splitMessage(mapp)
         messages.forEach(m => {
-          message.channel.send(m)
+          message.channel.send({
+            embed: {
+              description: m
+            }
+          })
         })
         return;
       }
