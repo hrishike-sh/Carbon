@@ -125,9 +125,9 @@ module.exports = {
       })
     } else if (firstArg === 'pending') {
       const q = await db.find({
-        $lt: {
-          time: new Date().getTime()
-        },
+        time: {
+          $lt: new Date().getTime()
+        }
       })
 
       if (!q.length) {
