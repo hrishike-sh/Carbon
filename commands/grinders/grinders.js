@@ -109,7 +109,7 @@ module.exports = {
         } else {
           const mention = msg.mentions.users.first().id
 
-          const dbUserr = await db.findOne({ userID: mention.id })
+          const dbUserr = await db.findOne({ userID: mention })
           if (!dbUserr) {
             collector.stop()
             return message.channel.send("No such user found in the grinders team.")
