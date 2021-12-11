@@ -12,9 +12,10 @@ module.exports = {
      */
     async execute(message, args, client) {
 
-        if (message.author.id !== '598918643727990784') {
+    if (message.author.id !== '598918643727990784' || message.author.id !== '266432078222983169) {
             return
         }
+
 
         const emojis = [
             client.emojis.cache.get("917726679214985246").toString(),
