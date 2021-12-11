@@ -142,9 +142,14 @@ module.exports = {
       }
       const mapp = q.map(v => `=> <@${v.userID}>(${client.users.fetch(v.userID).tag || "dumbkesh"}) pending since <t:${(v.time / 1000).toFixed(0)}:R>`).join('\n')
 
-      // if (mapp.length > 5500) {
-      //   const messages;
-      // }
+      if (mapp.length > 5500) {
+        await message.channel.send("A lot of pendings, the embed wont work.\nSending not-so-fancy messages...")
+        const messages = splitMessage(mapp)
+        messages.forEach(m => {
+          message.channel.send(m)
+        })
+        return;
+      }
       const embed2 = new MessageEmbed()
         .setTitle("Grinder Pendings")
         .setDescription(`${mapp}`)
