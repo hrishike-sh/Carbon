@@ -45,7 +45,7 @@ module.exports = {
         return message.channel.send("Please either @ping the user or give me a valid id.")
       }
 
-      const dbUser = await db.findOne({ userID: user })
+      const dbUser = await db.findOne({ userID: user.id })
 
       if (dbUser) {
         return message.channel.send("The user is already a grinder.")
@@ -73,7 +73,7 @@ module.exports = {
         return message.channel.send("Please either @ping the user or give me a valid id.")
       }
 
-      const dbUser = await db.findOne({ userID: user })
+      const dbUser = await db.findOne({ userID: user.id })
 
       if (!dbUser) {
         return message.channel.send("The user is not a grinder.")
@@ -125,9 +125,9 @@ module.exports = {
       })
     } else if (firstArg === 'pending') {
       const q = await db.find({
-        $lte: {
+        $lt: {
           time: new Date().getTime()
-        }
+        },
       })
 
       if (!q.length) {
