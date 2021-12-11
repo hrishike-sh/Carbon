@@ -145,6 +145,8 @@ module.exports = {
         .setDescription(`${q.map(v => `=> <@${v.userID}>(${client.users.cache.get(v.userID).tag}) pending for <t:${(v.time / 1000).toFixed(0)}:R>`).join('\n')}`)
         .setColor("GREEN")
         .setTimestamp()
+
+      message.channel.send({ embed: embed2 })
     }
 
   }
