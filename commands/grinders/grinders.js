@@ -115,7 +115,7 @@ module.exports = {
             return message.channel.send("No such user found in the grinders team.")
           }
 
-          dbUserr.time = dbUserr.time + ms(args[0])
+          dbUserr.time = dbUserr.time + ms(`${args[0]}d`)
           dbUserr.save()
 
           return message.channel.send(`Done! The user will now have to pay <t:${(dbUserr.time / 1000).toFixed(0)}:R>.`)
