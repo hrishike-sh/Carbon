@@ -166,17 +166,7 @@ module.exports = {
             )
 
             infoCollector.on("collect", async button => {
-                if (button.id === 'actions-bg') {
-
-                    const actionComponents = new MessageActionRow().addComponents([searchButton, upgradeButton, defendButton])
-
-                    const acMsg = await button.reply.send({
-                        content: "Use the buttons to do something.",
-                        components: actionComponents,
-                        ephemeral: true
-                    }
-
-                } else if (button.id === 'search-bg') {
+                if (button.id === 'search-bg') {
                     const gotShield = [1, 0, 0, 0][Math.floor(Math.random() * 4)] == 1
 
                     await button.reply.send("You start searching... you have a **25% chance** to get the shield.", true)
