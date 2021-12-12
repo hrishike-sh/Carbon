@@ -185,7 +185,7 @@ client.on("message", async (message) => {
   try {
     command.execute(message, args, client);
     commandsRan++;
-    (await client.fetchWebhook("913360972842930176")).send(
+    (await client.fetchWebhook("919470030343794748")).send(
       new MessageEmbed()
         .setAuthor(message.author.tag, message.author.displayAvatarURL())
         .setTitle(command.name)
