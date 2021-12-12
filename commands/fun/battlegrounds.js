@@ -180,34 +180,38 @@ module.exports = {
                         components: actionComponents,
                         ephemeral: true
                     })
+                    const actionCollector = acMsg.component.message.createButtonCollector(b => b)
 
-                } else if (button.id === 'search-bg') {
-                    const gameUser = gamedata.filter(va => va.member.id === button.clicker.user.id)[0]
-                    const gotShield = [1, 0, 0, 0][Math.floor(Math.random() * 4)] == 1
+                    actionCollector.on("collect", async button => {
+                        const buttonId = button.id
+                        const gameUser = gamedata.filter(va => va.member.id === button.clicker.user.id)[0]
+                        if (buttonId === 'search-bg') {
+                            const gotShield = [1, 0, 0, 0][Math.floor(Math.random() * 4)] == 1
 
-                    await button.reply.send("You start searching... you have a **25% chance** to get the shield.", true)
+                            await button.reply.send("You start searching... you have a **25% chance** to get the shield.", true)
 
-                    await sleep(500)
+                            await sleep(500)
 
-                    if (gotShield) {
-                        button.reply.edit("You found a 🛡️ Shield! You are now immune to **1** incoming attack.", true)
-                        gameUser.inv.shield.count++
-                        return
-                    } else {
-                        const randomDamage = Math.floor(Math.random() * 50) + 30
+                            if (gotShield) {
+                                button.reply.edit("You found a 🛡️ Shield! You are now immune to **1** incoming attack.", true)
+                                gameUser.inv.shield.count++
+                                return
+                            } else {
+                                const randomDamage = Math.floor(Math.random() * 50) + 30
 
-                        button.reply.edit(`You tried searching for a shield, but you end up finding a SNAKE. You were poisoned and lost **${randomDamage}** HP!`, true)
-                        gameUser.hp -= randomDamage
-                    }
+                                button.reply.edit(`You tried searching for a shield, but you end up finding a SNAKE. You were poisoned and lost **${randomDamage}** HP!`, true)
+                                gameUser.hp -= randomDamage
+                            }
+                        }
+                    })
 
+
+                } else {
+                    const buttonId = button.id
+                    const userInfo = gamedata.filter(val => val.id === buttonId)[0]
+
+                    await button.reply.send(`${userInfo.member}'s stats:\n   HP: **${userInfo.hp}**\n   Gun Damage: **${userInfo.gun.dmg}**`, true)
                 }
-
-                // else{
-                //     const buttonId = button.id
-                //     const userInfo = gamedata.filter(val => val.id === buttonId)[0]
-
-                //     await button.reply.send(`${userInfo.member}'s stats:\n   HP: **${userInfo.hp}**\n   Gun Damage: **${userInfo.gun.dmg}**`, true)
-                // }
             })
         })
     }
