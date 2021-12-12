@@ -155,7 +155,7 @@ module.exports = {
             const mainMessage = await message.channel.send({
                 embed: new MessageEmbed()
                     .setTitle("Battlegrounds")
-                    .setDescription("Click on the user to see their stats!\nEveryone has **15 seconds** to do **1** action."),
+                    .setDescription("Click on the user to see their stats!\nEveryone has **15 seconds** to do **3** actions."),
                 components,
             })
             const infoCollector = mainMessage.createButtonCollector(
@@ -194,7 +194,7 @@ module.exports = {
                 } else if (button.id === 'defend-bg') {
                     const moreHp = Math.floor(Math.random() * 30) + 10
 
-                    button.reply.send(`HEAL | You ate some ~~drugs~~ medicine and got **${moreHp}** hp.`)
+                    button.reply.send(`HEAL | You ate some ~~drugs~~ medicine and got **${moreHp}** hp.`, true)
 
                     gameUser.hp += moreHp
                 }
