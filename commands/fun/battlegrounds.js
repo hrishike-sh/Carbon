@@ -126,6 +126,13 @@ module.exports = {
             if (i > 4) components.push(row1, row2)
             if (i > 9) components.push(row3)
             if (i > 14) components.push(row4)
+            let row5 = new MessageActionRow().addComponent(
+                new MessageButton()
+                    .setStyle("green")
+                    .setLabel("Actions")
+                    .setID("actions-bg")
+            )
+            components.push(row5)
 
 
             // if(i > )
@@ -145,11 +152,34 @@ module.exports = {
             )
 
             infoCollector.on("collect", async button => {
-                const buttonId = button.id
-                const userInfo = gamedata.filter(val => val.id === buttonId)[0]
-                const blank = '<:blank:914473340129906708>'
+                if (button.id === 'actions-bg') {
 
-                await button.reply.send(`${userInfo.member}'s stats:\n${blank}HP: **${userInfo.hp}**\n${blank}Gun Damage: **${userInfo.gun.dmg}**`, true)
+                    const searchButton = new MessageButton()
+                        .setLabel("Search")
+                        .setID("search-bg")
+                        .setEmoji("🔍")
+                    const upgradeButton = new MessageButton()
+                        .setLabel("Upgrade Weapon")
+                        .setID("upgrade-bg")
+                        .setEmoji("⚒")
+                    const defendButton = new MessageButton()
+                        .setLabel("Defend")
+                        .setID("defend-bg")
+                        .setEmoji('🛡️')
+                    const actionComponents = new MessageActionRow().addComponents([searchButton, upgradeButton, defendButton])
+
+                    const actionsMessage = await button.reply.send({
+                        content: "Use the buttons to do something.",
+                        components: actionComponents,
+                        ephemeral: true
+                    })
+
+                } else {
+                    const buttonId = button.id
+                    const userInfo = gamedata.filter(val => val.id === buttonId)[0]
+
+                    await button.reply.send(`${userInfo.member}'s stats:\n   HP: **${userInfo.hp}**\n   Gun Damage: **${userInfo.gun.dmg}**`, true)
+                }
             })
         })
     }
