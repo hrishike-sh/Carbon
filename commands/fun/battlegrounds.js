@@ -127,12 +127,22 @@ module.exports = {
             if (i > 4) components.push(row1, row2)
             if (i > 9) components.push(row3)
             if (i > 14) components.push(row4)
-            let row5 = new MessageActionRow().addComponent(
-                new MessageButton()
-                    .setStyle("green")
-                    .setLabel("Actions")
-                    .setID("actions-bg")
-            )
+            const searchButton = new MessageButton()
+                .setLabel("Search")
+                .setID("search-bg")
+                .setEmoji("🔍")
+                .setStyle("blurple")
+            const upgradeButton = new MessageButton()
+                .setLabel("Upgrade Weapon")
+                .setID("upgrade-bg")
+                .setEmoji("⚒")
+                .setStyle("blurple")
+            const defendButton = new MessageButton()
+                .setLabel("Defend")
+                .setID("defend-bg")
+                .setEmoji('🛡️')
+                .setStyle("blurple")
+            let row5 = new MessageActionRow().addComponents([searchButton, upgradeButton, defendButton])
             components.push(row5)
 
 
@@ -158,21 +168,6 @@ module.exports = {
             infoCollector.on("collect", async button => {
                 if (button.id === 'actions-bg') {
 
-                    const searchButton = new MessageButton()
-                        .setLabel("Search")
-                        .setID("search-bg")
-                        .setEmoji("🔍")
-                        .setStyle("blurple")
-                    const upgradeButton = new MessageButton()
-                        .setLabel("Upgrade Weapon")
-                        .setID("upgrade-bg")
-                        .setEmoji("⚒")
-                        .setStyle("blurple")
-                    const defendButton = new MessageButton()
-                        .setLabel("Defend")
-                        .setID("defend-bg")
-                        .setEmoji('🛡️')
-                        .setStyle("blurple")
                     const actionComponents = new MessageActionRow().addComponents([searchButton, upgradeButton, defendButton])
 
                     const acMsg = await button.reply.send({
@@ -180,13 +175,8 @@ module.exports = {
                         components: actionComponents,
                         ephemeral: true
                     })
-                    const actionCollector = acMsg.component.message.createButtonCollector(b => b)
-
-                    actionCollector.on("collect", async button => {
-                        const buttonId = button.id
-                        const gameUser = gamedata.filter(va => va.member.id === button.clicker.user.id)[0]
-                        if (buttonId === 'search-bg') {
-                            const gotShield = [1, 0, 0, 0][Math.floor(Math.random() * 4)] == 1
+                    /**
+                     * const gotShield = [1, 0, 0, 0][Math.floor(Math.random() * 4)] == 1
 
                             await button.reply.send("You start searching... you have a **25% chance** to get the shield.", true)
 
@@ -202,8 +192,7 @@ module.exports = {
                                 button.reply.edit(`You tried searching for a shield, but you end up finding a SNAKE. You were poisoned and lost **${randomDamage}** HP!`, true)
                                 gameUser.hp -= randomDamage
                             }
-                        }
-                    })
+                     */
 
 
                 } else {
