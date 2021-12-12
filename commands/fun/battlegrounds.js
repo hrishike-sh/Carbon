@@ -75,7 +75,7 @@ module.exports = {
                     .setTitle("Game Information")
                     .setDescription("The game will start soon, you may read the instructions till then.")
                     .addField("How it works", "The bot will randomly choose a player, and the player has to decide what they have to do.")
-                    .addField("Actions", "**1) Defense Up**\n> This will increase HP (default: 100).\n**2) Upgrade Weapon**\n> This will increase the damage of your Gun (default: 35)\n3) Search\n> Try your luck and search for something")
+                    .addField("Actions", "1) **Defense Up**\n> This will increase HP (default: 100).\n2) **Upgrade Weapon**\n> This will increase the damage of your Gun (default: 35)\n3) **Search**\n> Try your luck and search for something")
                     .addField("Searching", "You can search for buffs, or get bit by a snake.\n**BUFFS:**\n1) Shield: You're immune to all incoming damage for 1 turn. (Can stack)")
                     .setTimestamp()
                     .setFooter("The game will start soon...", client.user.displayAvatarURL())
@@ -127,17 +127,30 @@ module.exports = {
             if (i > 9) components.push(row3)
             if (i > 14) components.push(row4)
 
-            await message.channel.send({
-                embed: new MessageEmbed()
-                    .setDescription("placeholder."),
-                components,
-            })
+
             // if(i > )
 
             /**
              * Init game
              */
             await sleep(5000)
+            const mainMessage = await message.channel.send({
+                embed: new MessageEmbed()
+                    .setTitle("Battlegrounds")
+                    .setDescription("Click on the user to see their stats!"),
+                components,
+            })
+            const infoCollector = mainMessage.createButtonCollector(
+                b => b
+            )
+
+            infoCollector.on("collect", async button => {
+                const buttonId = button.id
+                const userInfo = gamedata.filter(val => val.id === buttonId)[0]
+                const blank = '<:blank:914473340129906708>'
+
+                await button.reply.send(`${userInfo.member}'s stats:\n${blank}HP: **${userInfo.hp}**\n${blank}Gun Damage: **${userInfo.gun.dmg}**`, true)
+            })
         })
     }
 }
