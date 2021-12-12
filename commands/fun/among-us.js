@@ -103,12 +103,12 @@ module.exports = {
 
       whoAmICollector.on("collect", async bbutton => {
         if (!joined.includes(bbutton.clicker.user.id)) {
-          return button.reply.send("You're not even in the game.", true)
+          return bbutton.reply.send("You're not even in the game.", true)
         }
 
         const susUser = gamedata.filter(u => u.member.id === bbutton.clicker.user.id)[0]
 
-        button.reply.send(`You are **${susUser.impostor ? "the Impostor." : "a Crewmate"}**`, true)
+        bbutton.reply.send(`You are **${susUser.impostor ? "the Impostor." : "a Crewmate"}**`, true)
       })
 
 
