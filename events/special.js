@@ -40,7 +40,7 @@ module.exports = {
 
         const randomPresents = Math.floor(Math.random() * 40) + 10;
         addChannelToCD(message.channel.id, 60 * 1000);
-        (await client.fetchWebhook("918444980517867530")).send(
+        (await client.fetchWebhook("919473906425921596")).send(
             {
                 embed: {
                     title: "New Drop",
