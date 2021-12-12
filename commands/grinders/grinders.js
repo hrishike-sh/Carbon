@@ -68,7 +68,7 @@ module.exports = {
       }
 
       let user = message.mentions.users.size > 0 ? message.mentions.users.first().id : args[0]
-      user = message.guild.members.cache.get(user) || null
+      user = client.users.cache.get(user) || null
       if (!user) {
         return message.channel.send("Please either @ping the user or give me a valid id.")
       }
