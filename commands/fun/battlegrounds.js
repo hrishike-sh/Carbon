@@ -1,5 +1,6 @@
 const { Client, Message, MessageEmbed } = require('discord.js');
-const { MessageButton, MessageActionRow } = require("discord-buttons")
+const { MessageButton, MessageActionRow } = require("discord-buttons");
+const { before } = require('lodash');
 module.exports = {
     name: 'battlegrounds',
     aliases: ['pubg', 'fortnite', 'bg', 'arena'],
@@ -144,11 +145,14 @@ module.exports = {
             const mainMessage = await message.channel.send({
                 embed: new MessageEmbed()
                     .setTitle("Battlegrounds")
-                    .setDescription("Click on the user to see their stats!"),
+                    .setDescription("Click on the user to see their stats!\nEveryone has **15 seconds** to do **1** action."),
                 components,
             })
             const infoCollector = mainMessage.createButtonCollector(
-                b => b
+                b => b,
+                {
+                    time: 15 * 1000
+                }
             )
 
             infoCollector.on("collect", async button => {
@@ -171,11 +175,36 @@ module.exports = {
                         .setStyle("blurple")
                     const actionComponents = new MessageActionRow().addComponents([searchButton, upgradeButton, defendButton])
 
-                    const actionsMessage = await button.reply.send({
+                    const acMsg = await button.reply.send({
                         content: "Use the buttons to do something.",
                         components: actionComponents,
                         ephemeral: true
                     })
+                    const actionCollector = acMsg.createButtonCollector(b => b)
+
+                    actionCollector.on("collect", async button => {
+                        const buttonId = button.id
+                        const gameUser = gamedata.filter(va => va.member.id === button.clicker.user.id)[0]
+                        if (buttonId === 'search-bg') {
+                            const gotShield = [1, 0, 0, 0][Math.floor(Math.random() * 4)] == 1
+
+                            await button.reply.send("You start searching... you have a **25% chance** to get the shield.", true)
+
+                            await sleep(500)
+
+                            if (gotShield) {
+                                button.reply.edit("You found a 🛡️ Shield! You are now immune to **1** incoming attack.", true)
+                                gameUser.inv.shield.count++
+                                return
+                            } else {
+                                const randomDamage = Math.floor(Math.random() * 50) + 30
+
+                                button.reply.edit(`You tried searching for a shield, but you end up finding a SNAKE. You were poisoned and lost **${randomDamage}** HP!`, true)
+                                gameUser.hp -= randomDamage
+                            }
+                        }
+                    })
+
 
                 } else {
                     const buttonId = button.id
