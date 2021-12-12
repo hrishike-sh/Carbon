@@ -174,27 +174,25 @@ module.exports = {
                         content: "Use the buttons to do something.",
                         components: actionComponents,
                         ephemeral: true
-                    })
-                    /**
-                     * const gotShield = [1, 0, 0, 0][Math.floor(Math.random() * 4)] == 1
+                    }
 
-                            await button.reply.send("You start searching... you have a **25% chance** to get the shield.", true)
+                } else if (button.id === 'search-bg') {
+                    const gotShield = [1, 0, 0, 0][Math.floor(Math.random() * 4)] == 1
 
-                            await sleep(500)
+                    await button.reply.send("You start searching... you have a **25% chance** to get the shield.", true)
 
-                            if (gotShield) {
-                                button.reply.edit("You found a 🛡️ Shield! You are now immune to **1** incoming attack.", true)
-                                gameUser.inv.shield.count++
-                                return
-                            } else {
-                                const randomDamage = Math.floor(Math.random() * 50) + 30
+                    await sleep(500)
 
-                                button.reply.edit(`You tried searching for a shield, but you end up finding a SNAKE. You were poisoned and lost **${randomDamage}** HP!`, true)
-                                gameUser.hp -= randomDamage
-                            }
-                     */
+                    if (gotShield) {
+                        button.reply.edit("You found a 🛡️ Shield! You are now immune to **1** incoming attack.", true)
+                        gameUser.inv.shield.count++
+                        return
+                    } else {
+                        const randomDamage = Math.floor(Math.random() * 50) + 30
 
-
+                        button.reply.edit(`You tried searching for a shield, but you end up finding a SNAKE. You were poisoned and lost **${randomDamage}** HP!`, true)
+                        gameUser.hp -= randomDamage
+                    }
                 } else {
                     const buttonId = button.id
                     const userInfo = gamedata.filter(val => val.id === buttonId)[0]
