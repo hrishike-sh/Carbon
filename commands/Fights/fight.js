@@ -4,12 +4,12 @@ module.exports = {
     usage: '<@USER>',
     aliases: ['ffight'],
     description: 'Fight others ig?',
-    disabledChannels: ['870240187198885888'],
+    disabledChannels: ['870240187198885888', '796729013456470036'],
     execute(message, args) {
         if (!args[0]) return message.channel.send("You must mention someone to fight!")
         const player1 = message.member.id
         const mention = message.mentions.users.size > 0 ? message.mentions.users.first() : false;
-        if(mention.bot) return message.channel.send("Cant fight bots.")
+        if (mention.bot) return message.channel.send("Cant fight bots.")
         if (!mention) return message.channel.send("You must mention someone to fight with them.")
         const player2 = mention.id
         const player1username = message.author.username
