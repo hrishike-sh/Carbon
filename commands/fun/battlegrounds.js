@@ -166,7 +166,7 @@ module.exports = {
             )
 
             infoCollector.on("collect", async button => {
-                const gameUser = gamedata.filter(user => user.id === button.id)[0]
+                const gameUser = gamedata.filter(user => user.member.id === button.clicker.user.id)[0]
                 if (button.id === 'search-bg') {
                     const gotShield = [1, 0, 0, 0][Math.floor(Math.random() * 4)] == 1
 
@@ -184,11 +184,19 @@ module.exports = {
                         button.reply.edit(`You tried searching for a shield, but you end up finding a SNAKE. You were poisoned and lost **${randomDamage}** HP!`, true)
                         gameUser.hp -= randomDamage
                     }
-                } else {
-                    const buttonId = button.id
-                    const userInfo = gamedata.filter(val => val.id === buttonId)[0]
+                } else if (button.id === 'upgrade-bg') {
+                    const moreDamage = Math.floor(Math.random() * 30) + 20
 
-                    await button.reply.send(`${userInfo.member}'s stats:\n   HP: **${userInfo.hp}**\n   Gun Damage: **${userInfo.gun.dmg}**`, true)
+                    button.reply.send(`UPGRADE | You upgraded your gun and you now do **${moreDamage}** more damage with a single hit :sunglasses:`, true)
+
+                    gameUser.gun.dmg += moreDamage
+
+                } else if (button.id === 'defend-bg') {
+                    const moreHp = Math.floor(Math.random() * 30) + 10
+
+                    button.reply.send(`HEAL | You ate some ~~drugs~~ medicine and got **${moreHp}** hp.`)
+
+                    gameUser.hp += moreHp
                 }
             })
         })
