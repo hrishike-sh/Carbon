@@ -166,6 +166,7 @@ module.exports = {
             )
 
             infoCollector.on("collect", async button => {
+                const gameUser = gamedata.filter(user => user.id === button.id)[0]
                 if (button.id === 'search-bg') {
                     const gotShield = [1, 0, 0, 0][Math.floor(Math.random() * 4)] == 1
 
