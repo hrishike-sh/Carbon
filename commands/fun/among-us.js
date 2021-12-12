@@ -11,8 +11,10 @@ module.exports = {
    * @param {String[]} args
    */
   async execute(message, args, client) {
-    if (!['266432078222983169', '598918643727990784'].includes(message.author.id)) return
 
+    if (!message.member.permissions.has("MANAGE_GUILD")) {
+      return message.reply("You need the \`MANAGE_GUILD\` permission to run this command.")
+    }
 
     const emojiArray = [
       "917726679214985246",
