@@ -13,18 +13,7 @@ module.exports = {
   async execute(message, args, client) {
     if (!['266432078222983169', '598918643727990784'].includes(message.author.id)) return
 
-    const emojis = [
-      client.emojis.cache.get("917726679214985246").toString(),
-      client.emojis.cache.get("917726744457383936").toString(),
-      client.emojis.cache.get("917726831485026314").toString(),
-      client.emojis.cache.get("917726919062077490").toString(),
-      client.emojis.cache.get("917726981964058624").toString(),
-      client.emojis.cache.get("917727061651640350").toString(),
-      client.emojis.cache.get("917727115183530044").toString(),
-      client.emojis.cache.get("917727205453365278").toString(),
-      client.emojis.cache.get("917727491660083220").toString(),
-      client.emojis.cache.get("917727535704457237").toString(),
-    ];
+
     const emojiArray = [
       "917726679214985246",
       "917726744457383936",
@@ -63,47 +52,38 @@ module.exports = {
 
     const joined = [];
     let gamedata = [];
-    let i = 0;
 
     takePlayersCollector.on("collect", (button) => {
       if (joined.includes(button.clicker.user.id)) {
         button.reply.send("You have already joined.", true);
         return;
       }
-      if (i > 10) {
+      if (joined.length && joined.length > 10) {
         button.reply.send("The game is already full, too late.", true);
         return;
       }
       joined.push(button.clicker.user.id);
       gamedata.push({
         member: button.clicker.member,
-        color: emojiArray[i],
+        color: emojiArray[joined.length - 1],
         dead: false,
         impostor: false,
-        id: `${emojiArray[i]}_${Math.floor(Math.random() * 1_000_000)}`,
+        id: `${emojiArray[joined.length - 1]}_${Math.floor(Math.random() * 1_000_000)}`,
         gotVoted: 0,
         messages: 0,
       });
       button.reply.send(
         `You have successfully joined the game and you are: ${client.emojis.cache
-          .get(emojiArray[i])
+          .get(emojiArray[joined.length - 1])
           .toString()}`,
         true
       );
-      i++;
     });
 
     takePlayersCollector.on("end", async (collected) => {
-      const amountOfPlayers = gamedata.length;
-      console.log(gamedata);
-      // if(amountOfPlayers < 4){
-      //     message.channel.send(`You need atleast **4 players** to play the game, get more friends lol.`)
-      //     return
-      // }
 
       const randomNumber = Math.floor(Math.random() * gamedata.length);
       gamedata[randomNumber].impostor = true;
-      console.log(gamedata[randomNumber]);
 
       await message.channel.send(
         "I will now be DM'ing all of you with your role in the game, and shush, no snitching!"
@@ -119,7 +99,7 @@ module.exports = {
       let row1 = new MessageActionRow();
       let row2 = new MessageActionRow();
       let m;
-      for (m = 0; m < gamedata.length - 1; m++) {
+      for (m = 0; m < gamedata.length; m++) {
         if (m < 5) {
           row1 = row1.addComponent(
             new MessageButton()
@@ -127,6 +107,7 @@ module.exports = {
               .setStyle("grey")
               .setID(gamedata[m].id)
               .setEmoji(gamedata[m].color)
+              .setDisabled()
           );
         } else {
           row2 = row2.addComponent(
@@ -135,11 +116,12 @@ module.exports = {
               .setStyle("grey")
               .setID(gamedata[m].id)
               .setEmoji(gamedata[m].color)
+              .setDisabled()
           );
         }
       }
 
-      let components = gamedata.length < 5 ? [row1] : [row1, row2];
+      let components = gamedata.length < 6 ? [row1] : [row1, row2];
 
       await message.channel.send(
         "**How does the impostor win?**\n> The impostor has to send **15** messages in order to win or they have to not get caught for 2 minutes.\n\n**How do the crewmates win?**\n> The crewmates will have to work together to find out who the impostor is!\n\n**How do I call an emergency meeting?**\n> Type `emergency` to call a meeting. **NOTE** Only 3 meetings are allowed each game.",
@@ -150,9 +132,7 @@ module.exports = {
 
       const mainCol = message.channel.createMessageCollector(
         (m) => joined.includes(m.author.id),
-        {
-          // time: 120 * 1000
-        }
+        {}
       );
       let impostorMessages = 0;
       let meetings = 3;
@@ -195,7 +175,7 @@ module.exports = {
           row1 = new MessageActionRow();
           row2 = new MessageActionRow();
 
-          for (let a = 0; a < gamedata.length - 1; a++) {
+          for (let a = 0; a < gamedata.length; a++) {
             if (a < 5) {
               if (gamedata[a].dead) {
                 row1 = row1.addComponent(
@@ -236,7 +216,7 @@ module.exports = {
               }
             }
           }
-          components = m < 5 ? [row1, row3] : [row1, row2, row3];
+          components = m < 6 ? [row1, row3] : [row1, row2, row3];
 
           const meetingMessage = await message.channel.send(
             `${gamedata
@@ -252,7 +232,6 @@ module.exports = {
           const voteCollector = meetingMessage.createButtonCollector((b) => b, {
             time: 15000,
           });
-          let votes = [];
           let voted = [];
           voteCollector.on("collect", async (button) => {
             if (button.id === "message-am") {
@@ -278,7 +257,7 @@ module.exports = {
               (u) => u.member.id === button.clicker.id
             )[0];
             if (voter.dead) {
-              button.reply.send("You're already dead, why're voting?", true);
+              button.reply.send("You're already dead, why're you voting?", true);
               return;
             }
             const buttonId = button.id;
@@ -313,7 +292,7 @@ module.exports = {
               (a, b) => b.gotVoted - a.gotVoted
             )[0];
             votedOut.dead = true;
-            console.log(votedOut);
+
             if (votedOut.impostor) {
               message.channel.send(
                 `${votedOut.member} was voted out. And they were the impostor.\n\nCongrats to all the crewmates that survived!`
@@ -325,7 +304,7 @@ module.exports = {
               );
             }
 
-            for (let amogus = 0; amogus < gamedata.length - 1; amogus++) {
+            for (let amogus = 0; amogus < gamedata.length; amogus++) {
               gamedata[amogus].gotVoted = 0;
             }
           });
