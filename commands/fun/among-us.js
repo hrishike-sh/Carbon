@@ -84,17 +84,33 @@ module.exports = {
 
       const randomNumber = Math.floor(Math.random() * gamedata.length);
       gamedata[randomNumber].impostor = true;
+      const whoAmI = new MessageButton()
+        .setLabel("Click me!")
+        .setStyle("green")
+        .setID("whoami-amogus")
+      const roleCollector = await message.channel.send("Click the button to check your role, the game will start in **10 seconds**...", {
+        component: whoAmI
+      });
 
-      await message.channel.send(
-        "I will now be DM'ing all of you with your role in the game, and shush, no snitching!"
-      );
+      const whoAmICollector = roleCollector.createButtonCollector(
+        b => b,
+        {
+          time: 10000
+        }
+      )
 
-      for (let z = 0; z < gamedata.length; z++) {
-        await sleep(500);
-        gamedata[z].member.send(
-          `Your role is: **${gamedata[z].impostor ? "Impostor" : "Crewmate"}**`
-        );
-      }
+      whoAmICollector.on("collect", async bbutton => {
+        if (!joined.includes(bbutton.clicker.user.id)) {
+          return button.reply.send("You're not even in the game.", true)
+        }
+
+        const susUser = gamedata.filter(u => u.member.id === bbutton.clicker.user.id)[0]
+
+        button.reply.send(`You are **${susUser.impostor ? "the Impostor." : "a Crewmate"}**`, true)
+      })
+
+
+      await sleep(10 * 1000)
 
       let row1 = new MessageActionRow();
       let row2 = new MessageActionRow();
