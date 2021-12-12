@@ -158,14 +158,17 @@ module.exports = {
                         .setLabel("Search")
                         .setID("search-bg")
                         .setEmoji("🔍")
+                        .setStyle("blurple")
                     const upgradeButton = new MessageButton()
                         .setLabel("Upgrade Weapon")
                         .setID("upgrade-bg")
                         .setEmoji("⚒")
+                        .setStyle("blurple")
                     const defendButton = new MessageButton()
                         .setLabel("Defend")
                         .setID("defend-bg")
                         .setEmoji('🛡️')
+                        .setStyle("blurple")
                     const actionComponents = new MessageActionRow().addComponents([searchButton, upgradeButton, defendButton])
 
                     const actionsMessage = await button.reply.send({
