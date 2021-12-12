@@ -5,18 +5,13 @@ module.exports = {
   aliases: ["amogus"],
   fhOnly: false,
   disabledChannels: [],
-  /**
+  /** 
    * @param {Client} client
    * @param {Message} message
    * @param {String[]} args
    */
   async execute(message, args, client) {
-    if (
-      message.author.id !== "598918643727990784" ||
-      message.author.id !== "266432078222983169"
-    ) {
-      return;
-    }
+    if (!['266432078222983169', '598918643727990784'].includes(message.author.id)) return
 
     const emojis = [
       client.emojis.cache.get("917726679214985246").toString(),
@@ -183,8 +178,7 @@ module.exports = {
           meetings--;
           if (meetings < 0) {
             message.channel.send(
-              `The game has ended. After repeatedly using the Emergency button... it broke.\n\nResulting in the impostor killing everyone! The winner is ${
-                gamedata.filter((u) => u.impostor)[0].member
+              `The game has ended. After repeatedly using the Emergency button... it broke.\n\nResulting in the impostor killing everyone! The winner is ${gamedata.filter((u) => u.impostor)[0].member
               }`
             );
             mainCol.stop();
@@ -266,8 +260,7 @@ module.exports = {
                 .sort((a, b) => b.messages - a.messages)
                 .map(
                   (value, i) =>
-                    `**${i + 1}**. ${value.member.user.tag} with ${
-                      value.messages
+                    `**${i + 1}**. ${value.member.user.tag} with ${value.messages
                     } messages.`
                 )
                 .join("\n");
