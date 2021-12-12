@@ -76,7 +76,7 @@ module.exports = {
                     .setDescription("The game will start soon, you may read the instructions till then.")
                     .addField("How it works", "The bot will randomly choose a player, and the player has to decide what they have to do.")
                     .addField("Actions", "**1) Defense Up**\n> This will increase HP (default: 100).\n**2) Upgrade Weapon**\n> This will increase the damage of your Gun (default: 35)\n3) Search\n> Try your luck and search for something")
-                    .addField("Searching", "You can search for buffs, or get bit by a snake.\n**BUFFS:**\n1) Sheild: You're immune to all incoming damage for 1 turn. (Can stack)")
+                    .addField("Searching", "You can search for buffs, or get bit by a snake.\n**BUFFS:**\n1) Shield: You're immune to all incoming damage for 1 turn. (Can stack)")
                     .setTimestamp()
                     .setFooter("The game will start soon...", client.user.displayAvatarURL())
             )
@@ -95,28 +95,28 @@ module.exports = {
                     row1 = row1.addComponent(
                         new MessageButton()
                             .setLabel(gamedata[i].member.user.username)
-                            .setColor("grey")
+                            .setStyle("grey")
                             .setID(gamedata[i].id)
                     )
                 } else if (i < 10) {
                     row2 = row2.addComponent(
                         new MessageButton()
                             .setLabel(gamedata[i].member.user.username)
-                            .setColor("grey")
+                            .setStyle("grey")
                             .setID(gamedata[i].id)
                     )
                 } else if (i < 15) {
                     row3 = row3.addComponent(
                         new MessageButton()
                             .setLabel(gamedata[i].member.user.username)
-                            .setColor("grey")
+                            .setStyle("grey")
                             .setID(gamedata[i].id)
                     )
                 } else {
                     row4 = row4.addComponent(
                         new MessageButton()
                             .setLabel(gamedata[i].member.user.username)
-                            .setColor("grey")
+                            .setStyle("grey")
                             .setID(gamedata[i].id)
                     )
                 }
