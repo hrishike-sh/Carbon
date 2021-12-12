@@ -161,7 +161,7 @@ module.exports = {
             const infoCollector = mainMessage.createButtonCollector(
                 b => b,
                 {
-                    time: 15 * 1000
+
                 }
             )
 
