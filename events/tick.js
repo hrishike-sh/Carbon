@@ -275,22 +275,24 @@ module.exports = {
             if (!query || !query.length) {
             } else {
                 for (const q of query) {
-                    // const user = client.users.cache.get(q.userId) || null
-                    // if (!user) {
-                    //     q.fighthub.voting.hasVoted = false
-                    //     q.save()
-                    // } else {
-                    //     (await user.createDM()).send(
-                    //         new MessageEmbed()
-                    //             .setTitle("Vote Reminder")
-                    //             .setColor("GREEN")
-                    //             .setTimestamp()
-                    //             .setDescription("You can vote for **[FightHub](https://discord.gg/fight)** now!\nClick **[here](https://top.gg/servers/824294231447044197/vote)** to vote!\n\nOnce you vote, you will be reminded again after 12 hours. Thanks for your support! You can toggle vote reminders by running \`fh voterm\`")
-                    //             .setThumbnail(client.storage.fighthub.iconURL())
-                    //     )
-                    //     q.fighthub.voting.hasVoted = false;
-                    //     q.save()
-                    // }
+                    const user = client.users.cache.get(q.userId) || null
+                    if (!user) {
+                        q.fighthub.voting.hasVoted = false
+                        q.save()
+                    } else {
+                        ;(await user.createDM()).send(
+                            new MessageEmbed()
+                                .setTitle('Vote Reminder')
+                                .setColor('GREEN')
+                                .setTimestamp()
+                                .setDescription(
+                                    'You can vote for **[FightHub](https://discord.gg/fight)** now!\nClick **[here](https://top.gg/servers/824294231447044197/vote)** to vote!\n\nOnce you vote, you will be reminded again after 12 hours. Thanks for your support! You can toggle vote reminders by running `fh voterm`'
+                                )
+                                .setThumbnail(client.storage.fighthub.iconURL())
+                        )
+                        q.fighthub.voting.hasVoted = false
+                        q.save()
+                    }
                 }
             }
         }
