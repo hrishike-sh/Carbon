@@ -54,5 +54,7 @@ module.exports = {
                 .setTimestamp()
                 .setThumbnail(client.storage.fighthub.iconURL())
         )
+
+            (await client.fetchWebhook("921645605070200852")).send(`**${user.tag}** voted for the server.`)
     }
 }
