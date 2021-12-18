@@ -220,7 +220,7 @@ module.exports = {
         }
         // Timer
         if (voteReminderCounter == 30) {
-            console.log("Hi")
+
             voteReminderCounter = 0;
             const query = await voteModel.find({
                 fighthub: {
@@ -233,7 +233,7 @@ module.exports = {
                     }
                 }
             })
-            console.log(query.length, query)
+
             if (!query.length) {
 
             } else {
