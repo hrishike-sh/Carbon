@@ -34,7 +34,7 @@ module.exports = {
                         enabled: true
                     }
                 }
-            }).save()
+            })
         }
         if (dbUser.fighthub && !dbUser.fighthub.voting.enabled) return; // disabled reminders
 
