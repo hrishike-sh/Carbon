@@ -21,6 +21,7 @@ module.exports = {
         const user = client.users.cache.get(message.embeds[0].description.split("(id:")[1].split(")")[0]) || null
 
         if (!user) return;
+        console.log(user)
 
         let dbUser = await db.findOne({ userID: message.author.id })
         if (!dbUser || !dbUser.fighthub.voting) {
