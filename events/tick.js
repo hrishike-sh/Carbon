@@ -264,7 +264,16 @@ module.exports = {
         // Timer
         if (voteReminderCounter == 30) {
             voteReminderCounter = 0
-            const query = await voteModel.find({})
+            const query = await voteModel.find({
+                fighthub: {
+                    voting: {
+                        enabled: true,
+                        lastVoted: {
+                            $lt: new Date().getTime(),
+                        },
+                    },
+                },
+            })
 
             if (!query.length) {
             } else {
