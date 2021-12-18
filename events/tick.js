@@ -264,15 +264,15 @@ module.exports = {
         // Timer
         if (voteReminderCounter == 30) {
             voteReminderCounter = 0
-            const query = await voteModel.find({
-                fighthub: {
-                    voting: {
-                        enabled: true,
-                    },
-                },
-            })
+            let query = await voteModel.find({})
+            query = query.filter(
+                (val) =>
+                    val.fighthub &&
+                    val.fighthub.voting.enabled &&
+                    val.fighthub.voting.lastVoted < new Date().getTime()
+            )
             console.log(query)
-            if (!query.length) {
+            if (!query || !query.length) {
             } else {
                 for (const q of query) {
                     // const user = client.users.cache.get(q.userId) || null
