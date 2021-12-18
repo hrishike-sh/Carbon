@@ -9,7 +9,7 @@ const UserSchema = new mongoose.Schema({
         voting: {
             hasVoted: Boolean,
             lastVoted: Number,
-            enabled: true
+            enabled: Boolean
         }
     }
 })
