@@ -220,6 +220,7 @@ module.exports = {
         }
         // Timer
         if (voteReminderCounter == 30) {
+            console.log("Hi")
             voteReminderCounter = 0;
             const query = await voteModel.find({
                 fighthub: {
@@ -233,28 +234,32 @@ module.exports = {
                 }
             })
             console.log(query.length, query)
-            if (!query.length) return;
+            if (!query.length) {
 
-            for (const q of query) {
-                await sleep(2500)
-                const user = client.users.cache.get(q.userId) || null
-                if (!user) {
-                    q.fighthub.voting.hasVoted = false
-                    q.save()
-                } else {
-                    user.send(
-                        new MessageEmbed()
-                            .setTitle("Vote Reminder")
-                            .setColor("GREEN")
-                            .setTimestamp()
-                            .setDescription("You can vote for **[FightHub](https://discord.gg/fight)** now!\nClick **[here](https://top.gg/servers/824294231447044197/vote)** to vote!\n\nOnce you vote, you will be reminded again after 12 hours. Thanks for your support! You can toggle vote reminders by running \`fh voterm\`")
-                            .setThumbnail(client.storage.fighthub.iconURL())
-                    )
+            } else {
+                for (const q of query) {
+                    await sleep(2500)
+                    const user = client.users.cache.get(q.userId) || null
+                    if (!user) {
+                        q.fighthub.voting.hasVoted = false
+                        q.save()
+                    } else {
+                        (await user.createDM()).send(
+                            new MessageEmbed()
+                                .setTitle("Vote Reminder")
+                                .setColor("GREEN")
+                                .setTimestamp()
+                                .setDescription("You can vote for **[FightHub](https://discord.gg/fight)** now!\nClick **[here](https://top.gg/servers/824294231447044197/vote)** to vote!\n\nOnce you vote, you will be reminded again after 12 hours. Thanks for your support! You can toggle vote reminders by running \`fh voterm\`")
+                                .setThumbnail(client.storage.fighthub.iconURL())
+                        )
 
-                    q.fighthub.voting.hasVoted = false;
-                    q.save()
+                        q.fighthub.voting.hasVoted = false;
+                        q.save()
+                    }
                 }
             }
+
+
         }
 
         setTimeout(() => {
