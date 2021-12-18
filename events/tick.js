@@ -269,6 +269,7 @@ module.exports = {
                 (val) =>
                     val.fighthub &&
                     val.fighthub.voting.enabled &&
+                    val.fighthub.voting.hasVoted &&
                     val.fighthub.voting.lastVoted < new Date().getTime()
             )
             console.log(query)
