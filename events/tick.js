@@ -265,7 +265,11 @@ module.exports = {
         if (voteReminderCounter == 30) {
             voteReminderCounter = 0
             const query = await voteModel.find({
-                fighthub: {},
+                fighthub: {
+                    voting: {
+                        enabled: true,
+                    },
+                },
             })
             console.log(query)
             if (!query.length) {
