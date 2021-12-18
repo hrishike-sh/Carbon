@@ -1,5 +1,5 @@
-const { Message, Client, Collection } = require('discord.js');
-const { MessageButton, MessageActionRow } = require('discord-buttons');
+const { Message, Client, Collection } = require('discord.js')
+const { MessageButton, MessageActionRow } = require('discord-buttons')
 const presentSchema = require('../database/models/presentSchema')
 const correctInfo = new Collection()
 let dropCD = []
@@ -7,23 +7,23 @@ module.exports = {
     name: 'message',
     once: false,
     /**
-     * @param {Message} message 
-     * @param {Client} client 
+     * @param {Message} message
+     * @param {Client} client
      */
     async execute(message, client) {
         let disabledDrop = client.storage.disabledDrops
         //Checks
-        if (!message.guild) return; // no dms
+        if (!message.guild) return // no dms
 
-        if (message.guild.id !== client.storage.fighthub.id) return; // Returns if the server is not fighthub
+        if (message.guild.id !== client.storage.fighthub.id) return // Returns if the server is not fighthub
 
-        if (disabledDrop.includes(message.channel.id)) return; // Returns if the channel is disabled
+        if (disabledDrop.includes(message.channel.id)) return // Returns if the channel is disabled
 
-        if (dropCD.includes(message.channel.id)) return; // Returns if the channel has already had a drop recently
+        if (dropCD.includes(message.channel.id)) return // Returns if the channel has already had a drop recently
 
-        const randomNum = Math.floor(Math.random() * 100) == 69; // Generates a random number and checks if it is 69
+        const randomNum = Math.floor(Math.random() * 100) == 69 // Generates a random number and checks if it is 69
 
-        if (!randomNum) return; // 1/100 chance for the event to spawn
+        if (!randomNum) return // 1/100 chance for the event to spawn
         //Checks
 
         /**
@@ -38,20 +38,22 @@ module.exports = {
          *      # Number: 3
          */
 
-        const randomPresents = Math.floor(Math.random() * 40) + 10;
-        addChannelToCD(message.channel.id, 60 * 1000);
-        (await client.fetchWebhook("919473906425921596")).send(
-            {
-                embed: {
-                    title: "New Drop",
-                    description: `Dropped in <#${message.channel.id}> for ${randomPresents} presents.\n\nTime: <t:${(new Date().getTime() / 1000).toFixed(0)}>`
-                },
-                content: `<#${message.channel.id}>`
-            }
-        )
+        const randomPresents = Math.floor(Math.random() * 40) + 10
+        addChannelToCD(message.channel.id, 60 * 1000)
+        ;(await client.fetchWebhook('919473906425921596')).send({
+            embed: {
+                title: 'New Drop',
+                description: `Dropped in <#${
+                    message.channel.id
+                }> for ${randomPresents} presents.\n\nTime: <t:${(
+                    new Date().getTime() / 1000
+                ).toFixed(0)}>`,
+            },
+            content: `<#${message.channel.id}>`,
+        })
         const randomEvent = [1, 2, 3][Math.floor(Math.random() * 3)]
         if (randomEvent == 1) {
-            const header = `**:snowman: Christmas Event :snowman:**\nHit the snowman with the snowball for presents!\n`;
+            const header = `**:snowman: Christmas Event :snowman:**\nHit the snowman with the snowball for presents!\n`
             const maps = [
                 {
                     text: `🎄🎄🎄
@@ -59,7 +61,7 @@ module.exports = {
 
 
 <:blank:914473340129906708>`,
-                    yes: 1
+                    yes: 1,
                 },
                 {
                     text: `🎄🎄🎄
@@ -67,7 +69,7 @@ module.exports = {
 
 
 <:blank:914473340129906708>`,
-                    yes: 2
+                    yes: 2,
                 },
                 {
                     text: `🎄🎄🎄
@@ -75,51 +77,73 @@ module.exports = {
 
 
 <:blank:914473340129906708>`,
-                    yes: 3
-                }
+                    yes: 3,
+                },
             ]
 
-            let leftButton = new MessageButton().setEmoji("917049050929455144").setStyle("gray").setID('cevent-l1')
-            let middleButton = new MessageButton().setEmoji("917049050929455144").setStyle("gray").setID('cevent-m2')
-            let rightButton = new MessageButton().setEmoji("917049050929455144").setStyle("gray").setID('cevent-r3')
-            let row = new MessageActionRow().addComponents([leftButton, middleButton, rightButton])
+            let leftButton = new MessageButton()
+                .setEmoji('917049050929455144')
+                .setStyle('gray')
+                .setID('cevent-l1')
+            let middleButton = new MessageButton()
+                .setEmoji('917049050929455144')
+                .setStyle('gray')
+                .setID('cevent-m2')
+            let rightButton = new MessageButton()
+                .setEmoji('917049050929455144')
+                .setStyle('gray')
+                .setID('cevent-r3')
+            let row = new MessageActionRow().addComponents([
+                leftButton,
+                middleButton,
+                rightButton,
+            ])
 
             await message.channel.send(header)
             const firstCorrect = maps[Math.floor(Math.random() * 3)]
-            const mainMessage = await message.channel.send(`${firstCorrect.text}`, {
-                components: [row]
-            });
+            const mainMessage = await message.channel.send(
+                `${firstCorrect.text}`,
+                {
+                    components: [row],
+                }
+            )
 
             correctInfo.set(mainMessage.id, {
                 ended: false,
                 correctAnswer: firstCorrect.yes,
-                triedAndFailed: []
+                triedAndFailed: [],
             })
 
-            editMessage(mainMessage, maps, header, row);
+            editMessage(mainMessage, maps, header, row)
 
-            const mainCollector = mainMessage.createButtonCollector(
-                b => b,
-                {
-                    time: 30 * 1000,
-                    errors: ['time']
-                }
-            )
+            const mainCollector = mainMessage.createButtonCollector((b) => b, {
+                time: 30 * 1000,
+                errors: ['time'],
+            })
 
-            mainCollector.on('collect', async button => {
-
-                if (correctInfo.get(button.message.id).triedAndFailed.includes(button.clicker.user.id)) {
-                    button.reply.send("You're out of snowballs lol, you only have one chance.", true)
+            mainCollector.on('collect', async (button) => {
+                if (
+                    correctInfo
+                        .get(button.message.id)
+                        .triedAndFailed.includes(button.clicker.user.id)
+                ) {
+                    button.reply.send(
+                        "You're out of snowballs lol, you only have one chance.",
+                        true
+                    )
                     return
                 }
 
                 const id = button.id
                 const answerChose = parseInt(id.replace(/[^0-9]/g, ''))
-                const correctOne = parseInt(correctInfo.get(button.message.id).correctAnswer)
+                const correctOne = parseInt(
+                    correctInfo.get(button.message.id).correctAnswer
+                )
 
                 if (correctOne === answerChose) {
-
-                    button.reply.send(`${button.clicker.member} hit the snowman first.\n\n:gift: | You got **${randomPresents}** presents!`)
+                    button.reply.send(
+                        `${button.clicker.member} hit the snowman first.\n\n:gift: | You got **${randomPresents}** presents!`
+                    )
                     correctInfo.get(button.message.id).ended = true
 
                     leftButton = leftButton.setDisabled()
@@ -132,10 +156,14 @@ module.exports = {
                     } else {
                         rightButton = rightButton.setStyle('green')
                     }
-                    row = new MessageActionRow().addComponents([leftButton, middleButton, rightButton])
+                    row = new MessageActionRow().addComponents([
+                        leftButton,
+                        middleButton,
+                        rightButton,
+                    ])
 
                     await mainMessage.edit(`${mainMessage.content}`, {
-                        components: [row]
+                        components: [row],
                     })
                     mainCollector.stop()
 
@@ -145,33 +173,29 @@ module.exports = {
                     if (!dbUser) {
                         dbUser = new presentSchema({
                             userId,
-                            presents: 0
+                            presents: 0,
                         })
                     }
 
                     dbUser.presents = dbUser.presents + randomPresents
                     dbUser.save()
-
                 } else {
-
-                    correctInfo.get(button.message.id).triedAndFailed.push(button.clicker.user.id)
-                    button.reply.send("Your aim is trash, you hit one of the tree.", true)
-
+                    correctInfo
+                        .get(button.message.id)
+                        .triedAndFailed.push(button.clicker.user.id)
+                    button.reply.send(
+                        'Your aim is trash, you hit one of the tree.',
+                        true
+                    )
                 }
-
             })
-
-
         } else if (randomEvent == 2) {
-
-            const emoji = [
-                '🎅', '⛄', '🎄',
-                '🎁', '🦌', '🧣',
-                '🌨️', '❄️'
-            ]
+            const emoji = ['🎅', '⛄', '🎄', '🎁', '🦌', '🧣', '🌨️', '❄️']
             const toGuess = emoji[Math.floor(Math.random() * emoji.length)]
 
-            await message.channel.send(`**⛄ Christmas Event ⛄**\nMemorize & Guess the emoji to get some presents!`)
+            await message.channel.send(
+                `**⛄ Christmas Event ⛄**\nMemorize & Guess the emoji to get some presents!`
+            )
             const mainMessage = await message.channel.send(toGuess)
             await sleep(3000)
 
@@ -196,29 +220,30 @@ module.exports = {
                 }
             }
 
-            mainMessage.edit("Which emoji was displayed?", {
-                components: [row, row2]
+            mainMessage.edit('Which emoji was displayed?', {
+                components: [row, row2],
             })
 
             const mainCollector = await mainMessage.createButtonCollector(
-                b => b,
+                (b) => b,
                 {
                     time: 30 * 1000,
-                    errors: ['time']
+                    errors: ['time'],
                 }
             )
             let guessedButFailed = []
-            mainCollector.on('collect', async button => {
-
+            mainCollector.on('collect', async (button) => {
                 const id = button.id
                 const correct = toGuess
 
                 if (guessedButFailed.includes(button.clicker.user.id)) {
-                    button.reply.send("You can only guess once.", true)
+                    button.reply.send('You can only guess once.', true)
                     return
                 } else {
                     if (id === correct) {
-                        button.reply.send(`${button.clicker.member} guessed the emoji.\n\n:gift: | You got **${randomPresents}** presents!`)
+                        button.reply.send(
+                            `${button.clicker.member} guessed the emoji.\n\n:gift: | You got **${randomPresents}** presents!`
+                        )
                         mainCollector.stop()
 
                         row = new MessageActionRow()
@@ -265,7 +290,7 @@ module.exports = {
                         }
 
                         mainMessage.edit(`${mainMessage.content}`, {
-                            components: [row, row2]
+                            components: [row, row2],
                         })
                         guessedButFailed = []
 
@@ -275,24 +300,18 @@ module.exports = {
                         if (!dbUser) {
                             dbUser = new presentSchema({
                                 userId,
-                                presents: 0
+                                presents: 0,
                             })
                         }
 
                         dbUser.presents = dbUser.presents + randomPresents
                         dbUser.save()
-
                     } else {
-
                         guessedButFailed.push(button.clicker.user.id)
-                        button.reply.send("That was not the emoji.", true)
-
+                        button.reply.send('That was not the emoji.', true)
                     }
                 }
-
-
             })
-
         } else if (randomEvent == 3) {
             const wordArray = [
                 'santa',
@@ -302,26 +321,30 @@ module.exports = {
                 'sleigh',
                 'reindeer',
                 'presents',
-                'bells'
+                'bells',
             ]
 
-            const randomWord = wordArray[Math.floor(Math.random() * wordArray.length)]
+            const randomWord =
+                wordArray[Math.floor(Math.random() * wordArray.length)]
             const scrambledWord = scramble(randomWord)
 
-            await message.channel.send(`**⛄ Christmas Event ⛄**\nGuess the scrambled word for presents!\n\nWord: **\`${scrambledWord}\`**`)
+            await message.channel.send(
+                `**⛄ Christmas Event ⛄**\nGuess the scrambled word for presents!\n\nWord: **\`${scrambledWord}\`**`
+            )
 
             const mainCollector = message.channel.createMessageCollector(
-                m => m,
+                (m) => m,
                 {
                     time: 30 * 1000,
                 }
             )
 
-            mainCollector.on('collect', async msg => {
-
+            mainCollector.on('collect', async (msg) => {
                 if (msg.content.toLowerCase() === randomWord) {
                     mainCollector.stop('dont_check_for_this')
-                    message.channel.send(`${msg.member} guessed the right word.\n\n:gift: | You got **${randomPresents}** presents!`)
+                    message.channel.send(
+                        `${msg.member} guessed the right word.\n\n:gift: | You got **${randomPresents}** presents!`
+                    )
 
                     const userId = msg.author.id
                     let dbUser = await presentSchema.findOne({ userId })
@@ -329,48 +352,44 @@ module.exports = {
                     if (!dbUser) {
                         dbUser = new presentSchema({
                             userId,
-                            presents: 0
+                            presents: 0,
                         })
                     }
 
                     dbUser.presents = dbUser.presents + randomPresents
                     dbUser.save()
-
                 }
-
             })
-
         } else;
-
-    }
+    },
 }
 
 const editMessage = async (message, maps, header, row) => {
     for (let i = 0; i < 4; i++) {
         await sleep(3500)
-        if (correctInfo.get(message.id).ended) break;
+        if (correctInfo.get(message.id).ended) break
 
         const random = maps[Math.floor(Math.random() * 3)]
         message.edit(`${random.text}`, {
-            components: [row]
+            components: [row],
         })
 
         const oldInfo = correctInfo.get(message.id)
         correctInfo.set(message.id, {
             ended: false,
             correctAnswer: random.yes,
-            triedAndFailed: oldInfo.triedAndFailed
+            triedAndFailed: oldInfo.triedAndFailed,
         })
     }
 }
 
 function sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms))
+    return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
 function scramble(w) {
-    let help = `${w}`;
-    let results = '';
+    let help = `${w}`
+    let results = ''
     let randomLetter = ''
     for (i = 0; i < w.length; i++) {
         randomLetter = help.charAt(Math.floor(Math.random() * help.length))
@@ -383,6 +402,6 @@ function scramble(w) {
 function addChannelToCD(id, ms) {
     dropCD.push(id)
     setTimeout(() => {
-        dropCD = dropCD.filter(value => value !== id)
+        dropCD = dropCD.filter((value) => value !== id)
     }, ms)
 }
