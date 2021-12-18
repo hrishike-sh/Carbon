@@ -47,15 +47,18 @@ module.exports = {
         }
         dbUser.save()
 
-            (await user.user.createDM()).send({
-                embed: new MessageEmbed()
-                    .setTitle("Thank you for voting!")
-                    .setDescription(`You have voted for **[FightHub](https://discord.gg/fight)** and got the \`・Voter\` role for 12 hours!\n\nYou will be reminded <t:${(dbUser.fighthub.voting.lastVoted / 1000).toFixed(0)}:R> to vote again! You can toggle vote reminders by running \`fh voterm\`.`)
-                    .setColor("GREEN")
-                    .setTimestamp()
-                    .setThumbnail(client.storage.fighthub.iconURL())
-            })
+        const a = await user.user.createDM()
 
-            (await client.fetchWebhook("921645605070200852")).send(`**${user.tag}** voted for the server.`)
+        a.send({
+            embed: new MessageEmbed()
+                .setTitle("Thank you for voting!")
+                .setDescription(`You have voted for **[FightHub](https://discord.gg/fight)** and got the \`・Voter\` role for 12 hours!\n\nYou will be reminded <t:${(dbUser.fighthub.voting.lastVoted / 1000).toFixed(0)}:R> to vote again! You can toggle vote reminders by running \`fh voterm\`.`)
+                .setColor("GREEN")
+                .setTimestamp()
+                .setThumbnail(client.storage.fighthub.iconURL())
+        })
+
+        const web = client.fetchWebhook("921645605070200852")
+        web.send(`**${user.tag}** voted for the server.`)
     }
 }
