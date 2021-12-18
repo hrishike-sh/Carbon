@@ -232,7 +232,7 @@ module.exports = {
                     }
                 }
             })
-
+            console.log(query.length, query)
             if (!query.length) return;
 
             for (const q of query) {
