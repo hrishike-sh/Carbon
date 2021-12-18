@@ -36,7 +36,7 @@ module.exports = {
                 }
             }).save()
         }
-        if (!dbUser.fighthub.voting.enabled) return; // disabled reminders
+        if (dbUser.fighthub && !dbUser.fighthub.voting.enabled) return; // disabled reminders
 
         dbUser.fighthub = {
             voting: {
@@ -47,7 +47,7 @@ module.exports = {
         }
         dbUser.save()
 
-            (await user.createDM()).send({
+            (await user.user.createDM()).send({
                 embed: new MessageEmbed()
                     .setTitle("Thank you for voting!")
                     .setDescription(`You have voted for **[FightHub](https://discord.gg/fight)** and got the \`・Voter\` role for 12 hours!\n\nYou will be reminded <t:${(dbUser.fighthub.voting.lastVoted / 1000).toFixed(0)}:R> to vote again! You can toggle vote reminders by running \`fh voterm\`.`)
