@@ -8,6 +8,7 @@ const {
     MessageButton
 } = require('discord-buttons')
 const timerModel = require('../database/models/timer')
+const voteModel = require('../database/models/user')
 const ms = require('pretty-ms')
 let i = 0;
 let presenceCounter1 = 0;
@@ -15,6 +16,7 @@ let presenceCounter2 = 0;
 let gawCounter1 = 0;
 let randomColorCounter = 0;
 let timerCounter = 0;
+let voteReminderCounter = 0;
 module.exports = {
     name: 'tick',
     once: false,
@@ -25,7 +27,8 @@ module.exports = {
 
         // Incrementing everything
         presenceCounter1++
-        gawCounter1++
+        // gawCounter1++
+        voteReminderCounter++
         randomColorCounter++
         // timerCounter++
         // Incrementing everything
@@ -216,9 +219,50 @@ module.exports = {
             }
         }
         // Timer
+        if (voteReminderCounter == 30) {
+            voteReminderCounter = 0;
+            const query = await voteModel.find({
+                fighthub: {
+                    voting: {
+                        enabled: true,
+                        hasVoted: true,
+                        lastVoted: {
+                            $lt: new Date().getTime()
+                        }
+                    }
+                }
+            })
+
+            if (!query.length) return;
+
+            for (const q of query) {
+                await sleep(2500)
+                const user = client.users.cache.get(q.userId) || null
+                if (!user) {
+                    q.fighthub.voting.hasVoted = false
+                    q.save()
+                } else {
+                    user.send(
+                        new MessageEmbed()
+                            .setTitle("Vote Reminder")
+                            .setColor("GREEN")
+                            .setTimestamp()
+                            .setDescription("You can vote for **[FightHub](https://discord.gg/fight)** now!\nClick **[here](https://top.gg/servers/824294231447044197/vote)** to vote!\n\nOnce you vote, you will be reminded again after 12 hours. Thanks for your support! You can toggle vote reminders by running \`fh voterm\`")
+                            .setThumbnail(client.storage.fighthub.iconURL())
+                    )
+
+                    q.fighthub.voting.hasVoted = false;
+                    q.save()
+                }
+            }
+        }
 
         setTimeout(() => {
             client.emit('tick')
         }, 1000)
     }
+}
+
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms))
 }
