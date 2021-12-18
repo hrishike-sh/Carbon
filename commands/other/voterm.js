@@ -27,19 +27,19 @@ module.exports = {
             })
         }
 
-        if (!user.fighthub.voting.enabled) {
-            user.fighthub.voting.enabled = false
-            user.save()
-
-            await message.channel.send(
-                `Toggled the voting reminder.\nIt is now \`disabled\`.`
-            )
-        } else {
+        if (user.fighthub.voting.enabled == false) {
             user.fighthub.voting.enabled = true
             user.save()
 
             await message.channel.send(
                 `Toggled the voting reminder.\nIt is now \`enabled\`.`
+            )
+        } else {
+            user.fighthub.voting.enabled = false
+            user.save()
+
+            await message.channel.send(
+                `Toggled the voting reminder.\nIt is now \`disabled\`.`
             )
         }
     },
