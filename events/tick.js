@@ -265,21 +265,12 @@ module.exports = {
         if (voteReminderCounter == 30) {
             voteReminderCounter = 0
             const query = await voteModel.find({
-                fighthub: {
-                    voting: {
-                        enabled: true,
-                        lastVoted: {
-                            $lt: new Date().getTime(),
-                        },
-                    },
-                },
+                fighthub: {},
             })
-
+            console.log(query)
             if (!query.length) {
             } else {
                 for (const q of query) {
-                    await sleep(2500)
-                    console.log(q)
                     // const user = client.users.cache.get(q.userId) || null
                     // if (!user) {
                     //     q.fighthub.voting.hasVoted = false
@@ -293,7 +284,6 @@ module.exports = {
                     //             .setDescription("You can vote for **[FightHub](https://discord.gg/fight)** now!\nClick **[here](https://top.gg/servers/824294231447044197/vote)** to vote!\n\nOnce you vote, you will be reminded again after 12 hours. Thanks for your support! You can toggle vote reminders by running \`fh voterm\`")
                     //             .setThumbnail(client.storage.fighthub.iconURL())
                     //     )
-
                     //     q.fighthub.voting.hasVoted = false;
                     //     q.save()
                     // }
