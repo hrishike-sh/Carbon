@@ -58,7 +58,7 @@ module.exports = {
                 .setThumbnail(client.storage.fighthub.iconURL())
         })
 
-        const web = client.fetchWebhook("921645605070200852")
+        const web = await client.fetchWebhook("921645605070200852")
         web.send(`**${user.tag}** voted for the server.`)
     }
 }
