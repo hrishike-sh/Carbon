@@ -23,7 +23,6 @@ module.exports = {
                 afkIgnore: [],
             }).save()
         }
-
         if (args[0] == 'ignore' && admin) {
             const channel = message.mentions.channels.first() || message.channel
 
@@ -38,7 +37,7 @@ module.exports = {
                 `Done! <#${channel.id}> is now AFK ignored.`
             )
         }
-        if (args[0] == 'clear' && admin) {
+        if (['clear', 'remove'].includes(args[0]) && admin) {
             args.shift()
             if (!args[0])
                 return message.channel.send(
@@ -54,7 +53,7 @@ module.exports = {
                 return message.channel.send('I could not find that user.')
 
             const dbUser = await db.findOne({ userId: mention.id })
-            if (!dbUser || !dbUser.afk)
+            if (!dbUser || !dbUser.afk.afk)
                 return message.channel.send('The user is not AFK.')
 
             dbUser.afk.afk = false
