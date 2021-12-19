@@ -11,7 +11,7 @@ module.exports = {
      */
     async execute(message, client) {
         if (!message.guild) return
-        if (message.guild.id !== client.storage.fighthub.id) return
+        if (message.guild.id !== client.db.fighthub.id) return
         if (message.channel.id !== '826929140019232788') return // vote channel
         if (message.author.id !== '479688142908162059') return // vote tracker
 
@@ -62,7 +62,7 @@ module.exports = {
                 )
                 .setColor('GREEN')
                 .setTimestamp()
-                .setThumbnail(client.storage.fighthub.iconURL()),
+                .setThumbnail(client.db.fighthub.iconURL()),
         })
 
         const web = await client.fetchWebhook('921645605070200852')
