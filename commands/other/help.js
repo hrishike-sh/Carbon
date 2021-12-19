@@ -11,7 +11,7 @@ module.exports = {
     async execute(message, args, client) {
         /**commands.map(command => command.name).join(', ') */
         const data = []
-        const { commands } = client
+        const { commands } = client.c
 
         if (!args.length) {
             const commandsMap = commands

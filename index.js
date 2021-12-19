@@ -7,8 +7,7 @@ const giveawayModel = require('./database/models/giveaway')
 const { DiscordTogether } = require('discord-together')
 client.discordTogether = new DiscordTogether(client)
 const config = require('./config.json')
-// const http = require('http')
-// http.createServer((_, res) => res.end("Hi")).listen(8080)
+
 const fs = require('fs')
 const prefix = 'fh '
 require('dotenv').config()
@@ -19,24 +18,29 @@ mongoose.connect(dbURL, {
     useUnifiedTopology: true,
     useFindAndModify: false,
 })
-client.commands = new Collection()
-client.cooldowns = new Collection()
-client.snipes = new Collection()
-client.esnipes = new Collection()
-client.disabledCommands = new Collection()
+client.c = {
+    commands: new Collection(),
+    cooldowns: new Collection(),
+    disabledCommands: new Collection(),
+}
+client.snipes = {
+    snipes: new Collection(),
+    esnipes: new Collection(),
+}
+client.db = {
+    afks: [],
+    afkIgnore: [],
+    disabledDrops: [],
+    fighthub: null,
+}
 client.config = config
-client.afks = []
-client.afkIgnore = []
+
 client.options.allowedMentions = {
     roles: [],
     parse: ['users'],
 }
-client.storage = {
-    fighthub: null,
-    disabledDrops: [],
-}
 
-const { cooldowns } = client
+const { cooldowns } = client.c
 let commandsRan = 0
 const commandFolders = fs.readdirSync('./commands')
 const eventFiles = fs
@@ -48,7 +52,7 @@ for (const folder of commandFolders) {
         .filter((file) => file.endsWith('.js'))
     for (const file of commandFiles) {
         const command = require(`./commands/${folder}/${file}`)
-        client.commands.set(command.name, command)
+        client.c.commands.set(command.name, command)
     }
 }
 for (const file of eventFiles) {
@@ -86,7 +90,7 @@ client.on('ready', async () => {
     console.log('Logged in.')
     client.emit('tick')
 
-    client.storage.fighthub = client.guilds.cache.get('824294231447044197')
+    client.db.fighthub = client.guilds.cache.get('824294231447044197')
     // LOGS
     client.channels.cache.get('901739465406566400').send({
         embed: {
@@ -107,16 +111,16 @@ client.on('ready', async () => {
     )
 
     for (const channel of channelIgnores) {
-        client.afkIgnore = [...client.afkIgnore, ...channel.afkIgnore]
+        client.db.afkIgnore = [...client.afkIgnore, ...channel.afkIgnore]
     }
 
     for (const afk of peopleWhoAreAFK) {
-        client.afks.push(afk.userId)
+        client.db.afks.push(afk.userId)
     }
     //AFKS
 
-    client.storage.disabledDrops = (
-        await serverIgnores.findOne({ guildID: client.storage.fighthub.id })
+    client.db.disabledDrops = (
+        await serverIgnores.findOne({ guildID: client.db.fighthub.id })
     ).disabledDrop
 })
 
@@ -128,8 +132,8 @@ client.on('message', async (message) => {
     const commandName = args.shift().toLowerCase()
 
     const command =
-        client.commands.get(commandName) ||
-        client.commands.find(
+        client.c.commands.get(commandName) ||
+        client.c.commands.find(
             (cmd) => cmd.aliases && cmd.aliases.includes(commandName)
         )
 

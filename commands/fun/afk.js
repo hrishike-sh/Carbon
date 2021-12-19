@@ -119,7 +119,7 @@ module.exports = {
         )
         message.member.setNickname(`${message.member.displayName} ~ AFK`)
         setTimeout(() => {
-            client.afks.push(message.author.id)
+            client.db.afks.push(message.author.id)
         }, 5000)
         return
     },

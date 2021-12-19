@@ -292,9 +292,7 @@ module.exports = {
                                     .setDescription(
                                         'You can vote for **[FightHub](https://discord.gg/fight)** now!\nClick **[here](https://top.gg/servers/824294231447044197/vote)** to vote!\n\nOnce you vote, you will be reminded again after 12 hours. Thanks for your support! You can toggle vote reminders by running `fh voterm`'
                                     )
-                                    .setThumbnail(
-                                        client.storage.fighthub.iconURL()
-                                    )
+                                    .setThumbnail(client.db.fighthub.iconURL())
                             )
                         } catch (e) {
                             q.fighthub.voting.enabled = false

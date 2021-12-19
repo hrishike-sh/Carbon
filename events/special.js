@@ -11,11 +11,11 @@ module.exports = {
      * @param {Client} client
      */
     async execute(message, client) {
-        let disabledDrop = client.storage.disabledDrops
+        let disabledDrop = client.db.disabledDrops
         //Checks
         if (!message.guild) return // no dms
 
-        if (message.guild.id !== client.storage.fighthub.id) return // Returns if the server is not fighthub
+        if (message.guild.id !== client.db.fighthub.id) return // Returns if the server is not fighthub
 
         if (disabledDrop.includes(message.channel.id)) return // Returns if the channel is disabled
 
