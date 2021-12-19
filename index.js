@@ -156,7 +156,7 @@ client.on('message', async (message) => {
 
     const now = Date.now()
     const timestamps = cooldowns.get(command.name)
-    const cooldownAmount = (command.cooldown || 2) * 1000
+    const cooldownAmount = (command.cooldown || 0) * 1000
 
     if (timestamps.has(message.author.id)) {
         const expirationTime =
@@ -165,11 +165,13 @@ client.on('message', async (message) => {
         if (now < expirationTime) {
             const timeLeft = (expirationTime - now) / 1000
             return message.reply({
-                content: `You have to wait for ${timeLeft.toFixed(
-                    1
-                )} more second(s) before executing the ${
-                    command.name
-                } command.`,
+                embed: new MessageEmbed()
+                    .setDescription(
+                        `:x: You have to wait for **${Math.ceil(
+                            timeLeft
+                        )} seconds** before running this command again!`
+                    )
+                    .setColor('RED'),
             })
         }
     }

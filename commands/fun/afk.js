@@ -53,7 +53,7 @@ module.exports = {
                 return message.channel.send('I could not find that user.')
 
             const dbUser = await db.findOne({ userId: mention.id })
-            if (!dbUser || !dbUser.afk.afk)
+            if (!dbUser || dbUser.afk.afk == false)
                 return message.channel.send('The user is not AFK.')
 
             dbUser.afk.afk = false
