@@ -299,7 +299,9 @@ module.exports = {
                         } catch (e) {
                             q.fighthub.voting.enabled = false
                         } finally {
-                            ;(await client.fetchWebhook()).send(
+                            ;(
+                                await client.fetchWebhook('921645605070200852')
+                            ).send(
                                 `${user.tag} was **reminded** to vote again.`
                             )
                             q.fighthub.voting.hasVoted = false
