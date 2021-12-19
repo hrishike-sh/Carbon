@@ -14,13 +14,18 @@ module.exports = {
      */
     async execute(message, args, client) {
         const rawLb = await db.find({}).sort({ presents: -1 }).limit(10)
-        const a = ['🎅', '🦌', '🦌']
+        const a = [
+            '<:blank:914473340129906708>🎅<:blank:914473340129906708>',
+            '🦌➖🦌',
+            '🦌➖🦌',
+        ]
 
         const finalLb = rawLb
             .map(
                 (value) =>
                     `${
-                        a[rawLb.indexOf(value)] || '<:blank:914473340129906708>'
+                        a[rawLb.indexOf(value)] ||
+                        '<:blank:914473340129906708><:blank:914473340129906708><:blank:914473340129906708>'
                     } - <@${
                         rawLb[rawLb.indexOf(value)].userId
                     }>[:](https://discord.gg/fight) **${rawLb[
