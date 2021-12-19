@@ -39,6 +39,7 @@ module.exports = {
         ]
         if (presenceCounter1 == 60) {
             presenceCounter1 = 0
+            console.log('Presence counter ran.')
             if (++presenceCounter2 >= presences.length) {
                 presenceCounter2 = 0
             }
@@ -264,6 +265,7 @@ module.exports = {
         // Timer
         if (voteReminderCounter == 30) {
             voteReminderCounter = 0
+            console.log('Vote reminder ran')
             let query = await voteModel.find({})
             query = query.filter(
                 (val) =>
