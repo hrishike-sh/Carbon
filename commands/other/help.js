@@ -43,6 +43,7 @@ module.exports = {
         const extendedCommandEmbed = new MessageEmbed()
             .setTitle(command.name)
             .setDescription('')
+            .setFooter('Syntax: <required> [optional]')
 
         if (command.aliases)
             extendedCommandEmbed.addField(
@@ -53,7 +54,11 @@ module.exports = {
         if (command.description)
             extendedCommandEmbed.setDescription(command.description)
         if (command.usage)
-            extendedCommandEmbed.addField('Usage', command.usage, false)
+            extendedCommandEmbed.addField(
+                'Usage',
+                `\`\`\`xml\n<Usage : ${prefix} ${command.name} ${command.usage}>\n\`\`\``,
+                false
+            )
 
         extendedCommandEmbed.addField(
             'Cooldown',

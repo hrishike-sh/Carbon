@@ -5,6 +5,8 @@ module.exports = {
     name: 'presents',
     fhOnly: false,
     disabledChannels: [],
+    description: 'Check how many presents you or someone else has!',
+    usage: '[user]',
     category: {
         name: 'christmas',
         displayName: 'Christmas Special',
