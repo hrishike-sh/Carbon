@@ -38,6 +38,29 @@ module.exports = {
                 `Done! <#${channel.id}> is now AFK ignored.`
             )
         }
+        if (args[0] == 'clear' && admin) {
+            args.shift()
+            if (!args[0])
+                return message.channel.send(
+                    'Either @ping the member or give me their id in order to remove their AFK.'
+                )
+
+            const mention =
+                message.mentions.members.size > 0
+                    ? message.mentions.members.first()
+                    : message.guild.members.cache.get(args[0]) || null
+
+            if (!mention)
+                return message.channel.send('I could not find that user.')
+
+            const dbUser = await db.findOne({ userId: mention.id })
+            if (!dbUser || !dbUser.afk)
+                return message.channel.send('The user is not AFK.')
+
+            dbUser.afk.afk = false
+            dbUser.save()
+            return message.react('☑️')
+        }
         if (
             !message.member.roles.cache.some(
                 (role) => role.id === '824687430753189902'

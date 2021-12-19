@@ -56,7 +56,7 @@ module.exports = {
         if (command.usage)
             extendedCommandEmbed.addField(
                 'Usage',
-                `\`\`\`xml\n<Usage : ${prefix} ${command.name} ${command.usage}>\n\`\`\``,
+                `\`\`\`xml\n<Usage : ${prefix}${command.name} ${command.usage}>\n\`\`\``,
                 false
             )
 
