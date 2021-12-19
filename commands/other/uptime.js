@@ -11,7 +11,7 @@ module.exports = {
             new MessageEmbed()
                 .setTitle('Pong 🏓')
                 .setDescription(
-                    `**Client latency:** ${client.ws.ping}ms\nUp since ${uptime}`
+                    `**Client latency:** ${client.ws.ping}ms\nUp since <t:${uptime}:R>`
                 )
         )
     },
