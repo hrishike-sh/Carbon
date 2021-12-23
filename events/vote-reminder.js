@@ -24,10 +24,10 @@ module.exports = {
         if (!user) return
         console.log(user)
 
-        let dbUser = await db.findOne({ userId: message.author.id })
+        let dbUser = await db.findOne({ userId: user.id })
         if (!dbUser || !dbUser.fighthub.voting) {
             dbUser = new db({
-                userId: message.author.id,
+                userId: user.id,
                 fighthub: {
                     voting: {
                         hasVoted: true,
