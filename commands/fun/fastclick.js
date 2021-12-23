@@ -1,7 +1,11 @@
 const { MessageButton, MessageActionRow } = require('discord-buttons')
+const { Message } = require('discord.js')
 const ms = require('pretty-ms')
 module.exports = {
     name: 'fastclick',
+    /**
+     * @param {Message} message
+     */
     async execute(message, args) {
         const user1 = message.member
         const user2 =
@@ -136,7 +140,7 @@ module.exports = {
                         await button.reply.send('This is not for you', true)
                         return
                     }
-                    const clickedIn = ms(mainMessage.editedA - now, {
+                    const clickedIn = ms(mainMessage.editedAt - now, {
                         verbose: true,
                     })
                     const winner = button.clicker.user.id
