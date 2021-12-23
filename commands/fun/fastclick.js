@@ -1,5 +1,5 @@
 const { MessageButton, MessageActionRow } = require('discord-buttons')
-
+const ms = require('pretty-ms')
 module.exports = {
     name: 'fastclick',
     async execute(message, args) {
@@ -97,6 +97,7 @@ module.exports = {
                 let mainRow = new MessageActionRow().addComponents(array)
                 await sleep(2500)
                 mainMessage.edit('Click the green one', { components: mainRow })
+                const now = new Date()
 
                 const mainCollector = mainMessage.createButtonCollector(
                     (b) => b,
@@ -135,8 +136,9 @@ module.exports = {
                         await button.reply.send('This is not for you', true)
                         return
                     }
-                    const now = new Date()
-                    const clickedIn = `${now - mainMessage.editedAt}`
+                    const clickedIn = ms(now - mainMessage.editedA, {
+                        verbose: true,
+                    })
                     const winner = button.clicker.user.id
                     mainButton = mainButton.setDisabled()
                     baitButton1 = baitButton1.setDisabled()
@@ -147,7 +149,7 @@ module.exports = {
                     mainRow = new MessageActionRow().addComponents(array)
                     button.reply.defer()
                     mainMessage.edit(
-                        `:trophy: <@${winner}> has won! The button was clicked in ${clickedIn[0]}.${clickedIn[1]}s!`,
+                        `:trophy: <@${winner}> has won! The button was clicked in ${clickedIn}!`,
                         { components: mainRow }
                     )
                     return
