@@ -136,7 +136,7 @@ module.exports = {
                         await button.reply.send('This is not for you', true)
                         return
                     }
-                    const clickedIn = ms(now - mainMessage.editedA, {
+                    const clickedIn = ms(mainMessage.editedA - now, {
                         verbose: true,
                     })
                     const winner = button.clicker.user.id
