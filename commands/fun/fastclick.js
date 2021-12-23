@@ -120,7 +120,7 @@ module.exports = {
 
                     if (button.id !== 'correct-fc') {
                         const loser = button.clicker.user.id
-                        const winner = loser === user1 ? user1 : user2
+                        const winner = loser === user1.id ? user1.id : user2.id
                         mainButton = mainButton.setDisabled()
                         baitButton1 = baitButton1.setDisabled()
                         baitButton2 = baitButton2.setDisabled()
