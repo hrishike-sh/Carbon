@@ -130,7 +130,7 @@ module.exports = {
                         mainRow = new MessageActionRow().addComponents(array)
                         button.reply.defer()
                         mainMessage.edit(
-                            `:trophy: <@${winner.id}> won because <@${loser}> clicked the wrong button!`,
+                            `:trophy: <@${winner}> won because <@${loser}> clicked the wrong button!`,
                             { components: mainRow }
                         )
                         return
