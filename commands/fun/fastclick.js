@@ -3,6 +3,8 @@ const { Message } = require('discord.js')
 const ms = require('pretty-ms')
 module.exports = {
     name: 'fastclick',
+    usage: '<USER>',
+    description: 'Use your skills to win fights, the fastest to click wins!',
     /**
      * @param {Message} message
      */
@@ -140,7 +142,7 @@ module.exports = {
                         await button.reply.send('This is not for you', true)
                         return
                     }
-                    const clickedIn = ms(mainMessage.editedAt - now, {
+                    const clickedIn = ms(new Date() - now, {
                         verbose: true,
                     })
                     const winner = button.clicker.user.id
