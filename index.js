@@ -2,7 +2,6 @@ const { Collection, Intents, MessageEmbed, Client } = require('discord.js')
 const client = new Client({
     intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES],
 })
-require('discord-buttons')(client)
 const giveawayModel = require('./database/models/giveaway')
 const { DiscordTogether } = require('discord-together')
 client.discordTogether = new DiscordTogether(client)
