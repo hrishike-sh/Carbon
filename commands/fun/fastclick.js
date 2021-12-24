@@ -120,7 +120,6 @@ module.exports = {
 
                     if (button.id !== 'correct-fc') {
                         const loser = button.clicker.user.id
-                        const winner = loser === user1.id ? user1.id : user2.id
                         mainButton = mainButton.setDisabled()
                         baitButton1 = baitButton1.setDisabled()
                         baitButton2 = baitButton2.setDisabled()
@@ -130,7 +129,7 @@ module.exports = {
                         mainRow = new MessageActionRow().addComponents(array)
                         button.reply.defer()
                         mainMessage.edit(
-                            `:trophy: <@${winner}> won because <@${loser}> clicked the wrong button!`,
+                            `:trophy: <@${[user1.id, user2.id].filter(val => val !== loser)[0]}> won because <@${loser}> clicked the wrong button!`,
                             { components: mainRow }
                         )
                         return
