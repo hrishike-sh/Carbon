@@ -1,5 +1,10 @@
-const { Client, Message, MessageEmbed } = require('discord.js')
-const { MessageButton, MessageActionRow } = require('discord-buttons')
+const {
+    Client,
+    Message,
+    MessageEmbed,
+    MessageButton,
+    MessageActionRow,
+} = require('discord.js')
 const { before } = require('lodash')
 module.exports = {
     name: 'battlegrounds',
@@ -20,8 +25,8 @@ module.exports = {
         const joinBut = new MessageButton()
             .setLabel('Join')
             .setEmoji('⚔️')
-            .setID('join-bg')
-            .setStyle('green')
+            .setCustomId('join-bg')
+            .setStyle('SUCCESS')
 
         const joinMessage = await message.channel.send({
             embed: new MessageEmbed()
@@ -109,28 +114,28 @@ module.exports = {
                         new MessageButton()
                             .setLabel(gamedata[i].member.user.username)
                             .setStyle('grey')
-                            .setID(gamedata[i].id)
+                            .setCustomId(gamedata[i].id)
                     )
                 } else if (i < 10) {
                     row2 = row2.addComponent(
                         new MessageButton()
                             .setLabel(gamedata[i].member.user.username)
                             .setStyle('grey')
-                            .setID(gamedata[i].id)
+                            .setCustomId(gamedata[i].id)
                     )
                 } else if (i < 15) {
                     row3 = row3.addComponent(
                         new MessageButton()
                             .setLabel(gamedata[i].member.user.username)
                             .setStyle('grey')
-                            .setID(gamedata[i].id)
+                            .setCustomId(gamedata[i].id)
                     )
                 } else {
                     row4 = row4.addComponent(
                         new MessageButton()
                             .setLabel(gamedata[i].member.user.username)
                             .setStyle('grey')
-                            .setID(gamedata[i].id)
+                            .setCustomId(gamedata[i].id)
                     )
                 }
             }
@@ -141,19 +146,19 @@ module.exports = {
             if (i > 14) components.push(row4)
             const searchButton = new MessageButton()
                 .setLabel('Search')
-                .setID('search-bg')
+                .setCustomId('search-bg')
                 .setEmoji('🔍')
-                .setStyle('blurple')
+                .setStyle('PRIMARY')
             const upgradeButton = new MessageButton()
                 .setLabel('Upgrade Weapon')
-                .setID('upgrade-bg')
+                .setCustomId('upgrade-bg')
                 .setEmoji('⚒')
-                .setStyle('blurple')
+                .setStyle('PRIMARY')
             const defendButton = new MessageButton()
                 .setLabel('Defend')
-                .setID('defend-bg')
+                .setCustomId('defend-bg')
                 .setEmoji('🛡️')
-                .setStyle('blurple')
+                .setStyle('PRIMARY')
             let row5 = new MessageActionRow().addComponents([
                 searchButton,
                 upgradeButton,

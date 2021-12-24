@@ -1,5 +1,10 @@
-const { Message, Client, Collection } = require('discord.js')
-const { MessageButton, MessageActionRow } = require('discord-buttons')
+const {
+    Message,
+    Client,
+    Collection,
+    MessageButton,
+    MessageActionRow,
+} = require('discord.js')
 const presentSchema = require('../database/models/presentSchema')
 const correctInfo = new Collection()
 let dropCD = []
@@ -84,15 +89,15 @@ module.exports = {
             let leftButton = new MessageButton()
                 .setEmoji('917049050929455144')
                 .setStyle('gray')
-                .setID('cevent-l1')
+                .setCustomId('cevent-l1')
             let middleButton = new MessageButton()
                 .setEmoji('917049050929455144')
                 .setStyle('gray')
-                .setID('cevent-m2')
+                .setCustomId('cevent-m2')
             let rightButton = new MessageButton()
                 .setEmoji('917049050929455144')
                 .setStyle('gray')
-                .setID('cevent-r3')
+                .setCustomId('cevent-r3')
             let row = new MessageActionRow().addComponents([
                 leftButton,
                 middleButton,
@@ -150,11 +155,11 @@ module.exports = {
                     middleButton = middleButton.setDisabled()
                     rightButton = rightButton.setDisabled()
                     if (correctOne == 1) {
-                        leftButton = leftButton.setStyle('green')
+                        leftButton = leftButton.setStyle('SUCCESS')
                     } else if (correctOne == 2) {
-                        middleButton = middleButton.setStyle('green')
+                        middleButton = middleButton.setStyle('SUCCESS')
                     } else {
-                        rightButton = rightButton.setStyle('green')
+                        rightButton = rightButton.setStyle('SUCCESS')
                     }
                     row = new MessageActionRow().addComponents([
                         leftButton,
@@ -206,14 +211,14 @@ module.exports = {
                 if (i < 4) {
                     row = row.addComponent(
                         new MessageButton()
-                            .setID(emoji[i])
+                            .setCustomId(emoji[i])
                             .setEmoji(emoji[i])
                             .setStyle('grey')
                     )
                 } else {
                     row2 = row2.addComponent(
                         new MessageButton()
-                            .setID(emoji[i])
+                            .setCustomId(emoji[i])
                             .setEmoji(emoji[i])
                             .setStyle('grey')
                     )
@@ -254,15 +259,15 @@ module.exports = {
                                 if (emoji[i] === correct) {
                                     row = row.addComponent(
                                         new MessageButton()
-                                            .setID(emoji[i])
+                                            .setCustomId(emoji[i])
                                             .setEmoji(emoji[i])
-                                            .setStyle('green')
+                                            .setStyle('SUCCESS')
                                             .setDisabled()
                                     )
                                 } else {
                                     row = row.addComponent(
                                         new MessageButton()
-                                            .setID(emoji[i])
+                                            .setCustomId(emoji[i])
                                             .setEmoji(emoji[i])
                                             .setDisabled()
                                             .setStyle('grey')
@@ -272,15 +277,15 @@ module.exports = {
                                 if (emoji[i] === correct) {
                                     row2 = row2.addComponent(
                                         new MessageButton()
-                                            .setID(emoji[i])
+                                            .setCustomId(emoji[i])
                                             .setEmoji(emoji[i])
                                             .setDisabled()
-                                            .setStyle('green')
+                                            .setStyle('SUCCESS')
                                     )
                                 } else {
                                     row2 = row2.addComponent(
                                         new MessageButton()
-                                            .setID(emoji[i])
+                                            .setCustomId(emoji[i])
                                             .setEmoji(emoji[i])
                                             .setDisabled()
                                             .setStyle('grey')

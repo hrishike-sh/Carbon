@@ -1,4 +1,4 @@
-const { MessageButton, MessageActionRow } = require('discord-buttons')
+const { MessageButton, MessageActionRow } = require('discord.js')
 
 module.exports = {
     name: 'nop',
@@ -30,15 +30,15 @@ module.exports = {
         }
 
         const annBut = new MessageButton()
-            .setID('par_ping')
+            .setCustomId('par_ping')
             .setEmoji('861299771612594196')
             .setStyle('grey')
         const nitBut = new MessageButton()
-            .setID('no_par_ping')
+            .setCustomId('no_par_ping')
             .setEmoji('824904307337723905')
             .setStyle('grey')
         const gawBut = new MessageButton()
-            .setID('par_hes_ping')
+            .setCustomId('par_hes_ping')
             .setEmoji('861300228803002368')
             .setStyle('grey')
 

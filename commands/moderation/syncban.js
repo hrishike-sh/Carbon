@@ -1,5 +1,4 @@
-const { MessageEmbed } = require('discord.js')
-const { MessageButton, MessageActionRow } = require('discord-buttons')
+const { MessageEmbed, MessageButton, MessageActionRow } = require('discord.js')
 module.exports = {
     name: 'syncban',
     description: 'you dont need to know',
@@ -47,12 +46,12 @@ module.exports = {
 
             let yesbut = new MessageButton()
                 .setLabel('Yes')
-                .setStyle('green')
-                .setID('globalbanyes')
+                .setStyle('SUCCESS')
+                .setCustomId('globalbanyes')
             let nobut = new MessageButton()
                 .setLabel('No')
-                .setStyle('red')
-                .setID('globalbanno')
+                .setStyle('DANGER')
+                .setCustomId('globalbanno')
             const row = new MessageActionRow().addComponents([yesbut, nobut])
             const confirmation = await message.channel.send({
                 embed: {

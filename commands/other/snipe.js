@@ -1,5 +1,10 @@
-const { MessageButton, MessageActionRow } = require('discord-buttons')
-const { MessageEmbed, Client, Message } = require('discord.js')
+const {
+    MessageEmbed,
+    Client,
+    Message,
+    MessageButton,
+    MessageActionRow,
+} = require('discord.js')
 const settings = require('../../database/models/settingsSchema')
 
 module.exports = {
@@ -58,12 +63,12 @@ module.exports = {
             .setTimestamp(time)
         let prevBut = new MessageButton()
             .setEmoji('911971090954326017')
-            .setID('prev-snipe')
-            .setStyle('green')
+            .setCustomId('prev-snipe')
+            .setStyle('SUCCESS')
         let nextBut = new MessageButton()
             .setEmoji('911971202048864267')
-            .setID('next-snipe')
-            .setStyle('green')
+            .setCustomId('next-snipe')
+            .setStyle('SUCCESS')
         let row = new MessageActionRow().addComponents([prevBut, nextBut])
 
         const mainMessage = await message.channel.send({

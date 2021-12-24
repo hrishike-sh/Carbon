@@ -1,5 +1,10 @@
-const { Client, Message, MessageEmbed } = require('discord.js')
-const { MessageButton, MessageActionRow } = require('discord-buttons')
+const {
+    Client,
+    Message,
+    MessageEmbed,
+    MessageButton,
+    MessageActionRow,
+} = require('discord.js')
 module.exports = {
     name: 'amongus',
     aliases: ['amogus'],
@@ -33,11 +38,11 @@ module.exports = {
 
         const joinBut = new MessageButton()
             .setLabel('Join')
-            .setID('join-amongus')
-            .setStyle('green')
+            .setCustomId('join-amongus')
+            .setStyle('SUCCESS')
         const infoBut = new MessageButton()
             .setLabel('Info')
-            .setID('info-amongus')
+            .setCustomId('info-amongus')
             .setStyle('grey')
         const row = new MessageActionRow().addComponents([joinBut, infoBut])
 
@@ -94,8 +99,8 @@ module.exports = {
             gamedata[randomNumber].impostor = true
             const whoAmI = new MessageButton()
                 .setLabel('Click me!')
-                .setStyle('green')
-                .setID('whoami-amogus')
+                .setStyle('SUCCESS')
+                .setCustomId('whoami-amogus')
             const roleCollector = await message.channel.send(
                 'Click the button to check your role, the game will start in **10 seconds**...',
                 {
@@ -141,7 +146,7 @@ module.exports = {
                         new MessageButton()
                             .setLabel(gamedata[m].member.user.username)
                             .setStyle('grey')
-                            .setID(gamedata[m].id)
+                            .setCustomId(gamedata[m].id)
                             .setEmoji(gamedata[m].color)
                             .setDisabled()
                     )
@@ -150,7 +155,7 @@ module.exports = {
                         new MessageButton()
                             .setLabel(gamedata[m].member.user.username)
                             .setStyle('grey')
-                            .setID(gamedata[m].id)
+                            .setCustomId(gamedata[m].id)
                             .setEmoji(gamedata[m].color)
                             .setDisabled()
                     )
@@ -204,10 +209,10 @@ module.exports = {
                     inMeeting = true
                     const row3 = new MessageActionRow().addComponent(
                         new MessageButton()
-                            .setStyle('blurple')
+                            .setStyle('PRIMARY')
                             .setLabel('Messages')
                             .setEmoji('📖')
-                            .setID('message-am')
+                            .setCustomId('message-am')
                     )
                     row1 = new MessageActionRow()
                     row2 = new MessageActionRow()
@@ -220,8 +225,8 @@ module.exports = {
                                         .setLabel(
                                             gamedata[a].member.user.username
                                         )
-                                        .setStyle('red')
-                                        .setID(gamedata[a].id)
+                                        .setStyle('DANGER')
+                                        .setCustomId(gamedata[a].id)
                                         .setEmoji(gamedata[a].color)
                                         .setDisabled()
                                 )
@@ -232,7 +237,7 @@ module.exports = {
                                             gamedata[a].member.user.username
                                         )
                                         .setStyle('grey')
-                                        .setID(gamedata[a].id)
+                                        .setCustomId(gamedata[a].id)
                                         .setEmoji(gamedata[a].color)
                                 )
                             }
@@ -243,8 +248,8 @@ module.exports = {
                                         .setLabel(
                                             gamedata[a].member.user.username
                                         )
-                                        .setStyle('red')
-                                        .setID(gamedata[a].id)
+                                        .setStyle('DANGER')
+                                        .setCustomId(gamedata[a].id)
                                         .setEmoji(gamedata[a].color)
                                         .setDisabled()
                                 )
@@ -255,7 +260,7 @@ module.exports = {
                                             gamedata[a].member.user.username
                                         )
                                         .setStyle('grey')
-                                        .setID(gamedata[a].id)
+                                        .setCustomId(gamedata[a].id)
                                         .setEmoji(gamedata[a].color)
                                 )
                             }

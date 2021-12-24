@@ -1,5 +1,5 @@
-const { MessageButton, MessageActionRow } = require('discord-buttons')
-const { Message } = require('discord.js')
+
+const { Message, MessageButton, MessageActionRow } = require('discord.js')
 const ms = require('pretty-ms')
 module.exports = {
     name: 'fastclick',
@@ -20,12 +20,12 @@ module.exports = {
             )
 
         let yesButton = new MessageButton()
-            .setStyle('green')
-            .setID('yes_fc')
+            .setStyle('SUCCESS')
+            .setCustomId('yes_fc')
             .setLabel('Accept')
         let noButton = new MessageButton()
-            .setStyle('red')
-            .setID('no_fc')
+            .setStyle('DANGER')
+            .setCustomId('no_fc')
             .setLabel('Decline')
         let row = new MessageActionRow().addComponents([noButton, yesButton])
         const confirmation = await message.channel.send({
@@ -54,7 +54,7 @@ module.exports = {
                 yesButton = yesButton.setDisabled()
                 noButton = noButton
                     .setStyle('grey')
-                    .setID('no_fc')
+                    .setCustomId('no_fc')
                     .setDisabled()
                 row = new MessageActionRow().addComponents([
                     yesButton,
@@ -74,25 +74,25 @@ module.exports = {
                     `Alright! The button will appear in a few seconds, good luck!`
                 )
                 let mainButton = new MessageButton()
-                    .setStyle('green')
+                    .setStyle('SUCCESS')
                     .setLabel('This one')
-                    .setID('correct-fc')
+                    .setCustomId('correct-fc')
                 let baitButton1 = new MessageButton()
                     .setStyle('grey')
                     .setLabel('No not this')
-                    .setID('wrong1-fc')
+                    .setCustomId('wrong1-fc')
                 let baitButton2 = new MessageButton()
                     .setStyle('grey')
                     .setLabel('No not this')
-                    .setID('wrong2-fc')
+                    .setCustomId('wrong2-fc')
                 let baitButton3 = new MessageButton()
                     .setStyle('grey')
                     .setLabel('No not this')
-                    .setID('wrong3-fc')
+                    .setCustomId('wrong3-fc')
                 let baitButton4 = new MessageButton()
                     .setStyle('grey')
                     .setLabel('No not this')
-                    .setID('wrong4-fc')
+                    .setCustomId('wrong4-fc')
                 let array = [
                     mainButton,
                     baitButton1,
@@ -129,7 +129,11 @@ module.exports = {
                         mainRow = new MessageActionRow().addComponents(array)
                         button.reply.defer()
                         mainMessage.edit(
-                            `:trophy: <@${[user1.id, user2.id].filter(val => val !== loser)[0]}> won because <@${loser}> clicked the wrong button!`,
+                            `:trophy: <@${
+                                [user1.id, user2.id].filter(
+                                    (val) => val !== loser
+                                )[0]
+                            }> won because <@${loser}> clicked the wrong button!`,
                             { components: mainRow }
                         )
                         return
@@ -163,7 +167,7 @@ module.exports = {
                 button.reply.defer()
                 yesButton = yesButton
                     .setStyle('grey')
-                    .setID('yes_fc')
+                    .setCustomId('yes_fc')
                     .setDisabled()
                 noButton = noButton.setDisabled()
                 row = new MessageActionRow().addComponents([

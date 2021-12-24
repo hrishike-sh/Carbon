@@ -1,6 +1,10 @@
-const { Client, MessageEmbed } = require('discord.js')
+const {
+    Client,
+    MessageEmbed,
+    MessageActionRow,
+    MessageButton,
+} = require('discord.js')
 const giveawayModel = require('../database/models/giveaway')
-const { MessageActionRow, MessageButton } = require('discord-buttons')
 const timerModel = require('../database/models/timer')
 const voteModel = require('../database/models/user')
 const ms = require('pretty-ms')
@@ -99,15 +103,15 @@ module.exports = {
                                 components:
                                     new MessageActionRow().addComponents([
                                         new MessageButton()
-                                            .setStyle('green')
-                                            .setID(
+                                            .setStyle('SUCCESS')
+                                            .setCustomId(
                                                 'whydodisabledbuttonsneedanid'
                                             )
                                             .setLabel('Enter')
                                             .setDisabled(),
                                         new MessageButton()
                                             .setStyle('grey')
-                                            .setID('giveaway-info')
+                                            .setCustomId('giveaway-info')
                                             .setLabel('View Info'),
                                     ]),
                             })
@@ -182,8 +186,8 @@ module.exports = {
             } else {
                 const RemindBut = new MessageButton()
                     .setEmoji('🔔')
-                    .setStyle('green')
-                    .setID('remind_me')
+                    .setStyle('SUCCESS')
+                    .setCustomId('remind_me')
                 const row = new MessageActionRow().addComponents([RemindBut])
 
                 for (const timer of timers) {

@@ -1,6 +1,11 @@
 const channels = []
-const { MessageButton, MessageActionRow } = require('discord-buttons')
-const { Client, Message, MessageEmbed } = require('discord.js')
+const {
+    Client,
+    Message,
+    MessageEmbed,
+    MessageButton,
+    MessageActionRow,
+} = require('discord.js')
 module.exports = {
     name: 'russianroulette',
     aliases: ['rr'],
@@ -21,12 +26,12 @@ module.exports = {
         const joinBut = new MessageButton()
             .setLabel('Join')
             .setEmoji('⚔️')
-            .setID('join-rr')
-            .setStyle('green')
+            .setCustomId('join-rr')
+            .setStyle('SUCCESS')
         const infoBut = new MessageButton()
             .setLabel('Info')
             .setEmoji('ℹ️')
-            .setID('info-rr')
+            .setCustomId('info-rr')
             .setStyle('grey')
         const row = new MessageActionRow().addComponents([joinBut, infoBut])
         const joined = []

@@ -1,5 +1,5 @@
 const db = require('../../database/models/settingsSchema')
-const { MessageButton, MessageActionRow } = require('discord-buttons')
+const { MessageButton, MessageActionRow } = require('discord.js')
 
 module.exports = {
     name: 'unlockdown',
@@ -18,12 +18,12 @@ module.exports = {
 
         const yesbut = new MessageButton()
             .setLabel('Yes')
-            .setStyle('green')
-            .setID('lock-yes')
+            .setStyle('SUCCESS')
+            .setCustomId('lock-yes')
         const nobut = new MessageButton()
             .setLabel('No')
-            .setStyle('red')
-            .setID('lock-no')
+            .setStyle('DANGER')
+            .setCustomId('lock-no')
         const row1 = new MessageActionRow().addComponents([yesbut, nobut])
 
         const confirm = await message.channel.send(

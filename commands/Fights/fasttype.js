@@ -1,5 +1,10 @@
-const { Client, Message, MessageEmbed } = require('discord.js')
-const { MessageButton, MessageActionRow } = require('discord-buttons')
+const {
+    Client,
+    Message,
+    MessageEmbed,
+    MessageButton,
+    MessageActionRow,
+} = require('discord.js')
 const ms = require('pretty-ms')
 const txtgen = require('txtgen')
 module.exports = {
@@ -22,13 +27,13 @@ module.exports = {
             )
 
         const yesBut = new MessageButton()
-            .setID('yes-ft')
+            .setCustomId('yes-ft')
             .setLabel('Confirm')
-            .setStyle('green')
+            .setStyle('SUCCESS')
         const noBut = new MessageButton()
-            .setID('no-ft')
+            .setCustomId('no-ft')
             .setLabel('Decline')
-            .setStyle('red')
+            .setStyle('DANGER')
         const row = new MessageActionRow().addComponents([yesBut, noBut])
 
         const confirmation = await message.channel.send({

@@ -211,7 +211,7 @@ module.exports = {
                     .send({
                         embed: {
                             title: 'Donation Logs',
-                            color: 'BLURPLE',
+                            color: 'PRIMARY',
                             description: `[Jump](https://discord.com/channels/${message.guild.id}/${message.channel.id}/${message.id}) to message.`,
                             fields: [
                                 {
