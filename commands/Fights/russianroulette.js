@@ -56,13 +56,13 @@ module.exports = {
         joinCollector.on('collect', async (button) => {
             const id = button.id
             if (id === 'join-rr') {
-                if (joined.includes(button.clicker.user.id)) {
+                if (joined.includes(button.user.id)) {
                     button.reply.send('You have already joined the game.', true)
                     return
                 }
-                joined.push(button.clicker.user.id)
+                joined.push(button.user.id)
                 gameData.push({
-                    member: button.clicker,
+                    member: button,
                     dead: false,
                 })
 

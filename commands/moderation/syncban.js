@@ -70,7 +70,7 @@ module.exports = {
             )
 
             collector.on('collect', async (but) => {
-                if (but.clicker.user.id !== message.author.id) {
+                if (but.user.id !== message.author.id) {
                     await but.reply.send('This is not for you.', true)
                     return
                 }

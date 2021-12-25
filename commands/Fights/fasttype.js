@@ -53,7 +53,7 @@ module.exports = {
         confirmationCollector.on('collect', async (button) => {
             const id = button.id
 
-            if (button.clicker.user.id !== target.id) {
+            if (button.user.id !== target.id) {
                 button.reply.send('This is not for you.', true)
                 return
             }

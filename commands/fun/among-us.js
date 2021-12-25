@@ -64,7 +64,7 @@ module.exports = {
         let gamedata = []
 
         takePlayersCollector.on('collect', (button) => {
-            if (joined.includes(button.clicker.user.id)) {
+            if (joined.includes(button.user.id)) {
                 button.reply.send('You have already joined.', true)
                 return
             }
@@ -72,9 +72,9 @@ module.exports = {
                 button.reply.send('The game is already full, too late.', true)
                 return
             }
-            joined.push(button.clicker.user.id)
+            joined.push(button.user.id)
             gamedata.push({
-                member: button.clicker.member,
+                member: button.member,
                 color: emojiArray[joined.length - 1],
                 dead: false,
                 impostor: false,
@@ -112,7 +112,7 @@ module.exports = {
                 })
 
             whoAmICollector.on('collect', async (bbutton) => {
-                if (!joined.includes(bbutton.clicker.user.id)) {
+                if (!joined.includes(bbutton.user.id)) {
                     return bbutton.reply.send(
                         "You're not even in the game.",
                         true
@@ -120,7 +120,7 @@ module.exports = {
                 }
 
                 const susUser = gamedata.filter(
-                    (u) => u.member.id === bbutton.clicker.user.id
+                    (u) => u.member.id === bbutton.user.id
                 )[0]
 
                 bbutton.reply.send(
@@ -300,7 +300,7 @@ module.exports = {
                                 true
                             )
                         }
-                        if (!joined.includes(button.clicker.user.id)) {
+                        if (!joined.includes(button.user.id)) {
                             button.reply.send(
                                 'You are not even in the game, wtf are you trying to do??',
                                 true
@@ -308,7 +308,7 @@ module.exports = {
                             return
                         }
                         const voter = gamedata.filter(
-                            (u) => u.member.id === button.clicker.id
+                            (u) => u.member.id === button.user.id
                         )[0]
                         if (voter.dead) {
                             button.reply.send(
@@ -319,7 +319,7 @@ module.exports = {
                         }
                         const buttonId = button.id
 
-                        if (voted.includes(button.clicker.user.id)) {
+                        if (voted.includes(button.user.id)) {
                             button.reply.send('You have already voted.', true)
                             return
                         }
@@ -333,7 +333,7 @@ module.exports = {
                         )
                         votedTo.gotVoted++
 
-                        voted.push(button.clicker.user.id)
+                        voted.push(button.user.id)
 
                         meetingMessage.edit(
                             `${meetingMessageContent}\n\nVoted: ${voted

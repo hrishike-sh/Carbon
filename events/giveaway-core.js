@@ -14,7 +14,7 @@ module.exports = {
         if (!gaw) return
 
         if (button.id === 'giveaway-join') {
-            if (gaw.entries.includes(button.clicker.user.id)) {
+            if (gaw.entries.includes(button.user.id)) {
                 button.reply.send(
                     'You have already entered this giveaway.',
                     true
@@ -26,8 +26,7 @@ module.exports = {
                 let canJoin = true
                 for (const req of requirements) {
                     if (!canJoin) continue
-                    if (!button.clicker.member._roles.includes(req))
-                        canJoin = false
+                    if (!button.member._roles.includes(req)) canJoin = false
                 }
                 if (!canJoin)
                     return button.reply.send(
@@ -35,15 +34,13 @@ module.exports = {
                         true
                     )
             }
-            gaw.entries.push(button.clicker.user.id)
+            gaw.entries.push(button.user.id)
             gaw.save()
 
             button.reply.send('Your entry has been counted, good luck!', true)
         } else if (button.id === 'giveaway-info') {
             const info = {
-                joined: gaw.entries.includes(button.clicker.user.id)
-                    ? '✅'
-                    : '❌',
+                joined: gaw.entries.includes(button.user.id) ? '✅' : '❌',
                 chances: ((1 / gaw.entries.length) * 100).toFixed(3),
                 entries: gaw.entries.length.toLocaleString(),
                 ended: `${gaw.hasEnded}`,

@@ -37,7 +37,7 @@ module.exports = {
         })
 
         collectorC.on('collect', async (button) => {
-            if (button.clicker.user.id !== message.author.id) {
+            if (button.user.id !== message.author.id) {
                 button.reply.send(`This is not for you`, true)
                 return
             }

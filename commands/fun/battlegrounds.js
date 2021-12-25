@@ -48,7 +48,7 @@ module.exports = {
         let gamedata = []
 
         joinCollector.on('collect', async (button) => {
-            if (joined.includes(button.clicker.user.id)) {
+            if (joined.includes(button.user.id)) {
                 button.reply.send('You have already joined the game.', true)
                 return
             }
@@ -56,10 +56,10 @@ module.exports = {
                 button.reply.send('The game is full (20)', true)
                 return
             }
-            joined.push(button.clicker.user.id)
+            joined.push(button.user.id)
 
             gamedata.push({
-                member: button.clicker.member,
+                member: button.member,
                 id: Math.random().toString(36).substring(2),
                 hp: 100,
                 dead: false,
@@ -190,7 +190,7 @@ module.exports = {
 
             infoCollector.on('collect', async (button) => {
                 const gameUser = gamedata.filter(
-                    (user) => user.member.id === button.clicker.user.id
+                    (user) => user.member.id === button.user.id
                 )[0]
                 if (button.id === 'search-bg') {
                     const gotShield =

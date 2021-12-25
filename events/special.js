@@ -133,7 +133,7 @@ module.exports = {
                 if (
                     correctInfo
                         .get(button.message.id)
-                        .triedAndFailed.includes(button.clicker.user.id)
+                        .triedAndFailed.includes(button.user.id)
                 ) {
                     button.reply.send(
                         "You're out of snowballs lol, you only have one chance.",
@@ -150,7 +150,7 @@ module.exports = {
 
                 if (correctOne === answerChose) {
                     button.reply.send(
-                        `${button.clicker.member} hit the snowman first.\n\n:gift: | You got **${randomPresents}** presents!`
+                        `${button.member} hit the snowman first.\n\n:gift: | You got **${randomPresents}** presents!`
                     )
                     correctInfo.get(button.message.id).ended = true
 
@@ -175,7 +175,7 @@ module.exports = {
                     })
                     mainCollector.stop()
 
-                    const userId = button.clicker.user.id
+                    const userId = button.user.id
                     let dbUser = await presentSchema.findOne({ userId })
 
                     if (!dbUser) {
@@ -190,7 +190,7 @@ module.exports = {
                 } else {
                     correctInfo
                         .get(button.message.id)
-                        .triedAndFailed.push(button.clicker.user.id)
+                        .triedAndFailed.push(button.user.id)
                     button.reply.send(
                         'Your aim is trash, you hit one of the tree.',
                         true
@@ -242,13 +242,13 @@ module.exports = {
                 const id = button.id
                 const correct = toGuess
 
-                if (guessedButFailed.includes(button.clicker.user.id)) {
+                if (guessedButFailed.includes(button.user.id)) {
                     button.reply.send('You can only guess once.', true)
                     return
                 } else {
                     if (id === correct) {
                         button.reply.send(
-                            `${button.clicker.member} guessed the emoji.\n\n:gift: | You got **${randomPresents}** presents!`
+                            `${button.member} guessed the emoji.\n\n:gift: | You got **${randomPresents}** presents!`
                         )
                         mainCollector.stop()
 
@@ -300,7 +300,7 @@ module.exports = {
                         })
                         guessedButFailed = []
 
-                        const userId = button.clicker.user.id
+                        const userId = button.user.id
                         let dbUser = await presentSchema.findOne({ userId })
 
                         if (!dbUser) {
@@ -313,7 +313,7 @@ module.exports = {
                         dbUser.presents = dbUser.presents + randomPresents
                         dbUser.save()
                     } else {
-                        guessedButFailed.push(button.clicker.user.id)
+                        guessedButFailed.push(button.user.id)
                         button.reply.send('That was not the emoji.', true)
                     }
                 }

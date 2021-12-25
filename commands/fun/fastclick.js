@@ -44,7 +44,7 @@ module.exports = {
             })
 
         confirmationCollector.on('collect', async (button) => {
-            if (button.clicker.id !== user2.id) {
+            if (button.user.id !== user2.id) {
                 return button.reply.send('This is not for you.', true)
             }
 
@@ -114,16 +114,14 @@ module.exports = {
                         time: 30000,
                     })
                 mainCollector.on('collect', async (button) => {
-                    if (
-                        ![user1.id, user2.id].includes(button.clicker.user.id)
-                    ) {
+                    if (![user1.id, user2.id].includes(button.user.id)) {
                         await button.reply.send('This is not for you', true)
                         return
                     }
                     mainCollector.stop()
 
                     if (button.id !== 'correct-fc') {
-                        const loser = button.clicker.user.id
+                        const loser = button.user.id
                         const winner = loser === user1.id ? user2.id : user1.id
                         mainButton = mainButton.setDisabled()
                         baitButton1 = baitButton1.setDisabled()
@@ -144,16 +142,14 @@ module.exports = {
                         return
                     }
 
-                    if (
-                        ![user1.id, user2.id].includes(button.clicker.user.id)
-                    ) {
+                    if (![user1.id, user2.id].includes(button.user.id)) {
                         await button.reply.send('This is not for you', true)
                         return
                     }
                     const clickedIn = ms(new Date() - now, {
                         verbose: true,
                     })
-                    const winner = button.clicker.user.id
+                    const winner = button.user.id
                     mainButton = mainButton.setDisabled()
                     baitButton1 = baitButton1.setDisabled()
                     baitButton2 = baitButton2.setDisabled()
