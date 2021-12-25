@@ -212,7 +212,7 @@ module.exports = {
                 return
             }
 
-            if (button.id === 'myd-d') {
+            if (button.customId === 'myd-d') {
                 buttonD = buttonD.setStyle('SUCCESS').setDisabled()
 
                 buttonH = buttonH.setStyle('SECONDARY').setDisabled(false)
@@ -234,7 +234,7 @@ module.exports = {
                     }
                 )
                 button.deferUpdate()
-            } else if (button.id === 'myd-h') {
+            } else if (button.customId === 'myd-h') {
                 buttonH = buttonH.setStyle('SUCCESS').setDisabled()
 
                 buttonD = buttonD.setStyle('SECONDARY').setDisabled(false)
@@ -257,7 +257,7 @@ module.exports = {
                     }
                 )
                 button.deferUpdate()
-            } else if (button.id === 'myd-g') {
+            } else if (button.customId === 'myd-g') {
                 buttonG = buttonG.setStyle('SUCCESS').setDisabled()
 
                 buttonD = buttonD.setStyle('SECONDARY').setDisabled(false)
@@ -280,7 +280,7 @@ module.exports = {
                     }
                 )
                 button.deferUpdate()
-            } else if (button.id === 'myd-s') {
+            } else if (button.customId === 'myd-s') {
                 buttonS = buttonS.setStyle('SUCCESS').setDisabled()
 
                 buttonD = buttonD.setStyle('SECONDARY').setDisabled(false)

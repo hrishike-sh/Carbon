@@ -75,7 +75,7 @@ module.exports = {
                     return
                 }
 
-                if (but.id === 'globalbanno') {
+                if (but.customId === 'globalbanno') {
                     const msg = message.channel.send(
                         'You really got my hopes up there, nevermind i guess.'
                     )
@@ -83,7 +83,7 @@ module.exports = {
                     confirmation.delete()
                     await sleep(2500)
                     msg.delete()
-                } else if (but.id === 'globalbanyes') {
+                } else if (but.customId === 'globalbanyes') {
                     await but.reply.send('Banning...', true)
                     const errorArray = []
                     let bannedFrom

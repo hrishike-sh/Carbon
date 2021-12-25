@@ -5,7 +5,7 @@ module.exports = {
     async execute(button, client) {
         if (
             button.message.id === '883691336144941057' &&
-            button.id === 'ann_ping'
+            button.customId === 'ann_ping'
         ) {
             if (button.member.roles.cache.get('826946297151094814')) {
                 await button.member.roles.remove('826946297151094814')
@@ -22,7 +22,7 @@ module.exports = {
             }
         }
 
-        switch (button.id) {
+        switch (button.customId) {
             case 'ann_ping':
                 if (button.member.roles.cache.get('824916329848111114')) {
                     await button.member.roles.remove('824916329848111114')

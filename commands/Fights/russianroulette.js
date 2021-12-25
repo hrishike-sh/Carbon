@@ -54,7 +54,7 @@ module.exports = {
         )
 
         joinCollector.on('collect', async (button) => {
-            const id = button.id
+            const id = button.customId
             if (id === 'join-rr') {
                 if (joined.includes(button.user.id)) {
                     button.reply.send('You have already joined the game.', true)

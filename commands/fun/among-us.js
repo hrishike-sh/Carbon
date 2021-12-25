@@ -284,7 +284,7 @@ module.exports = {
                         )
                     let voted = []
                     voteCollector.on('collect', async (button) => {
-                        if (button.id === 'message-am') {
+                        if (button.customId === 'message-am') {
                             const map = gamedata
                                 .sort((a, b) => b.messages - a.messages)
                                 .map(
@@ -317,7 +317,7 @@ module.exports = {
                             )
                             return
                         }
-                        const buttonId = button.id
+                        const buttonId = button.customId
 
                         if (voted.includes(button.user.id)) {
                             button.reply.send('You have already voted.', true)

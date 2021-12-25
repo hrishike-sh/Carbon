@@ -4,7 +4,10 @@ module.exports = {
     name: 'clickButton',
     once: false,
     async execute(button, client) {
-        if (button.id !== 'giveaway-join' && button.id !== 'giveaway-info')
+        if (
+            button.customId !== 'giveaway-join' &&
+            button.customId !== 'giveaway-info'
+        )
             return
 
         const gaw = await giveawayModel.findOne({
@@ -13,7 +16,7 @@ module.exports = {
 
         if (!gaw) return
 
-        if (button.id === 'giveaway-join') {
+        if (button.customId === 'giveaway-join') {
             if (gaw.entries.includes(button.user.id)) {
                 button.reply.send(
                     'You have already entered this giveaway.',
@@ -38,7 +41,7 @@ module.exports = {
             gaw.save()
 
             button.reply.send('Your entry has been counted, good luck!', true)
-        } else if (button.id === 'giveaway-info') {
+        } else if (button.customId === 'giveaway-info') {
             const info = {
                 joined: gaw.entries.includes(button.user.id) ? '✅' : '❌',
                 chances: ((1 / gaw.entries.length) * 100).toFixed(3),

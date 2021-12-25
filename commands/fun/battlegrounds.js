@@ -192,7 +192,7 @@ module.exports = {
                 const gameUser = gamedata.filter(
                     (user) => user.member.id === button.user.id
                 )[0]
-                if (button.id === 'search-bg') {
+                if (button.customId === 'search-bg') {
                     const gotShield =
                         [1, 0, 0, 0][Math.floor(Math.random() * 4)] == 1
 
@@ -219,7 +219,7 @@ module.exports = {
                         )
                         gameUser.hp -= randomDamage
                     }
-                } else if (button.id === 'upgrade-bg') {
+                } else if (button.customId === 'upgrade-bg') {
                     const moreDamage = Math.floor(Math.random() * 30) + 20
 
                     button.reply.send(
@@ -228,7 +228,7 @@ module.exports = {
                     )
 
                     gameUser.gun.dmg += moreDamage
-                } else if (button.id === 'defend-bg') {
+                } else if (button.customId === 'defend-bg') {
                     const moreHp = Math.floor(Math.random() * 30) + 10
 
                     button.reply.send(

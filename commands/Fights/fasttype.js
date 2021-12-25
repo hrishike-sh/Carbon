@@ -51,7 +51,7 @@ module.exports = {
             confirmation.createMessageComponentCollector((b) => b, {})
 
         confirmationCollector.on('collect', async (button) => {
-            const id = button.id
+            const id = button.customId
 
             if (button.user.id !== target.id) {
                 button.reply.send('This is not for you.', true)

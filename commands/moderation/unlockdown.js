@@ -42,7 +42,7 @@ module.exports = {
                 return
             }
 
-            const id = button.id
+            const id = button.customId
 
             if (id === 'lock-no') {
                 confirm.delete()

@@ -48,7 +48,7 @@ module.exports = {
                 return button.reply.send('This is not for you.', true)
             }
 
-            if (button.id === 'yes_fc') {
+            if (button.customId === 'yes_fc') {
                 button.deferUpdate()
                 yesButton.setDisabled()
                 noButton = noButton
@@ -120,7 +120,7 @@ module.exports = {
                     }
                     mainCollector.stop()
 
-                    if (button.id !== 'correct-fc') {
+                    if (button.customId !== 'correct-fc') {
                         const loser = button.user.id
                         const winner = loser === user1.id ? user2.id : user1.id
                         mainButton = mainButton.setDisabled()

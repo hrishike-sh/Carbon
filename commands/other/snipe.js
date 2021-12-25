@@ -91,7 +91,7 @@ module.exports = {
                     content: 'This is not for you',
                 })
             }
-            const id = button.id
+            const id = button.customId
             button.deferUpdate()
             if (id === 'prev-snipe') {
                 snipe--

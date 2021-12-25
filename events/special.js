@@ -142,7 +142,7 @@ module.exports = {
                     return
                 }
 
-                const id = button.id
+                const id = button.customId
                 const answerChose = parseInt(id.replace(/[^0-9]/g, ''))
                 const correctOne = parseInt(
                     correctInfo.get(button.message.id).correctAnswer
@@ -239,7 +239,7 @@ module.exports = {
                 })
             let guessedButFailed = []
             mainCollector.on('collect', async (button) => {
-                const id = button.id
+                const id = button.customId
                 const correct = toGuess
 
                 if (guessedButFailed.includes(button.user.id)) {
