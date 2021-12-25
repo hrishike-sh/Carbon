@@ -50,7 +50,7 @@ module.exports = {
 
             if (button.id === 'yes_fc') {
                 button.deferUpdate()
-                yesButton = yesButton.setDisabled()
+                yesButton.setDisabled()
                 noButton = noButton
                     .setStyle('grey')
                     .setCustomId('no_fc')
@@ -167,10 +167,10 @@ module.exports = {
             } else {
                 button.deferUpdate()
                 yesButton = yesButton
-                    .setStyle('grey')
+                    .setStyle('SUCCESS')
                     .setCustomId('yes_fc')
                     .setDisabled()
-                noButton = noButton.setDisabled()
+                noButton.setDisabled()
                 row = new MessageActionRow().addComponents([
                     yesButton,
                     noButton,
