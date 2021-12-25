@@ -92,7 +92,7 @@ module.exports = {
                 })
             }
             const id = button.id
-            button.reply.defer()
+            button.deferReply()
             if (id === 'prev-snipe') {
                 snipe--
                 if (snipe < 0) {

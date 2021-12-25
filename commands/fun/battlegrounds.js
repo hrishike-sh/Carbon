@@ -204,7 +204,7 @@ module.exports = {
                     await sleep(500)
 
                     if (gotShield) {
-                        button.reply.edit(
+                        button.editReply(
                             'You found a 🛡️ Shield! You are now immune to **1** incoming attack.',
                             true
                         )
@@ -213,7 +213,7 @@ module.exports = {
                     } else {
                         const randomDamage = Math.floor(Math.random() * 50) + 30
 
-                        button.reply.edit(
+                        button.editReply(
                             `You tried searching for a shield, but you end up finding a SNAKE. You were poisoned and lost **${randomDamage}** HP!`,
                             true
                         )

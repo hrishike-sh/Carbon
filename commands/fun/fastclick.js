@@ -49,7 +49,7 @@ module.exports = {
             }
 
             if (button.id === 'yes_fc') {
-                button.reply.defer()
+                button.deferReply()
                 yesButton = yesButton.setDisabled()
                 noButton = noButton
                     .setStyle('grey')
@@ -130,7 +130,7 @@ module.exports = {
                         baitButton4 = baitButton4.setDisabled()
                         array = array
                         mainRow = new MessageActionRow().addComponents(array)
-                        button.reply.defer()
+                        button.deferReply()
                         mainMessage.edit({
                             components: mainRow,
                             content: `:trophy: <@${
@@ -157,7 +157,7 @@ module.exports = {
                     baitButton4 = baitButton4.setDisabled()
                     array = array
                     mainRow = new MessageActionRow().addComponents(array)
-                    button.reply.defer()
+                    button.deferReply()
                     mainMessage.edit({
                         components: mainRow,
                         content: `:trophy: <@${winner}> has won! The button was clicked in ${clickedIn}!`,
@@ -165,7 +165,7 @@ module.exports = {
                     return
                 })
             } else {
-                button.reply.defer()
+                button.deferReply()
                 yesButton = yesButton
                     .setStyle('grey')
                     .setCustomId('yes_fc')

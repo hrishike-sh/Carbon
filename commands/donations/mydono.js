@@ -233,7 +233,7 @@ module.exports = {
                         components: dataForD.components,
                     }
                 )
-                button.reply.defer()
+                button.deferReply()
             } else if (button.id === 'myd-h') {
                 buttonH = buttonH.setStyle('SUCCESS').setDisabled()
 
@@ -256,7 +256,7 @@ module.exports = {
                         components: dataForH.components,
                     }
                 )
-                button.reply.defer()
+                button.deferReply()
             } else if (button.id === 'myd-g') {
                 buttonG = buttonG.setStyle('SUCCESS').setDisabled()
 
@@ -279,7 +279,7 @@ module.exports = {
                         components: dataForG.components,
                     }
                 )
-                button.reply.defer()
+                button.deferReply()
             } else if (button.id === 'myd-s') {
                 buttonS = buttonS.setStyle('SUCCESS').setDisabled()
 
@@ -302,7 +302,7 @@ module.exports = {
                         components: dataForS.components,
                     }
                 )
-                button.reply.defer()
+                button.deferReply()
             } else;
         })
 
