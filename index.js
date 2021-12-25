@@ -186,7 +186,7 @@ client.on('message', async (message) => {
             })
             .setTitle(command.name)
             .setDescription(`**Message:** \`${message.content}\``)
-            .addField('Total commands ran', commandsRan, true)
+            .addField('Total commands ran', commandsRan.toString(), true)
             .addField(
                 'Server | Channel',
                 `${message.guild.name} | ${message.channel}(${message.channel.name})`

@@ -209,19 +209,19 @@ module.exports = {
 
             for (let i = 0; i < emoji.length; i++) {
                 if (i < 4) {
-                    row = row.addComponent(
+                    row = row.addComponents([
                         new MessageButton()
                             .setCustomId(emoji[i])
                             .setEmoji(emoji[i])
-                            .setStyle('grey')
-                    )
+                            .setStyle('grey'),
+                    ])
                 } else {
-                    row2 = row2.addComponent(
+                    row2 = row2.addComponents([
                         new MessageButton()
                             .setCustomId(emoji[i])
                             .setEmoji(emoji[i])
-                            .setStyle('grey')
-                    )
+                            .setStyle('grey'),
+                    ])
                 }
             }
 
@@ -257,39 +257,39 @@ module.exports = {
                         for (let i = 0; i < emoji.length; i++) {
                             if (i < 4) {
                                 if (emoji[i] === correct) {
-                                    row = row.addComponent(
+                                    row = row.addComponents([
                                         new MessageButton()
                                             .setCustomId(emoji[i])
                                             .setEmoji(emoji[i])
                                             .setStyle('SUCCESS')
-                                            .setDisabled()
-                                    )
+                                            .setDisabled(),
+                                    ])
                                 } else {
-                                    row = row.addComponent(
+                                    row = row.addComponents([
                                         new MessageButton()
                                             .setCustomId(emoji[i])
                                             .setEmoji(emoji[i])
                                             .setDisabled()
-                                            .setStyle('grey')
-                                    )
+                                            .setStyle('grey'),
+                                    ])
                                 }
                             } else {
                                 if (emoji[i] === correct) {
-                                    row2 = row2.addComponent(
+                                    row2 = row2.addComponents([
                                         new MessageButton()
                                             .setCustomId(emoji[i])
                                             .setEmoji(emoji[i])
                                             .setDisabled()
-                                            .setStyle('SUCCESS')
-                                    )
+                                            .setStyle('SUCCESS'),
+                                    ])
                                 } else {
-                                    row2 = row2.addComponent(
+                                    row2 = row2.addComponents([
                                         new MessageButton()
                                             .setCustomId(emoji[i])
                                             .setEmoji(emoji[i])
                                             .setDisabled()
-                                            .setStyle('grey')
-                                    )
+                                            .setStyle('grey'),
+                                    ])
                                 }
                             }
                         }
