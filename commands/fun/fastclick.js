@@ -104,7 +104,7 @@ module.exports = {
                 let mainRow = new MessageActionRow().addComponents(array)
                 await sleep(2500)
                 mainMessage.edit({
-                    components: mainRow,
+                    components: [mainRow],
                     content: 'Click the green one!',
                 })
                 const now = new Date()
@@ -132,7 +132,7 @@ module.exports = {
                         mainRow = new MessageActionRow().addComponents(array)
                         button.deferUpdate()
                         mainMessage.edit({
-                            components: mainRow,
+                            components: [mainRow],
                             content: `:trophy: <@${
                                 [user1.id, user2.id].filter(
                                     (val) => val !== loser
@@ -159,7 +159,7 @@ module.exports = {
                     mainRow = new MessageActionRow().addComponents(array)
                     button.deferUpdate()
                     mainMessage.edit({
-                        components: mainRow,
+                        components: [mainRow],
                         content: `:trophy: <@${winner}> has won! The button was clicked in ${clickedIn}!`,
                     })
                     return
