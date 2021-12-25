@@ -65,24 +65,10 @@ for (const file of eventFiles) {
 
 process.on('uncaughtException', (err) => {
     console.log(err)
-    client.channels.cache.get('912715570070294599').send({
-        embed: {
-            title: 'The bot almost crashed. (uncaughtException)',
-            description: err.message || 'No message data, Check the console',
-        },
-        content: '<@598918643727990784>',
-    })
 })
 
 process.on('unhandledRejection', (err) => {
     console.log(err)
-    client.channels.cache.get('912715570070294599').send({
-        embed: {
-            title: 'The bot almost crashed. (unhandledRejection)',
-            description: err.message || 'No message data, Check the console',
-        },
-        content: '<@598918643727990784>',
-    })
 })
 
 client.on('ready', async () => {
@@ -91,12 +77,11 @@ client.on('ready', async () => {
 
     client.db.fighthub = client.guilds.cache.get('824294231447044197')
     // LOGS
+    const restartEmbed = new MessageEmbed().setDescription(
+        `Bot restarted <t:${(new Date() / 1000).toFixed(0)}:R`
+    )
     client.channels.cache.get('901739465406566400').send({
-        embed: {
-            description: `Bot restarted <t:${(new Date() / 1000).toFixed(
-                0
-            )}:R>`,
-        },
+        embeds: [restartEmbed],
     })
     //LOGS
     //AFKS
@@ -194,21 +179,23 @@ client.on('message', async (message) => {
     try {
         command.execute(message, args, client)
         commandsRan++
-        ;(await client.fetchWebhook('919470030343794748')).send(
-            new MessageEmbed()
-                .setAuthor(
-                    message.author.tag,
-                    message.author.displayAvatarURL()
-                )
-                .setTitle(command.name)
-                .setDescription(`**Message:** \`${message.content}\``)
-                .addField('Total commands ran', commandsRan, true)
-                .addField(
-                    'Server | Channel',
-                    `${message.guild.name} | ${message.channel}(${message.channel.name})`
-                )
-                .setTimestamp()
-        )
+        const commandbed = new MessageEmbed()
+            .setAuthor({
+                name: message.author.tag,
+                iconURL: message.author.displayAvatarURL(),
+            })
+            .setTitle(command.name)
+            .setDescription(`**Message:** \`${message.content}\``)
+            .addField('Total commands ran', commandsRan, true)
+            .addField(
+                'Server | Channel',
+                `${message.guild.name} | ${message.channel}(${message.channel.name})`
+            )
+            .setTimestamp()
+
+        ;(await client.fetchWebhook('919470030343794748')).send({
+            embeds: [commandbed],
+        })
     } catch (error) {
         console.log(error)
         message.reply('An error occured while running this command.')
