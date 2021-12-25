@@ -202,7 +202,7 @@ module.exports = {
             }
         )
 
-        const collector = newMessage.createButtonCollector((b) => b, {
+        const collector = newMessage.createMessageComponentCollector((b) => b, {
             time: 30000,
         })
 

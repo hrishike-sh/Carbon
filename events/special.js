@@ -121,10 +121,13 @@ module.exports = {
 
             editMessage(mainMessage, maps, header, row)
 
-            const mainCollector = mainMessage.createButtonCollector((b) => b, {
-                time: 30 * 1000,
-                errors: ['time'],
-            })
+            const mainCollector = mainMessage.createMessageComponentCollector(
+                (b) => b,
+                {
+                    time: 30 * 1000,
+                    errors: ['time'],
+                }
+            )
 
             mainCollector.on('collect', async (button) => {
                 if (
@@ -229,13 +232,11 @@ module.exports = {
                 components: [row, row2],
             })
 
-            const mainCollector = await mainMessage.createButtonCollector(
-                (b) => b,
-                {
+            const mainCollector =
+                await mainMessage.createMessageComponentCollector((b) => b, {
                     time: 30 * 1000,
                     errors: ['time'],
-                }
-            )
+                })
             let guessedButFailed = []
             mainCollector.on('collect', async (button) => {
                 const id = button.id

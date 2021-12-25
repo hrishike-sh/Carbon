@@ -47,10 +47,8 @@ module.exports = {
             components: [row],
         })
 
-        const confirmationCollector = confirmation.createButtonCollector(
-            (b) => b,
-            {}
-        )
+        const confirmationCollector =
+            confirmation.createMessageComponentCollector((b) => b, {})
 
         confirmationCollector.on('collect', async (button) => {
             const id = button.id

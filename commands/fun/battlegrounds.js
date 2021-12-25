@@ -38,9 +38,12 @@ module.exports = {
             component: joinBut,
         })
 
-        const joinCollector = joinMessage.createButtonCollector((b) => b, {
-            time: 30 * 1000,
-        })
+        const joinCollector = joinMessage.createMessageComponentCollector(
+            (b) => b,
+            {
+                time: 30 * 1000,
+            }
+        )
         let joined = []
         let gamedata = []
 
@@ -178,9 +181,12 @@ module.exports = {
                     ),
                 components,
             })
-            const infoCollector = mainMessage.createButtonCollector((b) => b, {
-                time: 15000,
-            })
+            const infoCollector = mainMessage.createMessageComponentCollector(
+                (b) => b,
+                {
+                    time: 15000,
+                }
+            )
 
             infoCollector.on('collect', async (button) => {
                 const gameUser = gamedata.filter(

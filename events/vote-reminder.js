@@ -51,18 +51,20 @@ module.exports = {
         const a = await user.user.createDM()
 
         a.send({
-            embed: new MessageEmbed()
-                .setTitle('Thank you for voting!')
-                .setDescription(
-                    `You have voted for **[FightHub](https://discord.gg/fight)** and got the \`・Voter\` role for 12 hours!\n\nYou will be reminded <t:${(
-                        dbUser.fighthub.voting.lastVoted / 1000
-                    ).toFixed(
-                        0
-                    )}:R> to vote again! You can toggle vote reminders by running \`fh voterm\`.`
-                )
-                .setColor('GREEN')
-                .setTimestamp()
-                .setThumbnail(client.db.fighthub.iconURL()),
+            embeds: [
+                new MessageEmbed()
+                    .setTitle('Thank you for voting!')
+                    .setDescription(
+                        `You have voted for **[FightHub](https://discord.gg/fight)** and got the \`・Voter\` role for 12 hours!\n\nYou will be reminded <t:${(
+                            dbUser.fighthub.voting.lastVoted / 1000
+                        ).toFixed(
+                            0
+                        )}:R> to vote again! You can toggle vote reminders by running \`fh voterm\`.`
+                    )
+                    .setColor('GREEN')
+                    .setTimestamp()
+                    .setThumbnail(client.db.fighthub.iconURL()),
+            ],
         })
 
         const web = await client.fetchWebhook('921645605070200852')

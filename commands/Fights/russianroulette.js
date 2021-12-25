@@ -46,9 +46,12 @@ module.exports = {
             components: row,
         })
 
-        const joinCollector = joinMessage.createButtonCollector((b) => b, {
-            time: 15000,
-        })
+        const joinCollector = joinMessage.createMessageComponentCollector(
+            (b) => b,
+            {
+                time: 15000,
+            }
+        )
 
         joinCollector.on('collect', async (button) => {
             const id = button.id

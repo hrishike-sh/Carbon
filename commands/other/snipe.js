@@ -77,9 +77,12 @@ module.exports = {
             components: [row],
         })
 
-        const collector = mainMessage.createButtonCollector((b) => b, {
-            time: 30000,
-        })
+        const collector = mainMessage.createMessageComponentCollector(
+            (b) => b,
+            {
+                time: 30000,
+            }
+        )
 
         collector.on('collect', async (button) => {
             if (button.clicker.user.id !== message.author.id) {

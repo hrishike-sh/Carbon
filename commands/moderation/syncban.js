@@ -62,9 +62,12 @@ module.exports = {
                 },
                 components: [row],
             })
-            const collector = confirmation.createButtonCollector((b) => b, {
-                time: 3e4,
-            })
+            const collector = confirmation.createMessageComponentCollector(
+                (b) => b,
+                {
+                    time: 3e4,
+                }
+            )
 
             collector.on('collect', async (but) => {
                 if (but.clicker.user.id !== message.author.id) {

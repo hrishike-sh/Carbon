@@ -28,20 +28,20 @@ module.exports = {
             .setLabel('Decline')
         let row = new MessageActionRow().addComponents([noButton, yesButton])
         const confirmation = await message.channel.send({
-            embed: {
-                title: 'Confirmation',
-                color: 'YELLOW',
-                description: `${user2}, ${user1} has challenged you for a game of fast click.\nWhat do you say?`,
-                timestamp: new Date(),
-            },
+            embeds: [
+                {
+                    title: 'Confirmation',
+                    color: 'YELLOW',
+                    description: `${user2}, ${user1} has challenged you for a game of fast click.\nWhat do you say?`,
+                    timestamp: new Date(),
+                },
+            ],
             components: [row],
         })
-        const confirmationCollector = confirmation.createButtonCollector(
-            (b) => b,
-            {
+        const confirmationCollector =
+            confirmation.createMessageComponentCollector((b) => b, {
                 time: 30000,
-            }
-        )
+            })
 
         confirmationCollector.on('collect', async (button) => {
             if (button.clicker.id !== user2.id) {
@@ -60,13 +60,15 @@ module.exports = {
                     noButton,
                 ])
                 confirmation.edit({
-                    embed: {
-                        title: 'Challenge Accepted',
-                        color: 'GREEN',
-                        description: `${user2}, ${user1} has challenged you for a game of fast click.\nWhat do you say?`,
-                        timestamp: new Date(),
-                    },
-                    components: row,
+                    embeds: [
+                        {
+                            title: 'Challenge Accepted',
+                            color: 'GREEN',
+                            description: `${user2}, ${user1} has challenged you for a game of fast click.\nWhat do you say?`,
+                            timestamp: new Date(),
+                        },
+                    ],
+                    components: [row],
                 })
 
                 const mainMessage = await message.channel.send(
@@ -101,13 +103,16 @@ module.exports = {
                 ].sort(() => Math.random() - 0.5)
                 let mainRow = new MessageActionRow().addComponents(array)
                 await sleep(2500)
-                mainMessage.edit('Click the green one', { components: mainRow })
+                mainMessage.edit({
+                    components: mainRow,
+                    content: 'Click the green one!',
+                })
                 const now = new Date()
 
-                const mainCollector = mainMessage.createButtonCollector(
-                    (b) => b,
-                    { time: 30000 }
-                )
+                const mainCollector =
+                    mainMessage.createMessageComponentCollector((b) => b, {
+                        time: 30000,
+                    })
                 mainCollector.on('collect', async (button) => {
                     if (
                         ![user1.id, user2.id].includes(button.clicker.user.id)
@@ -128,14 +133,14 @@ module.exports = {
                         array = array
                         mainRow = new MessageActionRow().addComponents(array)
                         button.reply.defer()
-                        mainMessage.edit(
-                            `:trophy: <@${
+                        mainMessage.edit({
+                            components: mainRow,
+                            content: `:trophy: <@${
                                 [user1.id, user2.id].filter(
                                     (val) => val !== loser
                                 )[0]
                             }> won because <@${loser}> clicked the wrong button!`,
-                            { components: mainRow }
-                        )
+                        })
                         return
                     }
 
@@ -157,10 +162,10 @@ module.exports = {
                     array = array
                     mainRow = new MessageActionRow().addComponents(array)
                     button.reply.defer()
-                    mainMessage.edit(
-                        `:trophy: <@${winner}> has won! The button was clicked in ${clickedIn}!`,
-                        { components: mainRow }
-                    )
+                    mainMessage.edit({
+                        components: mainRow,
+                        content: `:trophy: <@${winner}> has won! The button was clicked in ${clickedIn}!`,
+                    })
                     return
                 })
             } else {
@@ -175,13 +180,15 @@ module.exports = {
                     noButton,
                 ])
                 confirmation.edit({
-                    embed: {
-                        title: 'Challenge Declined',
-                        color: 'RED',
-                        description: `${user2}, ${user1} has challenged you for a game of fast click.\nWhat do you say?`,
-                        timestamp: new Date(),
-                    },
-                    components: row,
+                    embeds: [
+                        {
+                            title: 'Challenge Declined',
+                            color: 'RED',
+                            description: `${user2}, ${user1} has challenged you for a game of fast click.\nWhat do you say?`,
+                            timestamp: new Date(),
+                        },
+                    ],
+                    components: [row],
                 })
                 return
             }

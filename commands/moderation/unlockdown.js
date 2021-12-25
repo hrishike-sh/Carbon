@@ -31,7 +31,7 @@ module.exports = {
             { components: row1 }
         )
 
-        const collectorC = confirm.createButtonCollector((b) => b, {
+        const collectorC = confirm.createMessageComponentCollector((b) => b, {
             time: 30000,
             max: 1,
         })

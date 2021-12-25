@@ -55,12 +55,10 @@ module.exports = {
             components: [row],
         })
 
-        const takePlayersCollector = takePlayers.createButtonCollector(
-            (b) => b,
-            {
+        const takePlayersCollector =
+            takePlayers.createMessageComponentCollector((b) => b, {
                 time: 30 * 1000,
-            }
-        )
+            })
 
         const joined = []
         let gamedata = []
@@ -108,12 +106,10 @@ module.exports = {
                 }
             )
 
-            const whoAmICollector = roleCollector.createButtonCollector(
-                (b) => b,
-                {
+            const whoAmICollector =
+                roleCollector.createMessageComponentCollector((b) => b, {
                     time: 10000,
-                }
-            )
+                })
 
             whoAmICollector.on('collect', async (bbutton) => {
                 if (!joined.includes(bbutton.clicker.user.id)) {
@@ -279,12 +275,13 @@ module.exports = {
                         }
                     )
                     const meetingMessageContent = meetingMessage.content
-                    const voteCollector = meetingMessage.createButtonCollector(
-                        (b) => b,
-                        {
-                            time: 15000,
-                        }
-                    )
+                    const voteCollector =
+                        meetingMessage.createMessageComponentCollector(
+                            (b) => b,
+                            {
+                                time: 15000,
+                            }
+                        )
                     let voted = []
                     voteCollector.on('collect', async (button) => {
                         if (button.id === 'message-am') {
