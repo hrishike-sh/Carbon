@@ -123,11 +123,11 @@ module.exports = {
                     if (button.customId !== 'correct-fc') {
                         const loser = button.user.id
                         const winner = loser === user1.id ? user2.id : user1.id
-                        mainButton = mainButton.setDisabled()
-                        baitButton1 = baitButton1.setDisabled()
-                        baitButton2 = baitButton2.setDisabled()
-                        baitButton3 = baitButton3.setDisabled()
-                        baitButton4 = baitButton4.setDisabled()
+                        mainButton.setDisabled()
+                        baitButton1.setDisabled()
+                        baitButton2.setDisabled()
+                        baitButton3.setDisabled()
+                        baitButton4.setDisabled()
                         array = array
                         mainRow = new MessageActionRow().addComponents(array)
                         button.deferUpdate()
@@ -150,11 +150,11 @@ module.exports = {
                         verbose: true,
                     })
                     const winner = button.user.id
-                    mainButton = mainButton.setDisabled()
-                    baitButton1 = baitButton1.setDisabled()
-                    baitButton2 = baitButton2.setDisabled()
-                    baitButton3 = baitButton3.setDisabled()
-                    baitButton4 = baitButton4.setDisabled()
+                    mainButton.setDisabled()
+                    baitButton1.setDisabled()
+                    baitButton2.setDisabled()
+                    baitButton3.setDisabled()
+                    baitButton4.setDisabled()
                     array = array
                     mainRow = new MessageActionRow().addComponents(array)
                     button.deferUpdate()
