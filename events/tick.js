@@ -110,7 +110,7 @@ module.exports = {
                                             .setLabel('Enter')
                                             .setDisabled(),
                                         new MessageButton()
-                                            .setStyle('grey')
+                                            .setStyle('SECONDARY')
                                             .setCustomId('giveaway-info')
                                             .setLabel('View Info'),
                                     ]),

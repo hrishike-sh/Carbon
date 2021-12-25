@@ -116,28 +116,28 @@ module.exports = {
                     row1 = row1.addComponents([
                         new MessageButton()
                             .setLabel(gamedata[i].member.user.username)
-                            .setStyle('grey')
+                            .setStyle('SECONDARY')
                             .setCustomId(gamedata[i].id),
                     ])
                 } else if (i < 10) {
                     row2 = row2.addComponents([
                         new MessageButton()
                             .setLabel(gamedata[i].member.user.username)
-                            .setStyle('grey')
+                            .setStyle('SECONDARY')
                             .setCustomId(gamedata[i].id),
                     ])
                 } else if (i < 15) {
                     row3 = row3.addComponents([
                         new MessageButton()
                             .setLabel(gamedata[i].member.user.username)
-                            .setStyle('grey')
+                            .setStyle('SECONDARY')
                             .setCustomId(gamedata[i].id),
                     ])
                 } else {
                     row4 = row4.addComponents([
                         new MessageButton()
                             .setLabel(gamedata[i].member.user.username)
-                            .setStyle('grey')
+                            .setStyle('SECONDARY')
                             .setCustomId(gamedata[i].id),
                     ])
                 }

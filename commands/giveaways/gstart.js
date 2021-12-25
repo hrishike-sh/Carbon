@@ -108,7 +108,7 @@ module.exports = {
                 .setCustomId('giveaway-join')
             const infoBut = new MessageButton()
                 .setLabel('View Info')
-                .setStyle('grey')
+                .setStyle('SECONDARY')
                 .setCustomId('giveaway-info')
             const row = new MessageActionRow().addComponents([
                 enterBut,

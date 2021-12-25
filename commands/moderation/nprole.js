@@ -32,15 +32,15 @@ module.exports = {
         const annBut = new MessageButton()
             .setCustomId('par_ping')
             .setEmoji('861299771612594196')
-            .setStyle('grey')
+            .setStyle('SECONDARY')
         const nitBut = new MessageButton()
             .setCustomId('no_par_ping')
             .setEmoji('824904307337723905')
-            .setStyle('grey')
+            .setStyle('SECONDARY')
         const gawBut = new MessageButton()
             .setCustomId('par_hes_ping')
             .setEmoji('861300228803002368')
-            .setStyle('grey')
+            .setStyle('SECONDARY')
 
         const row1 = new MessageActionRow().addComponents([
             annBut,

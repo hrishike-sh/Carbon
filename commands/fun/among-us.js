@@ -43,7 +43,7 @@ module.exports = {
         const infoBut = new MessageButton()
             .setLabel('Info')
             .setCustomId('info-amongus')
-            .setStyle('grey')
+            .setStyle('SECONDARY')
         const row = new MessageActionRow().addComponents([joinBut, infoBut])
 
         const takePlayers = await message.channel.send({
@@ -141,7 +141,7 @@ module.exports = {
                     row1 = row1.addComponents([
                         new MessageButton()
                             .setLabel(gamedata[m].member.user.username)
-                            .setStyle('grey')
+                            .setStyle('SECONDARY')
                             .setCustomId(gamedata[m].id)
                             .setEmoji(gamedata[m].color)
                             .setDisabled(),
@@ -150,7 +150,7 @@ module.exports = {
                     row2 = row2.addComponents([
                         new MessageButton()
                             .setLabel(gamedata[m].member.user.username)
-                            .setStyle('grey')
+                            .setStyle('SECONDARY')
                             .setCustomId(gamedata[m].id)
                             .setEmoji(gamedata[m].color)
                             .setDisabled(),
@@ -232,7 +232,7 @@ module.exports = {
                                         .setLabel(
                                             gamedata[a].member.user.username
                                         )
-                                        .setStyle('grey')
+                                        .setStyle('SECONDARY')
                                         .setCustomId(gamedata[a].id)
                                         .setEmoji(gamedata[a].color),
                                 ])
@@ -255,7 +255,7 @@ module.exports = {
                                         .setLabel(
                                             gamedata[a].member.user.username
                                         )
-                                        .setStyle('grey')
+                                        .setStyle('SECONDARY')
                                         .setCustomId(gamedata[a].id)
                                         .setEmoji(gamedata[a].color),
                                 ])

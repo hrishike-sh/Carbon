@@ -216,14 +216,14 @@ module.exports = {
                         new MessageButton()
                             .setCustomId(emoji[i])
                             .setEmoji(emoji[i])
-                            .setStyle('grey'),
+                            .setStyle('SECONDARY'),
                     ])
                 } else {
                     row2 = row2.addComponents([
                         new MessageButton()
                             .setCustomId(emoji[i])
                             .setEmoji(emoji[i])
-                            .setStyle('grey'),
+                            .setStyle('SECONDARY'),
                     ])
                 }
             }
@@ -271,7 +271,7 @@ module.exports = {
                                             .setCustomId(emoji[i])
                                             .setEmoji(emoji[i])
                                             .setDisabled()
-                                            .setStyle('grey'),
+                                            .setStyle('SECONDARY'),
                                     ])
                                 }
                             } else {
@@ -289,7 +289,7 @@ module.exports = {
                                             .setCustomId(emoji[i])
                                             .setEmoji(emoji[i])
                                             .setDisabled()
-                                            .setStyle('grey'),
+                                            .setStyle('SECONDARY'),
                                     ])
                                 }
                             }

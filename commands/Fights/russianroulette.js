@@ -32,7 +32,7 @@ module.exports = {
             .setLabel('Info')
             .setEmoji('ℹ️')
             .setCustomId('info-rr')
-            .setStyle('grey')
+            .setStyle('SECONDARY')
         const row = new MessageActionRow().addComponents([joinBut, infoBut])
         const joined = []
         let gameData = []
