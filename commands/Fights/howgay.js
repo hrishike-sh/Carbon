@@ -72,13 +72,12 @@ module.exports = {
             }
             if (button.customId == 'no-hg') {
                 button.deferUpdate()
-                thisMessage.edit({
-                    content: 'The fight was cancelled.',
-                    embeds: null,
-                })
+                thisMessage.delete()
+                message.channel.send('The fight was cancelled.')
                 return
             }
-
+            button.deferUpdate()
+            thisMessage.delete()
             let gayBed = {
                 title: 'HOWGAY',
                 description: 'Starting soon',
