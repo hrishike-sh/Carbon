@@ -70,6 +70,14 @@ module.exports = {
                     ephemeral: true,
                 })
             }
+            if (button.customId == 'no-hg') {
+                button.deferUpdate()
+                thisMessage.edit({
+                    content: 'The fight was cancelled.',
+                    embeds: null,
+                })
+                return
+            }
 
             let gayBed = {
                 title: 'HOWGAY',
