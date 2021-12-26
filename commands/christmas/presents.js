@@ -16,7 +16,7 @@ module.exports = {
      * @param {Message} message
      * @param {String[]} args
      */
-    async execute(message, args, client) {
+    async execute(message) {
         const userId =
             message.mentions.users.size > 0
                 ? message.mentions.users.first().id
@@ -31,13 +31,15 @@ module.exports = {
         const presents = user ? user.presents : 0
 
         console.log(lb)
-        message.channel.send(
-            new MessageEmbed()
-                .setTitle('Presents')
-                .setDescription(
-                    `**Your presents:** ${presents.toLocaleString()}\n**Leaderboard top:** ${lb[0].presents.toLocaleString()}`
-                )
-                .setColor('WHITE')
-        )
+        message.channel.send({
+            embeds: [
+                new MessageEmbed()
+                    .setTitle('Presents')
+                    .setDescription(
+                        `**Your presents:** ${presents.toLocaleString()}\n**Leaderboard top:** ${lb[0].presents.toLocaleString()}`
+                    )
+                    .setColor('WHITE'),
+            ],
+        })
     },
 }

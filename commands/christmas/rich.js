@@ -29,11 +29,13 @@ module.exports = {
             )
             .join('\n')
 
-        return message.channel.send(
-            new MessageEmbed()
-                .setTitle(':gift: Presents Leaderboard')
-                .setDescription(finalLb)
-                .setFooter('This is balanced')
-        )
+        return message.channel.send({
+            embeds: [
+                new MessageEmbed()
+                    .setTitle(':gift: Presents Leaderboard')
+                    .setDescription(finalLb)
+                    .setFooter('This is balanced'),
+            ],
+        })
     },
 }
