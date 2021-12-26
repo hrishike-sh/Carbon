@@ -24,9 +24,11 @@ module.exports = {
     async execute(message, args) {
         let target = message.mentions.users.first() || message.author
         const mainMessage = await message.channel.send({
-            embed: {
-                description: 'Fetching database...',
-            },
+            embeds: [
+                {
+                    description: 'Fetching database...',
+                },
+            ],
         })
         let user = await Messages.fetch(target.id, message.guild.id, true)
         let user2 = await Heists.fetch(target.id, message.guild.id, true)
@@ -34,10 +36,12 @@ module.exports = {
         let user4 = await Special.fetch(target.id, message.guild.id, true)
         if (!user && !user2 && !user3 && !user4)
             return mainMessage.edit({
-                embed: {
-                    description:
-                        'Either the target has not donated any amount OR your donations are yet to be counted!',
-                },
+                embeds: [
+                    {
+                        description:
+                            'Either the target has not donated any amount OR your donations are yet to be counted!',
+                    },
+                ],
             })
         let donationAmount = {
             amount: user.data ? user.data.messages : 0,
@@ -197,7 +201,7 @@ module.exports = {
         const newMessage = await message.channel.send(
             'If your donations are not yet counted, please contact a moderator.',
             {
-                embed: dataForD.embed,
+                embeds: [dataForD.embed],
                 components: dataForD.components,
             }
         )
@@ -226,13 +230,10 @@ module.exports = {
                     buttonS,
                 ])
                 dataForD.components = row
-                newMessage.edit(
-                    'If your donations are not yet counted, please contact a moderator.',
-                    {
-                        embed: dataForD.embed,
-                        components: dataForD.components,
-                    }
-                )
+                newMessage.edit({
+                    embeds: [dataForD.embed],
+                    components: dataForD.components,
+                })
                 button.deferUpdate()
             } else if (button.customId === 'myd-h') {
                 buttonH = buttonH.setStyle('SUCCESS').setDisabled()
@@ -249,13 +250,10 @@ module.exports = {
                 ])
                 dataForH.components = row
 
-                newMessage.edit(
-                    'If your donations are not yet counted, please contact a moderator.',
-                    {
-                        embed: dataForH.embed,
-                        components: dataForH.components,
-                    }
-                )
+                newMessage.edit({
+                    embeds: [dataForH.embed],
+                    components: dataForH.components,
+                })
                 button.deferUpdate()
             } else if (button.customId === 'myd-g') {
                 buttonG = buttonG.setStyle('SUCCESS').setDisabled()
@@ -272,13 +270,10 @@ module.exports = {
                 ])
                 dataForG.components = row
 
-                newMessage.edit(
-                    'If your donations are not yet counted, please contact a moderator.',
-                    {
-                        embed: dataForG.embed,
-                        components: dataForG.components,
-                    }
-                )
+                newMessage.edit({
+                    embeds: [dataForG.embed],
+                    components: dataForG.components,
+                })
                 button.deferUpdate()
             } else if (button.customId === 'myd-s') {
                 buttonS = buttonS.setStyle('SUCCESS').setDisabled()
@@ -295,13 +290,10 @@ module.exports = {
                 ])
                 dataForS.components = row
 
-                newMessage.edit(
-                    'If your donations are not yet counted, please contact a moderator.',
-                    {
-                        embed: dataForS.embed,
-                        components: dataForS.components,
-                    }
-                )
+                newMessage.edit({
+                    embeds: [dataForS.embed],
+                    components: dataForS.components,
+                })
                 button.deferUpdate()
             } else;
         })
@@ -319,9 +311,10 @@ module.exports = {
                 buttonS,
             ])
 
-            newMessage.edit('This message is now inactive.', {
-                embed: dataForD.embed,
-                components: row,
+            newMessage.edit({
+                content: 'This message is now inactive.',
+                embeds: [dataForD.embed],
+                components: [row],
             })
         })
     },
