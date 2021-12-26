@@ -46,14 +46,16 @@ module.exports = {
         const randomPresents = Math.floor(Math.random() * 40) + 10
         addChannelToCD(message.channel.id, 60 * 1000)
         ;(await client.fetchWebhook('919473906425921596')).send({
-            embed: {
-                title: 'New Drop',
-                description: `Dropped in <#${
-                    message.channel.id
-                }> for ${randomPresents} presents.\n\nTime: <t:${(
-                    new Date().getTime() / 1000
-                ).toFixed(0)}>`,
-            },
+            embeds: [
+                {
+                    title: 'New Drop',
+                    description: `Dropped in <#${
+                        message.channel.id
+                    }> for ${randomPresents} presents.\n\nTime: <t:${(
+                        new Date().getTime() / 1000
+                    ).toFixed(0)}>`,
+                },
+            ],
             content: `<#${message.channel.id}>`,
         })
         const randomEvent = [1, 2, 3][Math.floor(Math.random() * 3)]
@@ -135,10 +137,11 @@ module.exports = {
                         .get(button.message.id)
                         .triedAndFailed.includes(button.user.id)
                 ) {
-                    button.reply(
-                        "You're out of snowballs lol, you only have one chance.",
-                        true
-                    )
+                    button.reply({
+                        content:
+                            "You're out of snowballs lol, you only have one chance.",
+                        ephemeral: true,
+                    })
                     return
                 }
 
@@ -191,10 +194,10 @@ module.exports = {
                     correctInfo
                         .get(button.message.id)
                         .triedAndFailed.push(button.user.id)
-                    button.reply(
-                        'Your aim is trash, you hit one of the tree.',
-                        true
-                    )
+                    button.reply({
+                        content: 'Your aim is trash, you hit one of the tree.',
+                        ephemeral: true,
+                    })
                 }
             })
         } else if (randomEvent == 2) {
@@ -228,8 +231,9 @@ module.exports = {
                 }
             }
 
-            mainMessage.edit('Which emoji was displayed?', {
+            mainMessage.edit({
                 components: [row, row2],
+                content: 'Which emoji was displayed?',
             })
 
             const mainCollector =
@@ -243,7 +247,10 @@ module.exports = {
                 const correct = toGuess
 
                 if (guessedButFailed.includes(button.user.id)) {
-                    button.reply('You can only guess once.', true)
+                    button.reply({
+                        content: 'You can only guess once.',
+                        ephemeral: true,
+                    })
                     return
                 } else {
                     if (id === correct) {
@@ -295,8 +302,9 @@ module.exports = {
                             }
                         }
 
-                        mainMessage.edit(`${mainMessage.content}`, {
+                        mainMessage.edit({
                             components: [row, row2],
+                            content: `${mainMessage.content}`,
                         })
                         guessedButFailed = []
 
@@ -314,7 +322,10 @@ module.exports = {
                         dbUser.save()
                     } else {
                         guessedButFailed.push(button.user.id)
-                        button.reply('That was not the emoji.', true)
+                        button.reply({
+                            content: 'That was not the emoji.',
+                            ephemeral: true,
+                        })
                     }
                 }
             })
