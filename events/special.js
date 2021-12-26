@@ -108,12 +108,10 @@ module.exports = {
 
             await message.channel.send(header)
             const firstCorrect = maps[Math.floor(Math.random() * 3)]
-            const mainMessage = await message.channel.send(
-                `${firstCorrect.text}`,
-                {
-                    components: [row],
-                }
-            )
+            const mainMessage = await message.channel.send({
+                components: [row],
+                content: `${firstCorrect.text}`,
+            })
 
             correctInfo.set(mainMessage.id, {
                 ended: false,
@@ -387,8 +385,9 @@ const editMessage = async (message, maps, header, row) => {
         if (correctInfo.get(message.id).ended) break
 
         const random = maps[Math.floor(Math.random() * 3)]
-        message.edit(`${random.text}`, {
+        message.edit({
             components: [row],
+            content: `${random.text}`,
         })
 
         const oldInfo = correctInfo.get(message.id)
