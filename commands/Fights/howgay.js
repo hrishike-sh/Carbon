@@ -38,7 +38,7 @@ module.exports = {
             ['✔️', '❌'].includes(reaction.emoji.name) &&
             user.id === opponent.id
         thisMessage
-            .awaitReactions(filter2, { max: 1, time: 3e4 })
+            .awaitReactions({ filter2, max: 1, time: 3e4 })
             .then(async (responseReaction) => {
                 if (responseReaction.first().emoji.name === '❌') {
                     return message.channel.send('Howgay has been cancelled!')
@@ -58,7 +58,7 @@ module.exports = {
                 }
 
                 const mainMessage = await message.channel.send({
-                    embed: gayBed,
+                    embeds: [gayBed],
                 })
                 await sleep(1000)
                 gayBed.fields = [
@@ -68,7 +68,7 @@ module.exports = {
                     },
                 ]
                 gayBed.description = 'Good Luck!'
-                mainMessage.edit({ embed: gayBed })
+                mainMessage.edit({ embeds: [gayBed] })
 
                 await sleep(1000)
                 gayBed.fields = [
@@ -83,11 +83,11 @@ module.exports = {
                         inline: true,
                     },
                 ]
-                mainMessage.edit({ embed: gayBed })
+                mainMessage.edit({ embeds: [gayBed] })
 
                 let finalD = ''
                 if (horll === 'low') {
-                    if (player1rate >= player2rate) {
+                    if (player1rate > player2rate) {
                         finalD = `${opponent} has won the howgay!`
                     } else if (player2rate >= player1rate) {
                         finalD = `${message.author} has won the howgay!`
@@ -95,7 +95,7 @@ module.exports = {
                         finalD = `Its a tie?!`
                     }
                 } else {
-                    if (player1rate >= player2rate) {
+                    if (player1rate > player2rate) {
                         finalD = `${message.author} has won the howgay!`
                     } else if (player2rate >= player1rate) {
                         finalD = `${opponent} has won the howgay!`
@@ -106,7 +106,7 @@ module.exports = {
 
                 gayBed.description = finalD
 
-                mainMessage.edit(finalD, { embed: gayBed })
+                mainMessage.edit({ embeds: [gayBed], content: finalD })
             })
             .catch((e) => {
                 message.channel.send(`${e}`)
