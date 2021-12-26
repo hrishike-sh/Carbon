@@ -32,33 +32,35 @@ module.exports = {
         }
 
         message.channel.send({
-            embed: {
-                author: {
-                    name: sniped.tag,
-                    icon_url: sniped.member.user.displayAvatarURL({
-                        dynamic: false,
-                    }),
-                },
-                fields: [
-                    {
-                        name: 'Old Message',
-                        value: sniped.oldContent,
-                        inline: true,
+            embeds: [
+                {
+                    author: {
+                        name: sniped.tag,
+                        icon_url: sniped.member.user.displayAvatarURL({
+                            dynamic: false,
+                        }),
                     },
-                    {
-                        name: 'New Message',
-                        value: sniped.newContent,
-                        inline: true,
+                    fields: [
+                        {
+                            name: 'Old Message',
+                            value: sniped.oldContent,
+                            inline: true,
+                        },
+                        {
+                            name: 'New Message',
+                            value: sniped.newContent,
+                            inline: true,
+                        },
+                    ],
+                    footer: {
+                        text: `Sniped by ${
+                            message.author.tag
+                        } | Message was edited in ${ms(sniped.editedIn, {
+                            long: true,
+                        })}`,
                     },
-                ],
-                footer: {
-                    text: `Sniped by ${
-                        message.author.tag
-                    } | Message was edited in ${ms(sniped.editedIn, {
-                        long: true,
-                    })}`,
                 },
-            },
+            ],
         })
     },
 }

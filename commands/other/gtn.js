@@ -13,7 +13,7 @@ module.exports = {
             message.author.id !== '712316272213491824'
         )
             return
-        const number = args[0]
+        let number = args[0]
         if (!number) number = 100
         let rawGuess = parseInt(number)
         let finalGuess = Math.floor(Math.random() * rawGuess + 1)
@@ -29,21 +29,21 @@ module.exports = {
             'Now listening to messages, when someone guesses the right number, the channel will be locked!\n\nGood Luck!'
         )
         message.channel
-            .awaitMessages(filter, {
+            .awaitMessages({
+                filter,
                 max: 1,
             })
             .then((collected) => {
                 try {
-                    message.channel.send(
-                        `${collected.first().author} guessed it!`,
-                        {
-                            embed: {
+                    message.reply(`${collected.first().author} guessed it!`, {
+                        embeds: [
+                            {
                                 title: 'SOMEONE GUESSED IT!',
                                 description: `The correct number was **${finalGuess}**!`,
                                 timestamp: new Date(),
                             },
-                        }
-                    )
+                        ],
+                    })
                     message.channel.updateOverwrite(
                         message.channel.guild.roles.everyone,
                         {

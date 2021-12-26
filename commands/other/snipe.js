@@ -55,7 +55,10 @@ module.exports = {
         let { msg, time, image } = target
 
         let snipeBed = new MessageEmbed()
-            .setAuthor(msg.author.tag, msg.author.displayAvatarURL() || null)
+            .setAuthor({
+                name: msg.author.tag,
+                iconURL: msg.author.displayAvatarURL() || null,
+            })
             .setDescription(msg.content)
             .setColor('RANDOM')
             .setFooter(`${snipe + 1}/${sniped.length}`)
@@ -73,16 +76,13 @@ module.exports = {
 
         const mainMessage = await message.channel.send({
             content: 'Use the buttons to navigate.',
-            embed: snipeBed,
+            embeds: [snipeBed],
             components: [row],
         })
 
-        const collector = mainMessage.createMessageComponentCollector(
-            (b) => b,
-            {
-                time: 30000,
-            }
-        )
+        const collector = mainMessage.createMessageComponentCollector({
+            time: 30000,
+        })
 
         collector.on('collect', async (button) => {
             if (button.user.id !== message.author.id) {
@@ -101,10 +101,10 @@ module.exports = {
                 target = sniped[snipe]
                 let { msg, time, image } = target
                 snipeBed = new MessageEmbed()
-                    .setAuthor(
-                        msg.author.tag,
-                        msg.author.displayAvatarURL() || null
-                    )
+                    .setAuthor({
+                        name: msg.author.tag,
+                        iconURL: msg.author.displayAvatarURL() || null,
+                    })
                     .setDescription(msg.content)
                     .setColor('RANDOM')
                     .setFooter(`${snipe + 1}/${sniped.length}`)
@@ -113,7 +113,7 @@ module.exports = {
 
                 return mainMessage.edit({
                     content: 'Use the buttons to navigate.',
-                    embed: snipeBed,
+                    embeds: [snipeBed],
                     components: [row],
                 })
             } else {
@@ -124,10 +124,10 @@ module.exports = {
                 target = sniped[snipe]
                 let { msg, time, image } = target
                 snipeBed = new MessageEmbed()
-                    .setAuthor(
-                        msg.author.tag,
-                        msg.author.displayAvatarURL() || null
-                    )
+                    .setAuthor({
+                        name: msg.author.tag,
+                        iconURL: msg.author.displayAvatarURL() || null,
+                    })
                     .setDescription(msg.content)
                     .setColor('RANDOM')
                     .setFooter(`${snipe + 1}/${sniped.length}`)
@@ -136,7 +136,7 @@ module.exports = {
 
                 return mainMessage.edit({
                     content: 'Use the buttons to navigate.',
-                    embed: snipeBed,
+                    embeds: [snipeBed],
                     components: [row],
                 })
             }
@@ -149,20 +149,22 @@ module.exports = {
             target = sniped[snipe]
             let { msg, time, image } = target
             snipeBed = new MessageEmbed()
-                .setAuthor(
-                    msg.author.tag,
-                    msg.author.displayAvatarURL() || null
-                )
+                .setAuthor({
+                    name: msg.author.tag,
+                    iconURL: msg.author.displayAvatarURL() || null,
+                })
                 .setDescription(msg.content)
                 .setColor('RANDOM')
                 .setFooter(`${snipe + 1}/${sniped.length}`)
                 .setImage(image)
                 .setTimestamp(time)
-            return mainMessage.edit({
-                content: 'Use the buttons to navigate.',
-                embed: snipeBed,
-                components: [row],
-            })
+            try {
+                mainMessage.edit({
+                    content: 'Use the buttons to navigate.',
+                    embeds: [snipeBed],
+                    components: [row],
+                })
+            } catch (e) {}
         })
     },
 }
