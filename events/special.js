@@ -90,15 +90,15 @@ module.exports = {
 
             let leftButton = new MessageButton()
                 .setEmoji('917049050929455144')
-                .setStyle('gray')
+                .setStyle('SECONDARY')
                 .setCustomId('cevent-l1')
             let middleButton = new MessageButton()
                 .setEmoji('917049050929455144')
-                .setStyle('gray')
+                .setStyle('SECONDARY')
                 .setCustomId('cevent-m2')
             let rightButton = new MessageButton()
                 .setEmoji('917049050929455144')
-                .setStyle('gray')
+                .setStyle('SECONDARY')
                 .setCustomId('cevent-r3')
             let row = new MessageActionRow().addComponents([
                 leftButton,
