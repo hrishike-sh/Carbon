@@ -1,7 +1,7 @@
 const reminder = require('../database/models/timer')
 
 module.exports = {
-    name: 'clickButton',
+    name: 'interactionCreate',
     async execute(button, client) {
         if (
             button.message.id === '883691336144941057' &&
