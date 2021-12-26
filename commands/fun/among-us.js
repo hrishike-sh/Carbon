@@ -65,11 +65,17 @@ module.exports = {
 
         takePlayersCollector.on('collect', (button) => {
             if (joined.includes(button.user.id)) {
-                button.reply.send('You have already joined.', true)
+                button.reply({
+                    content: "You've already joined",
+                    ephemeral: true,
+                })
                 return
             }
             if (joined.length && joined.length > 10) {
-                button.reply.send('The game is already full, too late.', true)
+                button.reply({
+                    content: 'The game is already full, too late',
+                    ephemeral: true,
+                })
                 return
             }
             joined.push(button.user.id)
@@ -84,12 +90,12 @@ module.exports = {
                 gotVoted: 0,
                 messages: 0,
             })
-            button.reply.send(
-                `You have successfully joined the game and you are: ${client.emojis.cache
+            button.reply({
+                content: `You have successfully joined the game and you are: ${client.emojis.cache
                     .get(emojiArray[joined.length - 1])
                     .toString()}`,
-                true
-            )
+                ephemeral: true,
+            })
         })
 
         takePlayersCollector.on('end', async (collected) => {
@@ -99,12 +105,11 @@ module.exports = {
                 .setLabel('Click me!')
                 .setStyle('SUCCESS')
                 .setCustomId('whoami-amogus')
-            const roleCollector = await message.channel.send(
-                'Click the button to check your role, the game will start in **10 seconds**...',
-                {
-                    component: whoAmI,
-                }
-            )
+            const roleCollector = await message.channel.send({
+                content:
+                    'Click the button to check your role, the game will start in **10 seconds**...',
+                components: [whoAmI],
+            })
 
             const whoAmICollector =
                 roleCollector.createMessageComponentCollector((b) => b, {
@@ -113,22 +118,22 @@ module.exports = {
 
             whoAmICollector.on('collect', async (bbutton) => {
                 if (!joined.includes(bbutton.user.id)) {
-                    return bbutton.reply.send(
-                        "You're not even in the game.",
-                        true
-                    )
+                    return bbutton.reply({
+                        content: "You're not even in the game.",
+                        ephemeral: true,
+                    })
                 }
 
                 const susUser = gamedata.filter(
                     (u) => u.member.id === bbutton.user.id
                 )[0]
 
-                bbutton.reply.send(
-                    `You are **${
+                bbutton.reply({
+                    content: `You are **${
                         susUser.impostor ? 'the Impostor.' : 'a Crewmate'
                     }**`,
-                    true
-                )
+                    ephemeral: true,
+                })
             })
 
             await sleep(10 * 1000)
@@ -160,17 +165,15 @@ module.exports = {
 
             let components = gamedata.length < 6 ? [row1] : [row1, row2]
 
-            await message.channel.send(
-                '**How does the impostor win?**\n> The impostor has to send **15** messages in order to win or they have to not get caught for 2 minutes.\n\n**How do the crewmates win?**\n> The crewmates will have to work together to find out who the impostor is!\n\n**How do I call an emergency meeting?**\n> Type `emergency` to call a meeting. **NOTE** Only 3 meetings are allowed each game.',
-                {
-                    components,
-                }
-            )
+            await message.channel.send({
+                content:
+                    '**How does the impostor win?**\n> The impostor has to send **15** messages in order to win or they have to not get caught for 2 minutes.\n\n**How do the crewmates win?**\n> The crewmates will have to work together to find out who the impostor is!\n\n**How do I call an emergency meeting?**\n> Type `emergency` to call a meeting. **NOTE** Only 3 meetings are allowed each game.',
+                components,
+            })
 
-            const mainCol = message.channel.createMessageCollector(
-                (m) => joined.includes(m.author.id),
-                {}
-            )
+            const mainCol = message.channel.createMessageCollector({
+                filter: (m) => joined.includes(m.author.id),
+            })
             let impostorMessages = 0
             let meetings = 3
             let inMeeting = false
@@ -264,24 +267,20 @@ module.exports = {
                     }
                     components = m < 6 ? [row1, row3] : [row1, row2, row3]
 
-                    const meetingMessage = await message.channel.send(
-                        `${gamedata
+                    const meetingMessage = await message.channel.send({
+                        content: `${gamedata
                             .map((m) => m.member)
                             .join(
                                 ' '
                             )}\n\n**__EMERGENCY MEETING__**\nThe impostor's messages __won't__ be counted while the meeting is going on.\n\nYou have 15 seconds to vote someone out, good luck.`,
-                        {
-                            components,
-                        }
-                    )
+                        components,
+                    })
                     const meetingMessageContent = meetingMessage.content
                     const voteCollector =
-                        meetingMessage.createMessageComponentCollector(
-                            (b) => b,
-                            {
-                                time: 15000,
-                            }
-                        )
+                        meetingMessage.createMessageComponentCollector({
+                            filter: (b) => b,
+                            time: 15000,
+                        })
                     let voted = []
                     voteCollector.on('collect', async (button) => {
                         if (button.customId === 'message-am') {
@@ -295,42 +294,47 @@ module.exports = {
                                 )
                                 .join('\n')
 
-                            button.reply.send(
-                                `**Most Messages**\n\n${map}`,
-                                true
-                            )
+                            button.reply({
+                                content: `**Most Messages**\n\n${map}`,
+                                ephemeral: true,
+                            })
                         }
                         if (!joined.includes(button.user.id)) {
-                            button.reply.send(
-                                'You are not even in the game, wtf are you trying to do??',
-                                true
-                            )
+                            button.reply({
+                                content:
+                                    'You are not even in the game, wtf are you trying to do??',
+                                ephemeral: true,
+                            })
                             return
                         }
                         const voter = gamedata.filter(
                             (u) => u.member.id === button.user.id
                         )[0]
                         if (voter.dead) {
-                            button.reply.send(
-                                "You're already dead, why're you voting?",
-                                true
-                            )
+                            button.reply({
+                                content:
+                                    "You're already dead, why're you voting?",
+                                ephemeral: true,
+                            })
                             return
                         }
                         const buttonId = button.customId
 
                         if (voted.includes(button.user.id)) {
-                            button.reply.send('You have already voted.', true)
+                            button.reply({
+                                content: 'You have already voted.',
+                                ephemeral: true,
+                            })
                             return
                         }
 
                         const votedTo = gamedata.filter(
                             (user) => user.id === buttonId
                         )[0]
-                        button.reply.send(
-                            `You voted for ${votedTo.member}.`,
-                            true
-                        )
+                        button.reply({
+                            content: `You voted for ${votedTo.member}.`,
+                            ephemeral: true,
+                        })
                         votedTo.gotVoted++
 
                         voted.push(button.user.id)
