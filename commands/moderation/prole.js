@@ -73,7 +73,7 @@ module.exports = {
         ])
 
         message.channel.send('Get the ping roles here!', {
-            embed,
+            embeds: [embed],
             components: [row1, row2],
         })
     },
