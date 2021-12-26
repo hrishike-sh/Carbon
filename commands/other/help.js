@@ -19,16 +19,18 @@ module.exports = {
                 .join(', ')
 
             message.react('📨')
-            return message.author.send(
-                new MessageEmbed()
-                    .setTitle('Help Command')
-                    .setDescription(commandsMap)
-                    .setThumbnail(client.user.displayAvatarURL())
-                    .setColor('GREEN')
-                    .setFooter(
-                        'Type fh help [command name] for further info about the command.'
-                    )
-            )
+            return message.author.send({
+                embeds: [
+                    new MessageEmbed()
+                        .setTitle('Help Command')
+                        .setDescription(commandsMap)
+                        .setThumbnail(client.user.displayAvatarURL())
+                        .setColor('GREEN')
+                        .setFooter(
+                            'Type fh help [command name] for further info about the command.'
+                        ),
+                ],
+            })
         }
 
         const name = args[0].toLowerCase()
@@ -68,7 +70,7 @@ module.exports = {
 
         message.channel.send({
             split: true,
-            embed: extendedCommandEmbed,
+            embeds: [extendedCommandEmbed],
         })
     },
 }

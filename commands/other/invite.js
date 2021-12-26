@@ -13,7 +13,7 @@ module.exports = {
             )
 
         message.channel.send('You can invite me by using the button.', {
-            component: but,
+            components: [but],
         })
     },
 }
