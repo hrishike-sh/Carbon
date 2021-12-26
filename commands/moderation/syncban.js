@@ -71,7 +71,7 @@ module.exports = {
 
             collector.on('collect', async (but) => {
                 if (but.user.id !== message.author.id) {
-                    await but.reply.send('This is not for you.', true)
+                    await but.reply('This is not for you.', true)
                     return
                 }
 
@@ -84,7 +84,7 @@ module.exports = {
                     await sleep(2500)
                     msg.delete()
                 } else if (but.customId === 'globalbanyes') {
-                    await but.reply.send('Banning...', true)
+                    await but.reply('Banning...', true)
                     const errorArray = []
                     let bannedFrom
                     try {

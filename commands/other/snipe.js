@@ -86,7 +86,7 @@ module.exports = {
 
         collector.on('collect', async (button) => {
             if (button.user.id !== message.author.id) {
-                return button.reply.send({
+                return button.reply({
                     ephemeral: true,
                     content: 'This is not for you',
                 })

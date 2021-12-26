@@ -49,11 +49,11 @@ module.exports = {
 
         joinCollector.on('collect', async (button) => {
             if (joined.includes(button.user.id)) {
-                button.reply.send('You have already joined the game.', true)
+                button.reply('You have already joined the game.', true)
                 return
             }
             if (joined.length > 20) {
-                button.reply.send('The game is full (20)', true)
+                button.reply('The game is full (20)', true)
                 return
             }
             joined.push(button.user.id)
@@ -72,7 +72,7 @@ module.exports = {
                     },
                 },
             })
-            button.reply.send('You have joined the game!', true)
+            button.reply('You have joined the game!', true)
         })
 
         joinCollector.on('end', async () => {
@@ -196,7 +196,7 @@ module.exports = {
                     const gotShield =
                         [1, 0, 0, 0][Math.floor(Math.random() * 4)] == 1
 
-                    await button.reply.send(
+                    await button.reply(
                         'You start searching... you have a **25% chance** to get the shield.',
                         true
                     )
@@ -222,7 +222,7 @@ module.exports = {
                 } else if (button.customId === 'upgrade-bg') {
                     const moreDamage = Math.floor(Math.random() * 30) + 20
 
-                    button.reply.send(
+                    button.reply(
                         `UPGRADE | You upgraded your gun and you now do **${moreDamage}** more damage with a single hit :sunglasses:`,
                         true
                     )
@@ -231,7 +231,7 @@ module.exports = {
                 } else if (button.customId === 'defend-bg') {
                     const moreHp = Math.floor(Math.random() * 30) + 10
 
-                    button.reply.send(
+                    button.reply(
                         `HEAL | You ate some ~~drugs~~ medicine and got **${moreHp}** hp.`,
                         true
                     )

@@ -135,7 +135,7 @@ module.exports = {
                         .get(button.message.id)
                         .triedAndFailed.includes(button.user.id)
                 ) {
-                    button.reply.send(
+                    button.reply(
                         "You're out of snowballs lol, you only have one chance.",
                         true
                     )
@@ -149,7 +149,7 @@ module.exports = {
                 )
 
                 if (correctOne === answerChose) {
-                    button.reply.send(
+                    button.reply(
                         `${button.member} hit the snowman first.\n\n:gift: | You got **${randomPresents}** presents!`
                     )
                     correctInfo.get(button.message.id).ended = true
@@ -191,7 +191,7 @@ module.exports = {
                     correctInfo
                         .get(button.message.id)
                         .triedAndFailed.push(button.user.id)
-                    button.reply.send(
+                    button.reply(
                         'Your aim is trash, you hit one of the tree.',
                         true
                     )
@@ -243,11 +243,11 @@ module.exports = {
                 const correct = toGuess
 
                 if (guessedButFailed.includes(button.user.id)) {
-                    button.reply.send('You can only guess once.', true)
+                    button.reply('You can only guess once.', true)
                     return
                 } else {
                     if (id === correct) {
-                        button.reply.send(
+                        button.reply(
                             `${button.member} guessed the emoji.\n\n:gift: | You got **${randomPresents}** presents!`
                         )
                         mainCollector.stop()
@@ -314,7 +314,7 @@ module.exports = {
                         dbUser.save()
                     } else {
                         guessedButFailed.push(button.user.id)
-                        button.reply.send('That was not the emoji.', true)
+                        button.reply('That was not the emoji.', true)
                     }
                 }
             })

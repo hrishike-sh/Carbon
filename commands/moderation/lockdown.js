@@ -1,8 +1,13 @@
 const db = require('../../database/models/settingsSchema')
-const { MessageButton, MessageActionRow } = require('discord.js')
+const { MessageButton, MessageActionRow, Message } = require('discord.js')
 
 module.exports = {
     name: 'lockdown',
+    /**
+     *
+     * @param {Message} message
+     * @returns
+     */
     async execute(message) {
         if (!message.member.permissions.has('ADMINISTRATOR'))
             return message.channel.send(
@@ -26,19 +31,22 @@ module.exports = {
             .setCustomId('lock-no')
         const row1 = new MessageActionRow().addComponents([yesbut, nobut])
 
-        const confirm = await message.channel.send(
-            `Are you sure you want to lockdown?`,
-            { components: row1 }
-        )
+        const confirm = await message.channel.send({
+            components: [row1],
+            content: `Are you sure you want to lockdown?`,
+        })
 
-        const collectorC = confirm.createMessageComponentCollector((b) => b, {
+        const collectorC = confirm.createMessageComponentCollector({
             time: 30000,
             max: 1,
         })
 
         collectorC.on('collect', async (button) => {
             if (button.user.id !== message.author.id) {
-                button.reply.send(`This is not for you`, true)
+                button.reply({
+                    content: `This is not for you`,
+                    ephemeral: true,
+                })
                 return
             }
 
@@ -62,14 +70,16 @@ module.exports = {
                     )
 
                     toLockChannel.send({
-                        embed: {
-                            title: ':lock: **SERVER LOCKDOWN**',
-                            description:
-                                server.lockdownSet.message ||
-                                'The server is currently locked.',
-                            color: 'RED',
-                            timestamp: new Date(),
-                        },
+                        embeds: [
+                            {
+                                title: ':lock: **SERVER LOCKDOWN**',
+                                description:
+                                    server.lockdownSet.message ||
+                                    'The server is currently locked.',
+                                color: 'RED',
+                                timestamp: new Date(),
+                            },
+                        ],
                     })
                 }
 

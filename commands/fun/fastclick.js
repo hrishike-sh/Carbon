@@ -45,7 +45,7 @@ module.exports = {
 
         confirmationCollector.on('collect', async (button) => {
             if (button.user.id !== user2.id) {
-                return button.reply.send('This is not for you.', true)
+                return button.reply('This is not for you.', true)
             }
 
             if (button.customId === 'yes_fc') {
@@ -115,7 +115,7 @@ module.exports = {
                     })
                 mainCollector.on('collect', async (button) => {
                     if (![user1.id, user2.id].includes(button.user.id)) {
-                        await button.reply.send('This is not for you', true)
+                        await button.reply('This is not for you', true)
                         return
                     }
                     mainCollector.stop()
@@ -143,7 +143,7 @@ module.exports = {
                     }
 
                     if (![user1.id, user2.id].includes(button.user.id)) {
-                        await button.reply.send('This is not for you', true)
+                        await button.reply('This is not for you', true)
                         return
                     }
                     const clickedIn = ms(new Date() - now, {

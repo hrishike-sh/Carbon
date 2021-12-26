@@ -54,7 +54,7 @@ module.exports = {
             const id = button.customId
 
             if (button.user.id !== target.id) {
-                button.reply.send('This is not for you.', true)
+                button.reply('This is not for you.', true)
                 return
             }
 

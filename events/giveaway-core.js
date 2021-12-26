@@ -18,10 +18,7 @@ module.exports = {
 
         if (button.customId === 'giveaway-join') {
             if (gaw.entries.includes(button.user.id)) {
-                button.reply.send(
-                    'You have already entered this giveaway.',
-                    true
-                )
+                button.reply('You have already entered this giveaway.', true)
                 return
             }
             if (gaw.requirements) {
@@ -32,7 +29,7 @@ module.exports = {
                     if (!button.member._roles.includes(req)) canJoin = false
                 }
                 if (!canJoin)
-                    return button.reply.send(
+                    return button.reply(
                         `You do not meet the requirements to join the giveaway!`,
                         true
                     )
@@ -40,7 +37,7 @@ module.exports = {
             gaw.entries.push(button.user.id)
             gaw.save()
 
-            button.reply.send('Your entry has been counted, good luck!', true)
+            button.reply('Your entry has been counted, good luck!', true)
         } else if (button.customId === 'giveaway-info') {
             const info = {
                 joined: gaw.entries.includes(button.user.id) ? '✅' : '❌',
@@ -49,7 +46,7 @@ module.exports = {
                 ended: `${gaw.hasEnded}`,
             }
 
-            button.reply.send({
+            button.reply({
                 embed: {
                     title: 'Giveaway Info',
                     color: 'GREEN',
