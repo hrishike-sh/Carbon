@@ -47,11 +47,13 @@ module.exports = {
         const row = new MessageActionRow().addComponents([joinBut, infoBut])
 
         const takePlayers = await message.channel.send({
-            embed: new MessageEmbed()
-                .setTitle('Among Us')
-                .setDescription(
-                    'The game will begin in **30 seconds**\nOnly the first 10 people will be counted in!'
-                ),
+            embeds: [
+                new MessageEmbed()
+                    .setTitle('Among Us')
+                    .setDescription(
+                        'The game will begin in **30 seconds**\nOnly the first 10 people will be counted in!'
+                    ),
+            ],
             components: [row],
         })
 
