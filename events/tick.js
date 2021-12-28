@@ -24,7 +24,7 @@ module.exports = {
     async execute(client) {
         // Incrementing everything
         presenceCounter1++
-        // gawCounter1++
+        gawCounter1++
         voteReminderCounter++
         randomColorCounter++
         // timerCounter++
@@ -91,7 +91,7 @@ module.exports = {
                             }>`
 
                             await message.edit('This giveaway has ended.', {
-                                embed: {
+                                embeds: [{
                                     title: giveaway.prize || '',
                                     description: `Winner: ${winner}\nHosted By: <@${giveaway.hosterId}>`,
                                     color: 'black',
@@ -99,9 +99,9 @@ module.exports = {
                                         text: `Winners: ${giveaway.winners}`,
                                     },
                                     timestamp: new Date(),
-                                },
+                                }],
                                 components:
-                                    new MessageActionRow().addComponents([
+                                    [new MessageActionRow().addComponents([
                                         new MessageButton()
                                             .setStyle('SUCCESS')
                                             .setCustomId(
@@ -113,13 +113,13 @@ module.exports = {
                                             .setStyle('SECONDARY')
                                             .setCustomId('giveaway-info')
                                             .setLabel('View Info'),
-                                    ]),
+                                    ])],
                             })
 
                             await channel.send(
                                 `The giveaway for **${giveaway.prize}** has ended and the winner is ${winner}!`,
                                 {
-                                    embed: {
+                                    embeds: [{
                                         title: 'Giveaway Info',
                                         description: `Entries: **${giveaway.entries.length.toLocaleString()}**\nChances of winning: **${(
                                             (1 / giveaway.entries.length) *
@@ -129,14 +129,14 @@ module.exports = {
                                             text: 'Congrats!',
                                         },
                                         timestamp: new Date(),
-                                    },
+                                    }],
                                 }
                             )
 
                             client.users.cache
                                 .get(`${giveaway.hosterId}`)
                                 .send({
-                                    embed: {
+                                    embeds: [{
                                         title: 'Giveaway Result',
                                         description: `The giveaway you hosted has ended!`,
                                         fields: [
@@ -149,7 +149,7 @@ module.exports = {
                                                 value: `[Jump](https://discord.com/channels/${giveaway.guildId}/${giveaway.channelId}/${giveaway.messageId})`,
                                             },
                                         ],
-                                    },
+                                    }],
                                 })
                         }
                     }
