@@ -1,6 +1,8 @@
 const { SlashCommandBuilder } = require('@discordjs/builders')
 const { ChannelType } = require('discord-api-types/v9')
-const { CommandInteraction } = require('discord.js')
+const { CommandInteraction, MessageEmbed } = require('discord.js')
+const ms = require('ms')
+
 //
 module.exports = {
     data: new SlashCommandBuilder()
@@ -60,16 +62,49 @@ module.exports = {
             winners: interaction.options.getNumber('winners'),
             time: interaction.options.getString('time'),
             channel: interaction.options.getChannel('channel'),
-            req: interaction.options.getString('role_requirement'),
-            donor: interaction.options.getUser('donator'),
+            req: interaction.options.getString('role_requirement') || null,
+            donor: interaction.options.getUser('donator') || null,
         }
 
-        interaction.reply({
-            content: `**Prize**: ${data.prize}\n**Winners**: ${
-                data.winners
-            }\n**Time**: ${data.time}\n**Roles**: <@${
-                data.req
-            }>\n**Donator**: ${data.donor.toString()}\n**Channel**: ${data.channel.toString()}`,
-        })
+        let time = data.time
+        if (isNaN(ms(time))) {
+            return interaction.reply({
+                content: `Specify a valid time, I couldn't parse \`${time}\``,
+                ephemeral: true,
+            })
+        }
+        time = ms(time)
+
+        const winners = data.winners
+        const channel = data.channel
+        const donor = data.donor
+        let rawQuirement = false
+        const req = []
+        if (data.req) {
+            rawQuirement = req.split(' ')
+            if (rawQuirement.length) {
+                for (const r of rawQuirement) {
+                    req.push(r)
+                }
+            } else req = rawQuirement
+        } else req = false
+
+        const embed = new MessageEmbed()
+            .setTitle(data.prize)
+            .setDescription(
+                `React with 🎉 to enter!\n**Time**: ${ms(time, {
+                    long: true,
+                })}\n**Winners**: ${winners}\n**Host**: ${interaction.user.toString()}`
+            )
+            .setColor('GREEN')
+        if (req.length)
+            embed.addField(
+                'Requirements',
+                `Roles: ${req.map((val) => `<@&${val}>`).join(', ')}`,
+                false
+            )
+        if (donor) embed.addField('Donator:', `${donor.toString()}`, false)
+
+        interaction.reply({ embeds: [embed] })
     },
 }
