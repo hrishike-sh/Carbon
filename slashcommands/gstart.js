@@ -94,9 +94,12 @@ module.exports = {
             .setDescription(
                 `React with 🎉 to enter!\n**Time**: ${ms(time, {
                     long: true,
-                })} (<t:${
-                    (new Date().getTime() / 1000).toFixed(0) + parseInt(time)
-                }:R>)\n**Winners**: ${winners}\n**Host**: ${interaction.user.toString()}`
+                })} (<t:${(
+                    (new Date().getTime() + parseInt(time)) /
+                    1000
+                ).toFixed(
+                    0
+                )}:R>)\n**Winners**: ${winners}\n**Host**: ${interaction.user.toString()}`
             )
             .setColor('GREEN')
         if (req)
