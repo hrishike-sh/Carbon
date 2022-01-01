@@ -93,16 +93,18 @@ module.exports = {
                                     if (giveaway.requirements.length) {
                                         winner += message.reactions.cache
                                             .get('🎉')
-                                            .users.cache.filter((user) => {
-                                                const member =
-                                                    await message.guild.members.fetch(
-                                                        { user }
-                                                    )
+                                            .users.cache.filter(
+                                                async (user) => {
+                                                    const member =
+                                                        await message.guild.members.fetch(
+                                                            { user }
+                                                        )
 
-                                                return member.roles.cache.hasAll(
-                                                    giveaway.requirements
-                                                )
-                                            })
+                                                    return member.roles.cache.hasAll(
+                                                        giveaway.requirements
+                                                    )
+                                                }
+                                            )
                                             .random()
                                     } else
                                         winner += message.reactions.cache
@@ -113,7 +115,7 @@ module.exports = {
                                 if (giveaway.requirements.length) {
                                     winner = message.reactions.cache
                                         .get('🎉')
-                                        .users.cache.filter((user) => {
+                                        .users.cache.filter(async (user) => {
                                             const member =
                                                 await message.guild.members.fetch(
                                                     { user }
