@@ -66,7 +66,7 @@ module.exports = {
             ],
         })
 
-        const web = await client.fetchWebhook('921645605070200852')
+        const web = await client.fetchWebhook('926704087683186708')
         web.send(`**${user.user.tag}** voted for the server.`)
     },
 }

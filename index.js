@@ -223,7 +223,7 @@ client.on('messageCreate', async (message) => {
             )
             .setTimestamp()
 
-        ;(await client.fetchWebhook('919470030343794748')).send({
+        ;(await client.fetchWebhook('926703917293772800')).send({
             embeds: [commandbed],
         })
     } catch (error) {
