@@ -2,7 +2,7 @@ const { SlashCommandBuilder } = require('@discordjs/builders')
 const { ChannelType } = require('discord-api-types/v9')
 const { CommandInteraction, MessageEmbed } = require('discord.js')
 const ms = require('ms')
-
+const giveaway = require('../database/models/giveaway')
 //
 module.exports = {
     data: new SlashCommandBuilder()
@@ -96,7 +96,7 @@ module.exports = {
                     long: true,
                 })} (<t:${(new Date().getTime() + time / 1000).toFixed(
                     0
-                )}:R)\n**Winners**: ${winners}\n**Host**: ${interaction.user.toString()}`
+                )}:R>)\n**Winners**: ${winners}\n**Host**: ${interaction.user.toString()}`
             )
             .setColor('GREEN')
         if (req)
@@ -113,7 +113,24 @@ module.exports = {
         })
 
         channel = interaction.guild.channels.cache.get(channel.id)
-        const msg = channel.send({ embeds: [embed] })
+        const msg = await channel.send({ embeds: [embed] })
         msg.react('🎉')
+
+        // database
+        const dbDat = {
+            guildId: interaction.guild.id,
+            channelId: channel.id,
+            messageId: msg.id,
+            winners,
+            prize: data.prize,
+            endsAt: new Date().getTime() + time,
+            hasEnded: false,
+            requirements: [],
+        }
+        if (req) {
+            dbDat.requirements = req
+        }
+
+        const dbGaw = new giveaway(dbDat).save()
     },
 }
