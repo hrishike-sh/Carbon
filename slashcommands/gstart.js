@@ -76,7 +76,7 @@ module.exports = {
         time = ms(time)
 
         const winners = data.winners
-        const channel = data.channel
+        let channel = data.channel
         const donor = data.donor
         let rawQuirement = false
         let req = []
@@ -94,17 +94,26 @@ module.exports = {
             .setDescription(
                 `React with 🎉 to enter!\n**Time**: ${ms(time, {
                     long: true,
-                })}\n**Winners**: ${winners}\n**Host**: ${interaction.user.toString()}`
+                })} (<t:${(new Date().getTime() + time / 1000).toFixed(
+                    0
+                )}:R)\n**Winners**: ${winners}\n**Host**: ${interaction.user.toString()}`
             )
             .setColor('GREEN')
         if (req)
             embed.addField(
-                'Requirements',
+                'Requirements:',
                 `Roles: ${req.map((val) => `<@&${val}>`).join(', ')}`,
                 false
             )
         if (donor) embed.addField('Donator:', `${donor.toString()}`, false)
 
-        interaction.reply({ embeds: [embed] })
+        interaction.reply({
+            content: `Giveaway started in ${channel}`,
+            ephemeral: true,
+        })
+
+        channel = interaction.guild.channels.cache.get(channel.id)
+        const msg = channel.send({ embeds: [embed] })
+        msg.react('🎉')
     },
 }
