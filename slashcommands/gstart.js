@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require('@discordjs/builders')
-const { ChannelType } = require('discord-api-types')
+const { ChannelType } = require('discord-api-types/v9')
 const { CommandInteraction } = require('discord.js')
 //
 module.exports = {
