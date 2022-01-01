@@ -1,7 +1,7 @@
 const { SlashCommandBuilder } = require('@discordjs/builders')
 const { ChannelType } = require('discord-api-types')
 const { CommandInteraction } = require('discord.js')
-
+//
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('gstart')
