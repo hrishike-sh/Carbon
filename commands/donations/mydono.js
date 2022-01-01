@@ -198,13 +198,12 @@ module.exports = {
         }
 
         mainMessage.delete()
-        const newMessage = await message.channel.send(
-            'If your donations are not yet counted, please contact a moderator.',
-            {
-                embeds: [dataForD.embed],
-                components: dataForD.components,
-            }
-        )
+        const newMessage = await message.channel.send({
+            embeds: [dataForD.embed],
+            components: dataForD.components,
+            content:
+                'If your donations are not yet counted, please contact a moderator.',
+        })
 
         const collector = newMessage.createMessageComponentCollector((b) => b, {
             time: 30000,
