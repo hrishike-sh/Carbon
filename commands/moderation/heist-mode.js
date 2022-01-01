@@ -116,12 +116,10 @@ module.exports = {
 
                 server.save()
 
-                return message.channel.send(
-                    `The HeistMode for this server was disabled.`,
-                    {
-                        embeds: [embed],
-                    }
-                )
+                return message.channel.send({
+                    embeds: [embed],
+                    content: `The HeistMode for this server was disabled.`,
+                })
             }
         } else if (firstArg === 'stats' || firstArg === 'stat') {
             const embed = new MessageEmbed()
@@ -145,12 +143,10 @@ module.exports = {
                 .setTimestamp()
                 .setColor('YELLOW')
 
-            return message.channel.send(
-                `Stats for the last/current heist mode.`,
-                {
-                    embeds: [embed],
-                }
-            )
+            return message.channel.send({
+                embeds: [embed],
+                content: `Stats for the last/current heist mode.`,
+            })
         }
     },
 }
