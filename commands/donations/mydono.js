@@ -200,7 +200,7 @@ module.exports = {
         mainMessage.delete()
         const newMessage = await message.channel.send({
             embeds: [dataForD.embed],
-            components: dataForD.components,
+            components: [dataForD.components],
             content:
                 'If your donations are not yet counted, please contact a moderator.',
         })
@@ -231,7 +231,7 @@ module.exports = {
                 dataForD.components = row
                 newMessage.edit({
                     embeds: [dataForD.embed],
-                    components: dataForD.components,
+                    components: [dataForD.components],
                 })
                 button.deferUpdate()
             } else if (button.customId === 'myd-h') {
@@ -251,7 +251,7 @@ module.exports = {
 
                 newMessage.edit({
                     embeds: [dataForH.embed],
-                    components: dataForH.components,
+                    components: [dataForH.components],
                 })
                 button.deferUpdate()
             } else if (button.customId === 'myd-g') {
@@ -271,7 +271,7 @@ module.exports = {
 
                 newMessage.edit({
                     embeds: [dataForG.embed],
-                    components: dataForG.components,
+                    components: [dataForG.components],
                 })
                 button.deferUpdate()
             } else if (button.customId === 'myd-s') {
@@ -291,7 +291,7 @@ module.exports = {
 
                 newMessage.edit({
                     embeds: [dataForS.embed],
-                    components: dataForS.components,
+                    components: [dataForS.components],
                 })
                 button.deferUpdate()
             } else;
