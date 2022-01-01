@@ -6,19 +6,19 @@ module.exports = {
         .setName('gstart')
         .setDescription('Start a giveaway!')
         .addStringOption((option) => {
-            option
+            return option
                 .setName('time')
                 .setDescription('Specify how long the giveaway should last')
                 .setRequired(true)
         })
         .addNumberOption((option) => {
-            option
+            return option
                 .setName('winners')
                 .setDescription('Specify the amount of winners')
                 .setRequired(true)
         })
         .addStringOption((option) => {
-            option
+            return option
                 .setName('prize')
                 .setDescription('Specify the prize for the giveaway')
                 .setRequired(true)
