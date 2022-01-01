@@ -43,7 +43,6 @@ module.exports = {
         ]
         if (presenceCounter1 == 60) {
             presenceCounter1 = 0
-            console.log('Presence counter ran.')
             if (++presenceCounter2 >= presences.length) {
                 presenceCounter2 = 0
             }
@@ -91,17 +90,19 @@ module.exports = {
                             }>`
 
                             await message.edit('This giveaway has ended.', {
-                                embeds: [{
-                                    title: giveaway.prize || '',
-                                    description: `Winner: ${winner}\nHosted By: <@${giveaway.hosterId}>`,
-                                    color: 'black',
-                                    footer: {
-                                        text: `Winners: ${giveaway.winners}`,
+                                embeds: [
+                                    {
+                                        title: giveaway.prize || '',
+                                        description: `Winner: ${winner}\nHosted By: <@${giveaway.hosterId}>`,
+                                        color: 'black',
+                                        footer: {
+                                            text: `Winners: ${giveaway.winners}`,
+                                        },
+                                        timestamp: new Date(),
                                     },
-                                    timestamp: new Date(),
-                                }],
-                                components:
-                                    [new MessageActionRow().addComponents([
+                                ],
+                                components: [
+                                    new MessageActionRow().addComponents([
                                         new MessageButton()
                                             .setStyle('SUCCESS')
                                             .setCustomId(
@@ -113,43 +114,48 @@ module.exports = {
                                             .setStyle('SECONDARY')
                                             .setCustomId('giveaway-info')
                                             .setLabel('View Info'),
-                                    ])],
+                                    ]),
+                                ],
                             })
 
                             await channel.send(
                                 `The giveaway for **${giveaway.prize}** has ended and the winner is ${winner}!`,
                                 {
-                                    embeds: [{
-                                        title: 'Giveaway Info',
-                                        description: `Entries: **${giveaway.entries.length.toLocaleString()}**\nChances of winning: **${(
-                                            (1 / giveaway.entries.length) *
-                                            100
-                                        ).toFixed(3)}%**`,
-                                        footer: {
-                                            text: 'Congrats!',
+                                    embeds: [
+                                        {
+                                            title: 'Giveaway Info',
+                                            description: `Entries: **${giveaway.entries.length.toLocaleString()}**\nChances of winning: **${(
+                                                (1 / giveaway.entries.length) *
+                                                100
+                                            ).toFixed(3)}%**`,
+                                            footer: {
+                                                text: 'Congrats!',
+                                            },
+                                            timestamp: new Date(),
                                         },
-                                        timestamp: new Date(),
-                                    }],
+                                    ],
                                 }
                             )
 
                             client.users.cache
                                 .get(`${giveaway.hosterId}`)
                                 .send({
-                                    embeds: [{
-                                        title: 'Giveaway Result',
-                                        description: `The giveaway you hosted has ended!`,
-                                        fields: [
-                                            {
-                                                name: 'Winner',
-                                                value: winner,
-                                            },
-                                            {
-                                                name: 'Link',
-                                                value: `[Jump](https://discord.com/channels/${giveaway.guildId}/${giveaway.channelId}/${giveaway.messageId})`,
-                                            },
-                                        ],
-                                    }],
+                                    embeds: [
+                                        {
+                                            title: 'Giveaway Result',
+                                            description: `The giveaway you hosted has ended!`,
+                                            fields: [
+                                                {
+                                                    name: 'Winner',
+                                                    value: winner,
+                                                },
+                                                {
+                                                    name: 'Link',
+                                                    value: `[Jump](https://discord.com/channels/${giveaway.guildId}/${giveaway.channelId}/${giveaway.messageId})`,
+                                                },
+                                            ],
+                                        },
+                                    ],
                                 })
                         }
                     }
@@ -269,7 +275,6 @@ module.exports = {
         // Timer
         if (voteReminderCounter == 30) {
             voteReminderCounter = 0
-            console.log('Vote reminder ran')
             let query = await voteModel.find({})
             query = query.filter(
                 (val) =>
@@ -278,7 +283,6 @@ module.exports = {
                     val.fighthub.voting.hasVoted &&
                     val.fighthub.voting.lastVoted < new Date().getTime()
             )
-            console.log(query)
             if (!query || !query.length) {
             } else {
                 for (const q of query) {
