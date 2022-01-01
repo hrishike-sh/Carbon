@@ -21,6 +21,7 @@ client.c = {
     commands: new Collection(),
     cooldowns: new Collection(),
     disabledCommands: new Collection(),
+    slashCommands: new Collection(),
 }
 client.snipes = {
     snipes: new Collection(),
@@ -61,6 +62,14 @@ for (const file of eventFiles) {
     } else {
         client.on(event.name, (...args) => event.execute(...args, client))
     }
+}
+const commandFiles = fs
+    .readdirSync('./slashcommands')
+    .filter((file) => file.endsWith('.js'))
+for (const file of commandFiles) {
+    const command = require(`./slashcommands/${file}`)
+
+    client.c.slashCommands.set(command.data.name, command)
 }
 
 process.on('uncaughtException', (err) => {
@@ -106,6 +115,27 @@ client.on('ready', async () => {
     client.db.disabledDrops = (
         await serverIgnores.findOne({ guildID: client.db.fighthub.id })
     ).disabledDrop
+})
+
+client.on('interactionCreate', async (interaction) => {
+    if (!interaction.isCommand()) return
+
+    const { commandName } = interaction
+
+    const command = client.c.slashCommands.get(commandName)
+
+    if (!command) return
+
+    try {
+        await command.execute(interaction, client)
+    } catch (e) {
+        console.error(e)
+        await interaction.reply({
+            content:
+                'There was an error executing this command, the devs are notified',
+            ephemeral: true,
+        })
+    }
 })
 
 client.on('message', async (message) => {

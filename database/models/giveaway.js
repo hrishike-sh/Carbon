@@ -1,8 +1,7 @@
-
 const mongoose = require('mongoose')
 const reqString = {
     type: String,
-    required: true
+    required: true,
 }
 const GiveawaySchema = new mongoose.Schema({
     guildId: reqString,
@@ -10,11 +9,10 @@ const GiveawaySchema = new mongoose.Schema({
     messageId: reqString,
     hosterId: reqString,
     winners: Number,
-    entries: [String],
     prize: reqString,
     endsAt: Number,
     hasEnded: Boolean,
     requirements: [String],
-});
+})
 
 module.exports = mongoose.model('giveaway', GiveawaySchema, 'giveaway')

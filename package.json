@@ -9,6 +9,8 @@
     "version": "1.0.0",
     "main": "index.js",
     "dependencies": {
+        "@discordjs/builders": "^0.11.0",
+        "@discordjs/rest": "^0.2.0-canary.0",
         "abort-controller": "^3.0.0",
         "asynckit": "^0.4.0",
         "available-typed-arrays": "^1.0.4",
@@ -23,6 +25,7 @@
         "define-properties": "^1.1.3",
         "delayed-stream": "^1.0.0",
         "denque": "^1.5.0",
+        "discord-api-types": "^0.26.0",
         "discord-messages": "^1.0.2",
         "discord-reply": "^0.1.2",
         "discord-together": "^1.3.25",

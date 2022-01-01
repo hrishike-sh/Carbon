@@ -38,26 +38,28 @@ module.exports = {
         let time = args[0]
         if (time === 'help')
             return message.channel.send({
-                embed: {
-                    title: 'Giveaway Help',
-                    description: 'Here is some help:',
-                    fields: [
-                        {
-                            name: 'Arguments',
-                            value: `fh gstart <Time> <No. of winners (Currently 1 Max)> <Requirements> <Prize>`,
-                            inline: true,
-                        },
-                        {
-                            name: 'Requirements',
-                            value: `To provide valid requirements, use the role id(s). To give multiple requirements, seperate the role ids with a "."\nUse "None" if there are no requirements.`,
-                            inline: true,
-                        },
-                        {
-                            name: 'Examples',
-                            value: `\`fh gstart 10m 1w none Trophy\`\n\`fh gstart 1h 1w 824687107192520705 Pepe Medal\`\n\`fh gstart 6h 1w 824329689534431302.826099300383457341 DN Joke Pass\``,
-                        },
-                    ],
-                },
+                embeds: [
+                    {
+                        title: 'Giveaway Help',
+                        description: 'Here is some help:',
+                        fields: [
+                            {
+                                name: 'Arguments',
+                                value: `fh gstart <Time> <No. of winners (Currently 1 Max)> <Requirements> <Prize>`,
+                                inline: true,
+                            },
+                            {
+                                name: 'Requirements',
+                                value: `To provide valid requirements, use the role id(s). To give multiple requirements, seperate the role ids with a "."\nUse "None" if there are no requirements.`,
+                                inline: true,
+                            },
+                            {
+                                name: 'Examples',
+                                value: `\`fh gstart 10m 1w none Trophy\`\n\`fh gstart 1h 1w 824687107192520705 Pepe Medal\`\n\`fh gstart 6h 1w 824329689534431302.826099300383457341 DN Joke Pass\``,
+                            },
+                        ],
+                    },
+                ],
             })
         if (!time) return message.channel.send('You must specify time.')
         if (isNaN(ms(time)))
