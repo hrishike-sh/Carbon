@@ -3,6 +3,7 @@ const {
     MessageEmbed,
     MessageActionRow,
     MessageButton,
+    Message,
 } = require('discord.js')
 const giveawayModel = require('../database/models/giveaway')
 const timerModel = require('../database/models/timer')
@@ -71,7 +72,7 @@ module.exports = {
                     giveaway.hasEnded = true
                     giveaway.save()
 
-                    const channel = await client.channels.cache.get(
+                    const channel = client.channels.cache.get(
                         `${giveaway.channelId}`
                     )
                     if (!channel) {
@@ -81,13 +82,53 @@ module.exports = {
                         )
                         if (!message) {
                         } else {
-                            const winner = `<@${
-                                giveaway.entries[
-                                    Math.floor(
-                                        Math.random() * giveaway.entries.length
-                                    )
-                                ]
-                            }>`
+                            let winner
+                            if (giveaway.winners > 1) {
+                                winner = []
+                                for (
+                                    let win = 0;
+                                    win < giveaway.winners;
+                                    win++
+                                ) {
+                                    if (giveaway.requirements.length) {
+                                        winner += message.reactions.cache
+                                            .get('🎉')
+                                            .users.cache.filter((user) => {
+                                                const member =
+                                                    await message.guild.members.fetch(
+                                                        { user }
+                                                    )
+
+                                                return member.roles.cache.hasAll(
+                                                    giveaway.requirements
+                                                )
+                                            })
+                                            .random()
+                                    } else
+                                        winner += message.reactions.cache
+                                            .get('🎉')
+                                            .users.cache.random()
+                                }
+                            } else {
+                                if (giveaway.requirements.length) {
+                                    winner = message.reactions.cache
+                                        .get('🎉')
+                                        .users.cache.filter((user) => {
+                                            const member =
+                                                await message.guild.members.fetch(
+                                                    { user }
+                                                )
+
+                                            return member.roles.cache.hasAll(
+                                                giveaway.requirements
+                                            )
+                                        })
+                                        .random()
+                                } else
+                                    winner = message.reactions.cache
+                                        .get('🎉')
+                                        .users.cache.random()
+                            }
 
                             await message.edit('This giveaway has ended.', {
                                 embeds: [
