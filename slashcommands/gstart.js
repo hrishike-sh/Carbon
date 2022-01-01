@@ -79,9 +79,9 @@ module.exports = {
         const channel = data.channel
         const donor = data.donor
         let rawQuirement = false
-        const req = []
+        let req = []
         if (data.req) {
-            rawQuirement = req.split(' ')
+            rawQuirement = data.req.split(' ')
             if (rawQuirement.length) {
                 for (const r of rawQuirement) {
                     req.push(r)
@@ -97,7 +97,7 @@ module.exports = {
                 })}\n**Winners**: ${winners}\n**Host**: ${interaction.user.toString()}`
             )
             .setColor('GREEN')
-        if (req.length)
+        if (req)
             embed.addField(
                 'Requirements',
                 `Roles: ${req.map((val) => `<@&${val}>`).join(', ')}`,
