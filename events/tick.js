@@ -162,22 +162,9 @@ module.exports = {
                             })
 
                             await channel.send(
-                                `The giveaway for **${giveaway.prize}** has ended and the winner is ${winner}!`,
-                                {
-                                    embeds: [
-                                        {
-                                            title: 'Giveaway Info',
-                                            description: `Entries: **${giveaway.entries.length.toLocaleString()}**\nChances of winning: **${(
-                                                (1 / giveaway.entries.length) *
-                                                100
-                                            ).toFixed(3)}%**`,
-                                            footer: {
-                                                text: 'Congrats!',
-                                            },
-                                            timestamp: new Date(),
-                                        },
-                                    ],
-                                }
+                                `The giveaway for **${
+                                    giveaway.prize
+                                }** has ended and the winner is ${winner.toString()}!`
                             )
 
                             client.users.cache
