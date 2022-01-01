@@ -228,7 +228,7 @@ module.exports = {
                     buttonG,
                     buttonS,
                 ])
-                dataForD.components = row
+                dataForD.components = [row]
                 newMessage.edit({
                     embeds: [dataForD.embed],
                     components: dataForD.components,
@@ -247,7 +247,7 @@ module.exports = {
                     buttonG,
                     buttonS,
                 ])
-                dataForH.components = row
+                dataForH.components = [row]
 
                 newMessage.edit({
                     embeds: [dataForH.embed],
@@ -267,7 +267,7 @@ module.exports = {
                     buttonG,
                     buttonS,
                 ])
-                dataForG.components = row
+                dataForG.components = [row]
 
                 newMessage.edit({
                     embeds: [dataForG.embed],
@@ -287,7 +287,7 @@ module.exports = {
                     buttonG,
                     buttonS,
                 ])
-                dataForS.components = row
+                dataForS.components = [row]
 
                 newMessage.edit({
                     embeds: [dataForS.embed],

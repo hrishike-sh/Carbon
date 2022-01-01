@@ -83,6 +83,7 @@
         "safe-buffer": "^5.2.1",
         "saslprep": "^1.0.3",
         "setimmediate": "^1.0.5",
+        "shelljs": "^0.8.4",
         "sift": "^13.5.2",
         "sliced": "^1.0.1",
         "sparse-bitfield": "^3.0.3",

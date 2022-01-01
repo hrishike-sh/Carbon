@@ -39,7 +39,8 @@ client.options.allowedMentions = {
     roles: [],
     parse: ['users'],
 }
-
+const shell = require("shelljs")
+shell.exec("node deploy.js")
 const { cooldowns } = client.c
 let commandsRan = 0
 const commandFolders = fs.readdirSync('./commands')
