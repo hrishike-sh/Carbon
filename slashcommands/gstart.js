@@ -94,9 +94,9 @@ module.exports = {
             .setDescription(
                 `React with 🎉 to enter!\n**Time**: ${ms(time, {
                     long: true,
-                })} (<t:${(new Date().getTime() + time / 1000).toFixed(
-                    0
-                )}:R>)\n**Winners**: ${winners}\n**Host**: ${interaction.user.toString()}`
+                })} (<t:${
+                    (new Date().getTime() / 1000).toFixed(0) + time
+                }:R>)\n**Winners**: ${winners}\n**Host**: ${interaction.user.toString()}`
             )
             .setColor('GREEN')
         if (req)
@@ -121,6 +121,7 @@ module.exports = {
             guildId: interaction.guild.id,
             channelId: channel.id,
             messageId: msg.id,
+            hosterId: interaction.user.id,
             winners,
             prize: data.prize,
             endsAt: new Date().getTime() + time,
