@@ -102,6 +102,7 @@
         "ws": "^7.5.0"
     },
     "devDependencies": {
+        "@babel/helper-compilation-targets": "^7.16.7",
         "node": "^16.13.0"
     },
     "repository": {
