@@ -171,7 +171,7 @@ module.exports = {
                                 `The giveaway for **${
                                     giveaway.prize
                                 }** has ended and the winners are ${winner
-                                    .map((val) => `<@${val.user.id}>`)
+                                    .map((val) => `<@${val.id}>`)
                                     .join(' ')}!`
                             )
 
