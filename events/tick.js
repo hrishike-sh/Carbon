@@ -4,6 +4,7 @@ const {
     MessageActionRow,
     MessageButton,
     Message,
+    TextChannel,
 } = require('discord.js')
 const giveawayModel = require('../database/models/giveaway')
 const timerModel = require('../database/models/timer')
@@ -148,7 +149,7 @@ module.exports = {
                                     {
                                         title: giveaway.prize || '',
                                         description: `Winner: ${winner
-                                            .map((a) => `<@${a}>`)
+                                            .map((a) => `<@${a.id}>`)
                                             .join(' ')}\nHosted By: <@${
                                             giveaway.hosterId
                                         }>`,
@@ -168,29 +169,30 @@ module.exports = {
                                     .map((val) => `<@${val.id}>`)
                                     .join(' ')}!`
                             )
-
-                            client.users.cache
-                                .get(`${giveaway.hosterId}`)
-                                .send({
-                                    embeds: [
-                                        {
-                                            title: 'Giveaway Ended',
-                                            description: `The giveaway you hosted has ended!`,
-                                            fields: [
-                                                {
-                                                    name: 'Winner',
-                                                    value: winner.map(
-                                                        (a) => `<@${a}>`
-                                                    ),
-                                                },
-                                                {
-                                                    name: 'Link',
-                                                    value: `[Jump](https://discord.com/channels/${giveaway.guildId}/${giveaway.channelId}/${giveaway.messageId})`,
-                                                },
-                                            ],
-                                        },
-                                    ],
+                            ;(
+                                await channel.guild.members.fetch({
+                                    user: giveaway.hosterId,
                                 })
+                            ).send({
+                                embeds: [
+                                    {
+                                        title: 'Giveaway Ended',
+                                        description: `The giveaway you hosted has ended!`,
+                                        fields: [
+                                            {
+                                                name: 'Winner',
+                                                value: winner.map(
+                                                    (a) => `<@${a.id}>`
+                                                ),
+                                            },
+                                            {
+                                                name: 'Link',
+                                                value: `[Jump](https://discord.com/channels/${giveaway.guildId}/${giveaway.channelId}/${giveaway.messageId})`,
+                                            },
+                                        ],
+                                    },
+                                ],
+                            })
                         }
                     }
                 }
