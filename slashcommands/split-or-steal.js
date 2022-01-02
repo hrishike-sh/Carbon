@@ -68,7 +68,7 @@ module.exports = {
         const int = await interaction.reply({
             content: `${data.user1} & ${data.user2}`,
             embeds: [mainEmbed],
-            components,
+            components: [components],
         })
 
         const readyCollector = int.createMessageComponentCollector({

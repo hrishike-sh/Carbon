@@ -39,8 +39,8 @@ client.options.allowedMentions = {
     roles: [],
     parse: ['users'],
 }
-const shell = require("shelljs")
-shell.exec("node deploy.js")
+const shell = require('shelljs')
+shell.exec('node deploy.js')
 const { cooldowns } = client.c
 let commandsRan = 0
 const commandFolders = fs.readdirSync('./commands')
@@ -88,7 +88,7 @@ client.on('ready', async () => {
     client.db.fighthub = client.guilds.cache.get('824294231447044197')
     // LOGS
     const restartEmbed = new MessageEmbed().setDescription(
-        `Bot restarted <t:${(new Date() / 1000).toFixed(0)}:R`
+        `Bot restarted <t:${(new Date() / 1000).toFixed(0)}:R>`
     )
     client.channels.cache.get('901739465406566400').send({
         embeds: [restartEmbed],
