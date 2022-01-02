@@ -113,23 +113,29 @@ module.exports = {
                                 }
                             } else {
                                 if (giveaway.requirements.length) {
-                                    winner = message.reactions.cache
-                                        .get('🎉')
-                                        .users.cache.filter(async (user) => {
-                                            const member =
-                                                await message.guild.members.fetch(
-                                                    { user }
-                                                )
+                                    winner = [
+                                        message.reactions.cache
+                                            .get('🎉')
+                                            .users.cache.filter(
+                                                async (user) => {
+                                                    const member =
+                                                        await message.guild.members.fetch(
+                                                            { user }
+                                                        )
 
-                                            return member.roles.cache.hasAll(
-                                                giveaway.requirements
+                                                    return member.roles.cache.hasAll(
+                                                        giveaway.requirements
+                                                    )
+                                                }
                                             )
-                                        })
-                                        .random()
+                                            .random(),
+                                    ]
                                 } else
-                                    winner = message.reactions.cache
-                                        .get('🎉')
-                                        .users.cache.random()
+                                    winner = [
+                                        message.reactions.cache
+                                            .get('🎉')
+                                            .users.cache.random(),
+                                    ]
                             }
 
                             await message.edit('This giveaway has ended.', {
@@ -164,7 +170,9 @@ module.exports = {
                             await channel.send(
                                 `The giveaway for **${
                                     giveaway.prize
-                                }** has ended and the winner is ${winner.toString()}!`
+                                }** has ended and the winners are ${winner
+                                    .map((val) => `<@${val.user.id}>`)
+                                    .join(' ')}!`
                             )
 
                             client.users.cache
@@ -172,7 +180,7 @@ module.exports = {
                                 .send({
                                     embeds: [
                                         {
-                                            title: 'Giveaway Result',
+                                            title: 'Giveaway Ended',
                                             description: `The giveaway you hosted has ended!`,
                                             fields: [
                                                 {
