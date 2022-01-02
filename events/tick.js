@@ -91,25 +91,29 @@ module.exports = {
                                     win++
                                 ) {
                                     if (giveaway.requirements.length) {
-                                        winner += message.reactions.cache
-                                            .get('🎉')
-                                            .users.cache.filter(
-                                                async (user) => {
-                                                    const member =
-                                                        await message.guild.members.fetch(
-                                                            { user }
-                                                        )
+                                        winner.push(
+                                            message.reactions.cache
+                                                .get('🎉')
+                                                .users.cache.filter(
+                                                    async (user) => {
+                                                        const member =
+                                                            await message.guild.members.fetch(
+                                                                { user }
+                                                            )
 
-                                                    return member.roles.cache.hasAll(
-                                                        giveaway.requirements
-                                                    )
-                                                }
-                                            )
-                                            .random()
+                                                        return member.roles.cache.hasAll(
+                                                            giveaway.requirements
+                                                        )
+                                                    }
+                                                )
+                                                .random()
+                                        )
                                     } else
-                                        winner += message.reactions.cache
-                                            .get('🎉')
-                                            .users.cache.random()
+                                        winner.push(
+                                            message.reactions.cache
+                                                .get('🎉')
+                                                .users.cache.random()
+                                        )
                                 }
                             } else {
                                 if (giveaway.requirements.length) {
@@ -138,32 +142,22 @@ module.exports = {
                                     ]
                             }
 
-                            await message.edit('This giveaway has ended.', {
+                            await message.edit({
+                                content: 'This giveaway has ended.',
                                 embeds: [
                                     {
                                         title: giveaway.prize || '',
-                                        description: `Winner: ${winner}\nHosted By: <@${giveaway.hosterId}>`,
+                                        description: `Winner: ${winner
+                                            .map((a) => `<@${a}>`)
+                                            .join(' ')}\nHosted By: <@${
+                                            giveaway.hosterId
+                                        }>`,
                                         color: 'black',
                                         footer: {
                                             text: `Winners: ${giveaway.winners}`,
                                         },
                                         timestamp: new Date(),
                                     },
-                                ],
-                                components: [
-                                    new MessageActionRow().addComponents([
-                                        new MessageButton()
-                                            .setStyle('SUCCESS')
-                                            .setCustomId(
-                                                'whydodisabledbuttonsneedanid'
-                                            )
-                                            .setLabel('Enter')
-                                            .setDisabled(),
-                                        new MessageButton()
-                                            .setStyle('SECONDARY')
-                                            .setCustomId('giveaway-info')
-                                            .setLabel('View Info'),
-                                    ]),
                                 ],
                             })
 
@@ -185,7 +179,9 @@ module.exports = {
                                             fields: [
                                                 {
                                                     name: 'Winner',
-                                                    value: winner,
+                                                    value: winner.map(
+                                                        (a) => `<@${a}>`
+                                                    ),
                                                 },
                                                 {
                                                     name: 'Link',
