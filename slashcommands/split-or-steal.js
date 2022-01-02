@@ -5,6 +5,7 @@ const {
     MessageActionRow,
     MessageButton,
 } = require('discord.js')
+const { listenerCount } = require('process')
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -38,7 +39,7 @@ module.exports = {
             prize: interaction.options.getString('prize'),
         }
 
-        const mainEmbed = new MessageEmbed()
+        let mainEmbed = new MessageEmbed()
             .setTitle('Split or Steal')
             .setDescription(
                 'The game will start when both the parties are ready.\nHit **Ready** when you are ready!'
@@ -46,7 +47,7 @@ module.exports = {
             .setColor('YELLOW')
             .setTimestamp()
 
-        const components = new MessageActionRow().addComponents([
+        let components = new MessageActionRow().addComponents([
             new MessageButton()
                 .setLabel('READY')
                 .setStyle('SUCCESS')
@@ -65,7 +66,11 @@ module.exports = {
             },
         }
 
-        const int = await interaction.reply({
+        await interaction.reply({
+            content: 'Done, the game is now started.',
+            ephemeral: true,
+        })
+        const int = await interaction.channel.send({
             content: `${data.user1} & ${data.user2}`,
             embeds: [mainEmbed],
             components: [components],
@@ -74,9 +79,63 @@ module.exports = {
         const readyCollector = int.createMessageComponentCollector({
             time: 30_000,
         })
-        /**
-         * @param {MessageButton} button
-         */
-        readyCollector.on('collect', async (button) => {})
+
+        readyCollector.on('collect', async (button) => {
+            if (!button.isButton()) return // why lmao
+
+            if (
+                ![gamedata.user1.user.id, gamedata.user2.user.id].includes(
+                    button.user.id
+                )
+            ) {
+                return button.reply({
+                    content: 'This is not for you.',
+                    ephemeral: true,
+                })
+            }
+
+            if (button.user.id === gamedata.user1.user.id) {
+                if (gamedata.user1.ready) {
+                    return button.reply({
+                        content: 'You are already ready.',
+                        ephemeral: true,
+                    })
+                }
+
+                gamedata.user1.ready = true
+                button.reply({
+                    content: 'Waiting for opponent...',
+                    ephemeral: true,
+                })
+            } else {
+                if (gamedata.user2.ready) {
+                    return button.reply({
+                        content: 'You are already ready.',
+                        ephemeral: true,
+                    })
+                }
+
+                gamedata.user2.ready = true
+                button.reply({
+                    content: 'Waiting for opponent...',
+                    ephemeral: true,
+                })
+            }
+
+            if (gamedata.user1.ready && gamedata.user2.ready) {
+                components = new MessageActionRow().addComponents([
+                    new MessageButton()
+                        .setLabel('READY')
+                        .setStyle('SUCCESS')
+                        .setCustomId('ready-sos')
+                        .setDisabled(),
+                ])
+                await int.edit({
+                    content: `${data.user1} & ${data.user2}`,
+                    embeds: [mainEmbed],
+                    components: [components],
+                })
+            }
+        })
     },
 }
