@@ -135,6 +135,106 @@ module.exports = {
                     embeds: [mainEmbed],
                     components: [components],
                 })
+                const blnk = '<:blank:914473340129906708>'
+                let sosBed = new MessageEmbed()
+                    .setTitle('🤝 Split or Steal 💸')
+                    .setDescription(
+                        `**Rules**:\n${blnk}If both parties steal, its a tie!\n${blnk}If one steals and the other splits, the stealer keeps it all!\n${blnk}If both split, the reward gets split!\n\n**Reward**: ${data.prize}`
+                    )
+                    .setFooter('Good luck!')
+                let newPonents = new MessageActionRow().addComponents([
+                    new MessageButton()
+                        .setEmoji('🤝')
+                        .setLabel('Split')
+                        .setStyle('PRIMARY')
+                        .setCustomId('split-sos'),
+                    new MessageButton()
+                        .setEmoji('💸')
+                        .setLabel('Steal')
+                        .setStyle('PRIMARY')
+                        .setCustomId('steal-sos'),
+                ])
+                let current
+                const mainMessage = await interaction.channel.send({
+                    content: `<@${gamedata.user1.user.id}> your turn!`,
+                    embeds: [sosBed],
+                    components: [newPonents],
+                })
+                current = gamedata.user1.user.id
+
+                const sosCol = mainMessage.createMessageComponentCollector({
+                    time: 30_000,
+                })
+
+                sosCol.on('collect', async (but) => {
+                    if (
+                        ![
+                            gamedata.user1.user.id,
+                            gamedata.user2.user.id,
+                        ].includes(button.user.id)
+                    ) {
+                        return button.reply({
+                            content: 'This is not for you.',
+                            ephemeral: true,
+                        })
+                    }
+                    if (current !== but.user.id) {
+                        return button.reply({
+                            content: 'Not your turn.',
+                            ephemeral: true,
+                        })
+                    }
+
+                    if (gamedata.user1.choice && gamedata.user2.choice) {
+                        newPonents = new MessageActionRow().addComponents([
+                            new MessageButton()
+                                .setEmoji('🤝')
+                                .setLabel('Split')
+                                .setStyle('PRIMARY')
+                                .setCustomId('split-sos')
+                                .setDisabled(),
+                            new MessageButton()
+                                .setEmoji('💸')
+                                .setLabel('Steal')
+                                .setStyle('PRIMARY')
+                                .setCustomId('steal-sos')
+                                .setDisabled(),
+                        ])
+                        sosBed = new MessageEmbed()
+                            .setTitle('🤝 Split or Steal 💸')
+                            .setDescription(
+                                `**The game is over and the choices have been made.**\n\n**${
+                                    gamedata.user1.user.tag
+                                }** chose to ${gamedata.user1.choice.toUpperCase()}!\n**${
+                                    gamedata.user2.user.tag
+                                }** chose to ${gamedata.user2.choice.toUpperCase()}!`
+                            )
+                            .setThumbnail()
+
+                        return mainMessage.edit({
+                            content: 'The game is over!',
+                            embeds: [sosBed],
+                            components: [newPonents],
+                        })
+                    }
+
+                    const user =
+                        gamedata.user1.user.id == but.user.id
+                            ? gamedata.user1
+                            : gamedata.user2
+
+                    const choice =
+                        but.customId === 'steal-sos' ? 'steal' : 'split'
+
+                    user.choice = choice
+
+                    await mainMessage.edit({
+                        content: `<@${gamedata.user2.user.id}> your turn!`,
+                        embeds: [sosBed],
+                        components: [newPonents],
+                    })
+                    current = gamedata.user2.user.id
+                })
             }
         })
     },
