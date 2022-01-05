@@ -227,7 +227,7 @@ module.exports = {
                         but.customId === 'steal-sos' ? 'steal' : 'split'
 
                     user.choice = choice
-
+                    but.deferUpdate()
                     await mainMessage.edit({
                         content: `<@${gamedata.user2.user.id}> your turn!`,
                         embeds: [sosBed],
