@@ -185,39 +185,6 @@ module.exports = {
                         })
                     }
 
-                    if (gamedata.user1.choice && gamedata.user2.choice) {
-                        newPonents = new MessageActionRow().addComponents([
-                            new MessageButton()
-                                .setEmoji('🤝')
-                                .setLabel('Split')
-                                .setStyle('PRIMARY')
-                                .setCustomId('split-sos')
-                                .setDisabled(),
-                            new MessageButton()
-                                .setEmoji('💸')
-                                .setLabel('Steal')
-                                .setStyle('PRIMARY')
-                                .setCustomId('steal-sos')
-                                .setDisabled(),
-                        ])
-                        sosBed = new MessageEmbed()
-                            .setTitle('🤝 Split or Steal 💸')
-                            .setDescription(
-                                `**The game is over and the choices have been made.**\n\n**${
-                                    gamedata.user1.user.tag
-                                }** chose to ${gamedata.user1.choice.toUpperCase()}!\n**${
-                                    gamedata.user2.user.tag
-                                }** chose to ${gamedata.user2.choice.toUpperCase()}!`
-                            )
-                            .setThumbnail()
-
-                        return mainMessage.edit({
-                            content: 'The game is over!',
-                            embeds: [sosBed],
-                            components: [newPonents],
-                        })
-                    }
-
                     const user =
                         gamedata.user1.user.id == but.user.id
                             ? gamedata.user1
@@ -228,13 +195,47 @@ module.exports = {
 
                     user.choice = choice
                     but.deferUpdate()
-                    await mainMessage.edit({
+                })
+
+                if (gamedata.user1.choice && gamedata.user2.choice) {
+                    newPonents = new MessageActionRow().addComponents([
+                        new MessageButton()
+                            .setEmoji('🤝')
+                            .setLabel('Split')
+                            .setStyle('PRIMARY')
+                            .setCustomId('split-sos')
+                            .setDisabled(),
+                        new MessageButton()
+                            .setEmoji('💸')
+                            .setLabel('Steal')
+                            .setStyle('PRIMARY')
+                            .setCustomId('steal-sos')
+                            .setDisabled(),
+                    ])
+                    sosBed = new MessageEmbed()
+                        .setTitle('🤝 Split or Steal 💸')
+                        .setDescription(
+                            `**The game is over and the choices have been made.**\n\n**${
+                                gamedata.user1.user.tag
+                            }** chose to ${gamedata.user1.choice.toUpperCase()}!\n**${
+                                gamedata.user2.user.tag
+                            }** chose to ${gamedata.user2.choice.toUpperCase()}!`
+                        )
+                        .setThumbnail()
+
+                    return mainMessage.edit({
+                        content: 'The game is over!',
+                        embeds: [sosBed],
+                        components: [newPonents],
+                    })
+                } else {
+                    mainMessage.edit({
                         content: `<@${gamedata.user2.user.id}> your turn!`,
                         embeds: [sosBed],
                         components: [newPonents],
                     })
                     current = gamedata.user2.user.id
-                })
+                }
             }
         })
     },
