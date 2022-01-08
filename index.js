@@ -127,6 +127,15 @@ client.on('interactionCreate', async (interaction) => {
 
     if (!command) return
 
+    if (command.permissions) {
+        if (!interaction.member.permissions.has(command.permissions)) {
+            return interaction.reply({
+                content: `You need the \`${command.permissions.toUpperCase()}\` permission to run this command.`,
+                ephemeral: true,
+            })
+        }
+    }
+
     try {
         await command.execute(interaction, client)
     } catch (e) {
