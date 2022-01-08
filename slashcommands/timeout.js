@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require('@discordjs/builders')
-const { CommandInteraction } = require('discord.js')
+const { CommandInteraction, MessageEmbed } = require('discord.js')
 const ms = require('ms')
 module.exports = {
     data: new SlashCommandBuilder()
@@ -61,12 +61,34 @@ module.exports = {
 
         try {
             await target.timeout(time, data.reason.toString())
-            return interaction.reply({
+            interaction.reply({
                 content: `${target.toString()} has been timed out for ${ms(
                     time,
                     { long: true }
                 )}`,
             })
+            try {
+                ;(await target.createDM()).send({
+                    embeds: [
+                        new MessageEmbed()
+                            .setTitle('Timed out')
+                            .setDescription(
+                                `You have been timed out in FightHub with the reason: **${
+                                    data.reason
+                                }**\n\nYour timeout will run out <t:${(
+                                    (new Date().getTime() + time) /
+                                    1000
+                                ).toFixed(0)}:R>`
+                            )
+                            .setColor('RED')
+                            .setTimestamp(),
+                    ],
+                })
+            } catch (e2) {
+                return interaction.reply({
+                    content: `The user was timed out but I couldn't DM them.\nError: ${e2.message}`,
+                })
+            }
         } catch (e) {
             return interaction.reply({
                 content: `Could not timeout the user.\nError: ${e.message}`,
