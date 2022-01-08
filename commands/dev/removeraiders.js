@@ -20,10 +20,10 @@ module.exports = {
         message.channel.send(
             `Are you sure you want to kick **${size.toLocaleString()}** members?\nReply with \`yes\` or \`no\``
         )
-        const collector = message.channel.createMessageCollector(
-            (msg) => msg.author.id === message.author.id,
-            { max: 1 }
-        )
+        const collector = message.channel.createMessageCollector({
+            max: 1,
+            filter: (msg) => msg.author.id === message.author.id,
+        })
 
         collector.on('collect', async (message) => {
             if (message.content.toLowerCase() === 'yes') {
