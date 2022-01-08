@@ -7,7 +7,7 @@ module.exports = {
             return amogus
                 .setName('user')
                 .setDescription('The user you want to timeout.')
-                .setRequired('True')
+                .setRequired(true)
         })
         .addStringOption((sus) => {
             return sus
