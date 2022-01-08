@@ -238,7 +238,7 @@ client.on('messageCreate', async (message) => {
         })
     } catch (error) {
         console.log(error)
-        message.reply('An error occured while running this command.')
+       // message.reply('An error occured while running this command.')
     }
 })
 client.on('error', (error) => {
