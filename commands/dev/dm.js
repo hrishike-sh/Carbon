@@ -1,4 +1,4 @@
-const { Client, Message, MessageEmbed } = require('discord.js')
+const { Client, Message, MessageEmbed, DiscordAPIError } = require('discord.js')
 
 module.exports = {
     name: 'dm',
@@ -45,6 +45,13 @@ module.exports = {
                         .setTimestamp(),
                 ],
             })
-        } catch (e) {}
+            message.react('☑️')
+        } catch (e) {
+            return message.reply({
+                content: `Could not DM the user.\nError: ${
+                    e.message || 'hrish is dumb'
+                }`,
+            })
+        }
     },
 }

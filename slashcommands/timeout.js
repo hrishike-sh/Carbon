@@ -3,6 +3,8 @@ const { CommandInteraction } = require('discord.js')
 
 module.exports = {
     data: new SlashCommandBuilder()
+        .setName('timeout')
+        .setDescription('Time someone out.')
         .addUserOption((amogus) => {
             return amogus
                 .setName('user')
@@ -19,6 +21,15 @@ module.exports = {
      *
      * @param {CommandInteraction} interaction
      */
-    permissions: '',
-    async execute(interaction) {},
+    permissions: 'MODERATE_MEMBERS',
+    /**
+     *
+     * @param {CommandInteraction} interaction
+     */
+    async execute(interaction) {
+        await interaction.reply({
+            content: 'HmMmMM',
+            ephemeral: true,
+        })
+    },
 }
