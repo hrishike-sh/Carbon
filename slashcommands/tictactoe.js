@@ -183,7 +183,7 @@ module.exports = {
             gameButton[0].setEmoji(null)
             gameButton[0].setLabel(player.symbol.toUpperCase())
             current = ids.filter((a) => a !== current)[0]
-            const win = checkWin(gameboard)
+            const win = checkWin(gameBoard)
             if (win.win) {
                 message.edit({
                     content: `<@${player.user.id}> has won!`,
