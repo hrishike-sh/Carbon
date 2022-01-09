@@ -36,12 +36,12 @@ module.exports = {
             user1: {
                 user: interaction.user,
                 symbol: 'x',
-                emoji: '🇽',
+                emoji: '❌',
             },
             user2: {
                 user: data.opponent,
                 symbol: 'o',
-                emoji: '🇴',
+                emoji: '⭕',
             },
         }
 
