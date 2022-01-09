@@ -31,7 +31,11 @@ module.exports = {
             opponent: interaction.options.getUser('user'),
             buttons: interaction.options.getBoolean('buttons') || null,
         }
-
+        if (data.opponent.id === interaction.user.id)
+            return interaction.reply({
+                content: 'You cant fight yourself',
+                ephemeral: true,
+            })
         const gamedata = {
             user1: {
                 user: interaction.user,
