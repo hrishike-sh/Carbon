@@ -165,23 +165,23 @@ module.exports = {
                     : gamedata.user2
 
             const id = button.customId
-            const gameButton =
-                arow.components.filter((r) => r.customId === id) ||
-                brow.components.filter((r) => r.customId === id) ||
-                crow.components.filter((r) => r.customId === id)
+            let gameButton
 
             button.deferUpdate()
+
+            if (id.startsWith('a')) {
+                gameBoard['a'][id] = player.symbol
+                gameButton = arow.components.filter((a) => a.customId === id)
+            } else if (id.startsWith('b')) {
+                gameBoard['b'][id] = player.symbol
+                gameButton = brow.components.filter((b) => b.customId === id)
+            } else {
+                gameBoard['c'][id] = player.symbol
+                gameButton = crow.components.filter((c) => c.customId === id)
+            }
             gameButton[0].setDisabled()
             gameButton[0].setEmoji(null)
             gameButton[0].setLabel(player.symbol.toUpperCase())
-            if (id.startsWith('a')) {
-                gameBoard['a'][id] = player.symbol
-            } else if (id.startsWith('b')) {
-                gameBoard['b'][id] = player.symbol
-            } else {
-                gameBoard['c'][id] = player.symbol
-            }
-
             current = ids.filter((a) => a === current)[0]
             message.edit({
                 content: `<@${current}> your turn!`,
