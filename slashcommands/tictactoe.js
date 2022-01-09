@@ -183,10 +183,18 @@ module.exports = {
             gameButton[0].setEmoji(null)
             gameButton[0].setLabel(player.symbol.toUpperCase())
             current = ids.filter((a) => a !== current)[0]
-            message.edit({
-                content: `<@${current}> your turn!`,
-                components: [arow, brow, crow],
-            })
+            const win = checkWin(gameboard)
+            if (win.win) {
+                message.edit({
+                    content: `<@${player.user.id}> has won!`,
+                    components: null,
+                })
+            } else {
+                message.edit({
+                    content: `<@${current}> your turn!`,
+                    components: [arow, brow, crow],
+                })
+            }
         })
     },
 }
