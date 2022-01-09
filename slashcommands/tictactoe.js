@@ -3,6 +3,7 @@ const {
     CommandInteraction,
     MessageButton,
     MessageActionRow,
+    ButtonInteraction,
 } = require('discord.js')
 
 module.exports = {
@@ -86,54 +87,93 @@ module.exports = {
             } else return { win: false }
         }
 
-        let gameRow = [
-            new MessageActionRow().addComponents([
-                new MessageButton()
-                    .setCustomId('a1')
-                    .setEmoji('914473340129906708')
-                    .setStyle('SECONDARY'),
-                new MessageButton()
-                    .setCustomId('a2')
-                    .setEmoji('914473340129906708')
-                    .setStyle('SECONDARY'),
-                new MessageButton()
-                    .setCustomId('a3')
-                    .setEmoji('914473340129906708')
-                    .setStyle('SECONDARY'),
-            ]),
-            new MessageActionRow().addComponents([
-                new MessageButton()
-                    .setCustomId('b1')
-                    .setEmoji('914473340129906708')
-                    .setStyle('SECONDARY'),
-                new MessageButton()
-                    .setCustomId('b2')
-                    .setEmoji('914473340129906708')
-                    .setStyle('SECONDARY'),
-                new MessageButton()
-                    .setCustomId('b3')
-                    .setEmoji('914473340129906708')
-                    .setStyle('SECONDARY'),
-            ]),
-            new MessageActionRow().addComponents([
-                new MessageButton()
-                    .setCustomId('c1')
-                    .setEmoji('914473340129906708')
-                    .setStyle('SECONDARY'),
-                new MessageButton()
-                    .setCustomId('c2')
-                    .setEmoji('914473340129906708')
-                    .setStyle('SECONDARY'),
-                new MessageButton()
-                    .setCustomId('c3')
-                    .setEmoji('914473340129906708')
-                    .setStyle('SECONDARY'),
-            ]),
-        ]
+        let a1But = new MessageButton()
+            .setEmoji('914473340129906708')
+            .setCustomId('a1')
+            .setStyle('SECONDARY')
+        let a2But = new MessageButton()
+            .setEmoji('914473340129906708')
+            .setCustomId('a2')
+            .setStyle('SECONDARY')
+        let a3But = new MessageButton()
+            .setEmoji('914473340129906708')
+            .setCustomId('a3')
+            .setStyle('SECONDARY')
+        let arow = new MessageActionRow().addComponents([a1But, a2But, a3But])
 
-        await interaction.reply({
+        let b1But = new MessageButton()
+            .setEmoji('914473340129906708')
+            .setCustomId('b1')
+            .setStyle('SECONDARY')
+        let b2But = new MessageButton()
+            .setEmoji('914473340129906708')
+            .setCustomId('b2')
+            .setStyle('SECONDARY')
+        let b3But = new MessageButton()
+            .setEmoji('914473340129906708')
+            .setCustomId('b3')
+            .setStyle('SECONDARY')
+        let brow = new MessageActionRow().addComponents([b1But, b2But, b3But])
+
+        let c1But = new MessageButton()
+            .setEmoji('914473340129906708')
+            .setCustomId('c1')
+            .setStyle('SECONDARY')
+        let c2But = new MessageButton()
+            .setEmoji('914473340129906708')
+            .setCustomId('c2')
+            .setStyle('SECONDARY')
+        let c3But = new MessageButton()
+            .setEmoji('914473340129906708')
+            .setCustomId('c3')
+            .setStyle('SECONDARY')
+        let crow = new MessageActionRow().addComponents([c1But, c2But, c3But])
+
+        interaction.reply({ content: 'The game has started.' })
+        const message = await interaction.channel.send({
             content: 'Hi',
-            components: gameRow,
+            components: [arow, brow, crow],
+        })
+
+        const mainCollector = message.createMessageComponentCollector({})
+
+        let current = interaction.user.id
+        mainCollector.on('collect', async (button) => {
+            if (
+                ![interaction.user.id, data.opponent.id].includes(
+                    button.user.id
+                )
+            ) {
+                return button.reply({
+                    content: 'This is not your game.',
+                    ephemeral: true,
+                })
+            }
+
+            if (current !== button.user.id) {
+                return button.reply({
+                    content: 'Not your turn.',
+                    ephemeral: true,
+                })
+            }
+
+            const player =
+                button.user.id === gamedata.user1.user.id
+                    ? gamedata.user1
+                    : gamedata.user2
+
+            const id = button.customId
+            const gameButton =
+                arow.components.filter((r) => r.customId === id) ||
+                brow.components.filter((r) => r.customId === id) ||
+                crow.components.filter((r) => r.customId === id)
+
+            gameButton[0].setDisabled()
+
+            message.edit({
+                content: 'Hi',
+                components: [arow, brow, crow],
+            })
         })
     },
 }
