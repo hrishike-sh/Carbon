@@ -129,15 +129,17 @@ module.exports = {
             .setStyle('SECONDARY')
         let crow = new MessageActionRow().addComponents([c1But, c2But, c3But])
 
+        const ids = [interaction.user.id, data.opponent.id]
+        let current = ids[Math.floor(Math.random() * 2)]
+
         interaction.reply({ content: 'The game has started.' })
         const message = await interaction.channel.send({
-            content: 'Hi',
+            content: `<@${current}> your turn!`,
             components: [arow, brow, crow],
         })
 
         const mainCollector = message.createMessageComponentCollector({})
 
-        let current = interaction.user.id
         mainCollector.on('collect', async (button) => {
             if (
                 ![interaction.user.id, data.opponent.id].includes(
@@ -168,10 +170,21 @@ module.exports = {
                 brow.components.filter((r) => r.customId === id) ||
                 crow.components.filter((r) => r.customId === id)
 
+            button.deferUpdate()
             gameButton[0].setDisabled()
-            button.deferReply()
+            gameButton[0].setEmoji(null)
+            gameButton[0].setLabel(player.symbol.toUpperCase())
+            if (id.startsWith('a')) {
+                gameBoard['a'][id] = player.symbol
+            } else if (id.startsWith('b')) {
+                gameBoard['b'][id] = player.symbol
+            } else {
+                gameBoard['c'][id] = player.symbol
+            }
+
+            current = ids.filter((a) => a === current)[0]
             message.edit({
-                content: 'Hi',
+                content: `<@${current}> your turn!`,
                 components: [arow, brow, crow],
             })
         })
