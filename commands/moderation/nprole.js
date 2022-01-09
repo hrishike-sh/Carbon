@@ -48,7 +48,7 @@ module.exports = {
             gawBut,
         ])
 
-        message.channel.send('Get the ping roles here!', {
+        message.channel.send({
             embeds: [embed],
             components: [row1],
         })
