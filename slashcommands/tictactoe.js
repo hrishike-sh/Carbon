@@ -169,7 +169,7 @@ module.exports = {
                 crow.components.filter((r) => r.customId === id)
 
             gameButton[0].setDisabled()
-
+            button.deferReply()
             message.edit({
                 content: 'Hi',
                 components: [arow, brow, crow],
