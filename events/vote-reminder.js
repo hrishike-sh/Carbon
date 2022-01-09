@@ -66,7 +66,7 @@ module.exports = {
             ],
         })
 
-        const web = await client.fetchWebhook('926704087683186708')
+        const web = await client.channels.cache.get('921645520471085066')
         web.send(`**${user.user.tag}** voted for the server.`)
     },
 }

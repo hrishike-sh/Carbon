@@ -233,12 +233,12 @@ client.on('messageCreate', async (message) => {
             )
             .setTimestamp()
 
-        ;(await client.fetchWebhook('926703917293772800')).send({
+        client.channels.cache.get('913359587317522432').send({
             embeds: [commandbed],
         })
     } catch (error) {
         console.log(error)
-       // message.reply('An error occured while running this command.')
+        message.reply('An error occured while running this command.')
     }
 })
 client.on('error', (error) => {
