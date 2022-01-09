@@ -133,7 +133,7 @@ module.exports = {
 
         await interaction.reply({
             content: 'Hi',
-            components: [gameRow],
+            components: gameRow,
         })
     },
 }
