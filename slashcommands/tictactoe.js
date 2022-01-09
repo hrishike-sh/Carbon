@@ -86,6 +86,18 @@ module.exports = {
                 (g.a.a3 == 'o' && g.b.b2 == 'o' && g.c.c1 == 'o')
             ) {
                 return { win: true, winner: 'o' }
+            } else if (
+                g.a.a1 &&
+                g.a.a2 &&
+                g.a.a3 &&
+                g.b.b1 &&
+                g.b.b2 &&
+                g.b.b3 &&
+                g.c.c1 &&
+                g.c.c2 &&
+                g.c.c3
+            ) {
+                return { win: true, tie: true }
             } else return { win: false }
         }
 
@@ -187,10 +199,21 @@ module.exports = {
             current = ids.filter((a) => a !== current)[0]
             const win = checkWin(gameBoard)
             if (win.win) {
+                mainCollector.stop()
+                if (win.tie) {
+                    arow.components.forEach((c) => c.setDisabled())
+                    brow.components.forEach((c) => c.setDisabled())
+                    crow.components.forEach((c) => c.setDisabled())
+
+                    return message.edit({
+                        components: [arow, brow, crow],
+                        content: "It's a tie!",
+                    })
+                }
                 arow.components.forEach((c) => c.setDisabled())
                 brow.components.forEach((c) => c.setDisabled())
                 crow.components.forEach((c) => c.setDisabled())
-                message.edit({
+                return message.edit({
                     content: `<@${player.user.id}> has won!`,
                     components: [arow, brow, crow],
                 })
