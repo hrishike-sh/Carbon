@@ -45,7 +45,7 @@ module.exports = {
                         .setTimestamp(),
                 ],
             })
-            message.react('☑️')
+            message.react('929620380434440212')
         } catch (e) {
             return message.reply({
                 content: `Could not DM the user.\nError: ${
