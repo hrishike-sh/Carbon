@@ -36,10 +36,12 @@ module.exports = {
             user1: {
                 user: interaction.user,
                 symbol: 'x',
+                emoji: '🇽',
             },
             user2: {
                 user: data.opponent,
                 symbol: 'o',
+                emoji: '🇴',
             },
         }
 
@@ -180,8 +182,8 @@ module.exports = {
                 gameButton = crow.components.filter((c) => c.customId === id)
             }
             gameButton[0].setDisabled()
-            gameButton[0].setEmoji(null)
-            gameButton[0].setLabel(player.symbol.toUpperCase())
+            gameButton[0].setEmoji(player.emoji)
+            gameButton[0].setStyle(player.symbol === 'x' ? 'DANGER' : 'PRIMARY')
             current = ids.filter((a) => a !== current)[0]
             const win = checkWin(gameBoard)
             if (win.win) {
