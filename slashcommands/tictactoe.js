@@ -39,7 +39,7 @@ module.exports = {
             },
             user2: {
                 user: data.opponent,
-                symbol: 'y',
+                symbol: 'o',
             },
         }
 
@@ -182,7 +182,7 @@ module.exports = {
             gameButton[0].setDisabled()
             gameButton[0].setEmoji(null)
             gameButton[0].setLabel(player.symbol.toUpperCase())
-            current = ids.filter((a) => a === current)[0]
+            current = ids.filter((a) => a !== current)[0]
             message.edit({
                 content: `<@${current}> your turn!`,
                 components: [arow, brow, crow],
