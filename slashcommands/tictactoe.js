@@ -187,9 +187,12 @@ module.exports = {
             current = ids.filter((a) => a !== current)[0]
             const win = checkWin(gameBoard)
             if (win.win) {
+                arow.components.forEach((c) => c.setDisabled())
+                brow.components.forEach((c) => c.setDisabled())
+                crow.components.forEach((c) => c.setDisabled())
                 message.edit({
                     content: `<@${player.user.id}> has won!`,
-                    components: null,
+                    components: [arow, brow, crow],
                 })
             } else {
                 message.edit({
