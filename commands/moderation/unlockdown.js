@@ -54,7 +54,7 @@ module.exports = {
                     const toLockChannel =
                         message.guild.channels.cache.get(channel)
 
-                    toLockChannel.updateOverwrite(
+                    toLockChannel.permissionOverwrites.edit(
                         message.channel.guild.roles.everyone,
                         {
                             SEND_MESSAGES: null,
@@ -62,12 +62,14 @@ module.exports = {
                     )
 
                     toLockChannel.send({
-                        embed: {
-                            title: ':unlock: **SERVER UNLOCKED**',
-                            description: `The server is now unlocked.`,
-                            color: 'GREEN',
-                            timestamp: new Date(),
-                        },
+                        embeds: [
+                            {
+                                title: ':unlock: **SERVER UNLOCKED**',
+                                description: `The server is now unlocked.`,
+                                color: 'GREEN',
+                                timestamp: new Date(),
+                            },
+                        ],
                     })
                 }
 

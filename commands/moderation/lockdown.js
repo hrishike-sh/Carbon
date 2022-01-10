@@ -62,7 +62,7 @@ module.exports = {
                     const toLockChannel =
                         message.guild.channels.cache.get(channel)
 
-                    toLockChannel.updateOverwrite(
+                    toLockChannel.permissionOverwrites.edit(
                         message.channel.guild.roles.everyone,
                         {
                             SEND_MESSAGES: false,
