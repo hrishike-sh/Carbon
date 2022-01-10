@@ -26,10 +26,10 @@ module.exports = {
             .setCustomId('lock-no')
         const row1 = new MessageActionRow().addComponents([yesbut, nobut])
 
-        const confirm = await message.channel.send(
-            `Are you sure you want to unlock the server?`,
-            { components: row1 }
-        )
+        const confirm = await message.channel.send({
+            components: [row1],
+            content: `Are you sure you want to unlock the server?`,
+        })
 
         const collectorC = confirm.createMessageComponentCollector((b) => b, {
             time: 30000,

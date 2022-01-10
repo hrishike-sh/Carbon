@@ -56,6 +56,7 @@ module.exports = {
                 confirm.delete()
                 return message.channel.send(`I guess not.`)
             } else if (id === 'lock-yes') {
+                button.deferUpdate()
                 const channels = server.lockdownSet.channels
 
                 for (const channel of channels) {
