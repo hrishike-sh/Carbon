@@ -1,6 +1,6 @@
 const { SlashCommandBuilder } = require('@discordjs/builders')
 const { CommandInteraction } = require('discord.js')
-
+const db = require('../database/models/itemSchema')
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('additem')
@@ -16,6 +16,13 @@ module.exports = {
                 .setName('item_value')
                 .setDescription('Default value of the item.')
                 .setRequired(true)
+        })
+        .addStringOption((sus) => {
+            return sus
+                .addChoice('type', 'Collectible')
+                .addChoice('amogus', 'Sus')
+                .setName('a')
+                .setDescription('AAAAAAAAAA')
         })
         .addStringOption((sus) => {
             return sus
@@ -47,6 +54,20 @@ module.exports = {
                 ephemeral: true,
             })
         }
+
+        const item = await db.findOne({
+            item_id: data.id,
+        })
+
+        if (item) {
+            return await interaction.reply({
+                content: `An item with the id \`data.id\` already exists!`,
+            })
+        }
+
+        new db({
+            item_id: data.id,
+        })
 
         interaction.reply({
             embeds: [

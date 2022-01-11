@@ -7,6 +7,7 @@ const ItemSchema = new mongoose.Schema({
         name: String,
         thumbnail: String,
     },
+    category: String,
     lastUpdated: Number,
 })
 
