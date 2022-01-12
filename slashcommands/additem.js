@@ -20,10 +20,13 @@ module.exports = {
         .addStringOption((sus) => {
             return sus
                 .setRequired(true)
-                .addChoice('type', 'Collectible')
-                .addChoice('amogus', 'Sus')
-                .setName('a')
-                .setDescription('AAAAAAAAAA')
+                .addChoice('Collectible', 'col')
+                .addChoice('Sellable', 'sell')
+                .addChoice('Work Items', 'work')
+                .addChoice('Pepe Item', 'pepe')
+                .addChoice('Other', 'other')
+                .setName('type')
+                .setDescription('Type of the item.')
         })
         .addStringOption((sus) => {
             return sus
@@ -47,6 +50,7 @@ module.exports = {
             value: interaction.options.getNumber('item_value'),
             url: interaction.options.getString('thumbnail_url'),
             display_name: interaction.options.getString('display_name'),
+            category: interaction.options.getString('type'),
         }
 
         if (interaction.user.id !== '598918643727990784') {
@@ -68,7 +72,14 @@ module.exports = {
 
         new db({
             item_id: data.id,
-        })
+            value: data.value,
+            display: {
+                name: data.display_name,
+                thumbnail: data.url,
+            },
+            category: data.category.toLowerCase(),
+            lastUpdated: new Date().getTime(),
+        }).save()
 
         interaction.reply({
             embeds: [
