@@ -11,14 +11,12 @@ module.exports = {
     async execute(interaction) {
         const items = await db.find({})
 
-        let rawItems = items
-            .filter((b, a) => b.value - a.value)
-            .map(
-                (yes) =>
-                    `・**${
-                        yes.display.name
-                    }** - ⏣ ${yes.value.toLocaleString()}\n*ID*: \`${yes.id}\``
-            )
+        let rawItems = items.map(
+            (yes) =>
+                `・**${
+                    yes.display.name
+                }** - ⏣ ${yes.value.toLocaleString()}\n*ID*: \`${yes.id}\``
+        )
         console.log(items, rawItems)
         await interaction.reply({
             embeds: [
