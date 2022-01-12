@@ -15,7 +15,7 @@ module.exports = {
             (yes) =>
                 `・**${
                     yes.display.name
-                }** - ⏣ ${yes.value.toLocaleString()}\n*ID*: \`${yes.id}\``
+                }** - ⏣ ${yes.value.toLocaleString()}\n*ID*: \`${yes.item_id}\``
         )
         console.log(items, rawItems)
         await interaction.reply({
