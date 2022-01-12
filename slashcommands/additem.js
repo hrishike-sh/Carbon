@@ -66,7 +66,7 @@ module.exports = {
 
         if (item) {
             return await interaction.reply({
-                content: `An item with the id \`data.id\` already exists!`,
+                content: `An item with the id \`${data.id}\` already exists!`,
             })
         }
 
