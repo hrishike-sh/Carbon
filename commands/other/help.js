@@ -10,7 +10,6 @@ module.exports = {
      */
     async execute(message, args, client) {
         /**commands.map(command => command.name).join(', ') */
-        const data = []
         const { commands } = client.c
 
         if (!args.length) {
@@ -18,19 +17,24 @@ module.exports = {
                 .map((command) => `\`${command.name}\``)
                 .join(', ')
 
-            message.react('📨')
-            return message.author.send({
-                embeds: [
-                    new MessageEmbed()
-                        .setTitle('Help Command')
-                        .setDescription(commandsMap)
-                        .setThumbnail(client.user.displayAvatarURL())
-                        .setColor('GREEN')
-                        .setFooter(
-                            'Type fh help [command name] for further info about the command.'
-                        ),
-                ],
-            })
+            try {
+                message.author.send({
+                    embeds: [
+                        new MessageEmbed()
+                            .setTitle('Help Command')
+                            .setDescription(commandsMap)
+                            .setThumbnail(client.user.displayAvatarURL())
+                            .setColor('GREEN')
+                            .setFooter(
+                                'Type fh help [command name] for further info about the command.'
+                            ),
+                    ],
+                })
+                message.react('📨')
+            } catch (e) {
+                console.error(e.stack)
+                message.react('❌')
+            }
         }
 
         const name = args[0].toLowerCase()
