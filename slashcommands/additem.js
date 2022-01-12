@@ -19,7 +19,6 @@ module.exports = {
         })
         .addStringOption((sus) => {
             return sus
-                .setAutocomplete(true)
                 .setRequired(true)
                 .addChoice('type', 'Collectible')
                 .addChoice('amogus', 'Sus')
