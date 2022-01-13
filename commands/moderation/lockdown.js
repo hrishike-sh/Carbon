@@ -53,39 +53,57 @@ module.exports = {
             const id = button.customId
 
             if (id === 'lock-no') {
-                confirm.delete()
-                return message.channel.send(`I guess not.`)
-            } else if (id === 'lock-yes') {
-                button.deferUpdate()
-                const channels = server.lockdownSet.channels
-
-                for (const channel of channels) {
-                    const toLockChannel =
-                        message.guild.channels.cache.get(channel)
-
-                    toLockChannel.permissionOverwrites.edit(
-                        message.channel.guild.roles.everyone,
-                        {
-                            SEND_MESSAGES: false,
-                        }
-                    )
-
-                    toLockChannel.send({
-                        embeds: [
-                            {
-                                title: ':lock: **SERVER LOCKDOWN**',
-                                description:
-                                    server.lockdownSet.message ||
-                                    'The server is currently locked.',
-                                color: 'RED',
-                                timestamp: new Date(),
-                            },
-                        ],
-                    })
-                }
-
-                message.channel.send('Done, the server is now on lockdown!')
+                collectorC.stop()
+                await confirm.edit({
+                    components: [
+                        new MessageActionRow({
+                            components: [nobut.setDisabled(true)],
+                        }),
+                    ],
+                })
+                await button.reply({
+                    content: 'I guess not.',
+                    ephemeral: true,
+                })
+                return
             }
+            button.deferUpdate()
+            const channels = server.lockdownSet.channels
+
+            for (const channel of channels) {
+                const toLockChannel = message.guild.channels.cache.get(channel)
+
+                toLockChannel.permissionOverwrites.edit(
+                    message.channel.guild.roles.everyone,
+                    {
+                        SEND_MESSAGES: false,
+                    }
+                )
+
+                toLockChannel.send({
+                    embeds: [
+                        {
+                            title: ':lock: **SERVER LOCKDOWN**',
+                            description:
+                                server.lockdownSet.message ||
+                                'The server is currently locked.',
+                            color: 'RED',
+                            timestamp: new Date(),
+                        },
+                    ],
+                })
+            }
+
+            await confirm.edit({
+                components: [
+                    new MessageActionRow({
+                        components: [nobut.setDisabled(true)],
+                    }),
+                ],
+            })
+            await button.reply({
+                content: 'Done, the server is now on lockdown.',
+            })
         })
     },
 }
