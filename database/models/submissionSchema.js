@@ -12,3 +12,5 @@ const SubSchema = new mongoose.Schema({
     cooldown: Number,
     acceptedBy: String,
 })
+
+module.exports = mongoose.model('submission', SubSchema)
