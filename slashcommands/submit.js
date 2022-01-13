@@ -29,7 +29,7 @@ module.exports = {
         let dbUser = await db.findOne({
             userId: interaction.user.id,
         })
-        const all = await db.length
+        const all = (await db.find({})).length
         if (dbUser) {
             if (dbUser.cooldown > new Date().getTime()) {
                 return interaction.reply({
