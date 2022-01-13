@@ -51,7 +51,8 @@ module.exports = {
         }
         if (!link.match(reg)) {
             return interaction.reply({
-                content: 'No valid link was provided.',
+                content:
+                    'No valid link was provided.\nThe link should end in either .jpeg, .jpg, .gif or .png',
             })
         }
         const row = new MessageActionRow().addComponents([
