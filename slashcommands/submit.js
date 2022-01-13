@@ -46,7 +46,7 @@ module.exports = {
                     downvotes: 0,
                     netVotes: 0,
                 },
-            }).save()
+            })
         }
         if (!link.match(reg)) {
             return interaction.reply({
