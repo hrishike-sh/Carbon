@@ -26,16 +26,27 @@ module.exports = {
         const submissionsChannel = '924850616411504710'
         const link = interaction.options.getString('link')
         const reg = /\.(jpeg|jpg|gif|png)$/
-        const dbUser = await db.findOne({
-            userId: interaction.userId,
+        let dbUser = await db.findOne({
+            userId: interaction.user.id,
         })
-        if (dbUser && dbUser.cooldown > new Date().getTime()) {
-            return interaction.reply({
-                content: `${interaction.user.toString()} you can only **1** per **15 minutes**.\nYou can post again in \`${require('ms')(
-                    dbUser.cooldown - new Date().getTime(),
-                    { long: true }
-                )}\``,
-            })
+        if (dbUser) {
+            if (dbUser.cooldown > new Date().getTime()) {
+                return interaction.reply({
+                    content: `${interaction.user.toString()} you can only **1** per **15 minutes**.\nYou can post again in \`${require('ms')(
+                        dbUser.cooldown - new Date().getTime(),
+                        { long: true }
+                    )}\``,
+                })
+            }
+        } else {
+            dbUser = new db({
+                userId: interaction.user.id,
+                votes: {
+                    upvotes: 0,
+                    downvotes: 0,
+                    netVotes: 0,
+                },
+            }).save()
         }
         if (!link.match(reg)) {
             return interaction.reply({
@@ -100,25 +111,10 @@ module.exports = {
                     .setImage(link)
                     .setColor('YELLOW')
 
-                if (!dbUser) {
-                    new db({
-                        userId: interaction.user.id,
-                        submittedAt: new Date().getTime(),
-                        votes: {
-                            upvotes: 0,
-                            downvotes: 0,
-                            netVotes: 0,
-                        },
-                        url: link,
-                        cooldown: new Date().getTime() + require('ms')('15m'),
-                    }).save()
-                } else {
-                    dbUser.submittedAt = new Date().getTime()
-                    dbUser.url = link
-                    dbUser.cooldown =
-                        new Date().getTime() + require('ms')('15m')
-                    dbUser.save()
-                }
+                dbUser.submittedAt = new Date().getTime()
+                dbUser.url = link
+                dbUser.cooldown = new Date().getTime() + require('ms')('15m')
+                dbUser.save()
 
                 interaction.client.channels.cache.get(submissionsChannel).send({
                     embeds: [embed],
