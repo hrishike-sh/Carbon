@@ -19,7 +19,11 @@ module.exports = {
 
         const adminRole = '824348974449819658'
         const submissionsChannel = '924850662410453042'
-        if (!button.member.roles.cache.has(adminRole)) {
+
+        if (
+            !button.member.roles.cache.has(adminRole) &&
+            button.channel.id === '924850616411504710'
+        ) {
             return button.reply({
                 content: `You must have the <@&${adminRole}> role to accept/deny submissions!`,
                 ephemeral: true,
@@ -82,6 +86,16 @@ module.exports = {
                             .setStyle('PRIMARY')
                             .setCustomId('downvote-submissions'),
                     ]),
+                ],
+            })
+            ;(await user).send({
+                embeds: [
+                    {
+                        title: 'Submission update',
+                        description: `Your submission for the event was __accepted__.\n\nDenied by: ${button.user.tag}`,
+                        timestamp: new Date(),
+                        color: 'GREEN',
+                    },
                 ],
             })
         } else if (id === 'deny-submit') {
