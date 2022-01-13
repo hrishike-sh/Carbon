@@ -40,9 +40,9 @@ module.exports = {
                             title: 'Denied',
                             description: `Denied by: **${
                                 button.user.tag
-                            }**\nTime: <t:${(new Date.getTime() / 1000).toFixed(
-                                0
-                            )}:R>\n\nThe user was DM'd about this.`,
+                            }**\nTime: <t:${(
+                                new Date().getTime() / 1000
+                            ).toFixed(0)}:R>\n\nThe user was DM'd about this.`,
                         },
                         embed,
                     ],
