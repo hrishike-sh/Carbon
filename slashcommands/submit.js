@@ -10,7 +10,7 @@ module.exports = {
                 .setDescription(
                     'Upload your submission to an image host and provide the link here.'
                 )
-                .setRequired('true')
+                .setRequired(true)
         }),
     /**
      * @param {CommandInteraction} interaction
