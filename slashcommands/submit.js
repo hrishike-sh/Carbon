@@ -40,7 +40,11 @@ module.exports = {
                 .setStyle('DANGER')
                 .setCustomId('no-submit'),
         ])
-        const message = await interaction.reply({
+        interaction.reply({
+            content: 'Yes, check channel.',
+            ephemeral: true,
+        })
+        const message = await interaction.channel.send({
             content: 'Are you sure you want to submit this?',
             embeds: [
                 {
