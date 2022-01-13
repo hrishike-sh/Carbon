@@ -1,8 +1,10 @@
 const { Message, Client, MessageEmbed } = require('discord.js')
 const db = require('../database/models/user')
 const ms = require('ms')
+require('dotenv').config()
+
 module.exports = {
-    name: 'message',
+    name: 'messageCreate',
     once: false,
     /**
      *
@@ -10,6 +12,7 @@ module.exports = {
      * @param {Client} client
      */
     async execute(message, client) {
+        if (process.env.development === true) return
         if (!message.guild) return
         if (message.guild.id !== client.db.fighthub.id) return
         if (message.channel.id !== '826929140019232788') return // vote channel

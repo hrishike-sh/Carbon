@@ -10,7 +10,7 @@ module.exports = {
      * @returns
      */
     async execute(message, args, client) {
-        const fh = client.guilds.cache.get('824294231447044197')
+        const fh = client.guilds.cache.get(client.config.guildId)
         if (message.guild.id !== '845215901657071647') return
         if (
             !message.member.roles.cache.has('848576301182877727') &&

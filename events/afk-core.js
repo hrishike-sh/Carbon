@@ -3,7 +3,7 @@ const db = require('../database/models/user')
 const { Message, Client } = require('discord.js')
 
 module.exports = {
-    name: 'message',
+    name: 'messageCreate',
     once: false,
     /**
      *
@@ -13,7 +13,7 @@ module.exports = {
      */
     async execute(message, client) {
         if (!message.guild) return
-        if (message.guild.id !== '824294231447044197') return
+        if (message.guild.id !== client.config.guildId) return
         if (message.author.bot) return
         if (client.db.afkIgnore.includes(message.channel.id)) return
         if (client.db.afks.includes(message.author.id)) {
@@ -42,7 +42,7 @@ module.exports = {
             return
         }
         if (message.mentions.users.size < 1) return
-        if (message.guild.id !== '824294231447044197') return
+        if (message.guild.id !== client.config.guildId) return
         const mention = message.mentions.users.first().id
         const user1 = await db.findOne({ userId: mention })
 

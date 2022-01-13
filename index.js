@@ -1,16 +1,17 @@
-const { Collection, Intents, MessageEmbed, Client } = require('discord.js')
+const { Collection, Intents, Client, MessageEmbed } = require('discord.js')
+const fs = require('fs')
+const shell = require('shelljs')
+const mongoose = require('mongoose')
+const config = require('./config.json')
+const { DiscordTogether } = require('discord-together')
+require('dotenv').config()
+
 const client = new Client({
     intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES],
 })
-const giveawayModel = require('./database/models/giveaway')
-const { DiscordTogether } = require('discord-together')
-client.discordTogether = new DiscordTogether(client)
-const config = require('./config.json')
 
-const fs = require('fs')
-const prefix = 'fh '
-require('dotenv').config()
-const mongoose = require('mongoose')
+client.discordTogether = new DiscordTogether(client)
+
 let dbURL = process.env.mongopath
 mongoose.connect(dbURL, {
     useNewUrlParser: true,
@@ -39,7 +40,6 @@ client.options.allowedMentions = {
     roles: [],
     parse: ['users'],
 }
-const shell = require('shelljs')
 shell.exec('node deploy.js')
 const { cooldowns } = client.c
 let commandsRan = 0
@@ -85,12 +85,12 @@ client.on('ready', async () => {
     console.log('Logged in.')
     client.emit('tick')
 
-    client.db.fighthub = client.guilds.cache.get('824294231447044197')
+    client.db.fighthub = client.guilds.cache.get(config.guildId)
     // LOGS
-    const restartEmbed = new MessageEmbed().setDescription(
-        `Bot restarted <t:${(new Date() / 1000).toFixed(0)}:R>`
-    )
-    client.channels.cache.get('901739465406566400').send({
+    const restartEmbed = new MessageEmbed({
+        description: `Bot restarted <t:${(new Date() / 1000).toFixed(0)}:R>`,
+    })
+    client.channels.cache.get(config.logs.restartLog)?.send({
         embeds: [restartEmbed],
     })
     //LOGS
@@ -149,10 +149,10 @@ client.on('interactionCreate', async (interaction) => {
 })
 
 client.on('messageCreate', async (message) => {
-    if (!message.content.toLowerCase().startsWith(prefix)) return
+    if (!message.content.toLowerCase().startsWith(config.prefix)) return
     if (message.author.bot) return
 
-    const args = message.content.slice(prefix.length).trim().split(/ +/g)
+    const args = message.content.slice(config.prefix.length).trim().split(/ +/g)
     const commandName = args.shift().toLowerCase()
 
     const command =
@@ -162,18 +162,13 @@ client.on('messageCreate', async (message) => {
         )
 
     if (!command) return
-    if (
-        message.guild &&
-        message.guild.id !== '824294231447044197' &&
-        command.fhOnly
-    )
-        return message.channel.send(`This command can only be run in FightHub.`)
+    if (message.guild && message.guild.id !== config.guildId && command.fhOnly)
+        return message.reply(`This command can only be run in FightHub.`)
 
     if (
         command.disabledChannels &&
         command.disabledChannels.includes(message.channel.id)
     ) {
-        //
         message.react('❌')
         return
     }
@@ -210,7 +205,7 @@ client.on('messageCreate', async (message) => {
         let reply = 'You did not provide any arguments!'
 
         if (command.usage) {
-            reply += `\nThe proper usage would be: \`${prefix}${command.name} ${command.usage}\``
+            reply += `\nThe proper usage would be: \`${config.prefix}${command.name} ${command.usage}\``
         }
         return message.reply({
             content: reply,
@@ -229,11 +224,11 @@ client.on('messageCreate', async (message) => {
             .addField('Total commands ran', commandsRan.toString(), true)
             .addField(
                 'Server | Channel',
-                `${message.guild.name} | ${message.channel}(${message.channel.name})`
+                `${message.guild.name} | ${message.channel} (${message.channel.name})`
             )
             .setTimestamp()
 
-        client.channels.cache.get('913359587317522432').send({
+        await client.channels.cache.get(config.logs.cmdLogging)?.send({
             embeds: [commandbed],
         })
     } catch (error) {
