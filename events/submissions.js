@@ -27,13 +27,14 @@ module.exports = {
         }
 
         const id = button.customId
-        const user = client.users.fetch(
-            button.message.embeds[0].footer.text.split(':')[1],
-            { cache: true }
-        )
-        const embed = button.message.embeds[0]
-        const aaa = await db.findOne({ userId: (await user).id })
+
         if (id === 'accept-submit') {
+            const user = client.users.fetch(
+                button.message.embeds[0].footer.text.split(':')[1],
+                { cache: true }
+            )
+            const embed = button.message.embeds[0]
+            const aaa = await db.findOne({ userId: (await user).id })
             embed.setColor('GREEN')
             button.message.edit({
                 embeds: [
@@ -84,6 +85,12 @@ module.exports = {
                 ],
             })
         } else if (id === 'deny-submit') {
+            const user = client.users.fetch(
+                button.message.embeds[0].footer.text.split(':')[1],
+                { cache: true }
+            )
+            const embed = button.message.embeds[0]
+            const aaa = await db.findOne({ userId: (await user).id })
             embed.setColor('RED')
             button.message.edit({
                 embeds: [
