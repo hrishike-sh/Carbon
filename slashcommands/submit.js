@@ -29,7 +29,7 @@ module.exports = {
         const dbUser = await db.findOne({
             userId: interaction.userId,
         })
-        if (dbUser && dbUser.cooldown < new Date().getTime()) {
+        if (dbUser && dbUser.cooldown > new Date().getTime()) {
             return interaction.reply({
                 content: `${interaction.user.toString()} you can only **1** per **15 minutes**.\nYou can post again in \`${require('ms')(
                     dbUser.cooldown - new Date().getTime(),
