@@ -99,17 +99,26 @@ module.exports = {
                     .setFooter(`ID: ${interaction.user.id}`)
                     .setImage(link)
                     .setColor('YELLOW')
-                new db({
-                    userId: interaction.user.id,
-                    submittedAt: new Date().getTime(),
-                    votes: {
-                        upvotes: 0,
-                        downvotes: 0,
-                        netVotes: 0,
-                    },
-                    url: link,
-                    cooldown: new Date().getTime() + require('ms')('15m'),
-                }).save()
+
+                if (!dbUser) {
+                    new db({
+                        userId: interaction.user.id,
+                        submittedAt: new Date().getTime(),
+                        votes: {
+                            upvotes: 0,
+                            downvotes: 0,
+                            netVotes: 0,
+                        },
+                        url: link,
+                        cooldown: new Date().getTime() + require('ms')('15m'),
+                    }).save()
+                } else {
+                    dbUser.submittedAt = new Date().getTime()
+                    dbUser.url = link
+                    dbUser.cooldown =
+                        new Date().getTime() + require('ms')('15m')
+                    dbUser.save()
+                }
 
                 interaction.client.channels.cache.get(submissionsChannel).send({
                     embeds: [embed],
