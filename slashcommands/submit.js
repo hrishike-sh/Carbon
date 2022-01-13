@@ -6,6 +6,7 @@ const {
     MessageActionRow,
     MessageButton,
 } = require('discord.js')
+const db = require('../database/models/submissionSchema')
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('submit')
@@ -22,9 +23,20 @@ module.exports = {
      * @param {CommandInteraction} interaction
      */
     async execute(interaction) {
+        const submissionsChannel = '924850616411504710'
         const link = interaction.options.getString('link')
         const reg = /\.(jpeg|jpg|gif|png)$/
-
+        const dbUser = await db.findOne({
+            userId: interaction.userId,
+        })
+        if (dbUser && dbUser.cooldown < new Date().getTime()) {
+            return interaction.reply({
+                content: `${interaction.user.toString()} you can only **1** per **15 minutes**.\nYou can post again in \`${require('ms')(
+                    dbUser.cooldown - new Date().getTime(),
+                    { long: true }
+                )}\``,
+            })
+        }
         if (!link.match(reg)) {
             return interaction.reply({
                 content: 'No valid link was provided.',
@@ -49,9 +61,6 @@ module.exports = {
             embeds: [
                 {
                     title: `Submission by ${interaction.user.tag}`,
-                    footer: {
-                        text: 'Use the buttons to proceed.',
-                    },
                     image: {
                         url: link,
                     },
@@ -78,10 +87,36 @@ module.exports = {
             row.components.forEach((but) => {
                 but.setDisabled()
             })
-
+            message.edit({
+                components: [row],
+            })
             if (id === 'yes-submit') {
+                const embed = new MessageEmbed()
+                    .setAuthor({
+                        iconURL: interaction.user.displayAvatarURL(),
+                        name: interaction.user.tag,
+                    })
+                    .setFooter(`ID: ${interaction.user.id}`)
+                    .setImage(link)
+                    .setColor('YELLOW')
+                new db({
+                    userId: interaction.user.id,
+                    submittedAt: new Date().getTime(),
+                    votes: {
+                        upvotes: 0,
+                        downvotes: 0,
+                        netVotes: 0,
+                    },
+                    url: link,
+                    cooldown: new Date().getTime() + require('ms')('15m'),
+                }).save()
+
+                interaction.client.channels.cache.get(submissionsChannel).send({
+                    embeds: [embed],
+                })
                 return button.reply({
-                    content: 'That worked lol, but it still didnt do stuff',
+                    content:
+                        'Done! Your submission is submitted and you will get a DM when it is accepted or denied.',
                 })
             } else {
                 return button.reply({

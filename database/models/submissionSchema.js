@@ -8,5 +8,7 @@ const SubSchema = new mongoose.Schema({
         downvotes: Number,
         netVotes: Number,
     },
+    url: String,
+    cooldown: Number,
     acceptedBy: String,
 })
