@@ -11,6 +11,8 @@ const SubSchema = new mongoose.Schema({
     url: String,
     cooldown: Number,
     acceptedBy: String,
+    number: Number,
+    voted: [String],
 })
 
 module.exports = mongoose.model('submission', SubSchema)

@@ -29,6 +29,7 @@ module.exports = {
         let dbUser = await db.findOne({
             userId: interaction.user.id,
         })
+        const all = await db.length
         if (dbUser) {
             if (dbUser.cooldown > new Date().getTime()) {
                 return interaction.reply({
@@ -114,6 +115,7 @@ module.exports = {
                 dbUser.submittedAt = new Date().getTime()
                 dbUser.url = link
                 dbUser.cooldown = new Date().getTime() + require('ms')('15m')
+                dbUser.number = all
                 dbUser.save()
 
                 interaction.client.channels.cache.get(submissionsChannel).send({
