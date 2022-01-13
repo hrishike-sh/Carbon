@@ -32,7 +32,7 @@ module.exports = {
         if (dbUser) {
             if (dbUser.cooldown > new Date().getTime()) {
                 return interaction.reply({
-                    content: `${interaction.user.toString()} you can only **1** per **15 minutes**.\nYou can post again in \`${require('ms')(
+                    content: `${interaction.user.toString()} you can only submit **1** per **15 minutes**.\nYou can post again in \`${require('ms')(
                         dbUser.cooldown - new Date().getTime(),
                         { long: true }
                     )}\``,
@@ -118,6 +118,18 @@ module.exports = {
 
                 interaction.client.channels.cache.get(submissionsChannel).send({
                     embeds: [embed],
+                    components: [
+                        new MessageActionRow().addComponents([
+                            new MessageButton()
+                                .setLabel('Accept')
+                                .setCustomId('accept-submit')
+                                .setStyle('SUCCESS'),
+                            new MessageButton()
+                                .setStyle('DANGER')
+                                .setLabel('Deny')
+                                .setCustomId('deny-submit'),
+                        ]),
+                    ],
                 })
                 return button.reply({
                     content:
