@@ -33,7 +33,9 @@ module.exports = {
                 message.react('📨')
             } catch (e) {
                 console.error(e.stack)
-                message.react('❌')
+                message.channel.send(
+                    'I was unable to DM you, check your privacy settings for this server or something.'
+                )
             }
         }
 
