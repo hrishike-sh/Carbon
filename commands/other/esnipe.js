@@ -6,7 +6,7 @@ module.exports = {
     description: 'Dank Memer esnipe but better',
     execute(message, args, client) {
         const sniped = client.snipes.esnipes.get(message.channel.id)
-        if (message.guild.id === '824294231447044197') {
+        if (message.guild.id === client.config.guildId) {
             if (
                 !message.member.roles.cache.some(
                     (role) => role.id === '839803117646512128'

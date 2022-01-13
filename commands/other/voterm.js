@@ -1,4 +1,4 @@
-const { Client, Message, MessageEmbed } = require('discord.js')
+const { Client, Message } = require('discord.js')
 const db = require('../../database/models/user')
 module.exports = {
     name: 'voterm',

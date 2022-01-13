@@ -23,7 +23,7 @@ module.exports = {
         // const guild = await settings.findOne({ guildID: message.guild.id }) || null
 
         // if(guild.snipes == false) return message.channel.send(`This server has snipes disabled!`)
-        if (message.guild.id === '824294231447044197') {
+        if (message.guild.id === client.config.guildId) {
             if (
                 !message.member.roles.cache.some(
                     (role) => role.id === '839803117646512128'
