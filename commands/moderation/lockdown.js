@@ -57,7 +57,10 @@ module.exports = {
                 await confirm.edit({
                     components: [
                         new MessageActionRow({
-                            components: [nobut.setDisabled(true)],
+                            components: [
+                                yesbut.setDisabled(true),
+                                nobut.setDisabled(true),
+                            ],
                         }),
                     ],
                 })
@@ -97,7 +100,10 @@ module.exports = {
             await confirm.edit({
                 components: [
                     new MessageActionRow({
-                        components: [nobut.setDisabled(true)],
+                        components: [
+                            yesbut.setDisabled(true),
+                            nobut.setDisabled(true),
+                        ],
                     }),
                 ],
             })
