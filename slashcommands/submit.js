@@ -116,6 +116,7 @@ module.exports = {
                 dbUser.url = link
                 dbUser.cooldown = new Date().getTime() + require('ms')('15m')
                 dbUser.number = all
+                data.voted = []
                 dbUser.save()
 
                 interaction.client.channels.cache.get(submissionsChannel).send({
