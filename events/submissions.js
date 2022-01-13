@@ -130,6 +130,9 @@ module.exports = {
                 ],
             })
         } else if (id == 'upvote-submissions') {
+            const aaa = db.findOne({
+                number: button.message.embeds[0].title.split('#')[1],
+            })
             if (aaa.voted.includes(button.user.id)) {
                 return button.reply({
                     content: 'You have already voted for this submission.',
@@ -147,6 +150,9 @@ module.exports = {
                 ephemeral: true,
             })
         } else if (id == 'downvote-submissions') {
+            const aaa = db.findOne({
+                number: button.message.embeds[0].title.split('#')[1],
+            })
             if (aaa.voted.includes(button.user.id)) {
                 return button.reply({
                     content: 'You have already voted for this submission.',
