@@ -107,7 +107,7 @@ module.exports = {
                 return message.channel.send('The user is not a grinder.')
             }
 
-            await db.deleteOne({ userID: user.id })
+            // await db.deleteOne({ userID: user.id })
 
             return message.channel.send(
                 `Done! ${user} was removed from the grinders team.`
