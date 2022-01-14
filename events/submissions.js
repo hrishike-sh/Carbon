@@ -92,7 +92,7 @@ module.exports = {
                 embeds: [
                     {
                         title: 'Submission update',
-                        description: `Your submission for the event was __accepted__.\n\nDenied by: ${button.user.tag}`,
+                        description: `Your submission for the event was __accepted__.\n\nAccepted by: ${button.user.tag}`,
                         timestamp: new Date(),
                         color: 'GREEN',
                     },
