@@ -18,9 +18,9 @@ module.exports = {
             .slice(0, 10)
             .map(
                 (value, index) =>
-                    `<:yes:931435927061020712> **${
-                        (await interaction.client.users.fetch(value.userId)).tag
-                    }**'s [submission]() with **${value.votes.netVotes.toLocaleString()}** net votes!\n<:dot:931436867272998922> - <:upvote:931078295435505736> **${value.votes.upvotes.toLocaleString()}** : <:downvote:931078357637038080> **${
+                    `<:yes:931435927061020712> **<@${
+                        value.userId
+                    }>**'s [submission]() with **${value.votes.netVotes.toLocaleString()}** net votes!\n<:dot:931436867272998922> - <:upvote:931078295435505736> **${value.votes.upvotes.toLocaleString()}** : <:downvote:931078357637038080> **${
                         value.votes.downvotes
                     }**`
             )
