@@ -99,7 +99,7 @@ module.exports = {
                 ],
             })
         } else if (id === 'deny-submit') {
-            const user = client.users.fetch(
+            const user = await client.users.fetch(
                 button.message.embeds[0].footer.text.split(':')[1],
                 { cache: true }
             )
@@ -133,6 +133,7 @@ module.exports = {
                     ]),
                 ],
             })
+            await db.deleteOne({ userId: user.id })
             ;(await user).send({
                 embeds: [
                     {
