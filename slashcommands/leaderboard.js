@@ -10,9 +10,7 @@ module.exports = {
      */
     async execute(interaction) {
         const rawLb = await database.find({})
-        interaction.reply({
-            content: 'Computing leaderboard...',
-        })
+
         const maap = rawLb
             .sort((a, b) => b.votes.netVotes - a.votes.netVotes)
             .slice(0, 10)
@@ -25,7 +23,7 @@ module.exports = {
                     }**`
             )
 
-        return interaction.editReply({
+        return interaction.reply({
             content: null,
             embeds: [
                 {
