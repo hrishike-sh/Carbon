@@ -25,7 +25,7 @@ module.exports = {
             message.edit({
                 content: emojis[i],
             })
-            await sleep(500)
+            await sleep(800)
         }
     },
 }
