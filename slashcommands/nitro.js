@@ -124,7 +124,7 @@ module.exports = {
         const row = new MessageActionRow().addComponents([
             new MessageButton()
                 .setLabel('Join')
-                .setCustomId('join-nitro')
+                .setCustomId('giveaway-join')
                 .setStyle('SUCCESS'),
         ])
         const msg = await channel.send({ embeds: [embed], components: [row] })
@@ -140,7 +140,7 @@ module.exports = {
             endsAt: new Date().getTime() + time,
             hasEnded: false,
             requirements: [],
-            joined: [],
+            entries: [],
         }
         if (req) {
             dbDat.requirements = req

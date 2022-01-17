@@ -1,9 +1,17 @@
+const { MessageButton, Client, Interaction } = require('discord.js')
 const giveawayModel = require('../database/models/giveaway')
 
 module.exports = {
-    name: 'clickButton',
+    name: 'interactionCreate',
     once: false,
+    /**
+     *
+     * @param {Interaction} button
+     * @param {Client} client
+     * @returns
+     */
     async execute(button, client) {
+        if (!button.isButton()) return
         if (
             button.customId !== 'giveaway-join' &&
             button.customId !== 'giveaway-info'
@@ -23,21 +31,21 @@ module.exports = {
             }
             if (gaw.requirements) {
                 const requirements = gaw.requirements
-                let canJoin = true
-                for (const req of requirements) {
-                    if (!canJoin) continue
-                    if (!button.member._roles.includes(req)) canJoin = false
+
+                if (!button.member.roles.cache.hasAll(requirements)) {
+                    return button.reply({
+                        content: `You do not have the requirements to join this giveaway!`,
+                        ephemeral: true,
+                    })
                 }
-                if (!canJoin)
-                    return button.reply(
-                        `You do not meet the requirements to join the giveaway!`,
-                        true
-                    )
             }
             gaw.entries.push(button.user.id)
             gaw.save()
 
-            button.reply('Your entry has been counted, good luck!', true)
+            button.reply({
+                content: 'Your entry has been counted, good luck!',
+                ephermal: true,
+            })
         } else if (button.customId === 'giveaway-info') {
             const info = {
                 joined: gaw.entries.includes(button.user.id) ? '✅' : '❌',
@@ -47,30 +55,32 @@ module.exports = {
             }
 
             button.reply({
-                embed: {
-                    title: 'Giveaway Info',
-                    color: 'GREEN',
-                    description: 'Info for the giveaway:',
-                    fields: [
-                        {
-                            name: 'Joined',
-                            value: info.joined,
-                        },
-                        {
-                            name: 'Chances',
-                            value: `${info.chances}%`,
-                            inline: true,
-                        },
-                        {
-                            name: 'Total entries',
-                            value: info.entries,
-                        },
-                        {
-                            name: 'Ended',
-                            value: info.ended,
-                        },
-                    ],
-                },
+                embeds: [
+                    {
+                        title: 'Giveaway Info',
+                        color: 'GREEN',
+                        description: 'Info for the giveaway:',
+                        fields: [
+                            {
+                                name: 'Joined',
+                                value: info.joined,
+                            },
+                            {
+                                name: 'Chances',
+                                value: `${info.chances}%`,
+                                inline: true,
+                            },
+                            {
+                                name: 'Total entries',
+                                value: info.entries,
+                            },
+                            {
+                                name: 'Ended',
+                                value: info.ended,
+                            },
+                        ],
+                    },
+                ],
                 ephemeral: true,
             })
         }
