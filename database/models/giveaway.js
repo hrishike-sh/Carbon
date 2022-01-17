@@ -13,6 +13,7 @@ const GiveawaySchema = new mongoose.Schema({
     endsAt: Number,
     hasEnded: Boolean,
     requirements: [String],
+    joined: [],
 })
 
 module.exports = mongoose.model('giveaway', GiveawaySchema, 'giveaway')

@@ -1,13 +1,18 @@
 const { SlashCommandBuilder } = require('@discordjs/builders')
 const { ChannelType } = require('discord-api-types/v9')
-const { CommandInteraction, MessageEmbed } = require('discord.js')
+const {
+    CommandInteraction,
+    MessageEmbed,
+    MessageActionRow,
+    MessageButton,
+} = require('discord.js')
 const ms = require('ms')
 const giveaway = require('../database/models/giveaway')
 //
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('gstart')
-        .setDescription('Start a giveaway!')
+        .setName('nitro')
+        .setDescription('Start a nitro giveaway!')
         .addStringOption((option) => {
             return option
                 .setName('time')
@@ -92,7 +97,7 @@ module.exports = {
         const embed = new MessageEmbed()
             .setTitle(data.prize)
             .setDescription(
-                `React with 🎉 to enter!\n**Time**: ${ms(time, {
+                `Use the button to enter!\n**Time**: ${ms(time, {
                     long: true,
                 })} (<t:${(
                     (new Date().getTime() + parseInt(time)) /
@@ -116,8 +121,13 @@ module.exports = {
         })
 
         channel = interaction.guild.channels.cache.get(channel.id)
-        const msg = await channel.send({ embeds: [embed] })
-        msg.react('🎉')
+        const row = new MessageActionRow().addComponents([
+            new MessageButton()
+                .setLabel('Join')
+                .setCustomId('join-nitro')
+                .setStyle('SUCCESS'),
+        ])
+        const msg = await channel.send({ embeds: [embed], components: [row] })
 
         // database
         const dbDat = {
@@ -130,6 +140,7 @@ module.exports = {
             endsAt: new Date().getTime() + time,
             hasEnded: false,
             requirements: [],
+            joined: [],
         }
         if (req) {
             dbDat.requirements = req
