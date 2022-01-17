@@ -29,7 +29,7 @@ module.exports = {
                 button.reply('You have already entered this giveaway.', true)
                 return
             }
-            if (gaw.requirements) {
+            if (gaw.requirements.length > 0) {
                 const requirements = gaw.requirements
 
                 if (!button.member.roles.cache.hasAll(requirements)) {
