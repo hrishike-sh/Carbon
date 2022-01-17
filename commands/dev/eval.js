@@ -37,7 +37,9 @@ module.exports = {
 
         let result
         try {
-            result = await eval(input)
+            result = await eval(
+                input.includes('await') ? `(async()=>{${input}})();` : input
+            )
             if (typeof result !== 'string') {
                 result = inspect(result, {
                     depth: 1,
