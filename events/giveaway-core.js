@@ -26,7 +26,10 @@ module.exports = {
 
         if (button.customId === 'giveaway-join') {
             if (gaw.entries.includes(button.user.id)) {
-                button.reply('You have already entered this giveaway.', true)
+                button.reply({
+                    content: 'You have already entered this giveaway.',
+                    ephemeral: true,
+                })
                 return
             }
             if (gaw.requirements.length > 0) {
