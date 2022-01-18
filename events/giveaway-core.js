@@ -44,7 +44,7 @@ module.exports = {
 
             button.reply({
                 content: 'Your entry has been counted, good luck!',
-                ephermal: true,
+                ephemeral: true,
             })
         } else if (button.customId === 'giveaway-info') {
             const info = {
