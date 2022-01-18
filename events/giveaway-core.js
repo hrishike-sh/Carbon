@@ -35,9 +35,17 @@ module.exports = {
             if (gaw.requirements.length > 0) {
                 const requirements = gaw.requirements
 
-                if (!button.member.roles.cache.hasAll(requirements)) {
+                let canJoin = true
+
+                for (const req of requirements) {
+                    if (!canJoin) continue
+                    if (!button.member.roles.cache.has(req)) canjoin = false
+                }
+
+                if (!canJoin) {
                     return button.reply({
-                        content: `You do not have the requirements to join this giveaway!`,
+                        content:
+                            'You do not meet the requirements to join this giveaway!',
                         ephemeral: true,
                     })
                 }
