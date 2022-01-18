@@ -39,7 +39,7 @@ module.exports = {
 
                 for (const req of requirements) {
                     if (!canJoin) continue
-                    if (!button.member.roles.cache.has(req)) canjoin = false
+                    if (!button.member.roles.cache.has(req)) canJoin = false
                 }
 
                 if (!canJoin) {
