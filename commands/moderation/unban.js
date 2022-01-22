@@ -19,6 +19,7 @@ module.exports = {
             return
 
         const fh = client.guilds.cache.get('824294231447044197')
+        if (!args[0]) return message.reply('Either ping or give me the id.')
         const user =
             message.mentions.users.first() ||
             (await client.users.fetch(args[0]))
@@ -30,9 +31,13 @@ module.exports = {
             return message.reply(
                 'You also need to provide a reason for the unban.'
             )
-        const banned = await fh.bans.fetch(user.id, { cache: true })
+        const banned = await fh.bans
+            .fetch(user.id, { cache: true })
+            .catch((e) => {
+                return message.reply('The user is not banned.')
+            })
 
-        if (!banned) return message.reply(`"${user}" is not banned!`)
+        if (!banned) return
 
         const errors = []
         let data = {
@@ -53,7 +58,8 @@ module.exports = {
                         title: 'Your ban has been lifted!',
                         color: 'GREEN',
                         description: `You have been unbanned from [FightHub](https://discord.gg/fight)! You can join back now.\nResponsible moderator: **${message.author.tag}**`,
-                        timestamp: new Date(),
+                        timestamp: Date.now(),
+                        color: 'GREEN',
                     },
                 ],
             })
