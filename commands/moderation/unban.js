@@ -45,7 +45,7 @@ module.exports = {
             dm: true,
         }
         try {
-            await fh.bans.remove(user.id, { cache: true })
+            await fh.bans.remove(user.id, reason)
         } catch (e) {
             errors.push(e.message)
             data.banned = false
@@ -67,7 +67,17 @@ module.exports = {
             errors.push(e.message)
             data.dm = false
         }
-
+        client.channels.cache.get('824437562802307122').send({
+            embeds: [
+                {
+                    title: 'Member unbanned',
+                    description: `**Member:** ${user.tag}(${user.id})\n**Reason:** ${reason}\n**Responsible moderator:** ${message.author.tag}(${message.author.id})`,
+                    footer: {
+                        text: `ID: ${user.id}`,
+                    },
+                },
+            ],
+        })
         return message.reply({
             embeds: [
                 {
