@@ -54,13 +54,17 @@ module.exports = {
             if (!data.banned) return message.reply("Couldn't unban the member!")
             await user.send({
                 embeds: [
-                    {
-                        title: 'Your ban has been lifted!',
-                        color: 'GREEN',
-                        description: `You have been unbanned from [FightHub](https://discord.gg/fight)! You can join back now.\nResponsible moderator: **${message.author.tag}**`,
-                        timestamp: Date.now(),
-                        color: 'GREEN',
-                    },
+                    new MessageEmbed()
+                        .setTitle('Member unban')
+                        .setColor('GREEN')
+                        .setDescription(
+                            `Info about the ban:\n<:blank:914473340129906708>Member Unbanned: ${
+                                data.banned ? '☑️' : ':x:'
+                            }\n<:blank:914473340129906708>User DM'd: ${
+                                data.dm ? '☑️' : ':x:'
+                            }\n<:blank:914473340129906708>Reason: ${reason}`
+                        )
+                        .setTimestamp(),
                 ],
             })
         } catch (e) {
@@ -75,6 +79,7 @@ module.exports = {
                     footer: {
                         text: `ID: ${user.id}`,
                     },
+                    color: 'GREEN',
                 },
             ],
         })
