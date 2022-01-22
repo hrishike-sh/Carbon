@@ -26,7 +26,7 @@ module.exports = {
     async execute(client) {
         // Incrementing everything
         presenceCounter1++
-        gawCounter1++
+        // gawCounter1++
         voteReminderCounter++
         randomColorCounter++
         // timerCounter++
