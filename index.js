@@ -39,6 +39,7 @@ client.db = {
     disabledDrops: [],
     fighthub: null,
     reminders: [],
+    ars: [],
 }
 client.config = config
 
@@ -127,6 +128,11 @@ client.on('ready', async () => {
     const reminders = require('./database/models/remind')
     client.db.reminders = await reminders.find({})
     // Reminders
+
+    // ARS
+    const ars = require('./database/models/ar')
+    client.db.ars = await ars.find({})
+    // ARS
 })
 
 client.on('interactionCreate', async (interaction) => {
