@@ -11,7 +11,7 @@ const client = new Client({
         Intents.FLAGS.GUILDS,
         Intents.FLAGS.GUILD_MESSAGES,
         Intents.FLAGS.GUILD_MEMBERS,
-        Intents.FLAGS.GUILD_MESSAGE_REACTIONS
+        Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
     ],
 })
 
@@ -38,6 +38,7 @@ client.db = {
     afkIgnore: [],
     disabledDrops: [],
     fighthub: null,
+    reminders: [],
 }
 client.config = config
 
@@ -121,6 +122,11 @@ client.on('ready', async () => {
     client.db.disabledDrops = (
         await serverIgnores.findOne({ guildID: client.db.fighthub.id })
     ).disabledDrop
+
+    // Reminders
+    const reminders = await require('./database/models/remind').find({})
+    client.db.reminders = reminders
+    // Reminders
 })
 
 client.on('interactionCreate', async (interaction) => {

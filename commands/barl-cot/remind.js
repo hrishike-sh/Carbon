@@ -45,9 +45,17 @@ module.exports = {
             new Database({
                 userId: message.author.id,
                 channelId: message.channel.id,
-                time,
+                time: new Date().getTime() + time,
                 reason,
+                link: `https://discord.com/channels/${message.guild.id}/${message.channel.id}/${message.id}`,
             }).save()
+            client.db.reminders.push({
+                userId: message.author.id,
+                channelId: message.channel.id,
+                time: new Date().getTime() + time,
+                reason,
+                link: `https://discord.com/channels/${message.guild.id}/${message.channel.id}/${message.id}`,
+            })
         } catch (e) {
             return message.reply({
                 embeds: [
