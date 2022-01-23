@@ -21,7 +21,32 @@ module.exports = {
                     },
                 ],
             })
+        if (args[0] == 'list') {
+            const user = await Database.find({
+                userId: message.author.id,
+            })
+            if (!user)
+                return message.reply("You don't have any active reminders.")
+            let dat = []
+            let i = 0
+            for (const r of user) {
+                i++
+                dat.push(
+                    `${i}. Reminder about ${r.reason} <t:${(
+                        r.time / 1000
+                    ).toFixed(0)}:R>`
+                )
+            }
 
+            return message.reply({
+                embeds: [
+                    {
+                        description: dat.join('\n'),
+                        color: 'GREEN',
+                    },
+                ],
+            })
+        }
         let time = ms(args[0])
         if (isNaN(time))
             return message.reply({
