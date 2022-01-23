@@ -41,7 +41,7 @@ module.exports = {
             return message.reply({
                 embeds: [
                     {
-                        description: dat.join('\n'),
+                        description: dat.join('\n') || 'No reminders yet...',
                         color: 'GREEN',
                     },
                 ],
