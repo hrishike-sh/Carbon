@@ -27,9 +27,21 @@ module.exports = {
                                     reminder.reason
                                 }"`
                             )
-                            .addField('Message Link', reminder.link),
+                            .addField(
+                                'Message Link',
+                                `[Jump](${reminder.link})`
+                            ),
                     ],
                 })
+                const db = require('../database/models/remind')
+                await db.deleteOne({
+                    userId: reminder.userId,
+                    time: reminder.time,
+                })
+                client.db.reminders = client.db.reminders.filter(
+                    (a) =>
+                        a.userId !== reminder.userId && a.time !== reminder.time
+                )
             }
         }
     },
