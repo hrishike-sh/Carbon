@@ -23,14 +23,15 @@ module.exports = {
                             .setDescription(
                                 `<t:${(reminder.time / 1000).toFixed(
                                     0
-                                )}:r> you asked me to remind you about "${
+                                )}:R> you asked me to remind you about "${
                                     reminder.reason
                                 }"`
                             )
                             .addField(
                                 'Message Link',
                                 `[Jump](${reminder.link})`
-                            ),
+                            )
+                            .setTimestamp(),
                     ],
                 })
                 const db = require('../database/models/remind')
