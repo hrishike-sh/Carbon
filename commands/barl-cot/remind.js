@@ -33,7 +33,7 @@ module.exports = {
             })
 
         args.shift()
-
+        if (!args[0]) args[0] = ' '
         if (!isNaN(ms(args[0]))) {
             time += ms(args[0])
             args.shift()

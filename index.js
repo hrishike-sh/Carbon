@@ -124,8 +124,8 @@ client.on('ready', async () => {
     ).disabledDrop
 
     // Reminders
-    const reminders = await require('./database/models/remind').find({})
-    client.db.reminders = reminders
+    const reminders = require('./database/models/remind')
+    client.db.reminders = await reminders.find({})
     // Reminders
 })
 
