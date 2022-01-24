@@ -10,14 +10,14 @@ module.exports = {
         if (message.guild.id !== '824294231447044197') return
         for (const trigger of client.db.ars) {
             if (
-                message.content.includes(trigger) &&
-                !cds.includes(`${message.channel.id}.${trigger}`)
+                message.content.includes(trigger.trigger) &&
+                !cds.includes(`${message.channel.id}.${trigger.trigger}`)
             ) {
-                cds.push(`${message.channel.id}.${trigger}`)
+                cds.push(`${message.channel.id}.${trigger.trigger}`)
                 message.reply(trigger.response)
                 await sleep(5000)
                 cds = cds.filter(
-                    (v) => v !== `${message.channel.id}.${trigger}`
+                    (v) => v !== `${message.channel.id}.${trigger.trigger}`
                 )
             }
         }
