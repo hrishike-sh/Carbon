@@ -82,6 +82,25 @@ module.exports = {
             })
             client.db.ars = client.db.ars.filter((a) => a.trigger !== trigger)
             return message.reply('Removed that ar.')
+        } else if (args[0] == 'list') {
+            let data = await Database.find({})
+            data = data
+                .map(
+                    (value, index) =>
+                        `${index}. **Trigger:** ${value.trigger}\n  **Response:** ${value.response}`
+                )
+                .join('\n---------\n')
+
+            await message.reply({
+                embeds: [
+                    {
+                        title: 'Auto-Responses list',
+                        color: 'GREEN',
+                        description: data || 'None!',
+                        timestamp: new Date(),
+                    },
+                ],
+            })
         }
     },
 }
