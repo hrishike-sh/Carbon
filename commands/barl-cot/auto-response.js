@@ -87,7 +87,13 @@ module.exports = {
             data = data
                 .map(
                     (value, index) =>
-                        `${index}. **Trigger:** ${value.trigger}\n  **Response:** ${value.response}`
+                        `${index + 1}. **Trigger:** ${
+                            value.trigger
+                        }\n<:blank:914473340129906708>**Response:** ${
+                            value.response
+                        }\n<:blank:914473340129906708>**Added by:** <@${
+                            value.addedBy
+                        }>`
                 )
                 .join('\n---------\n')
 
