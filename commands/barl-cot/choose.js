@@ -16,8 +16,17 @@ module.exports = {
                     .replace('fh choose ')
                     .split(' ')
                     .includes(',')
-                    ? args.join(' ').split(', ')[
-                          Math.floor(Math.random() * args.length)
+                    ? message.content
+                          .toLowerCase()
+                          .replace('fh choose ')
+                          .split(',')[
+                          Math.floor(
+                              Math.random() *
+                                  message.content
+                                      .toLowerCase()
+                                      .replace('fh choose ')
+                                      .split(',').length
+                          )
                       ]
                     : args[Math.floor(Math.random() * args.length)]) ||
                 'Nothing out of nothing!'
