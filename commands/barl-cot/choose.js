@@ -9,32 +9,18 @@ module.exports = {
      * @param {String[]} args
      */
     async execute(message, args) {
-        return message.reply({
-            content: `I choose ${
-                (message.content
-                    .toLowerCase()
-                    .replace('fh choose ')
-                    .split(' ')
-                    .includes(',')
-                    ? message.content
-                          .toLowerCase()
-                          .replace('fh choose ')
-                          .split(',')[
-                          Math.floor(
-                              Math.random() *
-                                  message.content
-                                      .toLowerCase()
-                                      .replace('fh choose ')
-                                      .split(',').length
-                          )
-                      ]
-                    : args[Math.floor(Math.random() * args.length)]) ||
-                'Nothing out of nothing!'
-            }`,
-            allowedMentions: {
-                roles: [],
-                repliedUser: true,
-            },
-        })
+        if (message.content.includes(',')) {
+            const argarray = args.join(' ').split(',')
+            return message.reply(
+                `I choose ${
+                    argarray[Math.floor(Math.random() * argarray.length)]
+                }`
+            )
+        } else
+            return message.reply({
+                content: `I choose ${
+                    args[Math.floor(Math.random() * args.length)]
+                }`,
+            })
     },
 }
