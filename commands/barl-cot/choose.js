@@ -11,7 +11,11 @@ module.exports = {
     async execute(message, args) {
         return message.reply({
             content: `I choose ${
-                args[Math.floor(Math.random() * args.length)] ||
+                (args.join(' ').includes(',')
+                    ? args.join(' ').split(',')[
+                          Math.floor(Math.random() * args.length)
+                      ]
+                    : args[Math.floor(Math.random() * args.length)]) ||
                 'Nothing out of nothing!'
             }`,
             allowedMentions: {

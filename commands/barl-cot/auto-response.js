@@ -87,7 +87,7 @@ module.exports = {
             data = data
                 .map(
                     (value, index) =>
-                        `${index + 1}. **Trigger:** ${
+                        `${index + 1}.  **Trigger:** ${
                             value.trigger
                         }\n<:blank:914473340129906708>**Response:** ${
                             value.response
