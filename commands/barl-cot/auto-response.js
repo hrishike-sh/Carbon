@@ -27,7 +27,12 @@ module.exports = {
                     ],
                 })
             }
-            const trigger = args[0].toLowerCase()
+            let trigger = args[0].toLowerCase()
+            if (trigger.startsWith('"')) {
+                const amogus = args
+                amogus.join(' ').split('"').slice(1, -1)
+                console.log(amogus)
+            }
             args.shift()
 
             if (!args[0])
