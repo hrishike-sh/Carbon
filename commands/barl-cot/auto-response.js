@@ -31,9 +31,8 @@ module.exports = {
             if (trigger.startsWith('"')) {
                 const amogus = args
                 amogus.join(' ').split('"')
-                amogus.shift()
-                trigger = amogus[0]
-                args.join(' ').replace(trigger).split(' ')
+                trigger = amogus[0].replace(/"/g, '')
+                args.join(' ').replace(trigger, '').split(' ')
             }
             args.shift()
 
