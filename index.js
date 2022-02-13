@@ -40,6 +40,7 @@ client.db = {
     fighthub: null,
     reminders: [],
     ars: [],
+    messages: new Collection()
 }
 client.config = config
 
@@ -133,6 +134,8 @@ client.on('ready', async () => {
     const ars = require('./database/models/ar')
     client.db.ars = await ars.find({})
     // ARS
+
+    
 })
 
 client.on('interactionCreate', async (interaction) => {

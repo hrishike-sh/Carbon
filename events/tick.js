@@ -5,10 +5,12 @@ const {
     MessageButton,
     Message,
     TextChannel,
+    Collection,
 } = require('discord.js')
 const giveawayModel = require('../database/models/giveaway')
 const timerModel = require('../database/models/timer')
 const voteModel = require('../database/models/user')
+const messageModel = require("../database/models/messages")
 const ms = require('pretty-ms')
 let i = 0
 let presenceCounter1 = 0
@@ -17,6 +19,7 @@ let gawCounter1 = 0
 let randomColorCounter = 0
 let timerCounter = 0
 let voteReminderCounter = 0
+let messageCounter = 0
 module.exports = {
     name: 'tick',
     once: false,
@@ -27,6 +30,7 @@ module.exports = {
         // Incrementing everything
         voteReminderCounter++
         randomColorCounter++
+        messageCounter++
         // Incrementing everything
 
         // Random Color
@@ -99,6 +103,30 @@ module.exports = {
                 }
             }
         }
+
+        // MESSAGES
+        if(messageCounter > 300000){
+            const messages = client.db.messages
+            
+            messages.forEach((value, key) => {
+                await messageModel.findOneAndUpdate({
+                    userId: key
+                }, {
+                    $inc: {
+                        daily: value.daily,
+                        weekly: value.weekly,
+                        monthly: value.monthly,
+                    }
+                }, {
+                    upsert: true
+                })
+                const a = messages.get(key)
+                a.daily = 0
+                a.weekly = 0
+                a.monthly = 0
+            })
+        }
+        // MESSAGES
 
         setTimeout(() => {
             client.emit('tick')
