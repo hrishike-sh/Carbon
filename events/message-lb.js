@@ -16,16 +16,12 @@ module.exports = {
 
         if(!messages.has(message.author.id)){
             messages.set(message.author.id, {
-                daily: 0,
-                weekly: 0,
-                monthly: 0
+                messages: 0
             })
         }
         
         const user = messages.get(message.author.id)
-        user.daily++
-        user.weekly++
-        user.monthly++
+        user.messages++
 
         return;
     }

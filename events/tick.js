@@ -113,17 +113,15 @@ module.exports = {
                     userId: key
                 }, {
                     $inc: {
-                        daily: value.daily,
-                        weekly: value.weekly,
-                        monthly: value.monthly,
+                        daily: value.messages,
+                        weekly: value.messages,
+                        monthly: value.messages,
                     }
                 }, {
                     upsert: true
                 })
                 const a = messages.get(key)
-                a.daily = 0
-                a.weekly = 0
-                a.monthly = 0
+                a.messages = 0
             })
         }
         // MESSAGES

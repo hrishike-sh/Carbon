@@ -7,4 +7,4 @@ const MessageSchema = new mongoose.Schema({
     monthly: { type: Number, default: 0 },
 });
 
-module.exports = mongoose.model('message', MessageSchema)
+module.exports = mongoose.model('message-lb', MessageSchema)
