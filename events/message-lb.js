@@ -9,6 +9,7 @@ module.exports = {
      * @param {Client} client 
      */
     async execute(message, client){
+        if(message.guild.id !== '824294231447044197') return;
         if(message.author.bot) return;
         
         const messages = client.db.messages
