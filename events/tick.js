@@ -108,7 +108,7 @@ module.exports = {
         if(messageCounter > 300000){
             const messages = client.db.messages
             
-            messages.forEach((value, key) => {
+            messages.forEach(async (value, key) => {
                 await messageModel.findOneAndUpdate({
                     userId: key
                 }, {
