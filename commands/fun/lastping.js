@@ -12,14 +12,14 @@ module.exports = {
      */
     async execute(message, args) {
         if (
-            !message.member.roles.cache.hasAny([
+            !message.member.roles.cache.hasAny(
                 '826197829126979635',
                 '824687526396297226',
                 '825965323500126208',
-                '828048225096826890',
-            ])
+                '828048225096826890'
+            )
         ) {
-            message.reply(
+            return message.reply(
                 `You don't have permission to run this command. Check <#843943148945276949> for more info.`
             )
         }

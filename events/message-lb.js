@@ -14,12 +14,12 @@ module.exports = {
         if (message.mentions.members.size < 1) return
         message.mentions.members.forEach(async (member) => {
             if (
-                member.roles.cache.hasAny([
+                member.roles.cache.hasAny(
                     '826197829126979635',
                     '824687526396297226',
                     '825965323500126208',
-                    '828048225096826890',
-                ])
+                    '828048225096826890'
+                )
             ) {
                 let user = await pings.findOne({ userId: member.id })
                 if (!user) {
