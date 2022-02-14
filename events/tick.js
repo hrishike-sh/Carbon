@@ -10,7 +10,7 @@ const {
 const giveawayModel = require('../database/models/giveaway')
 const timerModel = require('../database/models/timer')
 const voteModel = require('../database/models/user')
-const messageModel = require("../database/models/messages")
+const messageModel = require('../database/models/ping')
 const ms = require('pretty-ms')
 let i = 0
 let presenceCounter1 = 0
@@ -105,25 +105,25 @@ module.exports = {
         }
 
         // MESSAGES
-        if(messageCounter > 300000){
-            const messages = client.db.messages
-            
-            messages.forEach(async (value, key) => {
-                await messageModel.findOneAndUpdate({
-                    userId: key
-                }, {
-                    $inc: {
-                        daily: value.messages,
-                        weekly: value.messages,
-                        monthly: value.messages,
-                    }
-                }, {
-                    upsert: true
-                })
-                const a = messages.get(key)
-                a.messages = 0
-            })
-        }
+        // if(messageCounter > 300000){
+        //     const messages = client.db.messages
+
+        //     messages.forEach(async (value, key) => {
+        //         await messageModel.findOneAndUpdate({
+        //             userId: key
+        //         }, {
+        //             $inc: {
+        //                 daily: value.messages,
+        //                 weekly: value.messages,
+        //                 monthly: value.messages,
+        //             }
+        //         }, {
+        //             upsert: true
+        //         })
+        //         const a = messages.get(key)
+        //         a.messages = 0
+        //     })
+        // }
         // MESSAGES
 
         setTimeout(() => {
