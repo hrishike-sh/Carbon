@@ -1,4 +1,9 @@
-const { Message, MessageEmbed } = require('discord.js')
+const {
+    Message,
+    MessageEmbed,
+    MessageActionRow,
+    MessageButton,
+} = require('discord.js')
 const Pings = require('../../database/models/ping')
 module.exports = {
     name: 'lastping',
@@ -46,13 +51,47 @@ module.exports = {
                         (new Date().getTime() - V.when) /
                         1000
                     ).toFixed(0)}:R>**\n**${V.author.username}#${
-                        v.author.discriminator
+                        V.author.discriminator
                     }**: ${V.content} [[Jump]](${V.message_link})`
             )
             .join('\n➖➖➖➖➖➖➖\n')
         PingBed.setDescription(map)
-        message.reply({
+        const inboxMessage = await message.reply({
             embeds: [PingBed],
+            components: [
+                new MessageActionRow().addComponents([
+                    new MessageButton()
+                        .setStyle('PRIMARY')
+                        .setLabel('Clear inbox')
+                        .setEmoji('📭')
+                        .setCustomId('clear-inbox_lp'),
+                ]),
+            ],
+        })
+
+        const collector = inboxMessage.createMessageComponentCollector({
+            filter: (but) => but.user.id === message.author.id,
+            time: 30000,
+        })
+
+        collector.on('collect', async (button) => {
+            DBUser.pings = []
+            DBUser.save()
+
+            inboxMessage.components.forEach((c) => {
+                c.components.forEach((cc) => {
+                    cc.setDisabled()
+                })
+            })
+
+            button.reply({
+                content: 'Inbox is cleared.',
+                ephemeral: true,
+            })
+            inboxMessage.edit({
+                embeds: [PingBed],
+                components: [inboxMessage.components],
+            })
         })
     },
 }
