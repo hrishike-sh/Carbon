@@ -12,7 +12,7 @@ module.exports = {
         if (message.guild.id !== '824294231447044197') return
 
         if (message.mentions.members.size < 1) return
-        message.mentions.members.forEach((member) => {
+        message.mentions.members.forEach(async (member) => {
             if (
                 member.roles.cache.hasAny([
                     '826197829126979635',
