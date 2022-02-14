@@ -48,8 +48,7 @@ module.exports = {
             .map(
                 (V, I) =>
                     `${I + 1}. **In <#${V.channel}>, <t:${(
-                        (new Date().getTime() - V.when) /
-                        1000
+                        V.when / 1000
                     ).toFixed(0)}:R>**\n**${V.author.username}#${
                         V.author.discriminator
                     }**: ${V.content} [[Jump]](${V.message_link})`
