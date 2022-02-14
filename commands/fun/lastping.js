@@ -43,7 +43,8 @@ module.exports = {
             })
         }
 
-        const pings = DBUser.pings
+        let pings = DBUser.pings
+        if (pings.length > 10) pings = pings.slice(0, 9)
         const map = pings
             .map(
                 (V, I) =>
@@ -56,6 +57,7 @@ module.exports = {
             .join('\n➖➖➖➖➖➖➖\n')
         PingBed.setDescription(map)
         const inboxMessage = await message.reply({
+            content: 'Only 10 recent pings are shown...',
             embeds: [PingBed],
             components: [
                 new MessageActionRow().addComponents([
