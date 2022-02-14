@@ -42,12 +42,12 @@ module.exports = {
         const map = pings
             .map(
                 (V, I) =>
-                    `${I + 1}. **In <#${V.channel}> <t:${(
+                    `${I + 1}. **In <#${V.channel}>, <t:${(
                         (new Date().getTime() - V.when) /
                         1000
-                    ).toFixed(0)}:R>**\n**${V.author.tag}**: ${
-                        V.content
-                    } [[Jump]](${V.message_link})`
+                    ).toFixed(0)}:R>**\n**${V.author.username}#${
+                        v.author.discriminator
+                    }**: ${V.content} [[Jump]](${V.message_link})`
             )
             .join('\n➖➖➖➖➖➖➖\n')
         PingBed.setDescription(map)
