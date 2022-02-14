@@ -77,12 +77,6 @@ module.exports = {
             DBUser.pings = []
             DBUser.save()
 
-            inboxMessage.components.forEach((c) => {
-                c.components.forEach((cc) => {
-                    cc.setDisabled()
-                })
-            })
-            const com = inboxMessage.components
             PingBed.setDescription('Inbox cleared!')
             button.reply({
                 content: 'Inbox is cleared.',
@@ -90,7 +84,16 @@ module.exports = {
             })
             inboxMessage.edit({
                 embeds: [PingBed],
-                components: [com],
+                components: [
+                    new MessageActionRow().addComponents([
+                        new MessageButton()
+                            .setStyle('PRIMARY')
+                            .setLabel('Clear inbox')
+                            .setEmoji('📭')
+                            .setCustomId('clear-inbox_lp')
+                            .setDisabled(),
+                    ]),
+                ],
             })
         })
     },
