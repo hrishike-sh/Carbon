@@ -33,7 +33,7 @@ module.exports = {
                     when: new Date().getTime(),
                     content: message.content,
                     message_link: `https://discord.com/channels/${message.guild.id}/${message.channel.id}/${message.id}`,
-                    author: message.author,
+                    author: message.author.tag,
                     channel: message.channel.id,
                 })
                 user.save()

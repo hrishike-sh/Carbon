@@ -49,9 +49,9 @@ module.exports = {
                 (V, I) =>
                     `${I + 1}. **In <#${V.channel}>, <t:${(
                         V.when / 1000
-                    ).toFixed(0)}:R>**\n**${V.author.username}#${
-                        V.author.discriminator
-                    }**: ${V.content} [[Jump]](${V.message_link})`
+                    ).toFixed(0)}:R>**\n**${V.author}**: ${
+                        V.content
+                    } [[Jump]](${V.message_link})`
             )
             .join('\n➖➖➖➖➖➖➖\n')
         PingBed.setDescription(map)
