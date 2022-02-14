@@ -83,14 +83,15 @@ module.exports = {
                     cc.setDisabled()
                 })
             })
-
+            const com = inboxMessage.components
+            PingBed.setDescription('Inbox cleared!')
             button.reply({
                 content: 'Inbox is cleared.',
                 ephemeral: true,
             })
             inboxMessage.edit({
                 embeds: [PingBed],
-                components: [inboxMessage.components],
+                components: [com],
             })
         })
     },
