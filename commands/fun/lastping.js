@@ -43,10 +43,9 @@ module.exports = {
             })
         }
 
-        let pings = DBUser.pings
+        let pings = DBUser.pings.sort((a, b) => b.when - a.when)
         if (pings.length > 10) pings = pings.slice(0, 10)
         const map = pings
-            .sort((a, b) => b.when - a.when)
             .map(
                 (V, I) =>
                     `${I + 1}. **In <#${V.channel}>, <t:${(
