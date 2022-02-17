@@ -8,24 +8,24 @@ const {
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('viewlock')
-        .setDescription('Viewlock a channel for a user or role or everyone.')
+        .setName('unviewlock')
+        .setDescription('Unviewlock a channel for a user or role or everyone.')
         .addChannelOption((option) => {
             return option
                 .setName('channel')
-                .setDescription('The channel you want to viewlock')
+                .setDescription('The channel you want to unviewlock')
                 .setRequired(true)
         })
         .addUserOption((opt) => {
             return opt
                 .setName('user')
-                .setDescription('The user you want to viewlock for.')
+                .setDescription('The user you want to unviewlock for.')
                 .setRequired(false)
         })
         .addRoleOption((opt) => {
             return opt
                 .setName('role')
-                .setDescription('The role you want to viewlock for.')
+                .setDescription('The role you want to unviewlock for.')
                 .setRequired(false)
         }),
     /**
@@ -49,25 +49,25 @@ module.exports = {
         const channel = data.channel
         if (channel.type !== 'GUILD_TEXT')
             return interaction.reply({
-                content: "Make sure it's a text channel.",
+                content: 'Make sure it is a text channel.',
             })
 
         try {
             if (data.user) {
                 channel.permissionOverwrites.edit(data.user.id, {
-                    VIEW_CHANNEL: false,
+                    VIEW_CHANNEL: true,
                 })
 
                 return interaction.reply({
-                    content: `${channel.toString()} has been viewlocked for ${data.user.toString()}!`,
+                    content: `${channel.toString()} has been unviewlocked for ${data.user.toString()}!`,
                 })
             } else if (data.role) {
                 channel.permissionOverwrites.edit(data.role.id, {
-                    VIEW_CHANNEL: false,
+                    VIEW_CHANNEL: true,
                 })
 
                 return interaction.reply({
-                    content: `${channel.toString()} has been viewlocked for role \`${
+                    content: `${channel.toString()} has been unviewlocked for role \`${
                         data.role.name
                     }\`.`,
                 })
@@ -75,12 +75,12 @@ module.exports = {
                 channel.permissionOverwrites.edit(
                     channel.guild.roles.everyone,
                     {
-                        VIEW_CHANNEL: false,
+                        VIEW_CHANNEL: true,
                     }
                 )
 
                 return interaction.reply({
-                    content: `${channel.toString()} is now viewlocked for \`@everyone\`.`,
+                    content: `${channel.toString()} is now unviewlocked for \`@everyone\`.`,
                 })
             }
         } catch (e) {
