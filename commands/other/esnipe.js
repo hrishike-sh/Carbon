@@ -4,7 +4,7 @@ module.exports = {
     name: 'esnipe',
     aliases: ['editsnipe'],
     description: 'Dank Memer esnipe but better',
-    execute(message, args, client) {
+    async execute(message, args, client) {
         const sniped = client.snipes.esnipes.get(message.channel.id)
         if (message.guild.id === client.config.guildId) {
             if (
