@@ -108,6 +108,7 @@ module.exports = {
 
         // GIVEAWAYS
         if (gawCounter1 > 5) {
+            gawCounter1 = 0
             const gaws = await giveawayModel.find({
                 endsAt: {
                     $lte: new Date().getTime(),
