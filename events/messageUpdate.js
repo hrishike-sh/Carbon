@@ -3,13 +3,16 @@ module.exports = {
     once: false,
     execute(oldMessage, newMessage, client) {
         if (newMessage.author.bot) return
+        let snipes = client.snipes.esnipes.get(message.channel.id) || []
 
-        client.snipes.esnipes.set(newMessage.channel.id, {
+        snipes.unshift({
             oldContent: oldMessage.content,
             newContent: newMessage.content,
-            editedIn: oldMessage.createdAt - newMessage.editedAt,
+            editedIn: newMessage.createdAt - oldMessage.editedAt,
             member: newMessage.member,
-            tag: newMessage.author.tag,
+            author: newMessage.author,
         })
+
+        client.snipes.esnipes.set(oldMessage.channel.id, snipes)
     },
 }
