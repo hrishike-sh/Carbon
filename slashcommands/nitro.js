@@ -83,10 +83,11 @@ module.exports = {
         const winners = data.winners
         let channel = data.channel
         const donor = data.donor
-        let rawQuirement = false
+        let rawQuirement = data.req
         let req = []
-        if (data.req) {
-            if (data.req.split(' ').length) {
+        if (rawQuirement) {
+            rawQuirement = rawQuirement.split(' ')
+            if (Array.isArray(rawQuirement) && rawQuirement.length) {
                 for (const r of rawQuirement) {
                     req.push(r)
                 }
