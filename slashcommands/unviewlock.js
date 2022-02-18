@@ -19,13 +19,13 @@ module.exports = {
         .addUserOption((opt) => {
             return opt
                 .setName('user')
-                .setDescription('The user you want to unviewlock for.')
+                .setDescription('The user you want to unviewlock for the channel you have selected')
                 .setRequired(false)
         })
         .addRoleOption((opt) => {
             return opt
                 .setName('role')
-                .setDescription('The role you want to unviewlock for.')
+                .setDescription('The role you want to unviewlock for the channel you have selected')
                 .setRequired(false)
         }),
     /**
