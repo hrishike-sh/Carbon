@@ -45,7 +45,7 @@ module.exports = {
                 .setRequired(false)
                 .setName('role_requirement')
                 .setDescription(
-                    "Add role requirements to the giveaway, add multiple by seperating roles ids with ' '"
+                    "Add role requirements to the giveaway, add multiple by seperating roles ids with '.'"
                 )
         })
         .addUserOption((option) => {
@@ -87,7 +87,7 @@ module.exports = {
         let req = []
         if (rawQuirement) {
             console.log(`1. ${rawQuirement}`)
-            rawQuirement = rawQuirement.split(' ')
+            rawQuirement = rawQuirement.split('.')
             console.log(`2. ${rawQuirement}`)
             if (Array.isArray(rawQuirement) && rawQuirement.length) {
                 for (const r of rawQuirement) {
