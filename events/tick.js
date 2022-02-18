@@ -31,6 +31,7 @@ module.exports = {
         voteReminderCounter++
         randomColorCounter++
         messageCounter++
+        gawCounter1++
         // Incrementing everything
 
         // Random Color
@@ -104,6 +105,67 @@ module.exports = {
                 }
             }
         }
+
+        // GIVEAWAYS
+        if (gawCounter1 > 5) {
+            const gaws = await giveawayModel.find({
+                endsAt: {
+                    $lte: new Date().getTime(),
+                },
+            })
+
+            for (const giveaway of gaws) {
+                const channel = client.channels.cache.get(giveaway.channelId)
+                if (channel) {
+                    const message = await channel.messages.fetch(
+                        giveaway.messageId
+                    )
+
+                    if (message) {
+                        let winners = []
+                        if (giveaway.winners > 1) {
+                            for (i = 0; i < giveaway.winners; i++) {
+                                winners.push(
+                                    giveaway.entries.filter(
+                                        (val) => !winners.includes(val)
+                                    )[
+                                        Math.floor(
+                                            Math.random() *
+                                                giveaway.entries.length
+                                        )
+                                    ]
+                                )
+                            }
+                        } else
+                            winners = [
+                                giveaway.entries[
+                                    Math.floor(
+                                        Math.random() * giveaway.enries.length
+                                    )
+                                ],
+                            ]
+                        winners = winners.map((a) => `<@${a}>`).join(' ')
+
+                        message.edit({
+                            content: `🎉 Giveaway Ended 🎉`,
+                            embeds: [
+                                new MessageEmbed()
+                                    .setTitle(giveaway.prize)
+                                    .setFooter({
+                                        text: `Winners: ${giveaway.winners} | Ended at`,
+                                    })
+                                    .setTimestamp()
+                                    .setColor('NOT_QUITE_BLACK')
+                                    .setDescription(
+                                        `Winner(s): ${winners}\nHost: <@${giveaway.hosterId}>`
+                                    ),
+                            ],
+                        })
+                    }
+                }
+            }
+        }
+        // GIVEAWAYS
 
         // MESSAGES
         // if(messageCounter > 300000){
