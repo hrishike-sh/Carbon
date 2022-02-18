@@ -170,7 +170,7 @@ module.exports = {
                             content: `${winners}\nYou have won the giveaway for **${
                                 giveaway.prize
                             }**! Your chances of winning the giveaway were **${(
-                                (giveaway.winners / giveaway.entries.length) *
+                                (1 / giveaway.entries.length) *
                                 100
                             ).toFixed(3)}%**`,
                             components: [
