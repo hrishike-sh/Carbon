@@ -11,8 +11,8 @@ const giveaway = require('../database/models/giveaway')
 //
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('nitro')
-        .setDescription('Start a nitro giveaway!')
+        .setName('giveaway')
+        .setDescription('Start a giveaway!')
         .addStringOption((option) => {
             return option
                 .setName('time')
@@ -86,14 +86,13 @@ module.exports = {
         let rawQuirement = false
         let req = []
         if (data.req) {
-            rawQuirement = data.req.split(' ')
-            if (rawQuirement.length) {
+            if (data.req.split(' ').length) {
                 for (const r of rawQuirement) {
                     req.push(r)
                 }
             } else req = rawQuirement
         } else req = false
-        console.log(time)
+
         const embed = new MessageEmbed()
             .setTitle(data.prize)
             .setDescription(
@@ -107,7 +106,7 @@ module.exports = {
                 )}:R>)\n**Winners**: ${winners}\n**Host**: ${interaction.user.toString()}`
             )
             .setColor('GREEN')
-        if (req)
+        if (req || req.length)
             embed.addField(
                 'Requirements:',
                 `Roles: ${req.map((val) => `<@&${val}>`).join(', ')}`,
@@ -123,7 +122,7 @@ module.exports = {
         channel = interaction.guild.channels.cache.get(channel.id)
         const row = new MessageActionRow().addComponents([
             new MessageButton()
-                .setLabel('Join')
+                .setEmoji('🎉')
                 .setCustomId('giveaway-join')
                 .setStyle('SUCCESS'),
         ])
