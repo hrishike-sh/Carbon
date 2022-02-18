@@ -119,9 +119,7 @@ module.exports = {
             for (const giveaway of gaws) {
                 giveaway.hasEnded = true
                 giveaway.save()
-                const channel: TextChannel = client.channels.cache.get(
-                    giveaway.channelId
-                )
+                const channel = client.channels.cache.get(giveaway.channelId)
                 if (channel) {
                     const message = await channel.messages.fetch(
                         giveaway.messageId
