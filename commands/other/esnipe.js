@@ -55,12 +55,10 @@ module.exports = {
                 name: msg.author.tag,
                 iconURL: msg.author.displayAvatarURL() || null,
             })
-            .addField('Old Message', oldContent)
+            .addField('Old Message', oldContent, true)
             .addField('New Message', newContent)
             .setColor('RANDOM')
-            .setFooter(
-                `${snipe + 1}/${sniped.length} | Edited in ${editedIn}ms`
-            )
+            .setFooter(`${snipe + 1}/${sniped.length}`)
         let prevBut = new MessageButton()
             .setEmoji('911971090954326017')
             .setCustomId('prev-snipe')
@@ -102,14 +100,10 @@ module.exports = {
                         name: msg.author.tag,
                         iconURL: msg.author.displayAvatarURL() || null,
                     })
-                    .addField('Old Message', oldContent)
+                    .addField('Old Message', oldContent, true)
                     .addField('New Message', newContent)
                     .setColor('RANDOM')
-                    .setFooter(
-                        `${snipe + 1}/${
-                            sniped.length
-                        } | Edited in ${editedIn}ms`
-                    )
+                    .setFooter(`${snipe + 1}/${sniped.length}`)
 
                 return mainMessage.edit({
                     content: 'Use the buttons to navigate.',
@@ -131,11 +125,7 @@ module.exports = {
                     .addField('Old Message', oldContent)
                     .addField('New Message', newContent)
                     .setColor('RANDOM')
-                    .setFooter(
-                        `${snipe + 1}/${
-                            sniped.length
-                        } | Edited in ${editedIn}ms`
-                    )
+                    .setFooter(`${snipe + 1}/${sniped.length}`)
 
                 return mainMessage.edit({
                     content: 'Use the buttons to navigate.',
@@ -156,12 +146,10 @@ module.exports = {
                     name: msg.author.tag,
                     iconURL: msg.author.displayAvatarURL() || null,
                 })
-                .addField('Old Message', oldContent)
+                .addField('Old Message', oldContent, true)
                 .addField('New Message', newContent)
                 .setColor('RANDOM')
-                .setFooter(
-                    `${snipe + 1}/${sniped.length} | Edited in ${editedIn}ms`
-                )
+                .setFooter(`${snipe + 1}/${sniped.length}`)
             try {
                 mainMessage.edit({
                     content: 'Use the buttons to navigate.',
