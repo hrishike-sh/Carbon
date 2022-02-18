@@ -58,7 +58,6 @@ module.exports = {
                 ephemeral: true,
             })
         }
-
         try {
             await target.timeout(time, data.reason.toString())
             interaction.reply({

@@ -2,7 +2,7 @@ const prefix = 'fh '
 const { Message, Client, MessageEmbed } = require('discord.js')
 module.exports = {
     name: 'help',
-    description: 'Please send help',
+    description: 'Help command',
     /**
      * @param {Message} message
      * @param {Client} client
