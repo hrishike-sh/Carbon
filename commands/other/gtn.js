@@ -8,7 +8,7 @@ module.exports = {
             message.author.id !== '450864876416401419' &&
             message.author.id !== '772524332382945292' &&
             message.author.id !== '598918643727990784' &&
-            message.author.id !== '712316272213491824'
+            message.author.id !== '712316272213491824' 
         )
             return
         let number = args[0]
