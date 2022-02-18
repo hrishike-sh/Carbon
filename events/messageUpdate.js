@@ -11,6 +11,7 @@ module.exports = {
             editedIn: newMessage.createdAt - oldMessage.editedAt,
             member: newMessage.member,
             author: newMessage.author,
+            msg: newMessage,
         })
 
         client.snipes.esnipes.set(oldMessage.channel.id, snipes)

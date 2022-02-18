@@ -48,18 +48,19 @@ module.exports = {
 
         let target = sniped[snipe]
 
-        let { msg, time, image } = target
+        let { msg, editedIn, oldContent, newContent } = target
 
         let snipeBed = new MessageEmbed()
             .setAuthor({
                 name: msg.author.tag,
                 iconURL: msg.author.displayAvatarURL() || null,
             })
-            .setDescription(msg.content)
+            .addField('Old Message', oldContent)
+            .addField('New Message', newContent)
             .setColor('RANDOM')
-            .setFooter(`${snipe + 1}/${sniped.length}`)
-            .setImage(image)
-            .setTimestamp(time)
+            .setFooter(
+                `${snipe + 1}/${sniped.length} | Edited in ${editedIn}ms`
+            )
         let prevBut = new MessageButton()
             .setEmoji('911971090954326017')
             .setCustomId('prev-snipe')
@@ -121,7 +122,7 @@ module.exports = {
                     snipe = sniped.length - 1
                 }
                 target = sniped[snipe]
-                let { msg, time, image } = target
+                let { msg, editedIn, oldContent, newContent } = target
                 snipeBed = new MessageEmbed()
                     .setAuthor({
                         name: msg.author.tag,
@@ -149,17 +150,18 @@ module.exports = {
             nextBut = nextBut.setDisabled()
             row = new MessageActionRow().addComponents([prevBut, nextBut])
             target = sniped[snipe]
-            let { msg, time, image } = target
+            let { msg, editedIn, oldContent, newContent } = target
             snipeBed = new MessageEmbed()
                 .setAuthor({
                     name: msg.author.tag,
                     iconURL: msg.author.displayAvatarURL() || null,
                 })
-                .setDescription(msg.content)
+                .addField('Old Message', oldContent)
+                .addField('New Message', newContent)
                 .setColor('RANDOM')
-                .setFooter(`${snipe + 1}/${sniped.length}`)
-                .setImage(image)
-                .setTimestamp(time)
+                .setFooter(
+                    `${snipe + 1}/${sniped.length} | Edited in ${editedIn}ms`
+                )
             try {
                 mainMessage.edit({
                     content: 'Use the buttons to navigate.',
