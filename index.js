@@ -14,8 +14,6 @@ const client = new Client({
     ],
 })
 
-client.discordTogether = new DiscordTogether(client)
-
 let dbURL = process.env.mongopath
 mongoose.connect(dbURL, {
     useNewUrlParser: true,
