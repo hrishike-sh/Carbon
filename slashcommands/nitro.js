@@ -86,7 +86,9 @@ module.exports = {
         let rawQuirement = data.req
         let req = []
         if (rawQuirement) {
+            console.log(`1. ${rawQuirement}`)
             rawQuirement = rawQuirement.split(' ')
+            console.log(`2. ${rawQuirement}`)
             if (Array.isArray(rawQuirement) && rawQuirement.length) {
                 for (const r of rawQuirement) {
                     req.push(r)
