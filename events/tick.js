@@ -119,7 +119,9 @@ module.exports = {
             for (const giveaway of gaws) {
                 giveaway.hasEnded = true
                 giveaway.save()
-                const channel = client.channels.cache.get(giveaway.channelId)
+                const channel: TextChannel = client.channels.cache.get(
+                    giveaway.channelId
+                )
                 if (channel) {
                     const message = await channel.messages.fetch(
                         giveaway.messageId
@@ -163,6 +165,25 @@ module.exports = {
                                     .setDescription(
                                         `Winner(s): ${winners}\nHost: <@${giveaway.hosterId}>`
                                     ),
+                            ],
+                        })
+
+                        message.channel.send({
+                            content: `${winners}\nYou have won the giveaway for **${
+                                giveaway.prize
+                            }**! Your chances of winning the giveaway were **${(
+                                (giveaway.winners / giveaway.entries.length) *
+                                100
+                            ).toFixed(3)}%**`,
+                            components: [
+                                new MessageActionRow().addComponents([
+                                    new MessageButton()
+                                        .setLabel('Jump')
+                                        .setStyle('LINK')
+                                        .setURL(
+                                            `https://discord.com/channels/${giveaway.guildId}/${giveaway.channelId}/${giveaway.messageId}`
+                                        ),
+                                ]),
                             ],
                         })
                     }
