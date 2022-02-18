@@ -1,5 +1,11 @@
 const ms = require('ms')
-
+const {
+    MessageEmbed,
+    Client,
+    Message,
+    MessageButton,
+    MessageActionRow,
+} = require('discord.js')
 module.exports = {
     name: 'esnipe',
     aliases: ['editsnipe'],
