@@ -3,7 +3,6 @@ const fs = require('fs')
 const shell = require('shelljs')
 const mongoose = require('mongoose')
 const config = require('./config.json')
-const { DiscordTogether } = require('discord-together')
 require('dotenv').config()
 
 const client = new Client({
@@ -14,8 +13,6 @@ const client = new Client({
         Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
     ],
 })
-
-client.discordTogether = new DiscordTogether(client)
 
 let dbURL = process.env.mongopath
 mongoose.connect(dbURL, {
@@ -40,7 +37,7 @@ client.db = {
     fighthub: null,
     reminders: [],
     ars: [],
-    messages: new Collection()
+    messages: new Collection(),
 }
 client.config = config
 
@@ -134,8 +131,6 @@ client.on('ready', async () => {
     const ars = require('./database/models/ar')
     client.db.ars = await ars.find({})
     // ARS
-
-    
 })
 
 client.on('interactionCreate', async (interaction) => {

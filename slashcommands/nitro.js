@@ -11,8 +11,8 @@ const giveaway = require('../database/models/giveaway')
 //
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('nitro')
-        .setDescription('Start a nitro giveaway!')
+        .setName('giveaway')
+        .setDescription('Start a giveaway!')
         .addStringOption((option) => {
             return option
                 .setName('time')
@@ -45,7 +45,7 @@ module.exports = {
                 .setRequired(false)
                 .setName('role_requirement')
                 .setDescription(
-                    "Add role requirements to the giveaway, add multiple by seperating roles ids with ' '"
+                    "Add role requirements to the giveaway, add multiple by seperating roles ids with '.'"
                 )
         })
         .addUserOption((option) => {
@@ -83,17 +83,19 @@ module.exports = {
         const winners = data.winners
         let channel = data.channel
         const donor = data.donor
-        let rawQuirement = false
+        let rawQuirement = data.req
         let req = []
-        if (data.req) {
-            rawQuirement = data.req.split(' ')
-            if (rawQuirement.length) {
+        if (rawQuirement) {
+            console.log(`1. ${rawQuirement}`)
+            rawQuirement = rawQuirement.split('.')
+            console.log(`2. ${rawQuirement}`)
+            if (Array.isArray(rawQuirement) && rawQuirement.length) {
                 for (const r of rawQuirement) {
                     req.push(r)
                 }
             } else req = rawQuirement
         } else req = false
-        console.log(time)
+
         const embed = new MessageEmbed()
             .setTitle(data.prize)
             .setDescription(
@@ -107,7 +109,7 @@ module.exports = {
                 )}:R>)\n**Winners**: ${winners}\n**Host**: ${interaction.user.toString()}`
             )
             .setColor('GREEN')
-        if (req)
+        if (req || req.length)
             embed.addField(
                 'Requirements:',
                 `Roles: ${req.map((val) => `<@&${val}>`).join(', ')}`,
@@ -123,7 +125,7 @@ module.exports = {
         channel = interaction.guild.channels.cache.get(channel.id)
         const row = new MessageActionRow().addComponents([
             new MessageButton()
-                .setLabel('Join')
+                .setEmoji('🎉')
                 .setCustomId('giveaway-join')
                 .setStyle('SUCCESS'),
         ])
