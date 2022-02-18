@@ -164,6 +164,17 @@ module.exports = {
                                         `Winner(s): ${winners}\nHost: <@${giveaway.hosterId}>`
                                     ),
                             ],
+                            components: [
+                                new MessageActionRow().addComponents([
+                                    new MessageButton()
+                                        .setEmoji(
+                                            `Entries: ${giveaway.entries.toLocaleString()}`
+                                        )
+                                        .setCustomId('giveaway-join')
+                                        .setStyle('PRIMARY')
+                                        .setDisabled(),
+                                ]),
+                            ],
                         })
 
                         message.channel.send({
