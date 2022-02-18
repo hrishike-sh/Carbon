@@ -77,7 +77,8 @@ module.exports = {
                                         .setTimestamp()
                                         .setDescription(
                                             `You can vote for **[FightHub](https://discord.gg/fight)** now!\nClick **[here](https://top.gg/servers/824294231447044197/vote)** to vote! Last vote was <t:${(
-                                                q.fighthub.voting.lastVoted /
+                                                (q.fighthub.voting.lastVoted -
+                                                    require('ms')('12h')) /
                                                 1000
                                             ).toFixed(
                                                 0
