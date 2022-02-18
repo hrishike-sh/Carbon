@@ -113,9 +113,12 @@ module.exports = {
                 endsAt: {
                     $lte: new Date().getTime(),
                 },
+                hasEnded: false,
             })
 
             for (const giveaway of gaws) {
+                giveaway.hasEnded = true
+                giveaway.save()
                 const channel = client.channels.cache.get(giveaway.channelId)
                 if (channel) {
                     const message = await channel.messages.fetch(
