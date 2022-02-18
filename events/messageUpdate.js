@@ -3,7 +3,7 @@ module.exports = {
     once: false,
     execute(oldMessage, newMessage, client) {
         if (newMessage.author.bot) return
-        let snipes = client.snipes.esnipes.get(message.channel.id) || []
+        let snipes = client.snipes.esnipes.get(oldMessage.channel.id) || []
 
         snipes.unshift({
             oldContent: oldMessage.content,
