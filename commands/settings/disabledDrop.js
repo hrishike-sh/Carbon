@@ -2,7 +2,7 @@ const { Client, Message, MessageEmbed } = require('discord.js')
 const db = require('../../database/models/settingsSchema')
 module.exports = {
     name: 'disabledDrop',
-    aliases: 'disablehere',
+    aliases: ['disablehere'],
     fhOnly: true,
     disabledChannels: [],
     /**

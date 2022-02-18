@@ -141,7 +141,7 @@ module.exports = {
                             winners = [
                                 giveaway.entries[
                                     Math.floor(
-                                        Math.random() * giveaway.enries.length
+                                        Math.random() * giveaway.entries.length
                                     )
                                 ],
                             ]
