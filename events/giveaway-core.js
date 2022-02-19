@@ -5,7 +5,7 @@ const {
     MessageActionRow,
 } = require('discord.js')
 const giveawayModel = require('../database/models/giveaway')
-
+const bypassIds = ['825965323500126208', '876460154705555487']
 module.exports = {
     name: 'interactionCreate',
     once: false,
@@ -45,7 +45,8 @@ module.exports = {
                     if (!canJoin) continue
                     if (!button.member.roles.cache.has(req)) canJoin = false
                 }
-
+                if (button.member.roles.cache.hasAny(...bypassIds))
+                    canJoin = true
                 if (!canJoin) {
                     return button.reply({
                         content:
