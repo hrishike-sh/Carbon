@@ -23,8 +23,6 @@ module.exports = {
             messageId: button.message.id,
         })
 
-        if (!gaw) return
-
         if (button.customId === 'giveaway-join') {
             if (gaw.entries.includes(button.user.id)) {
                 button.reply({
