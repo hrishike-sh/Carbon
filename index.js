@@ -153,6 +153,24 @@ client.on('interactionCreate', async (interaction) => {
 
     try {
         await command.execute(interaction, client)
+
+        const commandbed = new MessageEmbed()
+            .setAuthor({
+                name: interaction.user.tag,
+                iconURL: interaction.user.displayAvatarURL(),
+            })
+            .setTitle(command.name)
+            .setDescription(`**This was a slash command**`)
+            .addField('Total commands ran', commandsRan.toString(), true)
+            .addField(
+                'Server | Channel',
+                `${interaction.guild.name} | ${interaction.channel} (${interaction.channel.name})`
+            )
+            .setTimestamp()
+
+        await client.channels.cache.get(config.logs.cmdLogging)?.send({
+            embeds: [commandbed],
+        })
     } catch (e) {
         console.error(e)
         await interaction.reply({
