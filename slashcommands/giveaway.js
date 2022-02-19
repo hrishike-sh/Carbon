@@ -144,7 +144,10 @@ module.exports = {
                 .setCustomId('giveaway-join')
                 .setStyle('SUCCESS'),
         ])
-        const msg = await channel.send({ embeds: [embed], components: [row] })
+        const msg = await channel.send({
+            embeds: [...bemBeds],
+            components: [row],
+        })
 
         // database
         const dbDat = {
