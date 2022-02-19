@@ -55,6 +55,12 @@ module.exports = {
                 .setDescription(
                     'The person who is donating towards the giveaway'
                 )
+        })
+        .addStringOption((option) => {
+            return option
+                .setName('message')
+                .setDescription('The message from sponsor')
+                .setRequired(false)
         }),
 
     /**
@@ -69,6 +75,7 @@ module.exports = {
             channel: interaction.options.getChannel('channel'),
             req: interaction.options.getString('role_requirement') || null,
             donor: interaction.options.getUser('donator') || null,
+            message: interaction.options.getString('message') || null,
         }
 
         let time = data.time
@@ -122,7 +129,14 @@ module.exports = {
             content: `Giveaway started in ${channel}`,
             ephemeral: true,
         })
-
+        const bemBeds = []
+        bemBeds.push(embed)
+        if (data.message)
+            bemBeds.push(
+                new MessageEmbed().setDescription(
+                    `**Message:** ${data.message}`
+                )
+            )
         channel = interaction.guild.channels.cache.get(channel.id)
         const row = new MessageActionRow().addComponents([
             new MessageButton()
