@@ -54,7 +54,10 @@ module.exports = {
         }
 
         suggestChannel.send({
-            embeds: [],
+            embeds: [suggestEmbed],
+        })
+        interaction.reply({
+            content: `Your suggestion has been sent to the devs!`,
         })
     },
 }
