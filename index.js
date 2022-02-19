@@ -171,6 +171,7 @@ client.on('interactionCreate', async (interaction) => {
         await client.channels.cache.get(config.logs.cmdLogging)?.send({
             embeds: [commandbed],
         })
+        commandsRan++
     } catch (e) {
         console.error(e)
         await interaction.reply({
