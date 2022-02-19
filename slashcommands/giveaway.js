@@ -133,9 +133,9 @@ module.exports = {
         bemBeds.push(embed)
         if (data.message)
             bemBeds.push(
-                new MessageEmbed().setDescription(
-                    `**Message:** ${data.message}`
-                )
+                new MessageEmbed()
+                    .setDescription(`**Sponsor's message:** ${data.message}`)
+                    .setColor('GREEN')
             )
         channel = interaction.guild.channels.cache.get(channel.id)
         const row = new MessageActionRow().addComponents([
