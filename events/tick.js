@@ -192,6 +192,10 @@ module.exports = {
                                         .setURL(
                                             `https://discord.com/channels/${giveaway.guildId}/${giveaway.channelId}/${giveaway.messageId}`
                                         ),
+                                    new MessageButton()
+                                        .setLabel('Reroll')
+                                        .setCustomId('giveaway-reroll')
+                                        .setStyle('SECONDARY'),
                                 ]),
                             ],
                         })

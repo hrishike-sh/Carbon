@@ -14,7 +14,8 @@ module.exports = {
         if (!button.isButton()) return
         if (
             button.customId !== 'giveaway-join' &&
-            button.customId !== 'giveaway-info'
+            button.customId !== 'giveaway-info' &&
+            button.customId !== 'giveaway-reroll'
         )
             return
 
@@ -93,6 +94,46 @@ module.exports = {
                     },
                 ],
                 ephemeral: true,
+            })
+        } else if (button.customId === 'giveaway-reroll') {
+            const giveawayMessageId =
+                button.message.components[0].components[0].url
+                    .split('/')
+                    .slice(-1)[0]
+            const gaww = await giveawayModel.findOne({
+                messageId: giveawayMessageId,
+            })
+            if (button.user.id !== gaww.hosterId) {
+                return button.reply({
+                    content: `Only the hoster of the giveaway can reroll winners...`,
+                    ephemeral: true,
+                })
+            }
+
+            const winner =
+                gaww.entries[Math.floor(Math.random() * gaww.entries.length)]
+
+            await button.channel.send({
+                content: `${winner}\nYou have won the reroll for **${
+                    gaww.prize
+                }**! Your chances of winning the giveaway were **${(
+                    (1 / gaww.entries.length) *
+                    100
+                ).toFixed(3)}%**`,
+                components: [
+                    new MessageActionRow().addComponents([
+                        new MessageButton()
+                            .setLabel('Jump')
+                            .setStyle('LINK')
+                            .setURL(
+                                `https://discord.com/channels/${giveaway.guildId}/${giveaway.channelId}/${giveaway.messageId}`
+                            ),
+                        new MessageButton()
+                            .setLabel('Reroll')
+                            .setCustomId('giveaway-reroll')
+                            .setStyle('SECONDARY'),
+                    ]),
+                ],
             })
         }
     },
