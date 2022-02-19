@@ -159,7 +159,7 @@ client.on('interactionCreate', async (interaction) => {
                 name: interaction.user.tag,
                 iconURL: interaction.user.displayAvatarURL(),
             })
-            .setTitle(command.name)
+            .setTitle(command.data.name)
             .setDescription(`**This was a slash command**`)
             .addField('Total commands ran', commandsRan.toString(), true)
             .addField(
