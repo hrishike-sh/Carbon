@@ -1,4 +1,9 @@
-const { MessageButton, Client, Interaction } = require('discord.js')
+const {
+    MessageButton,
+    Client,
+    Interaction,
+    MessageActionRow,
+} = require('discord.js')
 const giveawayModel = require('../database/models/giveaway')
 
 module.exports = {
