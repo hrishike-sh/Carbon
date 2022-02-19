@@ -31,7 +31,7 @@ module.exports = {
         }
 
         const suggestChannel = client.channels.cache.get(
-            client.config.suggestChannel
+            client.config.logs.suggestChannel
         )
         const suggestEmbed = new MessageEmbed()
             .setDescription(data.suggestion)
