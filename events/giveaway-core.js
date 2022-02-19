@@ -116,7 +116,7 @@ module.exports = {
             const winner = `<@${
                 gaww.entries[Math.floor(Math.random() * gaww.entries.length)]
             }>`
-
+            button.deferUpdate()
             await button.channel.send({
                 content: `${winner}\nYou have won the reroll for **${
                     gaww.prize

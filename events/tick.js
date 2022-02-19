@@ -199,6 +199,33 @@ module.exports = {
                                 ]),
                             ],
                         })
+                        try {
+                            ;(await client.users.fetch(giveaway.hosterId)).send(
+                                {
+                                    embeds: [
+                                        new MessageEmbed()
+                                            .setTitle(
+                                                'Your giveaway has ended!'
+                                            )
+                                            .setDescription(
+                                                `Your giveaway for \`${giveaway.prize}\` has ended!`
+                                            )
+                                            .addField(
+                                                'Message Link',
+                                                `[Jump](https://discord.com/channels/${giveaway.guildId}/${giveaway.channelId}/${giveaway.messageId})`,
+                                                true
+                                            )
+                                            .addField(
+                                                'Winners',
+                                                `${winners}`,
+                                                true
+                                            )
+                                            .setTimestamp()
+                                            .setColor('GREEN'),
+                                    ],
+                                }
+                            )
+                        } catch (e) {}
                     }
                 }
             }
