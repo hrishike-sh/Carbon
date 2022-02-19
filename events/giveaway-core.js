@@ -129,7 +129,7 @@ module.exports = {
                             .setLabel('Jump')
                             .setStyle('LINK')
                             .setURL(
-                                `https://discord.com/channels/${giveaway.guildId}/${giveaway.channelId}/${giveaway.messageId}`
+                                `https://discord.com/channels/${gaww.guildId}/${gaww.channelId}/${gaww.messageId}`
                             ),
                         new MessageButton()
                             .setLabel('Reroll')
