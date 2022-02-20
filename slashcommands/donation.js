@@ -1,6 +1,6 @@
 const { SlashCommandBuilder } = require('@discordjs/builders')
-const { CommandInteraction, Client } = require('discord.js')
-
+const { CommandInteraction, Client, MessageEmbed } = require('discord.js')
+const MainDonoModel = require('../database/models/messages')
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('donation')
@@ -41,9 +41,89 @@ module.exports = {
      */
     async execute(interaction, client) {
         const data = {
-            wanted: interaction.options.getString('action'),
+            user: interaction.options.getUser('user'),
+            type: interaction.options.getString('type'),
+            action: interaction.options.getString('action'),
+            amount: client.functions.parseAmount(
+                interaction.options.getString('amount')
+            ),
         }
 
-        return interaction.reply(data.wanted.toString())
+        if (!data.amount)
+            return interaction.reply(`Please provide valid amount.`)
+
+        const embed = new MessageEmbed()
+        switch (data.type) {
+            case 'main_dono':
+                let dbUser = await MainDonoModel.findOne({
+                    userID: data.user.id,
+                })
+                if (!dbUser) {
+                    dbUser = new MainDonoModel({
+                        userID: data.user.id,
+                        guildID: interaction.guildId.at,
+                        messages: 0,
+                    })
+                }
+
+                if (data.action === 'dono_add') {
+                    dbUser.messages += data.amount
+                    interaction.reply({
+                        embeds: [
+                            embed
+                                .setTitle('Donation added.')
+                                .setDescription(
+                                    `The donation was successfully added to ${data.user.toString()}'s profile!`
+                                )
+                                .addField(
+                                    'Amount added',
+                                    data.amount.toString(),
+                                    true
+                                )
+                                .addField(
+                                    'Responsible moderator',
+                                    interaction.user.toString(),
+                                    true
+                                )
+                                .setTimestamp()
+                                .addField(
+                                    "Added to user's Main Donation!",
+                                    `**Total amount donated by this user:** ${dbUser.messages.toLocaleString()}`
+                                )
+                                .setColor('GREEN'),
+                        ],
+                    })
+                } else if (data.action === 'dono_remove') {
+                    dbUser.messages -= data.amount
+                    interaction.reply({
+                        embeds: [
+                            embed
+                                .setTitle('Donation removed.')
+                                .setDescription(
+                                    `The donation was successfully removed from ${data.user.toString()}'s profile!`
+                                )
+                                .addField(
+                                    'Amount removed',
+                                    data.amount.toString(),
+                                    true
+                                )
+                                .addField(
+                                    'Responsible moderator',
+                                    interaction.user.toString(),
+                                    true
+                                )
+                                .setTimestamp()
+                                .addField(
+                                    "Removed from user's Main Donation!",
+                                    `**Total amount donated by this user:** ${dbUser.messages.toLocaleString()}`
+                                )
+                                .setColor('RED'),
+                        ],
+                    })
+                } else return
+
+                dbUser.save()
+                return
+        }
     },
 }
