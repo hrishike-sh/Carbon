@@ -36,14 +36,14 @@ module.exports = {
                 .setRequired(true)
         }),
     /**
-     * @param {CommandInteraction} interaction 
-     * @param {Client} client 
+     * @param {CommandInteraction} interaction
+     * @param {Client} client
      */
-    async execute(interaction, client){
-       const data = {
-           wanted = interaction.options.getString('action')
-       }
+    async execute(interaction, client) {
+        const data = {
+            wanted: interaction.options.getString('action'),
+        }
 
-       return interaction.reply(data.wanted.toString())
-    }
+        return interaction.reply(data.wanted.toString())
+    },
 }
