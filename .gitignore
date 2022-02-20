@@ -1,3 +1,5 @@
 .env
 *.sqlite
 node_modules
+settings.json
+.vscode

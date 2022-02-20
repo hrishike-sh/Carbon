@@ -39,6 +39,10 @@ client.db = {
     ars: [],
     messages: new Collection(),
 }
+const skripts = require('./scripts')
+client.functions = {
+    parseAmount: skripts.parseAmount,
+}
 client.config = config
 
 client.options.allowedMentions = {
