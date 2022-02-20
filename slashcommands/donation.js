@@ -1,6 +1,6 @@
 const { SlashCommandBuilder } = require('@discordjs/builders')
 const { CommandInteraction, Client, MessageEmbed } = require('discord.js')
-const MainDonoModel = require('../database/models/messages')
+const MainDonoModel = require('../node_modules/discord-messages/models/messages')
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('donation')
