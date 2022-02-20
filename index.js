@@ -91,7 +91,7 @@ client.on('ready', async () => {
     client.emit('tick')
     client.user.setActivity({
         name: 'https://imgur.com/wYkzufz',
-        type: ' LISTENING',
+        type: 'LISTENING',
     })
     client.db.fighthub = client.guilds.cache.get(config.guildId)
     // LOGS
