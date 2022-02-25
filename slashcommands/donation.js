@@ -181,8 +181,9 @@ module.exports = {
                                 .addField(
                                     "Added to user's Main Donation!",
                                     `**Total amount donated by this user:** ${
-                                        DBUser.messages.toLocaleString() ||
-                                        'Error'
+                                        DBUser.messages
+                                            ? DBUser.messages.toLocaleString()
+                                            : 'The amount was added, but had an error fetching it.'
                                     }`
                                 )
                                 .setColor('GREEN'),
@@ -211,7 +212,11 @@ module.exports = {
                                 .setTimestamp()
                                 .addField(
                                     "Removed from user's Main Donation!",
-                                    `**Total amount donated by this user:** ${DBUser.messages.toLocaleString()}`
+                                    `**Total amount donated by this user:** ${
+                                        DBUser.messages
+                                            ? DBUser.messages.toLocaleString()
+                                            : 'The amount was added, but had an error fetching it.'
+                                    }`
                                 )
                                 .setColor('RED'),
                         ],
