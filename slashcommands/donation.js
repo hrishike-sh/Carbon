@@ -180,7 +180,10 @@ module.exports = {
                                 .setTimestamp()
                                 .addField(
                                     "Added to user's Main Donation!",
-                                    `**Total amount donated by this user:** ${DBUser.messages.toLocaleString()}`
+                                    `**Total amount donated by this user:** ${
+                                        DBUser.messages.toLocaleString() ||
+                                        'Error'
+                                    }`
                                 )
                                 .setColor('GREEN'),
                         ],
@@ -197,7 +200,7 @@ module.exports = {
                                 )
                                 .addField(
                                     'Amount removed',
-                                    data.amount.toLocaleString(),
+                                    data.amount.toLocaleString() || 'Error',
                                     true
                                 )
                                 .addField(
