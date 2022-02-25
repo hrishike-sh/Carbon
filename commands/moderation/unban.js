@@ -3,6 +3,7 @@ const { Client, Message, MessageEmbed } = require('discord.js')
 module.exports = {
     name: 'unban',
     aliases: ['ub'],
+    category: 'Moderation',
     fhOnly: false,
     usage: '<USER_ID> <REASON>',
     /**

@@ -25,6 +25,7 @@ async function uploadResult(content) {
 module.exports = {
     name: 'eval',
     aliases: ['e'],
+    category: 'Developer',
     descriprtion: 'Not for you to see.',
     async execute(message, args, client) {
         if (!client.config.trustedAccess.includes(message.author.id)) return

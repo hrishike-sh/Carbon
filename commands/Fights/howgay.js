@@ -7,6 +7,7 @@ const {
 
 module.exports = {
     name: 'howgay',
+    category: 'Fights',
     args: true,
     usage: '<user> <high / low>',
     description: "Dank Memer's howgay fighthub method, but its automatic!",

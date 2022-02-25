@@ -6,6 +6,7 @@ module.exports = {
     name: 'remindme',
     aliases: ['rm', 'remind'],
     fhOnly: true,
+    category: 'Utility',
     usage: '<time>',
     /**
      * @param {Client} client

@@ -9,6 +9,7 @@ module.exports = {
     usage: '<user>',
     description: 'Give dono roles to users automatically',
     fhOnly: true,
+    category: 'Donation',
     async execute(message, args) {
         if (
             !message.member.roles.cache.some(

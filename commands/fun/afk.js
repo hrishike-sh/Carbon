@@ -5,6 +5,7 @@ module.exports = {
     name: 'afk',
     cooldown: 10,
     fhOnly: true,
+    category: 'Utility',
     usage: '[reason]',
     description: 'Displays an AFK message when someone pings you.',
     /**

@@ -2,6 +2,7 @@ module.exports = {
     name: 'fight',
     args: true,
     usage: '<user>',
+    category: 'Fights',
     aliases: ['ffight'],
     description: 'Fight someone in the old dank memer style!',
     disabledChannels: ['870240187198885888', '796729013456470036'],

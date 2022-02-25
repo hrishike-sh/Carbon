@@ -9,6 +9,7 @@ module.exports = {
     name: 'lastping',
     aliases: ['lp'],
     usage: '',
+    category: 'Utility',
     description: 'Check your previous 10 pings in the server!',
     /**
      *

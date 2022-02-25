@@ -3,6 +3,7 @@ const ms = require('ms')
 module.exports = {
     name: 'removeraiders',
     aliases: ['deleteraiders', 'fuckraid', 'HELPIMGETTINGRAIDEDAA'],
+    category: 'Moderation',
     description:
         'Kicks all the new members who have joined in the last __x__ minutes/hours.',
     usage: '<time (1d, 5m, 3s, 1y)>',

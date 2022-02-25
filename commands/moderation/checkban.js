@@ -2,6 +2,7 @@ const { Message, Client } = require('discord.js')
 module.exports = {
     name: 'checkban',
     aliases: ['cb', 'fhml'],
+    category: 'Moderation',
     /**
      *
      * @param {Message} message

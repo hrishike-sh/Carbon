@@ -4,6 +4,7 @@ module.exports = {
     name: 'invite',
     aliases: ['inv'],
     description: 'Invite the bot.',
+    category: 'Other',
     /**
      *
      * @param {Message} message

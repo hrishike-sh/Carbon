@@ -1,6 +1,7 @@
 const { MessageEmbed, MessageButton, MessageActionRow } = require('discord.js')
 module.exports = {
     name: 'syncban',
+    category: 'Developer',
     description: 'you dont need to know',
     async execute(message, args, client) {
         const allowedUsers = ['598918643727990784', '266432078222983169']

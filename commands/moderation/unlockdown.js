@@ -3,6 +3,7 @@ const { MessageButton, MessageActionRow } = require('discord.js')
 
 module.exports = {
     name: 'unlockdown',
+    category: 'Moderation',
     async execute(message, args) {
         if (!message.member.permissions.has('ADMINISTRATOR'))
             return message.channel.send(

@@ -3,6 +3,7 @@ const { Client, Message, MessageEmbed, DiscordAPIError } = require('discord.js')
 module.exports = {
     name: 'dm',
     fhOnly: false,
+    category: 'Developer',
     disabledChannels: [],
     usage: '',
     /**
