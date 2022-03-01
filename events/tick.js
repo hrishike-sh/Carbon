@@ -105,16 +105,42 @@ module.exports = {
                 }
             }
         }
-
+        const entries = new Collection()
         // GIVEAWAYS
         if (gawCounter1 > 5) {
             gawCounter1 = 0
-            const gaws = await giveawayModel.find({
-                endsAt: {
-                    $lte: new Date().getTime(),
-                },
-                hasEnded: false,
-            })
+            const MainQuery = await giveawayModel.find({ hasEnded: false })
+            const gaws = MainQuery.filter(
+                (val) => val.endsAt < new Date().getTime()
+            )
+
+            for (const a of MainQuery) {
+                entries.set(a.messageId, a.entries.length)
+            }
+
+            const toEdit = MainQuery.filter(
+                (gaw) => gaw.entries.length !== entries.get(gaw.messageId)
+            )
+
+            for (const edit of toEdit) {
+                const channel = client.channels.cache.get(giveaway.channelId)
+                if (channel) {
+                    const message = await channel.messages.fetch(edit.messageId)
+                    if (message) {
+                        message.edit({
+                            components: [
+                                new MessageActionRow().addComponents([
+                                    new MessageButton()
+                                        .setEmoji('🎉')
+                                        .setLabel(edit.entries.length)
+                                        .setCustomId('giveaway-join')
+                                        .setStyle('SUCCESS'),
+                                ]),
+                            ],
+                        })
+                    }
+                }
+            }
 
             for (const giveaway of gaws) {
                 giveaway.hasEnded = true

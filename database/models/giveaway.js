@@ -14,6 +14,7 @@ const GiveawaySchema = new mongoose.Schema({
     hasEnded: Boolean,
     requirements: [String],
     entries: [],
+    lastEntryCount: Number,
 })
 
 module.exports = mongoose.model('giveaway', GiveawaySchema, 'giveaway')
