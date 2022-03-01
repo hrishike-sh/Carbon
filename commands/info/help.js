@@ -108,7 +108,8 @@ module.exports = {
             )
             embed.addField(
                 'Slash Commands',
-                commands.slash.map((c) => `\`${c.name}\` `).join(', ')
+                commands.slash.map((c) => `\`${c.data.name}\` `).join(', ') ||
+                    'No commands here!'
             )
             select.message.edit({
                 embeds: [embed],
