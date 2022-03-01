@@ -150,12 +150,14 @@ module.exports = {
                     })
                 }
 
-                const DBUser = await GrindDonoModel.findOne({
+                let DBUser = await GrindDonoModel.findOne({
                     userID: data.user.id,
                 })
                 if (!DBUser)
-                    return interaction.reply({
-                        content: 'The user is not a grinder!',
+                    DBUser = new GrindDonoModel({
+                        userID: data.user.id,
+                        guildID: interaction.guild.id,
+                        amount: 0,
                     })
 
                 if (data.action === 'dono_add') {
