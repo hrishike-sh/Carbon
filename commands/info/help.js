@@ -1,82 +1,90 @@
 const prefix = 'fh '
-const { Message, Client, MessageEmbed } = require('discord.js')
+const {
+    Message,
+    Client,
+    MessageEmbed,
+    MessageSelectMenu,
+    MessageActionRow,
+    SelectMenuInteraction,
+} = require('discord.js')
 module.exports = {
     name: 'help',
     description: 'Help command',
+    category: 'Other',
     /**
      * @param {Message} message
      * @param {Client} client
      * @param {String[]} args
      */
     async execute(message, args, client) {
-        /**commands.map(command => command.name).join(', ') */
-        const { commands } = client.c
+        const embed = new MessageEmbed()
+            .setTitle('❓ Help Command')
+            .setColor('GREEN')
+            .setDescription(`Select a Category to see the commands!`)
+            .setThumbnail(client.user.displayAvatarURL())
 
-        if (!args.length) {
-            const commandsMap = commands
-                .map((command) => `\`${command.name}\``)
-                .join(', ')
+        const selection = new MessageSelectMenu()
+            .setPlaceholder('Choose a Category...')
+            .setCustomId('help-menu')
+            .setOptions([
+                {
+                    label: 'Fights',
+                    value: 'select-Fights',
+                    description: 'All commands related to Fighting!',
+                    emoji: '👊',
+                },
+                {
+                    label: 'Donations',
+                    value: 'select-Donation',
+                    description: 'Donation commands that help your server!',
+                    emoji: '💵',
+                },
+                {
+                    label: 'Fun',
+                    value: 'select-Fun',
+                    description: 'Fun commands to try out!',
+                    emoji: '🎈',
+                },
+                {
+                    label: 'Developer',
+                    value: 'select-Developer',
+                    description:
+                        "Chances are, you can't use any of these commands.",
+                    emoji: '👩‍💻',
+                },
+                {
+                    label: 'Giveaways',
+                    value: 'select-Giveaways',
+                    description:
+                        'Commands that handle giveaways in your server.',
+                    emoji: '🎉',
+                },
+                {
+                    label: 'Utility',
+                    value: 'select-Utility',
+                    description: 'Commands that might help you.',
+                    emoji: '⚙',
+                },
+                {
+                    label: 'Other',
+                    value: 'select-Other',
+                    description: "Hrish didn't know where these commands go",
+                    emoji: '📚',
+                },
+            ])
 
-            try {
-                message.author.send({
-                    embeds: [
-                        new MessageEmbed()
-                            .setTitle('Help Command')
-                            .setDescription(commandsMap)
-                            .setThumbnail(client.user.displayAvatarURL())
-                            .setColor('GREEN')
-                            .setFooter(
-                                'Type fh help [command name] for further info about the command.'
-                            ),
-                    ],
-                })
-                message.react('📨')
-            } catch (e) {
-                console.error(e.stack)
-                message.channel.send(
-                    'I was unable to DM you, check your privacy settings for this server or something.'
-                )
-            }
-        }
-
-        const name = args[0].toLowerCase()
-        const command =
-            commands.get(name) ||
-            commands.find((c) => c.aliases && c.aliases.includes(name))
-
-        if (!command) {
-            return message.reply("that's not a valid command!")
-        }
-
-        const extendedCommandEmbed = new MessageEmbed()
-            .setTitle(command.name)
-            .setDescription('')
-            .setFooter('Syntax: <required> [optional]')
-
-        if (command.aliases)
-            extendedCommandEmbed.addField(
-                'Aliases',
-                command.aliases.join(', '),
-                false
-            )
-        if (command.description)
-            extendedCommandEmbed.setDescription(command.description)
-        if (command.usage)
-            extendedCommandEmbed.addField(
-                'Usage',
-                `\`\`\`xml\n<Usage : ${prefix}${command.name} ${command.usage}>\n\`\`\``,
-                false
-            )
-
-        extendedCommandEmbed.addField(
-            'Cooldown',
-            `${command.cooldown || 2} seconds.`,
-            false
-        )
-
-        message.channel.send({
-            split: true,
-            embeds: [extendedCommandEmbed],
+        const mainMessage = await message.channel.send({
+            embeds: [embed],
+            components: [new MessageActionRow().addComponents([selection])],
         })
+
+        const mainCollector = mainMessage.createMessageComponentCollector({
+            time: 60 * 1000 * 2,
+            filter: (u) => u.user.id === message.author.id,
+        })
+
+        // mainCollector.on("collect", async select => {
+        //     const value = select.
+        // })
     },
 }
