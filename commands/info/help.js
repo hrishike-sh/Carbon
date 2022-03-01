@@ -17,6 +17,8 @@ module.exports = {
      * @param {String[]} args
      */
     async execute(message, args, client) {
+        if (args) {
+        }
         const embed = new MessageEmbed()
             .setTitle('❓ Help Command')
             .setColor('GREEN')
@@ -72,6 +74,8 @@ module.exports = {
                     emoji: '📚',
                 },
             ])
+            .setMaxValues(1)
+            .setMinValues(1)
 
         const mainMessage = await message.channel.send({
             embeds: [embed],
@@ -83,8 +87,33 @@ module.exports = {
             filter: (u) => u.user.id === message.author.id,
         })
 
-        // mainCollector.on("collect", async select => {
-        //     const value = select.
-        // })
+        mainCollector.on('collect', async (select) => {
+            const value = select.values[0]
+            const category = value.replace('select-', '')
+            const commands = {
+                legacy: client.c.commands.filter(
+                    (c) => c.category && c.category === category
+                ),
+                slash: client.c.slashCommands.filter(
+                    (c) => c.category && c.category === category
+                ),
+            }
+
+            select.deferUpdate()
+            embed.addField(
+                'Legacy',
+                commands.legacy.map((c) => `\`${c.name}\` `).join(', ') ||
+                    'No commands here!',
+                false
+            )
+            embed.addField(
+                'Slash Commands',
+                commands.slash.map((c) => `\`${c.name}\` `).join(', ')
+            )
+            select.message.edit({
+                embeds: [embed],
+                components: [new MessageActionRow().addComponents([selection])],
+            })
+        })
     },
 }
