@@ -123,7 +123,7 @@ module.exports = {
                 {
                     name: 'Slash Commands',
                     value:
-                        commands.legacy
+                        commands.slash
                             .map((c) => `\`${c.name}\` `)
                             .join(', ') || 'No commands here!',
                     inline: false,
