@@ -111,9 +111,7 @@ module.exports = {
                 })} (<t:${(
                     (new Date().getTime() + parseInt(time)) /
                     1000
-                ).toFixed(
-                    0
-                )}:R>)\n**Host**: ${interaction.user.toString()}\n**Entries:** 0`
+                ).toFixed(0)}:R>)\n**Host**: ${interaction.user.toString()}`
             )
             .setFooter({
                 text: `Winners: ${winners} | Ends at `,

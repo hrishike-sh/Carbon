@@ -114,13 +114,13 @@ module.exports = {
                 (val) => val.endsAt < new Date().getTime()
             )
 
-            for (const a of MainQuery) {
-                entries.set(a.messageId, a.entries.length)
-            }
-
             const toEdit = MainQuery.filter(
                 (gaw) => gaw.entries.length !== entries.get(gaw.messageId)
             )
+
+            for (const a of MainQuery) {
+                entries.set(a.messageId, a.entries.length)
+            }
 
             for (const edit of toEdit) {
                 const channel = client.channels.cache.get(giveaway.channelId)
