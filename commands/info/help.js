@@ -111,6 +111,24 @@ module.exports = {
                 commands.slash.map((c) => `\`${c.data.name}\` `).join(', ') ||
                     'No commands here!'
             )
+            embed.setFields([
+                {
+                    name: 'Legacy Commands',
+                    value:
+                        commands.legacy
+                            .map((c) => `\`${c.name}\` `)
+                            .join(', ') || 'No commands here!',
+                    inline: false,
+                },
+                {
+                    name: 'Slash Commands',
+                    value:
+                        commands.legacy
+                            .map((c) => `\`${c.name}\` `)
+                            .join(', ') || 'No commands here!',
+                    inline: false,
+                },
+            ])
             select.message.edit({
                 embeds: [embed],
                 components: [new MessageActionRow().addComponents([selection])],
