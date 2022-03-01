@@ -1,9 +1,16 @@
+const { Message } = require('discord.js')
 module.exports = {
     name: 'gtn',
     usage: '<Max Number>',
     description: 'Guess the number (FH Only)',
     fhOnly: true,
     category: 'Utility',
+    /**
+     *
+     * @param {Message} message
+     * @param {*} args
+     * @returns
+     */
     execute(message, args) {
         if (
             message.author.id !== '450864876416401419' &&
@@ -34,17 +41,19 @@ module.exports = {
             })
             .then((collected) => {
                 try {
-                    message.reply(`${collected.first().author} guessed it!`, {
-                        embeds: [
-                            {
-                                title: 'SOMEONE GUESSED IT!',
-                                description: `The correct number was **${finalGuess}**!`,
-                                timestamp: new Date(),
-                            },
-                        ],
-                    })
-                    message.channel.updateOverwrite(
-                        message.channel.guild.roles.everyone,
+                    collected
+                        .first()
+                        .reply(`${collected.first().author} guessed it!`, {
+                            embeds: [
+                                {
+                                    title: 'SOMEONE GUESSED IT!',
+                                    description: `The correct number was **${finalGuess}**!`,
+                                    timestamp: new Date(),
+                                },
+                            ],
+                        })
+                    message.channel.permissionOverwrites.edit(
+                        message.guild.roles.everyone,
                         {
                             SEND_MESSAGES: false,
                         }
