@@ -100,17 +100,7 @@ module.exports = {
             }
 
             select.deferUpdate()
-            embed.addField(
-                'Legacy',
-                commands.legacy.map((c) => `\`${c.name}\` `).join(', ') ||
-                    'No commands here!',
-                false
-            )
-            embed.addField(
-                'Slash Commands',
-                commands.slash.map((c) => `\`${c.data.name}\` `).join(', ') ||
-                    'No commands here!'
-            )
+
             embed.setFields([
                 {
                     name: 'Legacy Commands',
@@ -124,7 +114,7 @@ module.exports = {
                     name: 'Slash Commands',
                     value:
                         commands.slash
-                            .map((c) => `\`${c.name}\` `)
+                            .map((c) => `\`${c.data.name}\` `)
                             .join(', ') || 'No commands here!',
                     inline: false,
                 },
