@@ -132,7 +132,9 @@ module.exports = {
                                 new MessageActionRow().addComponents([
                                     new MessageButton()
                                         .setEmoji('🎉')
-                                        .setLabel(edit.entries.length)
+                                        .setLabel(
+                                            edit.entries.length.toLocaleString()
+                                        )
                                         .setCustomId('giveaway-join')
                                         .setStyle('SUCCESS'),
                                 ]),
