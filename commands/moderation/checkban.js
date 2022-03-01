@@ -47,12 +47,10 @@ module.exports = {
                         {
                             name: 'Reason',
                             value: ban.reason,
-                            name: 'Responsible Moderator',
-                            value: `${interaction.user.tag}`,
                         },
                     ],
                 },
             ],
         })
-    },
+    }
 }
