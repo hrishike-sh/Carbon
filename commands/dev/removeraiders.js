@@ -21,15 +21,21 @@ module.exports = {
             return message.channel.send('You have to provide valid time.')
         const time = ms(args[0])
 
-        const msg = await message.channel.send('Fetching members...')
-        try {
-            await message.guild.members.fetch()
-            await msg.delete()
-        } catch (err) {
-            await msg.edit(
-                `There was an error while fetching members:\n${err.message}`
+        if (message.guild.members.cache.size < message.guild.memberCount) {
+            const msg = await message.channel.send(
+                `Fetching **${(
+                    message.guild.memberCount - message.guild.members.size
+                ).toLocaleString()}** members first...`
             )
-            return
+            try {
+                await message.guild.members.fetch()
+                await msg.delete()
+            } catch (err) {
+                await msg.edit(
+                    `There was an error while fetching members:\n${err.message}`
+                )
+                return
+            }
         }
         const toKick = message.guild.members.cache.filter(
             (mem) => message.createdTimestamp - mem.joinedTimestamp < time
@@ -50,7 +56,7 @@ module.exports = {
                 toKick.forEach((mem) => {
                     try {
                         mem.kick(
-                            `Raider. Requested by ${message.author.tag}(${message.author.id})`
+                            `Raider. Requested by ${message.author.tag} (${message.author.id})`
                         )
                         kicked++
                     } catch (e) {

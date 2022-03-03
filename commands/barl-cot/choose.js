@@ -1,4 +1,4 @@
-const { Client, Message, MessageEmbed } = require('discord.js')
+const { Message } = require('discord.js')
 
 module.exports = {
     name: 'choose',
@@ -25,5 +25,3 @@ module.exports = {
             })
     },
 }
-// empty commit cuz bot crashed + hrish is dumb
-// yes once again empty commit

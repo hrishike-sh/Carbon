@@ -40,7 +40,7 @@ module.exports = {
             components: [row],
         })
         const confirmationCollector =
-            confirmation.createMessageComponentCollector((b) => b, {
+            confirmation.createMessageComponentCollector({
                 time: 30000,
             })
 

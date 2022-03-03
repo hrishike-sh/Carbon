@@ -1,4 +1,4 @@
-const { Client, Message, MessageEmbed, DiscordAPIError } = require('discord.js')
+const { Client, Message, MessageEmbed } = require('discord.js')
 
 module.exports = {
     name: 'dm',
@@ -21,7 +21,7 @@ module.exports = {
 
         if (!user) {
             return message.reply(
-                `No user found with the ID ${args[0]}.\n\nMake sure you provide a valid ID and __do not__ mention the user.`
+                `No user found with the ID \`${args[0]}\`.\n\nMake sure you provide a valid ID and __do not__ mention the user.`
             )
         }
         args.shift()

@@ -12,11 +12,14 @@ module.exports = {
      * @returns
      */
     execute(message, args) {
+        const users = [
+            '450864876416401419',
+            '266432078222983169',
+            '598918643727990784',
+            '712316272213491824',
+        ]
         if (
-            message.author.id !== '450864876416401419' &&
-            message.author.id !== '772524332382945292' &&
-            message.author.id !== '598918643727990784' &&
-            message.author.id !== '712316272213491824' &&
+            !users.includes(msg.author.id) &&
             message.member.roles.cache.some(
                 (role) => role.id === '824348974449819658'
             )
@@ -38,7 +41,7 @@ module.exports = {
         message.channel.send(
             'Now listening to messages, when someone guesses the right number, the channel will be locked!\n\nGood Luck!'
         )
-        message.channel
+        await message.channel
             .awaitMessages({
                 filter,
                 max: 1,
