@@ -5,7 +5,6 @@ module.exports = {
     name: 'lockdown',
     category: 'Moderation',
     /**
-     *
      * @param {Message} message
      * @returns
      */
