@@ -24,7 +24,7 @@ module.exports = {
         if (message.guild.members.cache.size < message.guild.memberCount) {
             const msg = await message.channel.send(
                 `Fetching **${(
-                    message.guild.memberCount - message.guild.members.size
+                    message.guild.memberCount - message.guild.members.cache.size
                 ).toLocaleString()}** members first...`
             )
             try {
