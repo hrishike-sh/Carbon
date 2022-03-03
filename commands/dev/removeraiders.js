@@ -1,4 +1,4 @@
-const { Client, Message } = require('discord.js');
+const { Client, Message } = require('discord.js')
 const ms = require('ms')
 
 module.exports = {
@@ -8,7 +8,7 @@ module.exports = {
     description:
         'Kicks all the new members who have joined in the last __x__ minutes/hours.',
     usage: '<time (1d, 5m, 3s, 1y)>',
-        /**
+    /**
      * @param {Message} message
      * @param {String[]} args
      * @param {Client} client
@@ -23,11 +23,13 @@ module.exports = {
 
         const msg = await message.channel.send('Fetching members...')
         try {
-            await message.guild.members.fetch();
-            await msg.delete();
+            await message.guild.members.fetch()
+            await msg.delete()
         } catch (err) {
-            await msg.edit(`There was an error while fetching members:\n${err.message}`)
-            return;
+            await msg.edit(
+                `There was an error while fetching members:\n${err.message}`
+            )
+            return
         }
         const toKick = message.guild.members.cache.filter(
             (mem) => message.createdTimestamp - mem.joinedTimestamp < time
@@ -46,15 +48,15 @@ module.exports = {
                 let kicked = 0
                 let failed = 0
                 toKick.forEach((mem) => {
-                        try {
-                            mem.kick(
-                                `Raider. Requested by ${message.author.tag}(${message.author.id})`
-                            )
-                            kicked++
-                        } catch (e) {
-                            failed++
-                        }
-                    })
+                    try {
+                        mem.kick(
+                            `Raider. Requested by ${message.author.tag}(${message.author.id})`
+                        )
+                        kicked++
+                    } catch (e) {
+                        failed++
+                    }
+                })
 
                 return message.channel.send(
                     `Done! Kicked a total of **${kicked.toLocaleString()}** members.\nFailed to kick **${failed.toLocaleString()}** members.`

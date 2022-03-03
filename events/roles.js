@@ -1,12 +1,12 @@
 const reminder = require('../database/models/timer')
-const { Interaction } = require("discord.js")
+const { Interaction } = require('discord.js')
 module.exports = {
     name: 'interactionCreate',
     /**
      * @param {Interaction} button
      */
     async execute(button, client) {
-        if(!button.isButton()) return
+        if (!button.isButton()) return
         if (
             button.message.id === '883691336144941057' &&
             button.customId === 'ann_ping'

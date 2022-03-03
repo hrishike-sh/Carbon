@@ -1,4 +1,3 @@
-
 const mongoose = require('mongoose')
 
 const timerSchema = new mongoose.Schema({
@@ -9,6 +8,6 @@ const timerSchema = new mongoose.Schema({
     reminders: [String],
     reason: String,
     ended: Boolean,
-});
+})
 
-module.exports = mongoose.model('timer', timerSchema);
+module.exports = mongoose.model('timer', timerSchema)
