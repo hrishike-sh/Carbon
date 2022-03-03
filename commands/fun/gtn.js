@@ -11,7 +11,7 @@ module.exports = {
      * @param {*} args
      * @returns
      */
-    execute(message, args) {
+    async execute(message, args) {
         const users = [
             '450864876416401419',
             '266432078222983169',
