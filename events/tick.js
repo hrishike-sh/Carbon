@@ -122,35 +122,6 @@ module.exports = {
                 entries.set(a.messageId, a.entries.length)
             }
 
-            for (const edit of toEdit) {
-                const channel = client.channels.cache.get(edit.channelId)
-                if (channel) {
-                    let error = false
-                    let message = channel.messages
-                        .fetch(edit.messageId)
-                        .catch((e) => {
-                            edit.hasEnded = true
-                            edit.save()
-                            error = true
-                        })
-                    if (message && !error) {
-                        message.edit({
-                            components: [
-                                new MessageActionRow().addComponents([
-                                    new MessageButton()
-                                        .setEmoji('🎉')
-                                        .setLabel(
-                                            edit.entries.length.toLocaleString()
-                                        )
-                                        .setCustomId('giveaway-join')
-                                        .setStyle('SUCCESS'),
-                                ]),
-                            ],
-                        })
-                    }
-                }
-            }
-
             for (const giveaway of gaws) {
                 giveaway.hasEnded = true
                 giveaway.save()
@@ -261,6 +232,29 @@ module.exports = {
                                 }
                             )
                         } catch (e) {}
+                    }
+                }
+            }
+
+            for (const edit of toEdit) {
+                const channel = client.channels.cache.get(edit.channelId)
+                if (channel) {
+                    let message = channel.messages.fetch(edit.messageId)
+
+                    if (message) {
+                        message.edit({
+                            components: [
+                                new MessageActionRow().addComponents([
+                                    new MessageButton()
+                                        .setEmoji('🎉')
+                                        .setLabel(
+                                            edit.entries.length.toLocaleString()
+                                        )
+                                        .setCustomId('giveaway-join')
+                                        .setStyle('SUCCESS'),
+                                ]),
+                            ],
+                        })
                     }
                 }
             }
