@@ -122,6 +122,36 @@ module.exports = {
                 entries.set(a.messageId, a.entries.length)
             }
 
+            for (const edit of toEdit) {
+                const channel = client.channels.cache.get(edit.channelId)
+                if (channel) {
+                    try {
+                        const message = await channel.messages.fetch(
+                            edit.messageId
+                        )
+                        if (message) {
+                            message.edit({
+                                components: [
+                                    new MessageActionRow().addComponents([
+                                        new MessageButton()
+                                            .setEmoji('🎉')
+                                            .setLabel(
+                                                edit.entries.length.toLocaleString()
+                                            )
+                                            .setCustomId('giveaway-join')
+                                            .setStyle('SUCCESS'),
+                                    ]),
+                                ],
+                            })
+                        }
+                    } catch (e) {
+                        edit.hasEnded = true
+                        edit.save()
+                        continue
+                    }
+                }
+            }
+
             for (const giveaway of gaws) {
                 giveaway.hasEnded = true
                 giveaway.save()
@@ -233,34 +263,6 @@ module.exports = {
                                     ],
                                 })
                             } catch (e) {}
-                        }
-                    } catch (e) {
-                        continue
-                    }
-                }
-            }
-
-            for (const edit of toEdit) {
-                const channel = client.channels.cache.get(edit.channelId)
-                if (channel) {
-                    try {
-                        const message = await channel.messages.fetch(
-                            edit.messageId
-                        )
-                        if (message) {
-                            message.edit({
-                                components: [
-                                    new MessageActionRow().addComponents([
-                                        new MessageButton()
-                                            .setEmoji('🎉')
-                                            .setLabel(
-                                                edit.entries.length.toLocaleString()
-                                            )
-                                            .setCustomId('giveaway-join')
-                                            .setStyle('SUCCESS'),
-                                    ]),
-                                ],
-                            })
                         }
                     } catch (e) {
                         continue
