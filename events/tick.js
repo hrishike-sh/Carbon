@@ -125,14 +125,15 @@ module.exports = {
             for (const edit of toEdit) {
                 const channel = client.channels.cache.get(edit.channelId)
                 if (channel) {
+                    let error = false
                     let message = channel.messages
                         .fetch(edit.messageId)
                         .catch((e) => {
                             edit.hasEnded = true
                             edit.save()
-                            message = null
+                            error = true
                         })
-                    if (message) {
+                    if (message && !error) {
                         message.edit({
                             components: [
                                 new MessageActionRow().addComponents([
