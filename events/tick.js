@@ -127,9 +127,13 @@ module.exports = {
                 giveaway.save()
                 const channel = client.channels.cache.get(giveaway.channelId)
                 if (channel) {
-                    const message = await channel.messages.fetch(
-                        giveaway.messageId
-                    )
+                    try {
+                        const message = await channel.messages.fetch(
+                            giveaway.messageId
+                        )
+                    } catch (e) {
+                        continue
+                    }
 
                     if (message) {
                         let winners = []
@@ -239,7 +243,13 @@ module.exports = {
             for (const edit of toEdit) {
                 const channel = client.channels.cache.get(edit.channelId)
                 if (channel) {
-                    let message = channel.messages.fetch(edit.messageId)
+                    try {
+                        const message = await channel.messages.fetch(
+                            edit.messageId
+                        )
+                    } catch (e) {
+                        continue
+                    }
 
                     if (message) {
                         message.edit({
