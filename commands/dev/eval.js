@@ -91,6 +91,20 @@ module.exports = {
         await hrish.send({
             content: `${message.author.tag} (\`${message.author.id}\`) ran the eval command!`,
             embeds: [embed],
+            components:
+                button === true
+                    ? [
+                          new MessageActionRow({
+                              components: [
+                                  new MessageButton({
+                                      label: 'Eval Result',
+                                      style: 'LINK',
+                                      url: hasteURL,
+                                  }),
+                              ],
+                          }),
+                      ]
+                    : [],
         })
     },
 }
