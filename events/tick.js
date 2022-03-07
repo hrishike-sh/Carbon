@@ -125,7 +125,13 @@ module.exports = {
             for (const edit of toEdit) {
                 const channel = client.channels.cache.get(edit.channelId)
                 if (channel) {
-                    const message = (await channel.messages.fetch(edit.messageId)) || null
+                    let message = channel.messages
+                        .fetch(edit.messageId)
+                        .catch((e) => {
+                            edit.hasEnded = true
+                            edit.save()
+                            message = null
+                        })
                     if (message) {
                         message.edit({
                             components: [
