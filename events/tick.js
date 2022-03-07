@@ -145,8 +145,6 @@ module.exports = {
                             })
                         }
                     } catch (e) {
-                        edit.hasEnded = true
-                        edit.save()
                         continue
                     }
                 }
