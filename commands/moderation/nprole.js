@@ -5,6 +5,7 @@ module.exports = {
     aliases: ['noping', 'nopings'],
     description: 'you dont need to know',
     fhOnly: true,
+    category: 'Other',
     async execute(message, args) {
         if (
             !message.member.roles.cache.some(

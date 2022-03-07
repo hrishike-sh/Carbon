@@ -3,7 +3,6 @@ const fs = require('fs')
 const shell = require('shelljs')
 const mongoose = require('mongoose')
 const config = require('./config.json')
-const { DiscordTogether } = require('discord-together')
 require('dotenv').config()
 
 const client = new Client({
@@ -14,8 +13,6 @@ const client = new Client({
         Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
     ],
 })
-
-client.discordTogether = new DiscordTogether(client)
 
 let dbURL = process.env.mongopath
 mongoose.connect(dbURL, {
@@ -40,6 +37,11 @@ client.db = {
     fighthub: null,
     reminders: [],
     ars: [],
+    messages: new Collection(),
+}
+const skripts = require('./scripts')
+client.functions = {
+    parseAmount: skripts.parseAmount,
 }
 client.config = config
 
@@ -91,7 +93,10 @@ process.on('unhandledRejection', (err) => {
 client.on('ready', async () => {
     console.log('Logged in.')
     client.emit('tick')
-
+    client.user.setActivity({
+        name: 'Ping Hrishikesh',
+        type: 'LISTENING',
+    })
     client.db.fighthub = client.guilds.cache.get(config.guildId)
     // LOGS
     const restartEmbed = new MessageEmbed({
@@ -155,6 +160,25 @@ client.on('interactionCreate', async (interaction) => {
 
     try {
         await command.execute(interaction, client)
+
+        const commandbed = new MessageEmbed()
+            .setAuthor({
+                name: interaction.user.tag,
+                iconURL: interaction.user.displayAvatarURL(),
+            })
+            .setTitle(command.data.name)
+            .setDescription(`**This was a slash command**`)
+            .addField('Total commands ran', commandsRan.toString(), true)
+            .addField(
+                'Server | Channel',
+                `${interaction.guild.name} | ${interaction.channel} (${interaction.channel.name})`
+            )
+            .setTimestamp()
+
+        await client.channels.cache.get(config.logs.cmdLogging)?.send({
+            embeds: [commandbed],
+        })
+        commandsRan++
     } catch (e) {
         console.error(e)
         await interaction.reply({

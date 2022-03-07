@@ -5,6 +5,7 @@ module.exports = {
     name: 'grinders',
     aliases: 'grinder',
     fhOnly: true,
+    category: 'Donation',
     disabledChannels: [],
     /**
      * @param {Client} client

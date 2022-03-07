@@ -3,6 +3,7 @@ const { MessageButton, MessageActionRow } = require('discord.js')
 
 module.exports = {
     name: 'unlockdown',
+    category: 'Moderation',
     async execute(message, args) {
         if (!message.member.permissions.has('ADMINISTRATOR'))
             return message.channel.send(
@@ -38,7 +39,10 @@ module.exports = {
 
         collectorC.on('collect', async (button) => {
             if (button.user.id !== message.author.id) {
-                button.reply(`This is not for you`, true)
+                button.reply({
+                    content: `This is not for you`,
+                    ephemeral: true,
+                })
                 return
             }
 

@@ -9,6 +9,7 @@ const { before } = require('lodash')
 module.exports = {
     name: 'battlegrounds',
     aliases: ['pubg', 'fortnite', 'bg', 'arena'],
+    category: 'Fun',
     fhOnly: false,
     disabledChannels: [],
     /**

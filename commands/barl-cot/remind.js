@@ -6,6 +6,7 @@ module.exports = {
     name: 'remindme',
     aliases: ['rm', 'remind'],
     fhOnly: true,
+    category: 'Utility',
     usage: '<time>',
     /**
      * @param {Client} client
@@ -17,7 +18,7 @@ module.exports = {
             return message.reply({
                 embeds: [
                     {
-                        description: `Please provide valid time!\nExample: "1d" "5m"`,
+                        description: `Please provide a valid time!\nExample: "1d" or "5m"`,
                     },
                 ],
             })

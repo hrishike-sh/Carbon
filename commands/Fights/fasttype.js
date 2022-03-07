@@ -12,6 +12,7 @@ module.exports = {
     fhOnly: false,
     disabledChannels: [],
     usage: '<user>',
+    category: 'Fights',
     /**
      * @param {Client} client
      * @param {Message} message

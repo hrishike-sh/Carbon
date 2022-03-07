@@ -11,8 +11,8 @@ const giveaway = require('../database/models/giveaway')
 //
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('nitro')
-        .setDescription('Start a nitro giveaway!')
+        .setName('giveaway')
+        .setDescription('Start a giveaway!')
         .addStringOption((option) => {
             return option
                 .setName('time')
@@ -45,7 +45,7 @@ module.exports = {
                 .setRequired(false)
                 .setName('role_requirement')
                 .setDescription(
-                    "Add role requirements to the giveaway, add multiple by seperating roles ids with ' '"
+                    "Add role requirements to the giveaway, add multiple by seperating roles ids with '.'"
                 )
         })
         .addUserOption((option) => {
@@ -55,6 +55,12 @@ module.exports = {
                 .setDescription(
                     'The person who is donating towards the giveaway'
                 )
+        })
+        .addStringOption((option) => {
+            return option
+                .setName('message')
+                .setDescription('The message from sponsor')
+                .setRequired(false)
         }),
 
     /**
@@ -69,6 +75,7 @@ module.exports = {
             channel: interaction.options.getChannel('channel'),
             req: interaction.options.getString('role_requirement') || null,
             donor: interaction.options.getUser('donator') || null,
+            message: interaction.options.getString('message') || null,
         }
 
         let time = data.time
@@ -83,17 +90,19 @@ module.exports = {
         const winners = data.winners
         let channel = data.channel
         const donor = data.donor
-        let rawQuirement = false
+        let rawQuirement = data.req
         let req = []
-        if (data.req) {
-            rawQuirement = data.req.split(' ')
-            if (rawQuirement.length) {
+        if (rawQuirement) {
+            console.log(`1. ${rawQuirement}`)
+            rawQuirement = rawQuirement.split('.')
+            console.log(`2. ${rawQuirement}`)
+            if (Array.isArray(rawQuirement) && rawQuirement.length) {
                 for (const r of rawQuirement) {
                     req.push(r)
                 }
             } else req = rawQuirement
         } else req = false
-        console.log(time)
+
         const embed = new MessageEmbed()
             .setTitle(data.prize)
             .setDescription(
@@ -102,12 +111,14 @@ module.exports = {
                 })} (<t:${(
                     (new Date().getTime() + parseInt(time)) /
                     1000
-                ).toFixed(
-                    0
-                )}:R>)\n**Winners**: ${winners}\n**Host**: ${interaction.user.toString()}`
+                ).toFixed(0)}:R>)\n**Host**: ${interaction.user.toString()}`
             )
+            .setFooter({
+                text: `Winners: ${winners} | Ends at `,
+            })
             .setColor('GREEN')
-        if (req)
+            .setTimestamp(new Date().getTime() + time)
+        if (req || req.length)
             embed.addField(
                 'Requirements:',
                 `Roles: ${req.map((val) => `<@&${val}>`).join(', ')}`,
@@ -119,15 +130,25 @@ module.exports = {
             content: `Giveaway started in ${channel}`,
             ephemeral: true,
         })
-
+        const bemBeds = []
+        bemBeds.push(embed)
+        if (data.message)
+            bemBeds.push(
+                new MessageEmbed()
+                    .setDescription(`**Sponsor's message:** ${data.message}`)
+                    .setColor('GREEN')
+            )
         channel = interaction.guild.channels.cache.get(channel.id)
         const row = new MessageActionRow().addComponents([
             new MessageButton()
-                .setLabel('Join')
+                .setEmoji('🎉')
                 .setCustomId('giveaway-join')
                 .setStyle('SUCCESS'),
         ])
-        const msg = await channel.send({ embeds: [embed], components: [row] })
+        const msg = await channel.send({
+            embeds: [...bemBeds],
+            components: [row],
+        })
 
         // database
         const dbDat = {

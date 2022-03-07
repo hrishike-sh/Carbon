@@ -4,6 +4,7 @@ module.exports = {
     name: 'autoresponse',
     aliases: ['ar'],
     subcommands: ['+', 'add', '-', 'remove', 'list'],
+    category: 'Moderation',
     fhOnly: true,
     /**
      * @param {Message} message

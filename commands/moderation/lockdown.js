@@ -3,8 +3,8 @@ const { MessageButton, MessageActionRow, Message } = require('discord.js')
 
 module.exports = {
     name: 'lockdown',
+    category: 'Moderation',
     /**
-     *
      * @param {Message} message
      * @returns
      */

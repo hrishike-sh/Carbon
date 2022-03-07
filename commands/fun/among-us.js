@@ -7,6 +7,7 @@ const {
 } = require('discord.js')
 module.exports = {
     name: 'amongus',
+    category: 'Fun',
     aliases: ['amogus'],
     fhOnly: false,
     disabledChannels: [],

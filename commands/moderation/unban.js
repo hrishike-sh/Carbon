@@ -3,6 +3,7 @@ const { Client, Message, MessageEmbed } = require('discord.js')
 module.exports = {
     name: 'unban',
     aliases: ['ub'],
+    category: 'Moderation',
     fhOnly: false,
     usage: '<USER_ID> <REASON>',
     /**
@@ -13,8 +14,10 @@ module.exports = {
     async execute(message, args, client) {
         if (message.guild.id !== '845215901657071647') return
         if (
-            !message.member.roles.cache.has('848576301182877727') &&
-            !message.member.roles.cache.has('848580138970251314')
+            !message.member.roles.cache.hasAny(
+                '848576301182877727',
+                '848580138970251314'
+            )
         )
             return
 

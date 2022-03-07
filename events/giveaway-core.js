@@ -1,6 +1,11 @@
-const { MessageButton, Client, Interaction } = require('discord.js')
+const {
+    MessageButton,
+    Client,
+    Interaction,
+    MessageActionRow,
+} = require('discord.js')
 const giveawayModel = require('../database/models/giveaway')
-
+const bypassIds = ['825965323500126208', '876460154705555487']
 module.exports = {
     name: 'interactionCreate',
     once: false,
@@ -14,15 +19,14 @@ module.exports = {
         if (!button.isButton()) return
         if (
             button.customId !== 'giveaway-join' &&
-            button.customId !== 'giveaway-info'
+            button.customId !== 'giveaway-info' &&
+            button.customId !== 'giveaway-reroll'
         )
             return
 
         const gaw = await giveawayModel.findOne({
             messageId: button.message.id,
         })
-
-        if (!gaw) return
 
         if (button.customId === 'giveaway-join') {
             if (gaw.entries.includes(button.user.id)) {
@@ -41,7 +45,8 @@ module.exports = {
                     if (!canJoin) continue
                     if (!button.member.roles.cache.has(req)) canJoin = false
                 }
-
+                if (button.member.roles.cache.hasAny(...bypassIds))
+                    canJoin = true
                 if (!canJoin) {
                     return button.reply({
                         content:
@@ -93,6 +98,47 @@ module.exports = {
                     },
                 ],
                 ephemeral: true,
+            })
+        } else if (button.customId === 'giveaway-reroll') {
+            const giveawayMessageId =
+                button.message.components[0].components[0].url
+                    .split('/')
+                    .slice(-1)[0]
+            const gaww = await giveawayModel.findOne({
+                messageId: giveawayMessageId,
+            })
+            if (button.user.id !== gaww.hosterId) {
+                return button.reply({
+                    content: `Only the hoster of the giveaway can reroll winners...`,
+                    ephemeral: true,
+                })
+            }
+
+            const winner = `<@${
+                gaww.entries[Math.floor(Math.random() * gaww.entries.length)]
+            }>`
+            button.deferUpdate()
+            await button.channel.send({
+                content: `${winner}\nYou have won the reroll for **${
+                    gaww.prize
+                }**! Your chances of winning the giveaway were **${(
+                    (1 / gaww.entries.length) *
+                    100
+                ).toFixed(3)}%**`,
+                components: [
+                    new MessageActionRow().addComponents([
+                        new MessageButton()
+                            .setLabel('Jump')
+                            .setStyle('LINK')
+                            .setURL(
+                                `https://discord.com/channels/${gaww.guildId}/${gaww.channelId}/${gaww.messageId}`
+                            ),
+                        new MessageButton()
+                            .setLabel('Reroll')
+                            .setCustomId('giveaway-reroll')
+                            .setStyle('SECONDARY'),
+                    ]),
+                ],
             })
         }
     },

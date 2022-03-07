@@ -25,7 +25,7 @@ module.exports = {
             (await message.guild.members.fetch(id))
 
         if (!user) return
-
+        message.react('⏰')
         let dbUser = await db.findOne({ userId: user.id })
         if (!dbUser || !dbUser.fighthub.voting) {
             dbUser = new db({

@@ -15,6 +15,7 @@ module.exports = {
     description: 'Check your donations',
     usage: '[user]',
     usage: 'myd',
+    category: 'Donation',
     /**
      *
      * @param {Message} message

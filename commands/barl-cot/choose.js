@@ -1,7 +1,8 @@
-const { Client, Message, MessageEmbed } = require('discord.js')
+const { Message } = require('discord.js')
 
 module.exports = {
     name: 'choose',
+    category: 'Utility',
     usage: '<options>',
     /**
      * @param {Client} client

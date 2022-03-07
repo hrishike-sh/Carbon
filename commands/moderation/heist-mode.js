@@ -4,6 +4,7 @@ module.exports = {
     name: 'heist-mode',
     aliases: ['heistmode'],
     fhOnly: false,
+    category: 'Moderation',
     disabledChannels: [],
     /**
      * @param {Client} client
