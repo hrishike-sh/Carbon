@@ -131,87 +131,85 @@ module.exports = {
                         const message = await channel.messages.fetch(
                             giveaway.messageId
                         )
-                    } catch (e) {
-                        continue
-                    }
-
-                    if (message) {
-                        let winners = []
-                        if (giveaway.winners > 1) {
-                            for (i = 0; i < giveaway.winners; i++) {
-                                winners.push(
-                                    giveaway.entries.filter(
-                                        (val) => !winners.includes(val)
-                                    )[
+                        if (message) {
+                            let winners = []
+                            if (giveaway.winners > 1) {
+                                for (i = 0; i < giveaway.winners; i++) {
+                                    winners.push(
+                                        giveaway.entries.filter(
+                                            (val) => !winners.includes(val)
+                                        )[
+                                            Math.floor(
+                                                Math.random() *
+                                                    giveaway.entries.length
+                                            )
+                                        ]
+                                    )
+                                }
+                            } else
+                                winners = [
+                                    giveaway.entries[
                                         Math.floor(
                                             Math.random() *
                                                 giveaway.entries.length
                                         )
-                                    ]
-                                )
-                            }
-                        } else
-                            winners = [
-                                giveaway.entries[
-                                    Math.floor(
-                                        Math.random() * giveaway.entries.length
-                                    )
-                                ],
-                            ]
-                        winners = winners.map((a) => `<@${a}>`).join(' ')
+                                    ],
+                                ]
+                            winners = winners.map((a) => `<@${a}>`).join(' ')
 
-                        message.edit({
-                            content: `🎉 Giveaway Ended 🎉`,
-                            embeds: [
-                                new MessageEmbed()
-                                    .setTitle(giveaway.prize)
-                                    .setFooter({
-                                        text: `Winners: ${giveaway.winners} | Ended at`,
-                                    })
-                                    .setTimestamp()
-                                    .setColor('NOT_QUITE_BLACK')
-                                    .setDescription(
-                                        `Winner(s): ${winners}\nHost: <@${giveaway.hosterId}>`
-                                    ),
-                            ],
-                            components: [
-                                new MessageActionRow().addComponents([
-                                    new MessageButton()
-                                        .setLabel(
-                                            `Entries: ${giveaway.entries.length.toLocaleString()}`
-                                        )
-                                        .setCustomId('giveaway-join')
-                                        .setStyle('PRIMARY')
-                                        .setDisabled(),
-                                ]),
-                            ],
-                        })
-
-                        message.channel.send({
-                            content: `${winners}\nYou have won the giveaway for **${
-                                giveaway.prize
-                            }**! Your chances of winning the giveaway were **${(
-                                (1 / giveaway.entries.length) *
-                                100
-                            ).toFixed(3)}%**`,
-                            components: [
-                                new MessageActionRow().addComponents([
-                                    new MessageButton()
-                                        .setLabel('Jump')
-                                        .setStyle('LINK')
-                                        .setURL(
-                                            `https://discord.com/channels/${giveaway.guildId}/${giveaway.channelId}/${giveaway.messageId}`
+                            message.edit({
+                                content: `🎉 Giveaway Ended 🎉`,
+                                embeds: [
+                                    new MessageEmbed()
+                                        .setTitle(giveaway.prize)
+                                        .setFooter({
+                                            text: `Winners: ${giveaway.winners} | Ended at`,
+                                        })
+                                        .setTimestamp()
+                                        .setColor('NOT_QUITE_BLACK')
+                                        .setDescription(
+                                            `Winner(s): ${winners}\nHost: <@${giveaway.hosterId}>`
                                         ),
-                                    new MessageButton()
-                                        .setLabel('Reroll')
-                                        .setCustomId('giveaway-reroll')
-                                        .setStyle('SECONDARY'),
-                                ]),
-                            ],
-                        })
-                        try {
-                            ;(await client.users.fetch(giveaway.hosterId)).send(
-                                {
+                                ],
+                                components: [
+                                    new MessageActionRow().addComponents([
+                                        new MessageButton()
+                                            .setLabel(
+                                                `Entries: ${giveaway.entries.length.toLocaleString()}`
+                                            )
+                                            .setCustomId('giveaway-join')
+                                            .setStyle('PRIMARY')
+                                            .setDisabled(),
+                                    ]),
+                                ],
+                            })
+
+                            message.channel.send({
+                                content: `${winners}\nYou have won the giveaway for **${
+                                    giveaway.prize
+                                }**! Your chances of winning the giveaway were **${(
+                                    (1 / giveaway.entries.length) *
+                                    100
+                                ).toFixed(3)}%**`,
+                                components: [
+                                    new MessageActionRow().addComponents([
+                                        new MessageButton()
+                                            .setLabel('Jump')
+                                            .setStyle('LINK')
+                                            .setURL(
+                                                `https://discord.com/channels/${giveaway.guildId}/${giveaway.channelId}/${giveaway.messageId}`
+                                            ),
+                                        new MessageButton()
+                                            .setLabel('Reroll')
+                                            .setCustomId('giveaway-reroll')
+                                            .setStyle('SECONDARY'),
+                                    ]),
+                                ],
+                            })
+                            try {
+                                ;(
+                                    await client.users.fetch(giveaway.hosterId)
+                                ).send({
                                     embeds: [
                                         new MessageEmbed()
                                             .setTitle(
@@ -233,9 +231,11 @@ module.exports = {
                                             .setTimestamp()
                                             .setColor('GREEN'),
                                     ],
-                                }
-                            )
-                        } catch (e) {}
+                                })
+                            } catch (e) {}
+                        }
+                    } catch (e) {
+                        continue
                     }
                 }
             }
@@ -247,24 +247,23 @@ module.exports = {
                         const message = await channel.messages.fetch(
                             edit.messageId
                         )
+                        if (message) {
+                            message.edit({
+                                components: [
+                                    new MessageActionRow().addComponents([
+                                        new MessageButton()
+                                            .setEmoji('🎉')
+                                            .setLabel(
+                                                edit.entries.length.toLocaleString()
+                                            )
+                                            .setCustomId('giveaway-join')
+                                            .setStyle('SUCCESS'),
+                                    ]),
+                                ],
+                            })
+                        }
                     } catch (e) {
                         continue
-                    }
-
-                    if (message) {
-                        message.edit({
-                            components: [
-                                new MessageActionRow().addComponents([
-                                    new MessageButton()
-                                        .setEmoji('🎉')
-                                        .setLabel(
-                                            edit.entries.length.toLocaleString()
-                                        )
-                                        .setCustomId('giveaway-join')
-                                        .setStyle('SUCCESS'),
-                                ]),
-                            ],
-                        })
                     }
                 }
             }
