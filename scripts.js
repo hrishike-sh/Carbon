@@ -35,8 +35,8 @@ const DMUser = async (client, id, { embeds, content }) => {
         const user = await client.users.fetch(id)
         if (user) {
             ;(await user.createDM()).send({
-                content,
-                embeds: typeof embeds === [] ? embeds : [embeds],
+                content: content ? content.toString() : '',
+                embeds: embeds ? [embeds] : [],
             })
         }
     } catch (e) {
