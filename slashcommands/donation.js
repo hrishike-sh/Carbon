@@ -226,6 +226,8 @@ module.exports = {
                     success = true
                 } else return
 
+                DBUser.save()
+
                 if (success)
                     client.channels.cache
                         .get('845043301937315870')
