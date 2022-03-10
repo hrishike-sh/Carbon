@@ -24,6 +24,26 @@ const parseAmount = (string) => {
     else return calculated
 }
 
+const { Client } = require('discord.js')
+
+/**
+ * @param {Client} client
+ * @param {String} id
+ */
+const DMUser = async (client, id, { embeds, content }) => {
+    try {
+        const user = await client.users.fetch(id)
+        if (user) {
+            ;(await user.createDM()).send({
+                content,
+                embeds: typeof embeds === [] ? embeds : [embeds],
+            })
+        }
+    } catch (e) {
+        return null
+    }
+}
+
 const StringValues = {
     m: 1e6,
     k: 1e3,
@@ -31,3 +51,4 @@ const StringValues = {
 }
 
 module.exports.parseAmount = parseAmount
+module.exports.dmUser = DMUser

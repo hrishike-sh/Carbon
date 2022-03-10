@@ -42,6 +42,7 @@ client.db = {
 const skripts = require('./scripts')
 client.functions = {
     parseAmount: skripts.parseAmount,
+    dmUser: skripts.dmUser,
 }
 client.config = config
 
