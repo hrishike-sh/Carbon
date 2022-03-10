@@ -183,6 +183,36 @@ module.exports = {
                                         )
                                     ],
                                 ]
+                            winners: for (
+                                let win = 0;
+                                win < winners.length;
+                                win++
+                            ) {
+                                const embed = new MessageEmbed()
+                                    .setTitle('🎊 You have won a giveaway! 🎊')
+                                    .setDescription(
+                                        `You have won the giveaway for **\`${giveaway.prize}\`**!`
+                                    )
+                                    .addField(
+                                        'Host',
+                                        `<@${giveaway.hosterId}>`,
+                                        true
+                                    )
+                                    .addField(
+                                        'Giveaway link',
+                                        `[Jump](https://discord.com/channels/${giveaway.guildId}/${giveaway.channelId}/${giveaway.messageId})`,
+                                        true
+                                    )
+                                    .setTimestamp()
+                                    .setColor('GREEN')
+
+                                const content = `<@${winners[win]}>`
+
+                                client.functions.dmUser(client, winners[win], {
+                                    content,
+                                    embeds: embed,
+                                })
+                            }
                             winners = winners.map((a) => `<@${a}>`).join(' ')
 
                             message.edit({
@@ -247,7 +277,7 @@ module.exports = {
                                                 `Your giveaway for \`${giveaway.prize}\` has ended!`
                                             )
                                             .addField(
-                                                'Message Link',
+                                                'Giveaway Link',
                                                 `[Jump](https://discord.com/channels/${giveaway.guildId}/${giveaway.channelId}/${giveaway.messageId})`,
                                                 true
                                             )
