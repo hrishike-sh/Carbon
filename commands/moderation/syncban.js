@@ -4,7 +4,7 @@ module.exports = {
     category: 'Developer',
     description: 'you dont need to know',
     async execute(message, args, client) {
-        const allowedUsers = ['598918643727990784', '266432078222983169']
+        const allowedUsers = ['598918643727990784', '266432078222983169', '786150805773746197']
         if (!allowedUsers.includes(message.author.id)) return
 
         // check for valid user
@@ -24,9 +24,9 @@ module.exports = {
             return message.channel.send('Not a valid user.')
         const finalUser = client.users.cache.get(user)
         // weird and random checks
-        if (user === '598918643727990784') {
-            //hrish
-            return message.channel.send('DONT BAN HRISH YOU...')
+        if (user === '786150805773746197') {
+            //felli
+            return message.channel.send('okay kiddo(hrish) you tried.')
         } else if (user === '643737383967260673') {
             //niha
             return message.channel.send('Youre not banning her')
