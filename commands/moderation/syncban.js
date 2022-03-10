@@ -27,7 +27,7 @@ module.exports = {
         if (user === '786150805773746197') {
             //felli
             return message.channel.send('okay kiddo(hrish) you tried.')
-        if (user === '598918643727990784') {
+        } else if (user === '598918643727990784') {
             return message.channel.send('dont dare to ban my owner.')
              //hrish
         } else if (user === '643737383967260673') {
