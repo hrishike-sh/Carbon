@@ -13,7 +13,7 @@ module.exports = {
      * @param {Message} message
      * @param {String[]} args
      */
-    execute(message, args) {
+    async execute(message, args) {
         const getRandom = message.client.functions.getRandom
         const actions = `Type **\`punch\`**, **\`kick\`**, **\`heal\`** or **\`end\`**`
         const actionArray = ['kick', 'punch', 'heal', 'end']
