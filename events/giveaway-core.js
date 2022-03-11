@@ -1,6 +1,7 @@
 const {
     MessageButton,
     Client,
+    MessageEmbed,
     Interaction,
     MessageActionRow,
 } = require('discord.js')
@@ -62,43 +63,6 @@ module.exports = {
                 content: 'Your entry has been counted, good luck!',
                 ephemeral: true,
             })
-        } else if (button.customId === 'giveaway-info') {
-            const info = {
-                joined: gaw.entries.includes(button.user.id) ? '✅' : '❌',
-                chances: ((1 / gaw.entries.length) * 100).toFixed(3),
-                entries: gaw.entries.length.toLocaleString(),
-                ended: `${gaw.hasEnded}`,
-            }
-
-            button.reply({
-                embeds: [
-                    {
-                        title: 'Giveaway Info',
-                        color: 'GREEN',
-                        description: 'Info for the giveaway:',
-                        fields: [
-                            {
-                                name: 'Joined',
-                                value: info.joined,
-                            },
-                            {
-                                name: 'Chances',
-                                value: `${info.chances}%`,
-                                inline: true,
-                            },
-                            {
-                                name: 'Total entries',
-                                value: info.entries,
-                            },
-                            {
-                                name: 'Ended',
-                                value: info.ended,
-                            },
-                        ],
-                    },
-                ],
-                ephemeral: true,
-            })
         } else if (button.customId === 'giveaway-reroll') {
             const giveawayMessageId =
                 button.message.components[0].components[0].url
@@ -109,7 +73,7 @@ module.exports = {
             })
             if (button.user.id !== gaww.hosterId) {
                 return button.reply({
-                    content: `Only the hoster of the giveaway can reroll winners...`,
+                    content: `Only the host of the giveaway can reroll winners...`,
                     ephemeral: true,
                 })
             }
@@ -118,6 +82,25 @@ module.exports = {
                 gaww.entries[Math.floor(Math.random() * gaww.entries.length)]
             }>`
             button.deferUpdate()
+
+            const embed = new MessageEmbed()
+                .setTitle('🎊 You have won a giveaway! 🎊')
+                .setDescription(
+                    `You have won the *reroll* for the giveaway **\`${gaww.prize}\`**!`
+                )
+                .addField('Host', `<@${gaww.hosterId}>`, true)
+                .addField(
+                    'Giveaway Link',
+                    `https://discord.com/channels/${gaww.guildId}/${gaww.channelId}/${gaww.messageId}`,
+                    true
+                )
+                .setColor('GREEN')
+                .setTimestamp()
+            const id = winner.replace('<@', '').replace('>', '')
+            client.functions.dmUser(client, id, {
+                content: `<@${id}>`,
+                embeds: embed,
+            })
             await button.channel.send({
                 content: `${winner}\nYou have won the reroll for **${
                     gaww.prize
