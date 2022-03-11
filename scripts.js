@@ -43,6 +43,16 @@ const DMUser = async (client, id, { embeds, content }) => {
         return null
     }
 }
+/**
+ *
+ * @param {Number} min
+ * @param {Number} max
+ *
+ * @returns Random number between `min` and `max`
+ */
+const getRandom = (min, max) => {
+    return Math.floor(Math.random() * (max - min)) + min
+}
 
 const StringValues = {
     m: 1e6,
@@ -52,3 +62,4 @@ const StringValues = {
 
 module.exports.parseAmount = parseAmount
 module.exports.dmUser = DMUser
+module.exports.getRandom = getRandom

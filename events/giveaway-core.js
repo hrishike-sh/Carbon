@@ -91,7 +91,7 @@ module.exports = {
                 .addField('Host', `<@${gaww.hosterId}>`, true)
                 .addField(
                     'Giveaway Link',
-                    `https://discord.com/channels/${gaww.guildId}/${gaww.channelId}/${gaww.messageId}`,
+                    `[Jump](https://discord.com/channels/${gaww.guildId}/${gaww.channelId}/${gaww.messageId})`,
                     true
                 )
                 .setColor('GREEN')
