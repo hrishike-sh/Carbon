@@ -22,17 +22,11 @@ module.exports = {
                         .toLowerCase()
                         .includes(censor.censor.toLowerCase())
                 ) {
-                    message.member.timeout(
-                        5000,
-                        `Message contains censored word. (${censor.censor})`
-                    )
+                    console.log('Contains censored word!')
                 }
             } else if (censor.type === 'regex') {
                 if (message.content.test(censor.censor)) {
-                    message.member.timeout(
-                        5000,
-                        `Message contains censored word. (${censor.censor})`
-                    )
+                    console.log('Contains censored word regex!')
                 }
             }
         }
