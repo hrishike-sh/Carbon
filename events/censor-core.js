@@ -15,19 +15,24 @@ module.exports = {
 
         const censors = client.db.censors
 
-        for (const censor in censors) {
-            console.log(censor)
+        for (const censor of censors) {
             if (censor.type === 'string') {
                 if (
                     message.content
                         .toLowerCase()
                         .includes(censor.censor.toLowerCase())
                 ) {
-                    console.log('Contains censored word!')
+                    message.member.timeout(
+                        5000,
+                        `Message contains censored word. (${censor.censor})`
+                    )
                 }
             } else if (censor.type === 'regex') {
                 if (message.content.test(censor.censor)) {
-                    console.log('Contains censored word regex!')
+                    message.member.timeout(
+                        5000,
+                        `Message contains censored word. (${censor.name})`
+                    )
                 }
             }
         }
