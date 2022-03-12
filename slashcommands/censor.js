@@ -115,22 +115,22 @@ module.exports = {
                 )
             }
         } else if (command === 'list') {
-            const sensors =
-                server.censors.censors
-                    .map(
-                        (censor, index) =>
-                            `${index + 1}. Name: \`${censor.censor}\`(${
-                                censor.type
-                            })\nID: ${censor.id}`
-                    )
-                    .join('\n\n') || 'No censors added yet...'
+            const sensors = server.censors.censors.map(
+                (censor, index) =>
+                    `${index + 1}. Name: \`${censor.censor}\`(${
+                        censor.type
+                    })\nID: ${censor.id}`
+            )
 
             return interaction.reply({
                 embeds: [
                     new MessageEmbed()
                         .setTitle('Censors')
                         .setColor('AQUA')
-                        .setDescription(sensors).setTimestamp,
+                        .setDescription(
+                            sensors.join('\n\n') || 'No censors yet...'
+                        )
+                        .setTimestamp(),
                 ],
             })
         }
