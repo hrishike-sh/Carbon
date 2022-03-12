@@ -54,6 +54,10 @@ const getRandom = (min, max) => {
     return Math.floor(Math.random() * (max - min)) + min
 }
 
+const sleep = (ms) => {
+    return new Promise((resolve) => setTimeout(resolve, ms))
+}
+
 const StringValues = {
     m: 1e6,
     k: 1e3,
@@ -63,3 +67,4 @@ const StringValues = {
 module.exports.parseAmount = parseAmount
 module.exports.dmUser = DMUser
 module.exports.getRandom = getRandom
+module.exports.sleep = sleep

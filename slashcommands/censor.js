@@ -75,7 +75,7 @@ module.exports = {
                     censor: data.censor_regex,
                     type: 'regex',
                 }
-
+                client.db.censors.push(sensor)
                 server.censors.censors.push(sensor)
                 server.save()
 
@@ -88,7 +88,7 @@ module.exports = {
                     censor: data.censor,
                     type: 'string',
                 }
-
+                client.db.censors.push(sensor)
                 server.censors.censors.push(sensor)
                 server.save()
 
@@ -105,7 +105,9 @@ module.exports = {
                     (c) => c.id !== id
                 )
                 server.save()
-
+                client.db.censors = client.db.censors.filter(
+                    (censor) => censor.id !== id
+                )
                 return interaction.reply(
                     `Removed the censor with ID \`${id}\`!`
                 )

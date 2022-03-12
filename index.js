@@ -45,6 +45,7 @@ client.functions = {
     parseAmount: skripts.parseAmount,
     dmUser: skripts.dmUser,
     getRandom: skripts.getRandom,
+    sleep: skripts.sleep,
 }
 client.config = config
 
