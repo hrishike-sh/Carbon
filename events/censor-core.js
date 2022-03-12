@@ -16,6 +16,7 @@ module.exports = {
         const censors = client.db.censors
 
         for (const censor in censors) {
+            console.log(censor)
             if (censor.type === 'string') {
                 if (
                     message.content
