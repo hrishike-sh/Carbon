@@ -38,6 +38,7 @@ client.db = {
     reminders: [],
     ars: [],
     messages: new Collection(),
+    censors: [],
 }
 const skripts = require('./scripts')
 client.functions = {
@@ -140,6 +141,13 @@ client.on('ready', async () => {
     const ars = require('./database/models/ar')
     client.db.ars = await ars.find({})
     // ARS
+
+    // CENSORS
+    let cens = require('./database/models/settingsSchema')
+    cens = (await cens.findOne({ guildID: client.db.fighthub.id })).censors
+        .censors
+    client.db.censors = cens
+    // CENSORS
 })
 
 client.on('interactionCreate', async (interaction) => {
