@@ -20,6 +20,10 @@ const SettingsSchema = new mongoose.Schema({
         startedOn: Number,
     },
     afkIgnore: [String],
+    censors: {
+        censors: [Object],
+        timeout_duration: Number,
+    },
 })
 
 module.exports = mongoose.model('SettingsSchema', SettingsSchema)

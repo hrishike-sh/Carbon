@@ -1,6 +1,6 @@
 const { SlashCommandBuilder } = require('@discordjs/builders')
-const { CommandInteraction, Client } = require('discord.js')
-
+const { CommandInteraction, Client, MessageEmbed } = require('discord.js')
+const DB = require('../database/models/settingsSchema')
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('censor')
@@ -48,7 +48,91 @@ module.exports = {
      */
     async execute(interaction, client) {
         const command = interaction.options.getSubcommand(true)
+        let server = await DB.findOne({
+            guildID: interaction.guild.id,
+        })
 
-        return interaction.reply(`Command: ${command.toString()}`)
+        if (!server) {
+            server = new DB({
+                guildID: interaction.guild.id,
+            })
+        }
+        if (!server.censors) {
+            server.censors = {
+                censors: [],
+            }
+        }
+
+        if (command === 'add') {
+            const data = {
+                censor: interaction.options.getString('censor'),
+                censor_regex: interaction.options.getString('censor-regex'),
+            }
+
+            if (data.censor_regex) {
+                const sensor = {
+                    id: (Math.random() + 1).toString(36).substring(7),
+                    censor: data.censor_regex,
+                    type: 'regex',
+                }
+
+                server.censors.censors.push(sensor)
+                server.save()
+
+                return interaction.reply(
+                    `A censor with RegExp \`${data.censor_regex}\` was added!`
+                )
+            } else {
+                const sensor = {
+                    id: (Math.random() + 1).toString(36).substring(7),
+                    censor: data.censor,
+                    type: 'string',
+                }
+
+                server.censors.censors.push(sensor)
+                server.save()
+
+                return interaction.reply(
+                    `A censor with string \`${data.censor}\` was added!`
+                )
+            }
+        } else if (command === 'remove') {
+            const id = interaction.options.getString('id')
+
+            const sensor = server.censors.censors.filter((c) => c.id === id)[0]
+            if (sensor) {
+                server.censors.censors = server.censors.censors.filter(
+                    (c) => c.id !== id
+                )
+                server.save()
+
+                return interaction.reply(
+                    `Removed the censor with ID \`${id}\`!`
+                )
+            } else {
+                return interaction.reply(
+                    `I could not find any censor with the ID \`${id}\`!`
+                )
+            }
+        } else if (command === 'list') {
+            const sensors =
+                server.censors.censors
+                    .map(
+                        (censor, index) =>
+                            `${index + 1}. Name: \`${censor.censor}\`(${
+                                censor.type
+                            })\nID: ${censor.id}`
+                    )
+                    .join('\n\n') || 'No censors added yet...'
+
+            return interaction.reply({
+                embeds: [
+                    new MessageEmbed()
+                        .setTitle('Censors')
+                        .setColor('AQUA')
+                        .setDescription(sensors).setTimestamp,
+                ],
+            })
+        }
     },
 }
