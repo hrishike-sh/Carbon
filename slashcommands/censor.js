@@ -8,7 +8,7 @@ module.exports = {
         .addSubcommand((cmd) => {
             return cmd
                 .setName('add')
-                .setDescription('Add a new censor.')
+                .setDescription('Adds a new censor to the censor list')
                 .addStringOption((opt) => {
                     return opt
                         .setName('censor')
@@ -19,7 +19,7 @@ module.exports = {
                     return opt
                         .setName('censor-regex')
                         .setDescription(
-                            'The trigger you want to add, but takes input as regex.'
+                            'Uses regex system to add a new censor to the censor list.'
                         )
                         .setRequired(false)
                 })
@@ -27,12 +27,12 @@ module.exports = {
         .addSubcommand((cmd) => {
             return cmd
                 .setName('remove')
-                .setDescription('Remove a censor.')
+                .setDescription('Removes a censor from censor list')
                 .addStringOption((opt) => {
                     return opt
                         .setName('id')
                         .setDescription(
-                            'The ID of the censor. (ID can be found in /censor list)'
+                            'The ID of the censor. ID can be found in the censor list'
                         )
                         .setRequired(true)
                 })
