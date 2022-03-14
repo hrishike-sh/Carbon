@@ -24,6 +24,11 @@ const parseAmount = (string) => {
     else return calculated
 }
 
+const StringValues = {
+    m: 1e6,
+    k: 1e3,
+    b: 1e9,
+}
 const { Client } = require('discord.js')
 
 /**
@@ -58,13 +63,12 @@ const sleep = (ms) => {
     return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
-const StringValues = {
-    m: 1e6,
-    k: 1e3,
-    b: 1e9,
+const formatTime = (time, format) => {
+    return `<t:${(time / 1000).toFixed(0)}:${format || 'R'}>`
 }
 
 module.exports.parseAmount = parseAmount
 module.exports.dmUser = DMUser
 module.exports.getRandom = getRandom
 module.exports.sleep = sleep
+module.exports.formatTime = formatTime

@@ -46,6 +46,7 @@ client.functions = {
     dmUser: skripts.dmUser,
     getRandom: skripts.getRandom,
     sleep: skripts.sleep,
+    formatTime: skripts.formatTime,
 }
 client.config = config
 
