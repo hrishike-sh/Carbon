@@ -23,7 +23,7 @@ module.exports = {
             '<:black1:919554266929197117><:bo:919555310228742144>',
         ]
         const map = giveaways
-            .sort((a, b) => b.endsAt - a.endsAt)
+            .sort((a, b) => a.endsAt - b.endsAt)
             .map(
                 (g, i) =>
                     `${emo_jis[i]} Prize: **${
