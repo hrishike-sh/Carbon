@@ -28,5 +28,7 @@ module.exports = {
         const embed = new MessageEmbed()
             .setTitle('Freeloader Machine')
             .setDescription(map.join('\n\n') || 'No active giveaways...')
+
+        return message.reply({ embeds: [embed] })
     },
 }
