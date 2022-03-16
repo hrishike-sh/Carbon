@@ -1,4 +1,4 @@
-// //const { SlashCommandBuilder } = require('@discordjs/builders')
+// const { SlashCommandBuilder } = require('@discordjs/builders')
 // const { CommandInteraction, Client, MessageEmbed } = require('discord.js')
 // const DB = require('../database/models/settingsSchema')
 // module.exports = {
