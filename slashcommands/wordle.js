@@ -80,7 +80,7 @@ module.exports = {
                     components: [...componentArray],
                 })
                 Game.channel.send(
-                    'You can now type words in chat(max: 5 letters and 5 words). To exit out of the game type `end`.'
+                    'You can now type words in chat(max: 5 letters and 5 words). The edits may take time to load due to rate limits. To exit out of the game type `end`.'
                 )
             } else if (b.customId === 'no-w') {
                 Game.components[0].components
@@ -116,6 +116,7 @@ module.exports = {
                 return msg.reply('The word must only contain alphabets.')
 
             for (let i = 0; i < msg.content.length; i++) {
+                await client.functions.sleep()
                 Game.components[currentLine].components[i].label =
                     msg.content[i].toUpperCase()
                 Game.components[currentLine].components[i].emoji = null
