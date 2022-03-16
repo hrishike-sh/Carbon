@@ -73,15 +73,10 @@ module.exports = {
         const confirmation = Game.createMessageComponentCollector()
         confirmation.on('collect', (b) => {
             if (b.customId === 'start-w') {
-                Game.components[0].components
-                    .filter((a) => a.customId === 'no-w')[0]
-                    .setStyle('SECONDARY')
-                Game.components[0].components.forEach((a) => a.setDisabled)
-
                 Game.edit({
                     content: Game.content,
                     embeds: Game.embeds,
-                    components: Game.components,
+                    components: [...componentArray],
                 })
             } else {
                 Game.components[0].components
@@ -96,6 +91,7 @@ module.exports = {
                     embeds: Game.embeds,
                     components: Game.components,
                 })
+                return Game.channel.send('The game has been cancelled.')
             }
         })
 
