@@ -163,7 +163,7 @@ module.exports = {
                     })
                 })
                 Game.channel.send(
-                    `Congrats ${interaction.user.toString} you have won the game! The word was \`${wOrD}\``
+                    `Congrats ${interaction.user.toString()} you have won the game! The word was \`${wOrD}\``
                 )
                 mainCollector.stop()
                 confirmation.stop()
