@@ -26,6 +26,7 @@ module.exports = {
         gameSet.set(interaction.user.id, '')
         const user = interaction.member
         let wOrD = require('random-words')({ maxLength: 5, exactly: 1 })[0]
+        console.log(wOrD)
         await interaction.reply({ content: 'Game started', ephemeral: true })
         const embed = new MessageEmbed()
             .setTitle('📕 Wordle')
