@@ -116,7 +116,7 @@ module.exports = {
                 return msg.reply('The word must only contain alphabets.')
 
             for (let i = 0; i < msg.content.length; i++) {
-                await client.functions.sleep()
+                await client.functions.sleep(500)
                 Game.components[currentLine].components[i].label =
                     msg.content[i].toUpperCase()
                 Game.components[currentLine].components[i].emoji = null
