@@ -54,7 +54,7 @@ module.exports = {
         }
 
         const Game = await interaction.channel.send({
-            content: `<@${user.toString()}>`,
+            content: `${user.toString()}`,
             embeds: [embed],
             components: [
                 new MessageActionRow().addComponents([
@@ -73,10 +73,21 @@ module.exports = {
         const confirmation = Game.createMessageComponentCollector()
         confirmation.on('collect', (b) => {
             if (b.customId === 'start-w') {
-                Game.components
+                Game.components[0].components
                     .filter((a) => a.customId === 'no-w')[0]
                     .setStyle('PRIMARY')
-                Game.components.forEach((com) => com.setDisabled)
+                Game.components[0].components.forEach((a) => a.setDisabled)
+
+                Game.edit({
+                    content: Game.content,
+                    embeds: Game.embeds,
+                    components: Game.components,
+                })
+            } else {
+                Game.components[0].components
+                    .filter((a) => a.customId === 'start-w')[0]
+                    .setStyle('PRIMARY')
+                Game.components[0].components.forEach((a) => a.setDisabled)
 
                 Game.edit({
                     content: Game.content,
