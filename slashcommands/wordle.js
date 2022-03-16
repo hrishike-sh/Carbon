@@ -52,10 +52,43 @@ module.exports = {
                 ])
             }
         }
+
         const Game = await interaction.channel.send({
             content: `<@${user.toString()}>`,
             embeds: [embed],
-            components: [...componentArray],
+            components: [
+                new MessageActionRow().addComponents([
+                    new MessageButton()
+                        .setLabel('Start')
+                        .setStyle('SUCCESS')
+                        .setCustomId('start-w'),
+                    new MessageButton()
+                        .setLabel('Go back')
+                        .setStyle('DANGER')
+                        .setCustomId('no-w'),
+                ]),
+            ],
         })
+
+        const confirmation = Game.createMessageComponentCollector()
+        confirmation.on('collect', (b) => {
+            if (b.customId === 'start-w') {
+                Game.components
+                    .filter((a) => a.customId === 'no-w')[0]
+                    .setStyle('PRIMARY')
+                Game.components.forEach((com) => com.setDisabled)
+
+                Game.edit({
+                    content: Game.content,
+                    embeds: Game.embeds,
+                    components: Game.components,
+                })
+            }
+        })
+
+        const mainCollector = interaction.channel.createMessageCollector({
+            filter: (msg) => msg.author.id === user.id,
+        })
+        mainCollector.on('collect', async (msg) => {})
     },
 }
