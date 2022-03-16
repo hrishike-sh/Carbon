@@ -85,6 +85,7 @@ module.exports = {
                     embeds: Game.embeds,
                     components: [...componentArray],
                 })
+                b.deferUpdate()
                 Game.channel.send(
                     'You can now type words in chat(max: 5 letters and 5 words). The edits may take time to load due to rate limits. To exit out of the game type `end`.'
                 )
