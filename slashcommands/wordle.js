@@ -75,7 +75,7 @@ module.exports = {
             if (b.customId === 'start-w') {
                 Game.components[0].components
                     .filter((a) => a.customId === 'no-w')[0]
-                    .setStyle('PRIMARY')
+                    .setStyle('SECONDARY')
                 Game.components[0].components.forEach((a) => a.setDisabled)
 
                 Game.edit({
@@ -86,8 +86,10 @@ module.exports = {
             } else {
                 Game.components[0].components
                     .filter((a) => a.customId === 'start-w')[0]
-                    .setStyle('PRIMARY')
-                Game.components[0].components.forEach((a) => a.setDisabled)
+                    .setStyle('SECONDARY')
+                Game.components[0].components.forEach((a) => {
+                    a.setDisabled()
+                })
 
                 Game.edit({
                     content: Game.content,
