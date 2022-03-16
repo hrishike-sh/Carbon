@@ -5,6 +5,7 @@ const {
     MessageEmbed,
     MessageActionRow,
     MessageButton,
+    Message,
 } = require('discord.js')
 
 module.exports = {
@@ -104,6 +105,11 @@ module.exports = {
         let currentLine = 0
 
         mainCollector.on('collect', async (msg) => {
+            if (msg.content.toLowerCase() === 'end') {
+                mainCollector.stop()
+                confirmation.stop()
+                return msg.channel.send('The game has ended')
+            }
             if (msg.content.length > 5)
                 return msg.reply('The word can be of max 5 letters.')
             if (!/^[a-zA-Z]+$/.test())
