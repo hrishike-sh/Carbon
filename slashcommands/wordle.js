@@ -47,7 +47,7 @@ module.exports = {
                 row.addComponents([
                     new MessageButton()
                         .setEmoji('914473340129906708')
-                        .setStyle('PRIMARY')
+                        .setStyle('SECONDARY')
                         .setCustomId(id),
                 ])
             }
@@ -78,7 +78,10 @@ module.exports = {
                     embeds: Game.embeds,
                     components: [...componentArray],
                 })
-            } else {
+                Game.channel.send(
+                    'You can now type words in chat(max: 5 letters and 5 words). To exit out of the game type `end`.'
+                )
+            } else if (b.customId === 'no-w') {
                 Game.components[0].components
                     .filter((a) => a.customId === 'start-w')[0]
                     .setStyle('SECONDARY')
@@ -92,12 +95,35 @@ module.exports = {
                     components: Game.components,
                 })
                 return Game.channel.send('The game has been cancelled.')
-            }
+            } else b.deferUpdate()
         })
 
         const mainCollector = interaction.channel.createMessageCollector({
             filter: (msg) => msg.author.id === user.id,
         })
-        mainCollector.on('collect', async (msg) => {})
+        let currentLine = 0
+
+        mainCollector.on('collect', async (msg) => {
+            if (msg.content.length > 5)
+                return msg.reply('The word can be of max 5 letters.')
+            if (!/^[a-zA-Z]+$/.test())
+                return msg.reply('The word must only contain alphabets.')
+
+            for (let i = 0; i < msg.content.length; i++) {
+                Game.components[currentLine].components[i]
+                    .setLabel(msg.content[i].toUpperCase())
+                    .setEmoji(null)
+                    .setCustomId(
+                        Game.components[currentLine].components[i].customId
+                    )
+                currentLine++
+
+                Game.edit({
+                    content: user.toString(),
+                    embeds: [embed],
+                    components: Game.components,
+                })
+            }
+        })
     },
 }
