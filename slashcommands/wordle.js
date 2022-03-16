@@ -5,9 +5,9 @@ const {
     MessageEmbed,
     MessageActionRow,
     MessageButton,
-    Message,
+    Collection,
 } = require('discord.js')
-
+const gameSet = new Collection()
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('wordle')
@@ -18,10 +18,15 @@ module.exports = {
      * @param {Client} client
      */
     async execute(interaction, client) {
+        if (gameSet.has(interaction.user.id)) {
+            return interaction.reply(
+                "You already have an active game... If you don't know where it is, wait for 5 minutes and try again!"
+            )
+        }
+        gameSet.set(interaction.user.id, '')
         const user = interaction.member
-        const wOrD = 'testw'
+        let wOrD = require('random-words')({ maxLength: 5, exactly: 1 })
         await interaction.reply({ content: 'Game started', ephemeral: true })
-
         const embed = new MessageEmbed()
             .setTitle('📕 Wordle')
             .setDescription(
@@ -101,9 +106,11 @@ module.exports = {
 
         const mainCollector = interaction.channel.createMessageCollector({
             filter: (msg) => msg.author.id === user.id,
+            time: require('ms')('5m'),
         })
         let currentLine = 0
         let editing = false
+        let win = false
         mainCollector.on('collect', async (msg) => {
             if (msg.content.toLowerCase() === 'end') {
                 mainCollector.stop()
@@ -123,6 +130,12 @@ module.exports = {
                 return msg.reply(
                     'Please wait, the message is still being edited...'
                 )
+            if (msg.content.toLowerCase() === wOrD) win = true
+            if (currentLine > 5 && !win) {
+                return msg.reply(
+                    `You could not finish the game in 5 tries... The word was \`${wOrD}\``
+                )
+            }
             editing = true
             for (let i = 0; i < msg.content.length; i++) {
                 await client.functions.sleep(500)
@@ -142,6 +155,18 @@ module.exports = {
                         'SECONDARY'
                     )
             }
+            if (win) {
+                Game.components.forEach((c) => {
+                    c.components.forEach((a) => {
+                        a.setDisabled()
+                    })
+                })
+                Game.channel.send(
+                    `Congrats ${interaction.user.toString} you have won the game! The word was \`${wOrD}\``
+                )
+                mainCollector.stop()
+                confirmation.stop()
+            }
             Game.edit({
                 content: user.toString(),
                 embeds: [embed],
@@ -149,6 +174,9 @@ module.exports = {
             })
             editing = false
             currentLine++
+        })
+        mainCollector.on('end', (a) => {
+            gameSet.delete(interaction.user.id)
         })
     },
 }
