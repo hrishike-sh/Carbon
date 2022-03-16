@@ -131,7 +131,7 @@ module.exports = {
                     'Please wait, the message is still being edited...'
                 )
             if (msg.content.toLowerCase() === wOrD) win = true
-            if (currentLine > 5 && !win) {
+            if (currentLine > 4 && !win) {
                 return msg.reply(
                     `You could not finish the game in 5 tries... The word was \`${wOrD}\``
                 )
