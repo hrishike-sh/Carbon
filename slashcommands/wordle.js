@@ -103,7 +103,7 @@ module.exports = {
             filter: (msg) => msg.author.id === user.id,
         })
         let currentLine = 0
-        let editing = false
+
         mainCollector.on('collect', async (msg) => {
             if (msg.content.toLowerCase() === 'end') {
                 mainCollector.stop()
@@ -119,17 +119,18 @@ module.exports = {
                 return msg.reply('The word can be of max 5 letters.')
             if (!/^[a-zA-Z]+$/.test())
                 return msg.reply('The word must only contain alphabets.')
-            if (editing)
-                return msg.reply('Please wait before inputing next word...')
+
             for (let i = 0; i < msg.content.length; i++) {
-                editing = true
                 await client.functions.sleep(500)
                 Game.components[currentLine].components[i].label =
                     msg.content[i].toUpperCase()
                 Game.components[currentLine].components[i].emoji = null
-
-                editing = false
             }
+            Game.edit({
+                content: user.toString(),
+                embeds: [embed],
+                components: Game.components,
+            })
             currentLine++
         })
     },
