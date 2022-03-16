@@ -116,7 +116,6 @@ module.exports = {
                     .setCustomId(
                         Game.components[currentLine].components[i].customId
                     )
-                currentLine++
 
                 Game.edit({
                     content: user.toString(),
@@ -124,6 +123,7 @@ module.exports = {
                     components: Game.components,
                 })
             }
+            currentLine++
         })
     },
 }
