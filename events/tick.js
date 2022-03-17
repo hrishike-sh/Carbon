@@ -234,7 +234,7 @@ module.exports = {
                                     new MessageActionRow().addComponents([
                                         new MessageButton()
                                             .setLabel(
-                                                `Entries: ${giveaway.entries.length.toLocaleString()}`
+                                                `🎉 ${giveaway.entries.length.toLocaleString()}`
                                             )
                                             .setCustomId('giveaway-join')
                                             .setStyle('PRIMARY')
