@@ -165,7 +165,7 @@ module.exports = {
             if (!gaw) return
             if (!gaw.entries.includes(button.user.id)) {
                 return button.reply({
-                    content: 'You have not joined thsi giveaway.',
+                    content: 'You have not joined this giveaway.',
                     ephemeral: true,
                 })
             }
