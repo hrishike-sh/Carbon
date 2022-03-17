@@ -123,6 +123,8 @@ module.exports = {
                     ]),
                 ],
             })
+        } else if (button.customId === 'giveaway-leave') {
+            console.log('This bit ran.')
         }
     },
 }
