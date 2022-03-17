@@ -160,8 +160,25 @@ module.exports = {
                 ],
             })
         } else if (button.customId === 'giveaway-leave') {
-            button.reply({
-                content: 'This does not work yet, blame fellintron',
+            const messageId = button.message.reference.messageId
+            const gaw = await giveawayModel.findOne({ messageId })
+            if (!gaw) return
+            if (!gaw.entries.includes(button.user.id)) {
+                return button.reply({
+                    content: 'You have not joined thsi giveaway.',
+                    ephemeral: true,
+                })
+            }
+
+            gaw.entries.splice(gaw.entries.indexOf(button.user.id), 1)
+            gaw.save()
+
+            return button.reply({
+                embeds: [
+                    new MessageEmbed()
+                        .setDescription('You have left the giveaway')
+                        .setColor('RED'),
+                ],
                 ephemeral: true,
             })
         }
