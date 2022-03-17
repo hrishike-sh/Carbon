@@ -4,6 +4,7 @@ const {
     MessageEmbed,
     Interaction,
     MessageActionRow,
+    ButtonInteraction,
 } = require('discord.js')
 const giveawayModel = require('../database/models/giveaway')
 const bypassIds = ['825965323500126208', '876460154705555487']
@@ -12,7 +13,7 @@ module.exports = {
     once: false,
     /**
      *
-     * @param {Interaction} button
+     * @param {ButtonInteraction} button
      * @param {Client} client
      * @returns
      */
@@ -33,7 +34,22 @@ module.exports = {
         if (button.customId === 'giveaway-join') {
             if (gaw.entries.includes(button.user.id)) {
                 button.reply({
-                    content: 'You have already entered this giveaway.',
+                    embeds: [
+                        new MessageEmbed()
+                            .setTitle('You have already joined this giveaway!')
+                            .setDescription(
+                                'You can only join once... and you are already in!'
+                            )
+                            .setColor('YELLOW'),
+                    ],
+                    components: [
+                        new MessageActionRow().addComponents([
+                            new MessageButton()
+                                .setLabel('Leave giveaway')
+                                .setCustomId('giveaway-leave')
+                                .setStyle('DANGER'),
+                        ]),
+                    ],
                     ephemeral: true,
                 })
                 return
@@ -51,8 +67,25 @@ module.exports = {
                     canJoin = true
                 if (!canJoin) {
                     return button.reply({
-                        content:
-                            'You do not meet the requirements to join this giveaway!',
+                        embeds: [
+                            new MessageEmbed()
+                                .setTitle('🎉You have joined the giveaway!')
+                                .setDescription(
+                                    `You will receive a DM if you win.\nThe chances of you winning this giveaway are **${(
+                                        (1 / gaw.entries.length) *
+                                        100
+                                    ).toFixed(3)}%**!`
+                                )
+                                .setColor('GREEN'),
+                        ],
+                        components: [
+                            new MessageActionRow().addComponents([
+                                new MessageButton()
+                                    .setLabel('Leave giveaway')
+                                    .setCustomId('giveaway-leave')
+                                    .setStyle('DANGER'),
+                            ]),
+                        ],
                         ephemeral: true,
                     })
                 }
@@ -125,7 +158,10 @@ module.exports = {
                 ],
             })
         } else if (button.customId === 'giveaway-leave') {
-            console.log('This bit ran.')
+            button.reply({
+                content: 'This does not work yet, blame fellintron',
+                ephemeral: true,
+            })
         }
     },
 }
