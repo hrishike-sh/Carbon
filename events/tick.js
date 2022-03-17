@@ -227,7 +227,8 @@ module.exports = {
                                         .setColor('NOT_QUITE_BLACK')
                                         .setDescription(
                                             `Winner(s): ${winners}\nHost: <@${giveaway.hosterId}>`
-                                        ),
+                                        )
+                                        .setFields(message.embeds[0].fields),
                                 ],
                                 components: [
                                     new MessageActionRow().addComponents([
