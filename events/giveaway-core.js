@@ -21,7 +21,8 @@ module.exports = {
         if (
             button.customId !== 'giveaway-join' &&
             button.customId !== 'giveaway-info' &&
-            button.customId !== 'giveaway-reroll'
+            button.customId !== 'giveaway-reroll' &&
+            button.customId !== 'giveaway-leave'
         )
             return
 
