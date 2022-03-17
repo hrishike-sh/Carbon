@@ -67,25 +67,9 @@ module.exports = {
                     canJoin = true
                 if (!canJoin) {
                     return button.reply({
-                        embeds: [
-                            new MessageEmbed()
-                                .setTitle('🎉You have joined the giveaway!')
-                                .setDescription(
-                                    `You will receive a DM if you win.\nThe chances of you winning this giveaway are **${(
-                                        (1 / gaw.entries.length) *
-                                        100
-                                    ).toFixed(3)}%**!`
-                                )
-                                .setColor('GREEN'),
-                        ],
-                        components: [
-                            new MessageActionRow().addComponents([
-                                new MessageButton()
-                                    .setLabel('Leave giveaway')
-                                    .setCustomId('giveaway-leave')
-                                    .setStyle('DANGER'),
-                            ]),
-                        ],
+                        content:
+                            'You do not meet the requirements to join this giveaway!',
+
                         ephemeral: true,
                     })
                 }
@@ -94,7 +78,25 @@ module.exports = {
             gaw.save()
 
             button.reply({
-                content: 'Your entry has been counted, good luck!',
+                embeds: [
+                    new MessageEmbed()
+                        .setTitle('🎉You have joined the giveaway!')
+                        .setDescription(
+                            `You will receive a DM if you win.\nThe chances of you winning this giveaway are **${(
+                                (1 / gaw.entries.length) *
+                                100
+                            ).toFixed(3)}%**!`
+                        )
+                        .setColor('GREEN'),
+                ],
+                components: [
+                    new MessageActionRow().addComponents([
+                        new MessageButton()
+                            .setLabel('Leave giveaway')
+                            .setCustomId('giveaway-leave')
+                            .setStyle('DANGER'),
+                    ]),
+                ],
                 ephemeral: true,
             })
         } else if (button.customId === 'giveaway-reroll') {
