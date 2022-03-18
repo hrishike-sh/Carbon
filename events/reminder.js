@@ -38,7 +38,7 @@ module.exports = {
                     ],
                 })
                 const db = require('../database/models/remind')
-                db.deleteOne(
+                await db.deleteOne(
                     {
                         userId: reminder.userId,
                         time: reminder.time,
