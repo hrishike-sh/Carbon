@@ -19,9 +19,12 @@ module.exports = {
                     embeds: [
                         new MessageEmbed()
                             .setTitle('Reminder')
-                            .setColor('DARK_BUT_NOT_BLACK')
+                            .setColor('YELLOW')
                             .setDescription(
-                                `<t:${(reminder.time / 1000).toFixed(
+                                `<t:${(
+                                    (new Date().getTime() - reminder.time) /
+                                    1000
+                                ).toFixed(
                                     0
                                 )}:R> you asked me to remind you about "${
                                     reminder.reason
@@ -35,10 +38,14 @@ module.exports = {
                     ],
                 })
                 const db = require('../database/models/remind')
-                await db.deleteOne({
-                    userId: reminder.userId,
-                    time: reminder.time,
-                })
+                db.deleteOne(
+                    {
+                        userId: reminder.userId,
+                        time: reminder.time,
+                    },
+                    {},
+                    {}
+                )
                 client.db.reminders = client.db.reminders.filter(
                     (a) =>
                         a.userId !== reminder.userId && a.time !== reminder.time

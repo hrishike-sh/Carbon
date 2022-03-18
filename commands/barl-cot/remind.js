@@ -23,11 +23,12 @@ module.exports = {
                 ],
             })
         if (args[0] == 'list') {
-            const user = await Database.find({
+            let user = await Database.find({
                 userId: message.author.id,
             })
             if (!user)
                 return message.reply("You don't have any active reminders.")
+            user = user.sort((a, b) => a.time - b.time)
             let dat = []
             let i = 0
             for (const r of user) {
