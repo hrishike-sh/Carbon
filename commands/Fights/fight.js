@@ -21,7 +21,7 @@ module.exports = {
 
         if (!target)
             return message.reply('You must mention someone to fight with.')
-        if (target.bot) return message.reply('The bot would win.')
+        if (target.user.bot) return message.reply('The bot would win.')
         if (target.id === message.author.id)
             return message.reply('You fight yourself... and win!')
         const gamedata = [
