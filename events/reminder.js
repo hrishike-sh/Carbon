@@ -21,7 +21,7 @@ module.exports = {
                 if (!user) {
                     Database.deleteOne({
                         id: reminder.id,
-                    })
+                    }).exec()
                     continue
                 }
                 const embed = new MessageEmbed()
@@ -49,7 +49,7 @@ module.exports = {
                 })
                 Database.deleteOne({
                     id: reminder.id,
-                })
+                }).exec()
                 client.db.reminders = client.db.reminders.filter(
                     (a) => a.id !== reminder.id
                 )
