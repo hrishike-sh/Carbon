@@ -1,8 +1,8 @@
 const mongoose = require('mongoose')
 
 const RemindSchema = new mongoose.Schema({
+    id: String,
     userId: String,
-    channelId: String,
     time: Number,
     reason: String,
     link: String,

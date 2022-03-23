@@ -1,105 +1,55 @@
 const { Client, Message, MessageEmbed } = require('discord.js')
 const Database = require('../../database/models/remind')
-const ms = require('ms')
+const { getMilliseconds } = require('better-ms')
 
 module.exports = {
     name: 'remindme',
     aliases: ['rm', 'remind'],
     fhOnly: true,
     category: 'Utility',
-    usage: '<time>',
+    usage: '<reason> in <time>',
     /**
      * @param {Client} client
      * @param {Message} message
      * @param {String[]} args
      */
     async execute(message, args, client) {
-        if (!args[0])
-            return message.reply({
-                embeds: [
-                    {
-                        description: `Please provide a valid time!\nExample: "1d" or "5m"`,
-                    },
-                ],
-            })
-        if (args[0] == 'list') {
-            let user = await Database.find({
-                userId: message.author.id,
-            })
-            if (!user)
-                return message.reply("You don't have any active reminders.")
-            user = user.sort((a, b) => a.time - b.time)
-            let dat = []
-            let i = 0
-            for (const r of user) {
-                i++
-                dat.push(
-                    `${i}. Reminder about ${r.reason} <t:${(
-                        r.time / 1000
-                    ).toFixed(0)}:R>`
-                )
-            }
+        const example = '\n\n`fh rm work in 1h`'
+        if (!args[0]) return message.reply('Provide valid arguments.' + example)
 
-            return message.reply({
-                embeds: [
-                    {
-                        description: dat.join('\n') || 'No reminders yet...',
-                        color: 'GREEN',
-                    },
-                ],
-            })
-        }
-        let time = ms(args[0])
-        if (isNaN(time))
-            return message.reply({
-                embeds: [
-                    {
-                        description: `Couldn't parse "${args[0]}" as valid time!\nTry: "1d" "5m" etc.`,
-                    },
-                ],
-            })
+        const valid = args.join(' ').split(' in ')
+        if (!valid.length)
+            return message.reply('Please give valid time.' + example)
 
-        args.shift()
-        if (!args[0]) args[0] = ' '
-        if (!isNaN(ms(args[0]))) {
-            time += ms(args[0])
-            args.shift()
-        }
+        const reason = valid.slice(0, -1) || 'something'
+        let time = valid.pop()
+        if (!getMilliseconds(time))
+            return message.reply(
+                `Please provide valid time. I could not parse \`${time}\`${example}`
+            )
 
-        const reason = args.join(' ') || 'something'
-
-        try {
-            new Database({
-                userId: message.author.id,
-                channelId: message.channel.id,
-                time: new Date().getTime() + time,
-                reason,
-                link: `https://discord.com/channels/${message.guild.id}/${message.channel.id}/${message.id}`,
-            }).save()
-            client.db.reminders.push({
-                userId: message.author.id,
-                channelId: message.channel.id,
-                time: new Date().getTime() + time,
-                reason,
-                link: `https://discord.com/channels/${message.guild.id}/${message.channel.id}/${message.id}`,
-            })
-        } catch (e) {
-            return message.reply({
-                embeds: [
-                    {
-                        title: 'ERROR',
-                        color: 'RED',
-                        description: `There was an error:\n${e.message}`,
-                    },
-                ],
-            })
-        }
-
-        message.reply(
-            `I'll remind you about \`${reason}\` <t:${(
-                (new Date().getTime() + time) /
-                1000
-            ).toFixed(0)}:R>`
+        time = new Date().getTime() + getMilliseconds(time)
+        const id = (Math.random() + 1).toString(36).substring(7)
+        const dbEntry = new Database({
+            id,
+            userId: message.author.id,
+            time,
+            reason,
+            link: message.url,
+        })
+        dbEntry.save()
+        client.db.reminders.push({
+            id,
+            userId: message.author.id,
+            time,
+            reason,
+            link: message.url,
+        })
+        return message.reply(
+            `${message.author.toString()} noted. I will remind you **${client.functions.formatTime(
+                time,
+                'R'
+            )}** about ${reason}.\nType \`fh rm list\` to check your reminders!`
         )
     },
 }
