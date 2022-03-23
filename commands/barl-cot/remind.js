@@ -73,7 +73,7 @@ module.exports = {
             `${message.author.toString()} noted. I will remind you about **${reason} ${client.functions.formatTime(
                 time,
                 'R'
-            )}.\nType \`fh rm list\` to check your reminders!`
+            )}**.\nType \`fh rm list\` to check your reminders!`
         )
     },
 }
