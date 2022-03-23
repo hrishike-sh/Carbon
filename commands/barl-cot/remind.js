@@ -16,7 +16,31 @@ module.exports = {
     async execute(message, args, client) {
         const example = '\n\n`fh rm work in 1h`'
         if (!args[0]) return message.reply('Provide valid arguments.' + example)
+        if (args[0] == 'list') {
+            const eembed = new MessageEmbed()
+                .setTitle('Reminders')
+                .setColor('GREEN')
+                .setDescription('Your reminders are as follows:')
+                .setTimestamp()
+            client.db.reminders
+                .filter((u) => u.userId === message.author.id)
+                .forEach((reminder) => {
+                    eembed.addField(
+                        `Reminder about ${reminder.reason}`,
+                        `ID: ${
+                            reminder.id
+                        }\nReminds ${client.functions.formatTime(
+                            reminder.time,
+                            'R'
+                        )}`,
+                        true
+                    )
+                })
 
+            return message.reply({
+                embeds: [eembed],
+            })
+        }
         const valid = args.join(' ').split(' in ')
         if (!valid.length)
             return message.reply('Please give valid time.' + example)
@@ -46,10 +70,10 @@ module.exports = {
             link: message.url,
         })
         return message.reply(
-            `${message.author.toString()} noted. I will remind you **${client.functions.formatTime(
+            `${message.author.toString()} noted. I will remind you about **${reason} ${client.functions.formatTime(
                 time,
                 'R'
-            )}** about ${reason}.\nType \`fh rm list\` to check your reminders!`
+            )}.\nType \`fh rm list\` to check your reminders!`
         )
     },
 }
