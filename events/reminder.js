@@ -28,7 +28,7 @@ module.exports = {
                     .setTitle('⏰ Reminder')
                     .setDescription(
                         `${client.functions.formatTime(
-                            new Date().getTime() - reminder.time,
+                            reminder.time,
                             'R'
                         )} you asked me to remind you about **${
                             reminder.reason

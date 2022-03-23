@@ -21,7 +21,7 @@ module.exports = {
         if (!valid.length)
             return message.reply('Please give valid time.' + example)
 
-        const reason = valid.slice(0, -1) || 'something'
+        const reason = valid.slice(0, -1).join(' ') || 'something'
         let time = valid.pop()
         if (!getMilliseconds(time))
             return message.reply(
