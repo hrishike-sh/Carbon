@@ -53,6 +53,7 @@ module.exports = {
                 client.db.reminders = client.db.reminders.filter(
                     (a) => a.id === reminder.id
                 )
+                continue
             }
         }
     },
