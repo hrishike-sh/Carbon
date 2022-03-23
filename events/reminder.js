@@ -11,9 +11,9 @@ module.exports = {
      * @param {Client} client
      */
     async execute(client) {
-        const reminders = client.db.reminders
-
-        const expired = reminders.filter((rm) => rm.time < new Date().getTime())
+        const expired = client.db.reminders.filter(
+            (rm) => rm.time < new Date().getTime()
+        )
 
         if (expired.length) {
             for (const reminder of expired) {
@@ -51,7 +51,7 @@ module.exports = {
                     id: reminder.id,
                 })
                 client.db.reminders = client.db.reminders.filter(
-                    (a) => a.id === reminder.id
+                    (a) => a.id !== reminder.id
                 )
                 continue
             }
