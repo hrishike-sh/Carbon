@@ -41,7 +41,7 @@ module.exports = {
                     components: [
                         new MessageActionRow().addComponents([
                             new MessageButton()
-                                .setStyle('url')
+                                .setStyle('LINK')
                                 .setLabel('Message')
                                 .setURL(reminder.link),
                         ]),
