@@ -1,6 +1,7 @@
 const { SlashCommandBuilder } = require('@discordjs/builders')
 const { CommandInteraction } = require('discord.js')
 const db = require('../database/models/itemSchema')
+
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('items')
