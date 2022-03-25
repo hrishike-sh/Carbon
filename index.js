@@ -100,7 +100,7 @@ client.on('ready', async () => {
     client.emit('tick')
     client.user.setActivity({
         name: '/suggest',
-        type: 'PLAYING',
+        type: 'STREAMING',
     })
     client.db.fighthub = client.guilds.cache.get(config.guildId)
     // LOGS
