@@ -99,7 +99,7 @@ client.on('ready', async () => {
     console.log('Logged in.')
     client.emit('tick')
     client.user.setActivity({
-        name: 'Ping Hrishikesh',
+        name: 'fh help',
         type: 'LISTENING',
     })
     client.db.fighthub = client.guilds.cache.get(config.guildId)
