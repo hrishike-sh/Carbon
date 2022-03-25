@@ -2,6 +2,7 @@ const { SlashCommandBuilder } = require('@discordjs/builders')
 const { CommandInteraction } = require('discord.js')
 const db = require('../database/models/itemSchema')
 module.exports = {
+    category: 'Donation',
     data: new SlashCommandBuilder()
         .setName('additem')
         .setDescription('Add an item to the dono thing; Hrish only.')

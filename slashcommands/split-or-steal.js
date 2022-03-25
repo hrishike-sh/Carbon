@@ -5,9 +5,9 @@ const {
     MessageActionRow,
     MessageButton,
 } = require('discord.js')
-const { listenerCount } = require('process')
 
 module.exports = {
+    category: 'Fun',
     data: new SlashCommandBuilder()
         .setName('splitorsteal')
         .setDescription('Start a game of split or steal with someone!')

@@ -2,6 +2,7 @@ const { SlashCommandBuilder } = require('@discordjs/builders')
 const { CommandInteraction, MessageEmbed } = require('discord.js')
 const ms = require('ms')
 module.exports = {
+    category: 'Utility',
     data: new SlashCommandBuilder()
         .setName('timeout')
         .setDescription('Time someone out.')

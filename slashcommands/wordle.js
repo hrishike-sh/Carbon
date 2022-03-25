@@ -9,6 +9,7 @@ const {
 } = require('discord.js')
 const gameSet = new Collection()
 module.exports = {
+    category: 'Fun',
     data: new SlashCommandBuilder()
         .setName('wordle')
         .setDescription('Play the famous game of wordle in discord! (5x5)'),

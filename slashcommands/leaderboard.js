@@ -2,6 +2,7 @@ const { SlashCommandBuilder } = require('@discordjs/builders')
 const { CommandInteraction } = require('discord.js')
 const database = require('../database/models/submissionSchema')
 module.exports = {
+    category: 'Donation',
     data: new SlashCommandBuilder()
         .setName('leaderboard')
         .setDescription('Check the leaderboard for the event!'),

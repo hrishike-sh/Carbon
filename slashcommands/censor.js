@@ -3,6 +3,7 @@ const { CommandInteraction, Client, MessageEmbed } = require('discord.js')
 const DB = require('../database/models/settingsSchema')
 
 module.exports = {
+    category: 'Utility',
     data: new SlashCommandBuilder()
         .setName('censor')
         .setDescription('Configure the censors for your server.')

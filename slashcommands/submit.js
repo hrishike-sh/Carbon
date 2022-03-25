@@ -8,6 +8,7 @@ const {
 } = require('discord.js')
 const db = require('../database/models/submissionSchema')
 module.exports = {
+    category: 'Other',
     data: new SlashCommandBuilder()
         .setName('submit')
         .setDescription('Submit your submission for the Event!')

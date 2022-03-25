@@ -7,6 +7,7 @@ const {
 } = require('discord.js')
 
 module.exports = {
+    category: 'Fights',
     data: new SlashCommandBuilder()
         .setName('tictactoe')
         .setDescription('Start a game of tictactoe with someone!')

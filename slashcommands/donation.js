@@ -3,6 +3,7 @@ const { CommandInteraction, Client, MessageEmbed } = require('discord.js')
 const MainDonoModel = require('../node_modules/discord-messages/models/messages')
 const GrindDonoModel = require('../database/models/grindm')
 module.exports = {
+    category: 'Donation',
     data: new SlashCommandBuilder()
         .setName('donation')
         .setDescription("Add a donation to a user's profile!")

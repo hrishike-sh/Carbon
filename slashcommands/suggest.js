@@ -2,6 +2,7 @@ const { SlashCommandBuilder } = require('@discordjs/builders')
 const { CommandInteraction, Client, MessageEmbed } = require('discord.js')
 
 module.exports = {
+    category: 'Other',
     data: new SlashCommandBuilder()
         .setName(`suggest`)
         .setDescription('Suggest something you would like to see in this bot!')

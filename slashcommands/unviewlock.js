@@ -7,6 +7,7 @@ const {
 } = require('discord.js')
 
 module.exports = {
+    category: 'Utility',
     data: new SlashCommandBuilder()
         .setName('unviewlock')
         .setDescription('Unviewlock a channel for a user or role or everyone.')

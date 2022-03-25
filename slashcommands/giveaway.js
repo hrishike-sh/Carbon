@@ -10,6 +10,7 @@ const ms = require('ms')
 const giveaway = require('../database/models/giveaway')
 //
 module.exports = {
+    category: 'Giveaways',
     data: new SlashCommandBuilder()
         .setName('giveaway')
         .setDescription('Start a giveaway!')
