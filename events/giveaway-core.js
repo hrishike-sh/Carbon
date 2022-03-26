@@ -46,7 +46,7 @@ module.exports = {
                             .setDescription(
                                 `Winner(s): Couldn't fetch\nHost: <@${gaw.hosterId}>`
                             )
-                            .setFields(message.embeds[0].fields),
+                            .setFields(button.message.embeds[0].fields),
                     ],
                     components: [
                         new MessageActionRow().addComponents([
