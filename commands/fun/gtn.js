@@ -71,10 +71,10 @@ module.exports = {
                         SEND_MESSAGES: true,
                     }
                 )
-                const mainCol = message.channel.createMessageCollector({
-                    filter: (msg) => msg.content === randomNumber,
-                })
+                const mainCol = message.channel.createMessageCollector()
                 mainCol.on('collect', async (m) => {
+                    console.log(m.content)
+                    if (m.content !== randomNumber) return
                     await message.channel.permissionOverwrites.edit(
                         message.guild.roles.everyone,
                         {
