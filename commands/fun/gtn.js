@@ -75,13 +75,13 @@ module.exports = {
                     filter: (msg) => msg.content === randomNumber,
                     max: 1,
                 })
-                mainCol.on('collect', (m) => {
+                mainCol.on('collect', async (m) => {
                     await message.channel.permissionOverwrites.edit(
-                    message.guild.roles.everyone,
-                    {
-                        SEND_MESSAGES: true,
-                    }
-                )
+                        message.guild.roles.everyone,
+                        {
+                            SEND_MESSAGES: true,
+                        }
+                    )
                     return m.reply('You have guessed the number! Congrats.')
                 })
             }
