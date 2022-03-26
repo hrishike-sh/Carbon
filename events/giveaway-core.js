@@ -32,6 +32,40 @@ module.exports = {
         })
 
         if (button.customId === 'giveaway-join') {
+            if (gaw.hasEnded) {
+                message.edit({
+                    content: `🎉 Giveaway Ended 🎉`,
+                    embeds: [
+                        new MessageEmbed()
+                            .setTitle(gaw.prize)
+                            .setFooter({
+                                text: `Winners: ${gaw.winners} | Ended at`,
+                            })
+                            .setTimestamp()
+                            .setColor('NOT_QUITE_BLACK')
+                            .setDescription(
+                                `Winner(s): ${winners}\nHost: <@${gaw.hosterId}>`
+                            )
+                            .setFields(message.embeds[0].fields),
+                    ],
+                    components: [
+                        new MessageActionRow().addComponents([
+                            new MessageButton()
+                                .setLabel(
+                                    `🎉 ${gaw.entries.length.toLocaleString()}`
+                                )
+                                .setCustomId('giveaway-join')
+                                .setStyle('PRIMARY')
+                                .setDisabled(),
+                        ]),
+                    ],
+                })
+
+                return button.reply({
+                    content: 'This giveaway has already ended :pray:',
+                    ephemeral: true,
+                })
+            }
             if (gaw.entries.includes(button.user.id)) {
                 button.reply({
                     embeds: [
