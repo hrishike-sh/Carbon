@@ -73,7 +73,7 @@ module.exports = {
                 )
                 const mainCol = message.channel.createMessageCollector()
                 mainCol.on('collect', async (m) => {
-                    console.log(m.content)
+                    console.log(m.content, `-${randomNumber}`)
                     if (m.content !== randomNumber) return
                     await message.channel.permissionOverwrites.edit(
                         message.guild.roles.everyone,
@@ -81,8 +81,8 @@ module.exports = {
                             SEND_MESSAGES: false,
                         }
                     )
-                    collector.stop()
-                    return m.reply('You have guessed the number! Congrats.')
+                    m.reply('You have guessed the number! Congrats.')
+                    return collector.stop()
                 })
             }
         })
