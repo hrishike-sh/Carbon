@@ -44,7 +44,7 @@ module.exports = {
                             .setTimestamp()
                             .setColor('NOT_QUITE_BLACK')
                             .setDescription(
-                                `Winner(s): ${winners}\nHost: <@${gaw.hosterId}>`
+                                `Winner(s): Couldn't fetch\nHost: <@${gaw.hosterId}>`
                             )
                             .setFields(message.embeds[0].fields),
                     ],
