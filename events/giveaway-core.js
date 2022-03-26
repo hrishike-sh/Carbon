@@ -33,7 +33,7 @@ module.exports = {
 
         if (button.customId === 'giveaway-join') {
             if (gaw.hasEnded) {
-                button.message.edit({
+                await button.message.edit({
                     content: `🎉 Giveaway Ended 🎉`,
                     embeds: [
                         new MessageEmbed()
