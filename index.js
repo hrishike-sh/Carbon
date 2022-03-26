@@ -216,7 +216,9 @@ client.on('messageCreate', async (message) => {
 
     if (!command) return
     if (message.guild && message.guild.id !== config.guildId && command.fhOnly)
-        return message.reply(`This command can only be run in FightHub.`)
+        return message.reply(
+            `This command can only be run in FightHub temporarily.`
+        )
 
     if (
         command.disabledChannels &&
