@@ -73,15 +73,15 @@ module.exports = {
                 )
                 const mainCol = message.channel.createMessageCollector({
                     filter: (msg) => msg.content === randomNumber,
-                    max: 1,
                 })
                 mainCol.on('collect', async (m) => {
                     await message.channel.permissionOverwrites.edit(
                         message.guild.roles.everyone,
                         {
-                            SEND_MESSAGES: true,
+                            SEND_MESSAGES: false,
                         }
                     )
+                    collector.stop()
                     return m.reply('You have guessed the number! Congrats.')
                 })
             }
