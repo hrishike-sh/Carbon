@@ -63,7 +63,7 @@ module.exports = {
                 message.channel.send(
                     'The channel will be unlocked after 5 seconds and will be automatically locked after someone guesses the number.'
                 )
-                await client.functions.sleep(5000)
+                await message.client.functions.sleep(5000)
                 message.channel.send('Good luck, channel is unlocked.')
                 await message.channel.permissionOverwrites.edit(
                     message.guild.roles.everyone,
@@ -76,6 +76,12 @@ module.exports = {
                     max: 1,
                 })
                 mainCol.on('collect', (m) => {
+                    await message.channel.permissionOverwrites.edit(
+                    message.guild.roles.everyone,
+                    {
+                        SEND_MESSAGES: true,
+                    }
+                )
                     return m.reply('You have guessed the number! Congrats.')
                 })
             }
