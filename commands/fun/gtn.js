@@ -66,7 +66,7 @@ module.exports = {
                 await message.client.functions.sleep(5000)
                 message.channel.send('Good luck, channel is unlocked.')
                 await message.channel.permissionOverwrites.edit(
-                    message.guild.roles.everyone,
+                    message.guild.roles.everyone.id,
                     {
                         SEND_MESSAGES: true,
                     }
@@ -76,7 +76,7 @@ module.exports = {
                     console.log(m.content, `-${randomNumber}`)
                     if (m.content !== randomNumber) return
                     await message.channel.permissionOverwrites.edit(
-                        message.guild.roles.everyone,
+                        message.guild.roles.everyone.id,
                         {
                             SEND_MESSAGES: false,
                         }
