@@ -50,7 +50,7 @@ module.exports = {
 
         const msg = await message.channel.send({
             embeds: [embed],
-            components: [...components],
+            components: [components],
         })
         const collector = msg.createMessageComponentCollector({
             filter: (button) => {
