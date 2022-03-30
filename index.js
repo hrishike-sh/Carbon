@@ -164,7 +164,10 @@ client.on('interactionCreate', async (interaction) => {
     const command = client.c.slashCommands.get(commandName)
 
     if (!command) return
-    if (!client.switches.slashCommands) {
+    if (
+        !client.switches.slashCommands &&
+        !client.config.trustedAccess.includes(interaction.user.id)
+    ) {
         return interaction.reply({
             content: 'Slash Commands are disabled temporarily.',
         })
@@ -223,7 +226,10 @@ client.on('messageCreate', async (message) => {
         )
 
     if (!command) return
-    if (!client.switches.commands) {
+    if (
+        !client.switches.commands &&
+        !client.config.trustedAccess.includes(message.author.id)
+    ) {
         return message.reply({
             content: 'Commands have been disabled temporarily.',
         })
