@@ -48,6 +48,10 @@ client.functions = {
     sleep: skripts.sleep,
     formatTime: skripts.formatTime,
 }
+client.switches = {
+    commands: true,
+    slashCommands: true,
+}
 client.config = config
 
 client.options.allowedMentions = {
