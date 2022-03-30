@@ -176,7 +176,7 @@ module.exports = {
                     .setColor('GREEN')
                     .setTimestamp()
 
-                return message.channel.send({ embed })
+                return message.channel.send({ embeds: [embed] })
             }
             const mapp = q
                 .map(
