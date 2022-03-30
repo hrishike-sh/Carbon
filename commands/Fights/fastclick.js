@@ -18,6 +18,8 @@ module.exports = {
             return message.channel.send(
                 `You must mention someone to play with them!\n\nExample: \`fh fastclick @Hrishikesh#0369\``
             )
+        if (user1.id === user1.id)
+            return message.channel.send(`Please don't play yourself, it's kinda lonely`)
 
         let yesButton = new MessageButton()
             .setStyle('SUCCESS')
