@@ -78,7 +78,7 @@ module.exports = {
                         ? false
                         : true
                     msg.components[0].components
-                        .find((b) => b.customId === 'commands-switch')
+                        .filter((b) => b.customId === 'commands-switch')[0]
                         .setStyle(
                             client.switches.commands ? 'SUCCESS' : 'DANGER'
                         )
@@ -96,7 +96,7 @@ module.exports = {
                         ? false
                         : true
                     msg.components[0].components
-                        .find((b) => b.customId === 'scommands-switch')
+                        .filter((b) => b.customId === 'scommands-switch')[0]
                         .setStyle(
                             client.switches.slashCommands ? 'SUCCESS' : 'DANGER'
                         )
