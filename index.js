@@ -164,7 +164,11 @@ client.on('interactionCreate', async (interaction) => {
     const command = client.c.slashCommands.get(commandName)
 
     if (!command) return
-
+    if (!client.switches.slashCommands) {
+        return interaction.reply({
+            content: 'Slash Commands are disabled temporarily.',
+        })
+    }
     if (command.permissions) {
         if (!interaction.member.permissions.has(command.permissions)) {
             return interaction.reply({
@@ -219,6 +223,11 @@ client.on('messageCreate', async (message) => {
         )
 
     if (!command) return
+    if (!client.switches.commands) {
+        return message.reply({
+            content: 'Commands have been disabled temporarily.',
+        })
+    }
     if (message.guild && message.guild.id !== config.guildId && command.fhOnly)
         return message.reply(
             `This command can only be run in FightHub temporarily.`
