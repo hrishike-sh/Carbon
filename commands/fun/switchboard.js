@@ -85,7 +85,7 @@ module.exports = {
                     msg.edit({
                         components: [...msg.components],
                     })
-                    button.reply({
+                    return button.reply({
                         content: `Commands are now ${
                             client.switches.commands ? 'ENABLED' : 'DISABLED'
                         } globally.`,
@@ -103,7 +103,7 @@ module.exports = {
                     msg.edit({
                         components: [...msg.components],
                     })
-                    button.reply({
+                    return button.reply({
                         content: `Slash Commands are now ${
                             client.switches.slashCommands
                                 ? 'ENABLED'
