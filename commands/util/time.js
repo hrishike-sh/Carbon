@@ -99,10 +99,10 @@ module.exports = {
             const id = b.customId.split(':')[1]
             b.deferUpdate()
             return message.channel.send({
-                content: `\`${
-                    (client.functions.formatTime(new Date().getTime() + time),
-                    id)
-                }\``,
+                content: `\`${client.functions.formatTime(
+                    new Date().getTime() + time,
+                    id
+                )}\``,
             })
         })
         collector.on('end', () => {
