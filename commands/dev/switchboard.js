@@ -80,26 +80,51 @@ module.exports = {
                     .setPlaceholder('Choose a specific command.')
                     .setMaxValues(1)
                     .setMinValues(1)
-
+                const selection2 = new MessageSelectMenu()
+                    .setCustomId('select-commands2-switch')
+                    .setPlaceholder('Other commands...')
+                    .setMaxValues(1)
+                    .setMinValues(1)
                 for (const [key, value] of client.c.commands) {
-                    selection.addOptions([
-                        {
-                            label: value.name || 'ERROR',
-                            value: `command:${
-                                value.name || 'hrishissodumb'
-                            }-switch`,
-                            emoji:
-                                (allDbCommands.find((a) => a.name == value.name)
-                                    ?.disabled
-                                    ? '❌'
-                                    : '✅') || '❔',
-                        },
-                    ])
+                    if (selection.options.length > 24) {
+                        selection2.addOptions([
+                            {
+                                label: value.name || 'ERROR',
+                                value: `command:${
+                                    value.name || 'hrishissodumb'
+                                }-switch`,
+                                emoji:
+                                    (allDbCommands.find(
+                                        (a) => a.name == value.name
+                                    )?.disabled
+                                        ? '❌'
+                                        : '✅') || '❔',
+                            },
+                        ])
+                    } else {
+                        selection.addOptions([
+                            {
+                                label: value.name || 'ERROR',
+                                value: `command:${
+                                    value.name || 'hrishissodumb'
+                                }-switch`,
+                                emoji:
+                                    (allDbCommands.find(
+                                        (a) => a.name == value.name
+                                    )?.disabled
+                                        ? '❌'
+                                        : '✅') || '❔',
+                            },
+                        ])
+                    }
                 }
                 const newCollector = (
                     await mainMessage.edit({
                         components: [
-                            new MessageActionRow().addComponents([selection]),
+                            new MessageActionRow().addComponents([
+                                selection,
+                                selection2,
+                            ]),
                         ],
                     })
                 ).createMessageComponentCollector({
