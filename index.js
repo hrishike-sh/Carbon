@@ -23,7 +23,7 @@ mongoose.connect(dbURL, {
 client.c = {
     commands: new Collection(),
     cooldowns: new Collection(),
-    disabledCommands: new Collection(),
+    disabledCommands: [],
     slashCommands: new Collection(),
 }
 client.snipes = {
@@ -154,6 +154,15 @@ client.on('ready', async () => {
         .censors
     client.db.censors = cens
     // CENSORS
+
+    // Disabled Commands
+    let dcommands = (await require('./database/models/command').find()).filter(
+        (a) => a.disabled
+    )
+    dcommands.forEach((val) => {
+        client.c.disabledCommands.push(val.name)
+    })
+    // Disabled Commands
 })
 
 client.on('interactionCreate', async (interaction) => {
@@ -226,13 +235,8 @@ client.on('messageCreate', async (message) => {
         )
 
     if (!command) return
-    if (
-        !client.switches.commands &&
-        !client.config.trustedAccess.includes(message.author.id)
-    ) {
-        return message.reply({
-            content: 'Commands have been disabled temporarily.',
-        })
+    if (client.c.disabledCommands.includes(command.name)) {
+        return message.reply('This command is temporarily disabled.')
     }
     if (message.guild && message.guild.id !== config.guildId && command.fhOnly)
         return message.reply(

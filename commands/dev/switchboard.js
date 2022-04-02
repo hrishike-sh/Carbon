@@ -5,6 +5,7 @@ const {
     MessageActionRow,
     MessageButton,
     MessageSelectMenu,
+    SelectMenuInteraction,
 } = require('discord.js')
 const DBCommands = require('../../database/models/command')
 module.exports = {
@@ -98,7 +99,7 @@ module.exports = {
                                     label: value.name || 'ERROR',
                                     value: `command:${
                                         value.name || 'hrishissodumb'
-                                    }-switch`,
+                                    }`,
                                     emoji:
                                         (allDbCommands.find(
                                             (a) => a.name == value.name
@@ -113,7 +114,7 @@ module.exports = {
                                     label: value.name || 'ERROR',
                                     value: `command:${
                                         value.name || 'hrishissodumb'
-                                    }-switch`,
+                                    }`,
                                     emoji:
                                         (allDbCommands.find(
                                             (a) => a.name == value.name
@@ -129,7 +130,7 @@ module.exports = {
                                 label: value.name || 'ERROR',
                                 value: `command:${
                                     value.name || 'hrishissodumb'
-                                }-switch`,
+                                }`,
                                 emoji:
                                     (allDbCommands.find(
                                         (a) => a.name == value.name
@@ -158,8 +159,32 @@ module.exports = {
                         } else return true
                     },
                 })
-
-                newCollector.on('collect', async (select) => {})
+                /**
+                 * @param {SelectMenuInteraction} select
+                 */
+                newCollector.on('collect', async (select) => {
+                    const command = select.values[0].split(':')[1]
+                    const c = await DBCommands.findOne({
+                        name: command,
+                    })
+                    if (c.disabled) {
+                        c.disabled = false
+                        client.c.disabledCommands.filter(
+                            (a) => a.name !== c.name
+                        )
+                        c.save()
+                        return select.reply(
+                            `The \`${c.name}\` command is enabled globally.`
+                        )
+                    } else {
+                        c.disabled = true
+                        client.c.disabledCommands.push(c.name)
+                        c.save()
+                        return select.reply(
+                            `The \`${c.name}\` command is disabled globally.`
+                        )
+                    }
+                })
             } else if (ID === 'scommands') {
             } else return
         })
