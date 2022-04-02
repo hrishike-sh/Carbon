@@ -98,7 +98,9 @@ module.exports = {
                 }
                 const newCollector = (
                     await mainMessage.edit({
-                        components: [selection],
+                        components: [
+                            new MessageActionRow().addComponents([selection]),
+                        ],
                     })
                 ).createMessageComponentCollector({
                     filter: (button) => {
