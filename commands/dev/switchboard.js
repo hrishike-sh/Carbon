@@ -85,22 +85,44 @@ module.exports = {
                     .setPlaceholder('Other commands...')
                     .setMaxValues(1)
                     .setMinValues(1)
+                const selection3 = new MessageSelectMenu()
+                    .setCustomId('select-commands3-switch')
+                    .setPlaceholder('Other commands...')
+                    .setMaxValues(1)
+                    .setMinValues(1)
                 for (const [key, value] of client.c.commands) {
                     if (selection.options.length > 24) {
-                        selection2.addOptions([
-                            {
-                                label: value.name || 'ERROR',
-                                value: `command:${
-                                    value.name || 'hrishissodumb'
-                                }-switch`,
-                                emoji:
-                                    (allDbCommands.find(
-                                        (a) => a.name == value.name
-                                    )?.disabled
-                                        ? '❌'
-                                        : '✅') || '❔',
-                            },
-                        ])
+                        if (selection2.options.length > 24) {
+                            selection3.addOptions([
+                                {
+                                    label: value.name || 'ERROR',
+                                    value: `command:${
+                                        value.name || 'hrishissodumb'
+                                    }-switch`,
+                                    emoji:
+                                        (allDbCommands.find(
+                                            (a) => a.name == value.name
+                                        )?.disabled
+                                            ? '❌'
+                                            : '✅') || '❔',
+                                },
+                            ])
+                        } else {
+                            selection2.addOptions([
+                                {
+                                    label: value.name || 'ERROR',
+                                    value: `command:${
+                                        value.name || 'hrishissodumb'
+                                    }-switch`,
+                                    emoji:
+                                        (allDbCommands.find(
+                                            (a) => a.name == value.name
+                                        )?.disabled
+                                            ? '❌'
+                                            : '✅') || '❔',
+                                },
+                            ])
+                        }
                     } else {
                         selection.addOptions([
                             {
