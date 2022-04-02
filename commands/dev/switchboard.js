@@ -84,8 +84,10 @@ module.exports = {
                 for (const [key, value] of client.c.commands) {
                     selection.addOptions([
                         {
-                            label: value.name,
-                            value: `command:${value.name}-switch`,
+                            label: value.name || 'ERROR',
+                            value: `command:${
+                                value.name || 'hrishissodumb'
+                            }-switch`,
                             emoji:
                                 (allDbCommands.find((a) => a.name == value.name)
                                     ?.disabled
