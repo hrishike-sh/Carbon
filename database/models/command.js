@@ -6,4 +6,4 @@ const CommandSchema = new mongoose.Schema({
     disabled: false,
 })
 
-module.exports = mongoose.model('autoresponse', CommandSchema)
+module.exports = mongoose.model('command', CommandSchema)
