@@ -86,11 +86,11 @@ module.exports = {
                         {
                             label: value.name,
                             value: `command:${value.name}-switch`,
-                            emoji: allDbCommands.find(
-                                (a) => a.name == value.name
-                            ).disabled
-                                ? '❌'
-                                : '✅',
+                            emoji:
+                                (allDbCommands.find((a) => a.name == value.name)
+                                    ?.disabled
+                                    ? '❌'
+                                    : '✅') || '❔',
                         },
                     ])
                 }
