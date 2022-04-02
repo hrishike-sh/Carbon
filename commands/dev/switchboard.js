@@ -74,7 +74,7 @@ module.exports = {
                 })
 
             const ID = button.customId.replace('-switch', '')
-
+            button.deferUpdate()
             if (ID === 'commands') {
                 const selection = new MessageSelectMenu()
                     .setCustomId('select-commands-switch')
@@ -186,6 +186,10 @@ module.exports = {
                     }
                 })
             } else if (ID === 'scommands') {
+                button.reply({
+                    content: 'This part doesnt work yet',
+                    ephemeral: true,
+                })
             } else return
         })
     },
