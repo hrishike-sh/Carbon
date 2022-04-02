@@ -143,10 +143,9 @@ module.exports = {
                 const newCollector = (
                     await mainMessage.edit({
                         components: [
-                            new MessageActionRow().addComponents([
-                                selection,
-                                selection2,
-                            ]),
+                            new MessageActionRow().addComponents([selection]),
+                            new MessageActionRow().addComponents([selection2]),
+                            new MessageActionRow().addComponents([selection3]),
                         ],
                     })
                 ).createMessageComponentCollector({
