@@ -74,7 +74,7 @@ module.exports = {
                 })
 
             const ID = button.customId.replace('-switch', '')
-            button.deferUpdate()
+            if (button.isButton()) button.deferUpdate()
             if (ID === 'commands') {
                 const selection = new MessageSelectMenu()
                     .setCustomId('select-commands-switch')
