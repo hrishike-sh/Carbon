@@ -4,8 +4,9 @@ const {
     MessageEmbed,
     MessageActionRow,
     MessageButton,
+    MessageSelectMenu,
 } = require('discord.js')
-
+const DBCommands = require('../../database/models/command')
 module.exports = {
     name: 'switchboard',
     aliases: ['sb'],
@@ -19,7 +20,7 @@ module.exports = {
         const switches = client.switches
 
         if (!client.config.trustedAccess.includes(message.author.id)) return
-
+        const allDbCommands = await DBCommands.find({})
         const embed = new MessageEmbed()
             .setTitle('SwitchBoard')
             .setColor('NAVY')
@@ -48,11 +49,11 @@ module.exports = {
                 .setCustomId('scommands-switch'),
         ])
 
-        const msg = await message.channel.send({
+        const mainMessage = await message.channel.send({
             embeds: [embed],
             components: [components],
         })
-        const collector = msg.createMessageComponentCollector({
+        const collector = mainMessage.createMessageComponentCollector({
             filter: (button) => {
                 if (button.user.id !== message.author.id) {
                     return button.reply({
@@ -72,45 +73,45 @@ module.exports = {
                 })
 
             const ID = button.customId.replace('-switch', '')
-            switch (ID) {
-                case 'commands':
-                    client.switches.commands = client.switches.commands
-                        ? false
-                        : true
-                    msg.components[0].components
-                        .filter((b) => b.customId === 'commands-switch')[0]
-                        .setStyle(
-                            client.switches.commands ? 'SUCCESS' : 'DANGER'
-                        )
-                    msg.edit({
-                        components: [...msg.components],
+
+            if (ID === 'commands') {
+                const selection = new MessageSelectMenu()
+                    .setCustomId('select-commands-switch')
+                    .setPlaceholder('Choose a specific command.')
+                    .setMaxValues(1)
+                    .setMinValues(1)
+
+                for (const [key, value] of client.c.commands) {
+                    selection.addOptions([
+                        {
+                            label: value.name,
+                            value: `command:${value.name}-switch`,
+                            emoji: allDbCommands.find(
+                                (a) => a.name == value.name
+                            ).disabled
+                                ? '❌'
+                                : '✅',
+                        },
+                    ])
+                }
+                const newCollector = (
+                    await mainMessage.edit({
+                        components: [selection],
                     })
-                    return button.reply({
-                        content: `Commands are now ${
-                            client.switches.commands ? 'ENABLED' : 'DISABLED'
-                        } globally.`,
-                    })
-                case 'scommands':
-                    client.switches.slashCommands = client.switches
-                        .slashCommands
-                        ? false
-                        : true
-                    msg.components[0].components
-                        .filter((b) => b.customId === 'scommands-switch')[0]
-                        .setStyle(
-                            client.switches.slashCommands ? 'SUCCESS' : 'DANGER'
-                        )
-                    msg.edit({
-                        components: [...msg.components],
-                    })
-                    return button.reply({
-                        content: `Slash Commands are now ${
-                            client.switches.slashCommands
-                                ? 'ENABLED'
-                                : 'DISABLED'
-                        } globally.`,
-                    })
-            }
+                ).createMessageComponentCollector({
+                    filter: (button) => {
+                        if (button.user.id !== message.author.id) {
+                            return button.reply({
+                                content: 'Not for you.',
+                                ephemeral: true,
+                            })
+                        } else return true
+                    },
+                })
+
+                newCollector.on('collect', async (select) => {})
+            } else if (ID === 'scommands') {
+            } else return
         })
     },
 }
