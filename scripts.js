@@ -1,3 +1,5 @@
+const { randomBytes } = require('crypto')
+
 /**
  * @param {String} string
  *
@@ -67,8 +69,13 @@ const formatTime = (time, format) => {
     return `<t:${(time / 1000).toFixed(0)}:${format || 'R'}>`
 }
 
+const getRandomHash = () => {
+    return randomBytes(18).toString('hex')
+}
+
 module.exports.parseAmount = parseAmount
 module.exports.dmUser = DMUser
 module.exports.getRandom = getRandom
 module.exports.sleep = sleep
 module.exports.formatTime = formatTime
+module.exports.getRandomHash = getRandomHash

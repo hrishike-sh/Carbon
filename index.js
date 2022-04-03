@@ -47,6 +47,7 @@ client.functions = {
     getRandom: skripts.getRandom,
     sleep: skripts.sleep,
     formatTime: skripts.formatTime,
+    randomHash: skripts.getRandomHash,
 }
 client.switches = {
     commands: true,
