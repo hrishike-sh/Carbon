@@ -75,11 +75,19 @@ module.exports = {
             .setEmoji('911971090954326017')
             .setCustomId('prev-snipe')
             .setStyle('SUCCESS')
+        let delBut = new MessageButton()
+            .setEmoji('🗑')
+            .setCustomId('del-snipe')
+            .setStyle('PRIMARY')
         let nextBut = new MessageButton()
             .setEmoji('911971202048864267')
             .setCustomId('next-snipe')
             .setStyle('SUCCESS')
-        let row = new MessageActionRow().addComponents([prevBut, nextBut])
+        let row = new MessageActionRow().addComponents([
+            prevBut,
+            delBut,
+            nextBut,
+        ])
 
         const mainMessage = await message.channel.send({
             content: 'Use the buttons to navigate.',
@@ -123,7 +131,7 @@ module.exports = {
                     embeds: [snipeBed],
                     components: [row],
                 })
-            } else {
+            } else if (id === 'next-snipe') {
                 snipe++
                 if (snipe > sniped.length || snipe == sniped.length) {
                     snipe = sniped.length - 1
@@ -146,6 +154,8 @@ module.exports = {
                     embeds: [snipeBed],
                     components: [row],
                 })
+            } else {
+                mainMessage.delete()
             }
         })
 
