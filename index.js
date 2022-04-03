@@ -103,7 +103,7 @@ client.on('ready', async () => {
     console.log('Logged in.')
     client.emit('tick')
     client.user.setActivity({
-        name: 'meow UwU',
+        name: 'nya UwU 😼',
         type: 'STREAMING',
     })
     client.db.fighthub = client.guilds.cache.get(config.guildId)
