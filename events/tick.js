@@ -292,6 +292,28 @@ module.exports = {
                                     ],
                                 })
                             } catch (e) {}
+                            if (giveaway.sponsor.id) {
+                                try {
+                                    await (
+                                        await client.users.fetch(
+                                            giveaway.sponsor.id
+                                        )
+                                    ).send({
+                                        embeds: [
+                                            new MessageEmbed()
+                                                .setTitle(
+                                                    'Thank you for sponsoring!'
+                                                )
+                                                .setDescription(
+                                                    `Your giveaway for **${
+                                                        giveaway.prize
+                                                    }** has ended and you were thanked **${giveaway.sponsor.thanks.toLocaleString()}** times!`
+                                                )
+                                                .setColor('AQUA'),
+                                        ],
+                                    })
+                                } catch (_) {}
+                            }
                         }
                     } catch (e) {
                         continue
