@@ -75,7 +75,7 @@ module.exports = {
             time: interaction.options.getString('time'),
             channel: interaction.options.getChannel('channel'),
             req: interaction.options.getString('role_requirement') || null,
-            donor: interaction.options.getUser('donator') || null,
+            donor: interaction.options.getUser('donator') || interaction.user,
             message: interaction.options.getString('message') || null,
         }
 
@@ -158,7 +158,7 @@ module.exports = {
             messageId: msg.id,
             hosterId: interaction.user.id,
             winners,
-            sponsor: {id: donor.id || interaction.user.id, thanks: 0},
+            sponsor: { id: donor.id, thanks: 0 },
             prize: data.prize,
             endsAt: new Date().getTime() + time,
             hasEnded: false,
