@@ -23,7 +23,8 @@ module.exports = {
             button.customId !== 'giveaway-join' &&
             button.customId !== 'giveaway-info' &&
             button.customId !== 'giveaway-reroll' &&
-            button.customId !== 'giveaway-leave'
+            button.customId !== 'giveaway-leave' &&
+            button.customId !== 'giveaway-thank'
         )
             return
 
@@ -33,7 +34,7 @@ module.exports = {
 
         if (button.customId === 'giveaway-join') {
             if (gaw.hasEnded) {
-                await button.message.edit({
+                button.message.edit({
                     content: `🎉 Giveaway Ended 🎉`,
                     embeds: [
                         new MessageEmbed()
@@ -82,6 +83,11 @@ module.exports = {
                                 .setLabel('Leave giveaway')
                                 .setCustomId('giveaway-leave')
                                 .setStyle('DANGER'),
+                            new MessageButton()
+                                .setLabel('Thank the sponsor')
+                                .setEmoji('♥')
+                                .setCustomId('giveaway-thank')
+                                .setStyle('PRIMARY'),
                         ]),
                     ],
                     ephemeral: true,
@@ -129,6 +135,11 @@ module.exports = {
                             .setLabel('Leave giveaway')
                             .setCustomId('giveaway-leave')
                             .setStyle('DANGER'),
+                        new MessageButton()
+                            .setLabel('Thank the sponsor')
+                            .setEmoji('♥')
+                            .setCustomId('giveaway-thank')
+                            .setStyle('PRIMARY'),
                     ]),
                 ],
                 ephemeral: true,
@@ -215,6 +226,23 @@ module.exports = {
                 ],
                 ephemeral: true,
             })
+        } else if (button.customId === 'giveaway-thank') {
+            const messageId = button.message.reference.messageId
+            const gaw = await giveawayModel.findOne({ messageId })
+
+            gaw.sponsor.thanks++
+
+            button.reply({
+                embeds: [
+                    {
+                        description: `Thank you for thanking them!\nThey have been thanked ${gaw.sponsor.thanks.toLocaleString()} times.`,
+                        color: 'LUMINOUS_VIVID_PINK', // what color is this
+                    },
+                ],
+                ephemeral: true,
+            })
+            gaw.save()
+            return
         }
     },
 }

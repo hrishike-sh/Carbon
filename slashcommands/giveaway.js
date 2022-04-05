@@ -125,7 +125,7 @@ module.exports = {
                 `Roles: ${req.map((val) => `<@&${val}>`).join(', ')}`,
                 false
             )
-        if (donor) embed.addField('Donator:', `${donor.toString()}`, false)
+        if (donor) embed.addField('Sponsor:', `${donor.toString()}`, false)
 
         interaction.reply({
             content: `Giveaway started in ${channel}`,
@@ -158,6 +158,7 @@ module.exports = {
             messageId: msg.id,
             hosterId: interaction.user.id,
             winners,
+            sponsor: {id: donor.id || interaction.user.id, thanks: 0},
             prize: data.prize,
             endsAt: new Date().getTime() + time,
             hasEnded: false,

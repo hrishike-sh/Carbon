@@ -8,6 +8,10 @@ const GiveawaySchema = new mongoose.Schema({
     channelId: reqString,
     messageId: reqString,
     hosterId: reqString,
+    sponsor: {
+        id: String,
+        thanks: Number
+    },
     winners: Number,
     prize: reqString,
     endsAt: Number,
