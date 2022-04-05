@@ -229,7 +229,12 @@ module.exports = {
         } else if (button.customId === 'giveaway-thank') {
             const messageId = button.message.reference.messageId
             const gaw = await giveawayModel.findOne({ messageId })
-
+            if (!gaw.sponsor.thanks) {
+                return button.reply({
+                    content: 'This feature only works for newer giveaways.',
+                    ephemeral: true,
+                })
+            }
             gaw.sponsor.thanks++
 
             button.reply({
