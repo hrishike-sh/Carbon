@@ -58,11 +58,11 @@ module.exports = {
                 )
                 components[i].addComponents([
                     new MessageButton()
-                        .setLabel(arra[j][0])
-                        .setCustomId(arra[j][1])
-                        .setStyle(arra[j][2]),
+                        .setLabel(arra[j])
+                        .setCustomId(arra[++j])
+                        .setStyle(arra[++j]),
                 ])
-                j++
+                j = 0
             }
             i++
         }
