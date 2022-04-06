@@ -162,7 +162,7 @@ module.exports = {
                     mainMessage.components[0].components.forEach((c) => {
                         c.setDisabled()
                     })
-                    embed.setColor('RED')
+                    embed.setColor('GREEN')
                     return mainMessage.edit({
                         content: `This request was cancelled by ${button.user.toString()}!`,
                         embeds: [embed],
@@ -171,6 +171,7 @@ module.exports = {
                 }
             })
         } else {
+            interaction.reply("This isn't implemented yet")
         }
     },
 }
