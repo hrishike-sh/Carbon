@@ -115,6 +115,7 @@ module.exports = {
                             .setStyle('DANGER'),
                     ]),
                 ],
+                allowedMentions: { roles: [giveawayRole] },
             })
 
             const collector = mainMessage.createMessageComponentCollector({
@@ -124,7 +125,7 @@ module.exports = {
                             content: `You must have the <@&${giveawayRole}> to accept/deny this.`,
                             ephemeral: true,
                         })
-                    }
+                    } else return true
                 },
             })
             collector.on('collect', async (button) => {
