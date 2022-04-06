@@ -115,7 +115,7 @@ module.exports = {
                             .setStyle('DANGER'),
                     ]),
                 ],
-                allowedMentions: { roles: [giveawayRole] },
+                allowedMentions: { roles: [giveawayRole], parse: ['users'] },
             })
 
             const collector = mainMessage.createMessageComponentCollector({
@@ -147,14 +147,14 @@ module.exports = {
                     })
                     embed.setColor('RED')
                     return mainMessage.edit({
-                        content: This` request was cancelled by ${button.user.toString()}!`,
+                        content: `This request was cancelled by ${button.user.toString()}!`,
                         embeds: [embed],
                         components: mainMessage.components,
                     })
                 } else {
                     collector.stop()
                     interaction.user.send(
-                        `Your giveaway request has been cancelled by <@${button.user.toString()}> in <#${giveawayChannel}>`
+                        `Your giveaway request has been cancelled by ${button.user.toString()} in <#${giveawayChannel}>`
                     )
                     mainMessage.components[0].components
                         .find((b) => !b.customId.includes('deny'))
@@ -164,7 +164,7 @@ module.exports = {
                     })
                     embed.setColor('RED')
                     return mainMessage.edit({
-                        content: This` request was cancelled by ${button.user.toString()}!`,
+                        content: `This request was cancelled by ${button.user.toString()}!`,
                         embeds: [embed],
                         components: mainMessage.components,
                     })
