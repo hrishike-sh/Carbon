@@ -112,12 +112,12 @@ module.exports = {
                 })
             }
             const operation = operationArray.includes(thing)
+            console.log(operationArray, operation)
             operation
                 ? operationArray.includes(amogus[-1])
                     ? (amogus[-1] = thing)
                     : amogus.push(thing)
                 : amogus.push(thing)
-            console.log(operationArray, operation.includes(thing))
             /**
              * Explaining line 92-96
              * First IF the input is an operation(i.e. multiply, addition etc.), it will
