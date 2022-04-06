@@ -91,8 +91,9 @@ module.exports = {
             time: 300000,
         })
         const operationArray = ['+', '-', '/', '*']
-        const calculated = false
+        let calculated = false
         mainCollector.on('collect', async (button) => {
+            button.deferUpdate()
             if (calculated) {
                 calculated = false
                 amogus = []
@@ -116,6 +117,7 @@ module.exports = {
                     ? (amogus[-1] = thing)
                     : amogus.push(thing)
                 : amogus.push(thing)
+            console.log(operationArray, operation.includes(thing))
             /**
              * Explaining line 92-96
              * First IF the input is an operation(i.e. multiply, addition etc.), it will
