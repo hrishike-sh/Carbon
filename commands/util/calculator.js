@@ -112,7 +112,7 @@ module.exports = {
                 })
             }
             const operation = operationArray.includes(thing)
-            console.log(operationArray, operation)
+            console.log(operationArray, operation, amogus[-1], amogus)
             operation
                 ? operationArray.includes(amogus[-1])
                     ? (amogus[-1] = thing)
