@@ -145,9 +145,9 @@ module.exports = {
                     mainMessage.components[0].components.forEach((c) => {
                         c.setDisabled()
                     })
-                    embed.setColor('RED')
+                    embed.setColor('GREEN')
                     return mainMessage.edit({
-                        content: `This request was cancelled by ${button.user.toString()}!`,
+                        content: `This request was accepted by ${button.user.toString()}!`,
                         embeds: [embed],
                         components: mainMessage.components,
                     })
@@ -162,7 +162,7 @@ module.exports = {
                     mainMessage.components[0].components.forEach((c) => {
                         c.setDisabled()
                     })
-                    embed.setColor('GREEN')
+                    embed.setColor('RED')
                     return mainMessage.edit({
                         content: `This request was cancelled by ${button.user.toString()}!`,
                         embeds: [embed],
