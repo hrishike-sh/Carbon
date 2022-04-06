@@ -50,7 +50,9 @@ module.exports = {
         let i = 0
         for (const array of arrays) {
             let j = 0
+            console.log(`---------------Main Array\n${array[i]}`)
             for (const arra of array) {
+                console.log(arra[j])
                 console.log(
                     `Label: ${arra[j][0]} - Custom ID: ${arra[j][1]} - Style: ${arra[j][2]}`
                 )
