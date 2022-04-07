@@ -79,6 +79,7 @@ module.exports = {
         })
         let index = 0
         collector.on('collect', async (b) => {
+            b.deferUpdate()
             const todo = b.customId.replace('-items', '')
 
             if (todo == 'first') {
@@ -93,7 +94,7 @@ module.exports = {
                 index = Items.length - 1
             }
 
-            embed.setDescription(Items[index].join())
+            embed.setDescription(Items[index].join('\n\n'))
             embed.setFooter({
                 text: `${index + 1}/${Items.length}`,
             })
