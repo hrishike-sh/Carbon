@@ -54,11 +54,26 @@ module.exports = {
             category: interaction.options.getString('type'),
         }
 
-        if (interaction.user.id !== '598918643727990784') {
-            return interaction.reply({
-                content: 'Only hrish can run this command.',
+        if (
+            !interaction.member.roles.cache.some(
+                (role) => role.id === '824539655134773269'
+            ) &&
+            !interaction.member.roles.cache.some(
+                (role) => role.id === '824348974449819658'
+            ) &&
+            !interaction.member.roles.cache.some(
+                (role) => role.id === '825783847622934549'
+            ) &&
+            !interaction.member.roles.cache.some(
+                (role) => role.id === '858088054942203945'
+            ) &&
+            interaction.author.id !== '786150805773746197'
+        ) {
+            return interaction.reply( {
+                content: 'Only staff can run this command.',
                 ephemeral: true,
-            })
+            }
+            )
         }
 
         const item = await db.findOne({
