@@ -97,6 +97,9 @@ module.exports = {
             embed.setFooter({
                 text: `${index + 1}/${Items.length}`,
             })
+            mainMessage.edit({
+                embeds: [embed],
+            })
         })
     },
 }
