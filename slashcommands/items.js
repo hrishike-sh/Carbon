@@ -38,6 +38,9 @@ module.exports = {
             .setTitle('Dank Memer Items')
             .setColor('AQUA')
             .setDescription(Items[0].join(`\n\n`))
+            .setFooter({
+                text: `Page 1/${Items.length}`,
+            })
 
         const mainMessage = await interaction.channel.send({
             embeds: [embed],
@@ -61,6 +64,39 @@ module.exports = {
                         .setStyle('SECONDARY'),
                 ]),
             ],
+        })
+
+        const collector = mainMessage.createMessageComponentCollector({
+            filter: (b) => {
+                if (b.user.id !== interaction.user.id) {
+                    return b.reply({
+                        content: 'Not for you.',
+                        ephemeral: true,
+                    })
+                } else return true
+            },
+            time: 600000,
+        })
+        let index = 0
+        collector.on('collect', async (b) => {
+            const todo = b.customId.replace('-items', '')
+
+            if (todo == 'first') {
+                index = 0
+            } else if (todo == 'prev') {
+                index--
+                index < 0 ? (index = 0) : null
+            } else if (todo == 'next') {
+                index++
+                index > Items.length - 1 ? (index = Items.length - 1) : null
+            } else {
+                index = Items.length - 1
+            }
+
+            embed.setDescription(Items[index].join())
+            embed.setFooter({
+                text: `${index + 1}/${Items.length}`,
+            })
         })
     },
 }
