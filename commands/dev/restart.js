@@ -2,7 +2,7 @@ module.exports = {
 	name: 'restart',
 	category: 'Developer',
     aliases: ['reboot', 'botisdyingplsreboot', 'EXITPROCESS'],
-	run: async (client, message, args) => {
+	 async execute (message, args, client) {
         if (!client.config.cmds.trustedAccess.includes(message.author.id)) {
             return message.reply('You cannot use this.')
         }
