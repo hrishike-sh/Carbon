@@ -21,7 +21,7 @@ module.exports = {
         .addStringOption((sus) => {
             return sus
                 .setRequired(true)
-                .addChoice('Collectible', 'col')
+                .addChoice('Collectable', 'col')
                 .addChoice('Sellable', 'sell')
                 .addChoice('Work Items', 'work')
                 .addChoice('Pepe Item', 'pepe')
