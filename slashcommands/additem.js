@@ -5,7 +5,7 @@ module.exports = {
     category: 'Donation',
     data: new SlashCommandBuilder()
         .setName('additem')
-        .setDescription('Add an item to the dono thing; Hrish only.')
+        .setDescription('Add an item to the items list')
         .addStringOption((sus) => {
             return sus
                 .setName('item_id')
