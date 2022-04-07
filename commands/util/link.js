@@ -18,6 +18,8 @@ module.exports = {
             )
         }
 
-        return message.reply(msg.embeds[0].thumbnail || 'No link found.')
+        return message.reply(
+            `\`${msg.embeds[0].thumbnail.url || 'No link found.'}\``
+        )
     },
 }
