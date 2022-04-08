@@ -11,13 +11,34 @@ module.exports = {
     category: 'Donation',
     data: new SlashCommandBuilder()
         .setName('items')
-        .setDescription('Check all the available items that you can donate!'),
+        .setDescription('Check all the available items that you can donate!')
+        .addStringOption((opt) => {
+            return opt
+                .setName('query')
+                .setRequired(false)
+                .setDescription(
+                    'An optional query to search items. (Search Item Ids)'
+                )
+        }),
     /**
      * @param {CommandInteraction} interaction
      */
     async execute(interaction) {
-        const items = await db.find({})
-
+        let items = await db.find({})
+        if (interaction.options.getString('query')) {
+            items = items.filter((a) =>
+                a.item_id
+                    .toLowerCase()
+                    .includes(
+                        interaction.options
+                            .getString('query')
+                            .toLocaleLowerCase()
+                    )
+            )
+            if (!items.length) {
+                return interaction.reply('No search results found.')
+            }
+        }
         let rawItems = items.map(
             (yes) =>
                 `・**${
