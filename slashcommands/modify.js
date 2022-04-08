@@ -75,7 +75,7 @@ module.exports = {
                     title: item.display.name,
                     description: `**Value:** ${item.value.toLocaleString()}`,
                     thumbnail: {
-                        url: item.url,
+                        url: item.display.thumbnail,
                     },
                 },
             ],
