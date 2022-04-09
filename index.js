@@ -172,6 +172,7 @@ client.on('ready', async () => {
     }
     
     await message.react('962407474059694200');
+    await client.functions.sleep(1250);
     await message.react('962407492300705834');
     return null;
     })
