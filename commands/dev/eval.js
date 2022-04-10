@@ -5,7 +5,10 @@ const {
     MessageActionRow,
     MessageButton,
 } = require('discord.js')
-
+const { AmariBot } = require('amaribot.js')
+const Amari = new AmariBot(process.env.amariToken, {
+    token: process.env.amariToken,
+})
 async function uploadResult(content) {
     const parseQueryString = (obj) => {
         let res = ''
