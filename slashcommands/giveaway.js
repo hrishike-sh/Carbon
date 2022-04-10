@@ -69,6 +69,19 @@ module.exports = {
      * @param {CommandInteraction} interaction
      */
     async execute(interaction) {
+        const modRoles = [
+            '824348974449819658',
+            '824539655134773269',
+            '825783847622934549',
+            '858088054942203945',
+            '826002228828700718',
+        ]
+        if (!interaction.member.roles.cache.hasAny(...modRoles)) {
+            return interaction.reply({
+                content: 'You cannot host giveaways...',
+                ephemeral: true,
+            })
+        }
         const data = {
             prize: interaction.options.getString('prize'),
             winners: interaction.options.getNumber('winners'),
