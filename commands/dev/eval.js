@@ -54,9 +54,11 @@ module.exports = {
         }
 
         const tokenRegex = new RegExp(process.env.token, 'gi')
+        const tokenRegex2 = new RegExp(process.env.amariToken, 'gi')
         let button = false
         let hasteURL = ''
         result = result.replace(tokenRegex, 'nice try but no')
+        result = result.replace(tokenRegex2, '🤡🤡🤡🤡🤡')
         if (result.length > 1000) {
             if (result.length >= 1024) {
                 hasteURL = await uploadResult(result, {
