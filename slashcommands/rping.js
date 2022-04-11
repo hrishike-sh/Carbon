@@ -81,7 +81,7 @@ module.exports = {
         if (time < 1800000) {
             return interaction.reply({
                 content: `This ping cannot be pinged as it is on cooldown.\nTry again ${client.functions.formatTime(
-                    lastPPing + 3600000
+                    lastPPing + 1800000
                 )}`,
             })
         }
