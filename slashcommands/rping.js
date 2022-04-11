@@ -97,7 +97,7 @@ module.exports = {
             content: 'Ponged!',
             ephemeral: true,
         })
-        lastPPing = new Date().getTime()
+        lastPing.pings[heh] = new Date().getTime()
         lastPing.save()
     },
 }
