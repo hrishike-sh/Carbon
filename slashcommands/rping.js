@@ -102,7 +102,7 @@ module.exports = {
         if (data.type) {
             embeds[0].setDescription(
                 embeds[0].description +
-                    `\n<:bdot:919555960769486890> Message: ${data.type}`
+                    `\n<:bdot:919555960769486890> Event type: ${data.type}`
             )
         }
         if (!data.host && !data.message && !data.type) {
