@@ -64,7 +64,7 @@ module.exports = {
 
         const lastPPing = lastPing.pings[heh]
         const time = new Date().getTime() - lastPPing
-        if (time < 3600000) {
+        if (time < 1800000) {
             return interaction.reply({
                 content: `This ping cannot be pinged as it is on cooldown.\nTry again ${client.functions.formatTime(
                     lastPPing + 3600000
