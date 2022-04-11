@@ -24,6 +24,11 @@ const SettingsSchema = new mongoose.Schema({
         censors: [Object],
         timeout_duration: Number,
     },
+    pings: {
+        mini: Number,
+        gaw: Number,
+        event: Number,
+    },
 })
 
 module.exports = mongoose.model('SettingsSchema', SettingsSchema)
