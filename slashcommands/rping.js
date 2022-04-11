@@ -72,7 +72,7 @@ module.exports = {
             })
         }
 
-        const embeds = [
+        let embeds = [
             new MessageEmbed()
                 .setDescription(
                     `Make sure to thank them in <#870240187198885888>!`
@@ -92,6 +92,9 @@ module.exports = {
                     `\n<:bdot:919555960769486890> Message: ${data.message}`
             )
         }
+        if (!data.host && !data.message) {
+            embeds = []
+        }
 
         interaction.reply({
             content: 'Ponged!',
@@ -99,5 +102,14 @@ module.exports = {
         })
         lastPing.pings[heh] = new Date().getTime()
         lastPing.save()
+
+        await interaction.channel.send({
+            content: `<@&${data.id}>`,
+            embeds: embeds.length ? embeds : [],
+            allowedMentions: {
+                roles: [data.id],
+                parse: ['users'],
+            },
+        })
     },
 }
