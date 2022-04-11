@@ -29,6 +29,12 @@ module.exports = {
         })
         .addStringOption((opt) => {
             return opt
+                .setName('prize')
+                .setDescription('Note: USE THIS ONLY FOR EVENTS!!')
+                .setRequired(false)
+        })
+        .addStringOption((opt) => {
+            return opt
                 .setName('event-type')
                 .setDescription('The type of the event(if any).')
         }),
@@ -55,6 +61,7 @@ module.exports = {
             host: interaction.options.getUser('sponsor') || null,
             message: interaction.options.getString('message') || null,
             type: interaction.options.getString('event-type') || null,
+            prize: interaction.options.getString('prize') || null,
         }
         let heh
         if (data.id === '824916330574118942') {
@@ -93,16 +100,22 @@ module.exports = {
                     `\n<:bdash:919555889239822477> Sponsor: ${data.host.toString()}`
             )
         }
-        if (data.message) {
-            embeds[0].setDescription(
-                embeds[0].description +
-                    `\n<:bdot:919555960769486890> Message: ${data.message}`
-            )
-        }
         if (data.type) {
             embeds[0].setDescription(
                 embeds[0].description +
                     `\n<:bdot:919555960769486890> Event type: ${data.type}`
+            )
+        }
+        if (data.prize) {
+            embeds[0].setDescription(
+                embeds[0].description +
+                    `\n<:bdot:919555960769486890> Prize: ${data.prize}`
+            )
+        }
+        if (data.message) {
+            embeds[0].setDescription(
+                embeds[0].description +
+                    `\n<:bdot:919555960769486890> Message: ${data.message}`
             )
         }
         if (!data.host && !data.message && !data.type) {
