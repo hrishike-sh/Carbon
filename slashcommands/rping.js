@@ -13,6 +13,7 @@ module.exports = {
                 .addChoice('Giveaway Ping', '824916330574118942')
                 .addChoice('Event Ping', '858088201451995137')
                 .addChoice('Mini Gaw and Event Ping', '837121985787592704')
+                .setRequired(true)
         })
         .addUserOption((opt) => {
             return opt
@@ -25,6 +26,11 @@ module.exports = {
                 .setName('message')
                 .setDescription('Message from the sponsor')
                 .setRequired(false)
+        })
+        .addStringOption((opt) => {
+            return opt
+                .setName('event-type')
+                .setDescription('The type of the event(if any).')
         }),
     category: 'Donation',
     /**
@@ -48,6 +54,7 @@ module.exports = {
             id: interaction.options.getString('role'),
             host: interaction.options.getUser('sponsor') || null,
             message: interaction.options.getString('message') || null,
+            type: interaction.options.getString('event-type') || null,
         }
         let heh
         if (data.id === '824916330574118942') {
@@ -92,7 +99,13 @@ module.exports = {
                     `\n<:bdot:919555960769486890> Message: ${data.message}`
             )
         }
-        if (!data.host && !data.message) {
+        if (data.type) {
+            embeds[0].setDescription(
+                embeds[0].description +
+                    `\n<:bdot:919555960769486890> Message: ${data.type}`
+            )
+        }
+        if (!data.host && !data.message && !data.type) {
             embeds = []
         }
 
