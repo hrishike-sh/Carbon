@@ -10,7 +10,7 @@ const GiveawaySchema = new mongoose.Schema({
     hosterId: reqString,
     sponsor: {
         id: String,
-        thanks: Number
+        thanks: Number,
     },
     winners: Number,
     prize: reqString,
@@ -18,6 +18,7 @@ const GiveawaySchema = new mongoose.Schema({
     hasEnded: Boolean,
     requirements: [String],
     entries: [],
+    winners: [],
     lastEntryCount: Number,
 })
 

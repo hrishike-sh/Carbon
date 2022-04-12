@@ -145,6 +145,12 @@ module.exports = {
                             })
                         }
                     } catch (e) {
+                        edit.hasEnded = true
+                        edit.save()
+                        channel.send(
+                            'Failed to edit giveaway.' +
+                                `\nError: \`${e.message}\``
+                        )
                         continue
                     }
                 }
@@ -152,7 +158,6 @@ module.exports = {
 
             for (const giveaway of gaws) {
                 giveaway.hasEnded = true
-                giveaway.save()
                 const channel = client.channels.cache.get(giveaway.channelId)
                 if (channel) {
                     try {
@@ -213,6 +218,8 @@ module.exports = {
                                     embeds: embed,
                                 })
                             }
+                            giveaway.winners = winners
+                            giveaway.save()
                             winners = winners.map((a) => `<@${a}>`).join(' ')
 
                             message.edit({
@@ -316,6 +323,7 @@ module.exports = {
                             }
                         }
                     } catch (e) {
+                        giveaway.save()
                         continue
                     }
                 }
