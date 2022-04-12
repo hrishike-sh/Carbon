@@ -42,7 +42,7 @@ module.exports = {
             ],
             allowedMentions: {
                 repliedUser: false,
-                roles: ['824329689534431302'],
+                parse: ['roles'],
             },
         })
     },
