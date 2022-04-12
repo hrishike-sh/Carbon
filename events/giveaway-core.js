@@ -47,9 +47,11 @@ module.exports = {
                             .setTimestamp()
                             .setColor('NOT_QUITE_BLACK')
                             .setDescription(
-                                `Winner(s): ${gaw.WWinners.map(
-                                    (w) => `<@${w}>`
-                                ).join(' ')}\nHost: <@${gaw.hosterId}>`
+                                `Winner(s): ${
+                                    gaw.WWinners.map((w) => `<@${w}>`).join(
+                                        ' '
+                                    ) || "Couldn't fetch!"
+                                }\nHost: <@${gaw.hosterId}>`
                             )
                             .setFields(button.message.embeds[0].fields),
                     ],
