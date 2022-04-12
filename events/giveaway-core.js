@@ -6,6 +6,7 @@ const {
     MessageActionRow,
     ButtonInteraction,
     Message,
+    Collection,
 } = require('discord.js')
 const { Model } = require('mongoose')
 const giveawayModel = require('../database/models/giveaway')
@@ -259,15 +260,15 @@ module.exports = {
     },
 }
 
-let beingEdited = false
+let beingEdited = new Collection()
 /**
  *
  * @param {Message} msg
  * @param {Model} model
  */
 const editCount = async (msg, model) => {
-    if (beingEdited) return
-    beingEdited = true
+    if (beingEdited.get(msg.id)) return
+    beingEdited.set(msg.id, true)
     await msg.client.functions.sleep(5000)
     msg.components[0].components[0].setLabel(
         model.entries.length.toLocaleString()
@@ -275,5 +276,5 @@ const editCount = async (msg, model) => {
     await msg.edit({
         components: msg.components,
     })
-    beingEdited = false
+    beingEdited.delete(msg.id)
 }
