@@ -18,7 +18,7 @@ const GiveawaySchema = new mongoose.Schema({
     hasEnded: Boolean,
     requirements: [String],
     entries: [],
-    Winners: [],
+    WWinners: [],
     lastEntryCount: Number,
 })
 

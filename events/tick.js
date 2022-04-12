@@ -218,7 +218,7 @@ module.exports = {
                                     embeds: embed,
                                 })
                             }
-                            giveaway.Winners = winners
+                            giveaway.WWinners = winners
                             giveaway.save()
                             winners = winners.map((a) => `<@${a}>`).join(' ')
 
