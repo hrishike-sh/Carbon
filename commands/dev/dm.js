@@ -26,7 +26,7 @@ module.exports = {
         }
         args.shift()
 
-        const msg = args.join(' ')
+        let msg = args.join(' ')
         if (!msg)
             return message.reply(
                 'Please give me what message you want to send them next time.'
