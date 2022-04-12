@@ -31,15 +31,21 @@ module.exports = {
             return message.reply(
                 'Please give me what message you want to send them next time.'
             )
-
+        let anonymous = false
+        if (msg.includes('-a')) {
+            msg = msg.replace('-a', '')
+            anonymous = true
+        }
         try {
             ;(await user.createDM()).send({
                 content: 'You have received a message!',
                 embeds: [
                     new MessageEmbed()
                         .setAuthor({
-                            name: message.author.tag,
-                            iconURL: message.author.displayAvatarURL(),
+                            name: anonymous ? 'Anonymous' : message.author.tag,
+                            iconURL: anonymous
+                                ? client.user.displayAvatarURL()
+                                : message.author.displayAvatarURL(),
                         })
                         .setTitle('Message: ')
                         .setDescription(msg.toString())
