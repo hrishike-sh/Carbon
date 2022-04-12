@@ -267,7 +267,9 @@ const editCount = async (msg, model) => {
     if (beingEdited) return
     beingEdited = true
     await msg.client.functions.sleep(5000)
-    msg.components[0].components[0].setLabel(model.entries.toLocaleString())
+    msg.components[0].components[0].setLabel(
+        model.entries.length.toLocaleString()
+    )
     await msg.edit({
         components: msg.components,
     })
