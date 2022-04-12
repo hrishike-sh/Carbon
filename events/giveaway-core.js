@@ -5,7 +5,9 @@ const {
     Interaction,
     MessageActionRow,
     ButtonInteraction,
+    Message,
 } = require('discord.js')
+const { Model } = require('mongoose')
 const giveawayModel = require('../database/models/giveaway')
 const bypassIds = ['825965323500126208', '876460154705555487']
 module.exports = {
@@ -45,7 +47,9 @@ module.exports = {
                             .setTimestamp()
                             .setColor('NOT_QUITE_BLACK')
                             .setDescription(
-                                `Winner(s): Couldn't fetch\nHost: <@${gaw.hosterId}>`
+                                `Winner(s): ${gaw.WWinners.map(
+                                    (w) => `<@${w}>`
+                                ).join(' ')}\nHost: <@${gaw.hosterId}>`
                             )
                             .setFields(button.message.embeds[0].fields),
                     ],
@@ -144,6 +148,7 @@ module.exports = {
                 ],
                 ephemeral: true,
             })
+            editCount(button.message, gaw)
         } else if (button.customId === 'giveaway-reroll') {
             const giveawayMessageId =
                 button.message.components[0].components[0].url
@@ -217,7 +222,7 @@ module.exports = {
 
             gaw.entries.splice(gaw.entries.indexOf(button.user.id), 1)
             gaw.save()
-
+            editCount(button.message, gaw)
             return button.reply({
                 embeds: [
                     new MessageEmbed()
@@ -250,4 +255,21 @@ module.exports = {
             return
         }
     },
+}
+
+let beingEdited = false
+/**
+ *
+ * @param {Message} msg
+ * @param {Model} model
+ */
+const editCount = async (msg, model) => {
+    if (beingEdited) return
+    beingEdited = true
+    await msg.client.functions.sleep(5000)
+    msg.components[0].components[0].setLabel(model.entries.toLocaleString())
+    await msg.edit({
+        components: msg.components,
+    })
+    beingEdited = false
 }
