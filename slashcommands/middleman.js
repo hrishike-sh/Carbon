@@ -32,6 +32,10 @@ module.exports = {
         }
 
         interaction.reply({
+            content: 'Middleman request sent!',
+            ephemeral: true,
+        })
+        interaction.channel.send({
             content: `<@&824329689534431302> ${guildChannel.toString()}`,
             embeds: [
                 {
@@ -41,7 +45,6 @@ module.exports = {
                 },
             ],
             allowedMentions: {
-                repliedUser: false,
                 parse: ['roles'],
             },
         })
