@@ -84,7 +84,7 @@ module.exports = {
                             SEND_MESSAGES: false,
                         }
                     )
-
+                    col.stop()
                     m.reply({
                         embeds: [
                             {
