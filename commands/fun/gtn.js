@@ -71,13 +71,36 @@ module.exports = {
                         SEND_MESSAGES: true,
                     }
                 )
-                const mainCol = message.channel.createMessageCollector({
-                    filter: (msg) => msg.content === randomNumber,
-                })
 
-                mainCol.on('collect', (m) => {
-                    return m.reply('yuh')
-                })
+                message.channel
+                    .awaitMessages({
+                        filter: (m) => m.content === randomNumber,
+                        max: 1,
+                    })
+                    .then((collected) => {
+                        try {
+                            message.channel.send(
+                                `${collected.first().author} guessed it!`,
+                                {
+                                    embeds: [
+                                        {
+                                            title: 'SOMEONE GUESSED IT!',
+                                            description: `The correct number was **${finalGuess}**!`,
+                                            timestamp: new Date(),
+                                        },
+                                    ],
+                                }
+                            )
+                            message.channel.updateOverwrite(
+                                message.channel.guild.roles.everyone,
+                                {
+                                    SEND_MESSAGES: false,
+                                }
+                            )
+                        } catch (e) {
+                            console.log(e)
+                        }
+                    })
             }
         })
 
