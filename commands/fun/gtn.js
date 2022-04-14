@@ -71,27 +71,27 @@ module.exports = {
                         SEND_MESSAGES: true,
                     }
                 )
-
+                console.log(randomNumber)
                 message.channel
                     .awaitMessages({
-                        filter: (m) => m.content === randomNumber,
-                        max: 1,
+                        filter: (m) => m.content === `${randomNumber}`,
                     })
                     .then((collected) => {
+                        console.log(collected)
                         try {
-                            message.channel.send(
-                                `${collected.first().author} guessed it!`,
-                                {
-                                    embeds: [
-                                        {
-                                            title: 'SOMEONE GUESSED IT!',
-                                            description: `The correct number was **${finalGuess}**!`,
-                                            timestamp: new Date(),
-                                        },
-                                    ],
-                                }
-                            )
-                            message.channel.updateOverwrite(
+                            message.channel.send({
+                                content: `${
+                                    collected.first().author
+                                } guessed it!`,
+                                embeds: [
+                                    {
+                                        title: 'SOMEONE GUESSED IT!',
+                                        description: `The correct number was **${finalGuess}**!`,
+                                        timestamp: new Date(),
+                                    },
+                                ],
+                            })
+                            message.channel.permissionOverwrites.edit(
                                 message.channel.guild.roles.everyone,
                                 {
                                     SEND_MESSAGES: false,
