@@ -65,24 +65,18 @@ module.exports = {
                 )
                 await message.client.functions.sleep(5000)
                 message.channel.send('Good luck, channel is unlocked.')
-                await message.channel.permissionOverwrites.edit(
-                    message.guild.roles.everyone.id,
+                message.channel.permissionOverwrites.edit(
+                    message.guild.roles.everyone,
                     {
                         SEND_MESSAGES: true,
                     }
                 )
-                const mainCol = message.channel.createMessageCollector()
-                mainCol.on('collect', async (m) => {
-                    console.log(m.content, `-${randomNumber}`)
-                    if (m.content !== randomNumber) return
-                    await message.channel.permissionOverwrites.edit(
-                        message.guild.roles.everyone.id,
-                        {
-                            SEND_MESSAGES: false,
-                        }
-                    )
-                    m.reply('You have guessed the number! Congrats.')
-                    return collector.stop()
+                const mainCol = message.channel.createMessageCollector({
+                    filter: (msg) => msg.content === randomNumber,
+                })
+
+                mainCol.on('collect', (m) => {
+                    return m.reply('yuh')
                 })
             }
         })
