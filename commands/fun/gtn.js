@@ -76,6 +76,11 @@ module.exports = {
                 const col = message.channel.createMessageCollector()
 
                 col.on('collect', (m) => {
+                    console.log(
+                        m.content,
+                        randomNumber,
+                        m.content === randomNumber
+                    )
                     if (m.content === randomNumber) {
                         m.reply('You guessed it')
                     } else {
