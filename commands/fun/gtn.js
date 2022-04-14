@@ -73,19 +73,28 @@ module.exports = {
                 )
                 console.log(randomNumber)
 
-                const col = message.channel.createMessageCollector()
+                const col = message.channel.createMessageCollector({
+                    filter: (m) => m.content === `${randomNumber}`,
+                })
 
                 col.on('collect', (m) => {
-                    console.log(
-                        m.content,
-                        randomNumber,
-                        m.content === randomNumber
+                    message.channel.permissionOverwrites.edit(
+                        message.guild.roles.everyone,
+                        {
+                            SEND_MESSAGES: false,
+                        }
                     )
-                    if (m.content === `${randomNumber}`) {
-                        m.reply('You guessed it')
-                    } else {
-                        m.reply('😕')
-                    }
+
+                    m.reply({
+                        embeds: [
+                            {
+                                title: '🎉 We have our winner',
+                                description: `The number to be guessed was **${randomNumber}** and ${m.author.toString()} guessed it!`,
+                                color: 'GREEN',
+                                timestamp: new Date(),
+                            },
+                        ],
+                    })
                 })
             }
         })
