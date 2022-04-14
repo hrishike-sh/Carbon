@@ -72,28 +72,11 @@ module.exports = {
                     }
                 )
                 console.log(randomNumber)
-                message.channel.awaitMessages({}).then((collected) => {
-                    console.log(collected)
-                    try {
-                        message.channel.send({
-                            content: `${collected.first().author} guessed it!`,
-                            embeds: [
-                                {
-                                    title: 'SOMEONE GUESSED IT!',
-                                    description: `The correct number was **${finalGuess}**!`,
-                                    timestamp: new Date(),
-                                },
-                            ],
-                        })
-                        message.channel.permissionOverwrites.edit(
-                            message.channel.guild.roles.everyone,
-                            {
-                                SEND_MESSAGES: false,
-                            }
-                        )
-                    } catch (e) {
-                        console.log(e)
-                    }
+
+                const col = message.channel.createMessageCollector()
+
+                col.on('collect', (m) => {
+                    m.reply('Hi')
                 })
             }
         })
