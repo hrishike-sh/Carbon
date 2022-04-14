@@ -81,7 +81,7 @@ module.exports = {
                         randomNumber,
                         m.content === randomNumber
                     )
-                    if (m.content === randomNumber) {
+                    if (m.content === `${randomNumber}`) {
                         m.reply('You guessed it')
                     } else {
                         m.reply('😕')
