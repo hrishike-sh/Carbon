@@ -31,11 +31,31 @@ module.exports = {
                 "Not the right message? Couldn't find any embeds."
             )
         }
+        const dbItems = await itemsDb.find({})
+        const itemms = []
+        for (const iitem of dbItems) {
+            itemms.push(iitem.item_id)
+        }
         const itemArray = getItems(
             dankMessage.embeds[0].fields[0].value.split('\n')
         )
-
-        message.reply(itemArray)
+        let toAdd = 0
+        for (const item of itemArray.split('\n')) {
+            if (item.includes('x')) {
+                const temp = item.split('x')
+                const amount = temp[0]
+                let item = temp[1]
+                let got = false
+                for (const i of itemms) {
+                    if (got) continue
+                    const res = i.localeCompare(item)
+                    if (res === 0) {
+                        got = true
+                        message.reply(`Found item ${item}`)
+                    }
+                }
+            }
+        }
     },
 }
 
@@ -55,7 +75,7 @@ function getItems(arr) {
             a +=
                 '\n' +
                 array.join(' ').match(/[0-9]x/i) +
-                array[array.length - 1]
+                array[array.length - 1].toLowerCase()
         }
     })
     return a
