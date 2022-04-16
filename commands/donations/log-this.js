@@ -10,7 +10,7 @@ module.exports = {
      * @param {String[]} args
      */
     async execute(message, args) {
-        const modRoles = []
+        const modRoles = ['824348974449819658']
         if (!message.member.roles.cache.hasAny(...modRoles)) {
             return message.reply("You can't use this command bozo")
         }
