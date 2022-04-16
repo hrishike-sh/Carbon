@@ -44,14 +44,14 @@ module.exports = {
             if (item.includes('x')) {
                 const temp = item.split('x')
                 const amount = temp[0]
-                let item = temp[1]
+                let ktem = temp[1]
                 let got = false
                 for (const i of itemms) {
                     if (got) continue
-                    const res = i.localeCompare(item)
+                    const res = i.localeCompare(ktem)
                     if (res === 0) {
                         got = true
-                        message.reply(`Found item ${item}`)
+                        message.reply(`Found item ${ktem}`)
                     }
                 }
             }
