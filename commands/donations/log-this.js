@@ -34,7 +34,7 @@ module.exports = {
         const dbItems = await itemsDb.find({})
         const itemms = []
         for (const iitem of dbItems) {
-            itemms.push(iitem.item_id.toLowerCase())
+            itemms.push(iitem.display.name.split(' ').join('').toLowerCase())
         }
         const itemArray = getItems(
             dankMessage.embeds[0].fields[0].value.split('\n')
@@ -57,10 +57,18 @@ module.exports = {
                         const value =
                             amount *
                             (dbItems.find(
-                                (a) => a.item_id.toLowerCase() === ktem
+                                (a) =>
+                                    a.display.name
+                                        .split(' ')
+                                        .join('')
+                                        .toLowerCase() === ktem
                             )
                                 ? dbItems.find(
-                                      (a) => a.item_id.toLowerCase() === ktem
+                                      (a) =>
+                                          a.display.name
+                                              .split(' ')
+                                              .join('')
+                                              .toLowerCase() === ktem
                                   ).value
                                 : 0)
 
