@@ -58,6 +58,8 @@ module.exports = {
                             (dbItems.find((a) => a.item_id === ktem)
                                 ? dbItems.find((a) => a.item_id === ktem).value
                                 : 0)
+
+                        console.log(`will add ${value}`)
                         toAdd += value
                     } else {
                         erray.push(
@@ -67,6 +69,7 @@ module.exports = {
                 }
             } else {
                 toAdd += parseInt(item)
+                console.log(`will add ${item}`)
             }
         }
         const embed = new MessageEmbed()
