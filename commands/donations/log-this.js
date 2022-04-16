@@ -35,7 +35,7 @@ module.exports = {
             dankMessage.embeds[0].fields[0].value.split('\n')
         )
 
-        message.reply(itemArray.join('\n'))
+        message.reply(itemArray)
     },
 }
 
