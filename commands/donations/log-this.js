@@ -45,7 +45,7 @@ module.exports = {
             if (!item.length) continue
             console.log(item)
             if (item.includes('x')) {
-                const temp = item.split('x')
+                const temp = item.split('x', 1)
                 const amount = temp[0]
                 let ktem = temp[1]
                 let got = false
