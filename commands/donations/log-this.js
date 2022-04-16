@@ -56,8 +56,12 @@ module.exports = {
                         got = true
                         const value =
                             amount *
-                            (dbItems.find((a) => a.item_id === ktem)
-                                ? dbItems.find((a) => a.item_id === ktem).value
+                            (dbItems.find(
+                                (a) => a.item_id.toLowerCase() === ktem
+                            )
+                                ? dbItems.find(
+                                      (a) => a.item_id.toLowerCase() === ktem
+                                  ).value
                                 : 0)
 
                         console.log(`will add ${value}`)
@@ -78,9 +82,9 @@ module.exports = {
             .setDescription('temp2')
             .addField(`Amount to be added:`, toAdd.toLocaleString(), true)
             .setColor('GREEN')
-        // if (erray.length) {
-        //     embed.addField('ERRORS:', erray.join('\n'))
-        // }
+        if (erray.length) {
+            embed.addField('ERRORS:', erray.join('\n'))
+        }
         return message.reply({
             embeds: [embed],
         })
