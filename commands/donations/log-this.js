@@ -47,7 +47,7 @@ module.exports = {
             if (item.includes('x')) {
                 const temp = item.split('x', 1)
                 const amount = temp[0]
-                let ktem = temp[1]
+                let ktem = item.split('x')[1]
                 let got = false
                 for (const i of itemms) {
                     if (got) continue
