@@ -82,9 +82,9 @@ module.exports = {
             .setDescription('temp2')
             .addField(`Amount to be added:`, toAdd.toLocaleString(), true)
             .setColor('GREEN')
-        if (erray.length) {
-            embed.addField('ERRORS:', erray.join('\n'))
-        }
+        // if (erray.length) {
+        //     embed.addField('ERRORS:', erray.join('\n'))
+        // }
         return message.reply({
             embeds: [embed],
         })
