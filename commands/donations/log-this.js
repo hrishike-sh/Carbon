@@ -40,6 +40,7 @@ module.exports = {
 }
 
 function getItems(arr) {
+    let a = ''
     arr.forEach((value) => {
         if (value.includes('⏣ ')) {
             a += '\n' + value.split('⏣ ')[1].replace(/(\*|,)/g, '')
