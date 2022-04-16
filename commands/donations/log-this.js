@@ -54,7 +54,7 @@ module.exports = {
                         got = true
                         const value =
                             amount *
-                            dbItems.find((a) => a.item_id === ktem).value
+                            (dbItems.find((a) => a.item_id === ktem).value || 0)
                         toAdd += value
                     } else {
                         erray.push(
