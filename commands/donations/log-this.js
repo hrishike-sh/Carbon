@@ -77,6 +77,7 @@ module.exports = {
                 console.log(`will add ${item}`)
             }
         }
+        console.log(erray)
         const embed = new MessageEmbed()
             .setTitle('temp')
             .setDescription('temp2')
