@@ -42,6 +42,7 @@ module.exports = {
         let toAdd = 0
         const erray = []
         for (const item of itemArray.split('\n')) {
+            console.log(item)
             if (item.includes('x')) {
                 const temp = item.split('x')
                 const amount = temp[0]
