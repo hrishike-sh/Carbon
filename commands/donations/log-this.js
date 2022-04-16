@@ -34,12 +34,13 @@ module.exports = {
         const dbItems = await itemsDb.find({})
         const itemms = []
         for (const iitem of dbItems) {
-            itemms.push(iitem.item_id)
+            itemms.push(iitem.item_id.toLowerCase())
         }
         const itemArray = getItems(
             dankMessage.embeds[0].fields[0].value.split('\n')
         )
         let toAdd = 0
+        const erray = []
         for (const item of itemArray.split('\n')) {
             if (item.includes('x')) {
                 const temp = item.split('x')
@@ -51,11 +52,31 @@ module.exports = {
                     const res = i.localeCompare(ktem)
                     if (res === 0) {
                         got = true
-                        message.reply(`Found item ${ktem}`)
+                        const value =
+                            amount *
+                            dbItems.find((a) => a.item_id === ktem).value
+                        toAdd += value
+                    } else {
+                        erray.push(
+                            `Couldn't find any item in the database with the ID \`${ktem}\``
+                        )
                     }
                 }
+            } else {
+                toAdd += parseInt(item)
             }
         }
+        const embed = new MessageEmbed()
+            .setTitle('temp')
+            .setDescription('temp2')
+            .addField(`Amount to be added:`, toAdd.toLocaleString(), true)
+            .setColor('GREEN')
+        if (erray.length) {
+            embed.addField('ERRORS:', erray.join('\n'))
+        }
+        return message.reply({
+            embeds: [embed],
+        })
     },
 }
 
