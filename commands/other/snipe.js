@@ -24,9 +24,17 @@ module.exports = {
         // const guild = await settings.findOne({ guildID: message.guild.id }) || null
 
         // if(guild.snipes == false) return message.channel.send(`This server has snipes disabled!`)
-        if (message.guild.id === '941403039586209943') return
+        if (message.guild.id === '941403039586209943') {
+            return message.channel.send(
+                'No sniping shoo'
+            )
+        };
         
-        if (message.guild.id === '778944637002842112') return
+        if (message.guild.id === '778944637002842112') {
+            return message.channel.send(
+                'No.'
+            )
+        };
 
         if (message.guild.id === client.config.guildId) {
             if (
