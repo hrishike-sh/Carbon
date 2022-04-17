@@ -25,6 +25,8 @@ module.exports = {
 
         // if(guild.snipes == false) return message.channel.send(`This server has snipes disabled!`)
         if (message.guild.id === '941403039586209943') return
+        
+        if (message.guild.id === '778944637002842112') return
 
         if (message.guild.id === client.config.guildId) {
             if (
