@@ -23,7 +23,7 @@ mongoose.connect(dbURL, {
 client.c = {
     commands: new Collection(),
     cooldowns: new Collection(),
-    disabledCommands: new Collection(),
+    disabledCommands: [],
     slashCommands: new Collection(),
 }
 client.snipes = {
@@ -47,6 +47,11 @@ client.functions = {
     getRandom: skripts.getRandom,
     sleep: skripts.sleep,
     formatTime: skripts.formatTime,
+    randomHash: skripts.getRandomHash,
+}
+client.switches = {
+    commands: true,
+    slashCommands: true,
 }
 client.config = config
 
@@ -99,8 +104,8 @@ client.on('ready', async () => {
     console.log('Logged in.')
     client.emit('tick')
     client.user.setActivity({
-        name: '/suggest',
-        type: 'STREAMING',
+        name: 'banning users',
+        type: 'dnd',
     })
     client.db.fighthub = client.guilds.cache.get(config.guildId)
     // LOGS
@@ -150,7 +155,27 @@ client.on('ready', async () => {
         .censors
     client.db.censors = cens
     // CENSORS
-})
+
+    // Disabled Commands
+    let dcommands = (await require('./database/models/command').find()).filter(
+        (a) => a.disabled
+    )
+    dcommands.forEach((val) => {
+        client.c.disabledCommands.push(val.name)
+    })
+    // Disabled Commands
+}) 
+
+ client.on('messageCreate', async (message) => {
+    if (message.channel.id !== '924850662410453042') {
+    return null
+    }
+    
+    await message.react('962407474059694200');
+    await client.functions.sleep(1250);
+    await message.react('962407492300705834');
+    return null;
+    })
 
 client.on('interactionCreate', async (interaction) => {
     if (!interaction.isCommand()) return
@@ -160,7 +185,14 @@ client.on('interactionCreate', async (interaction) => {
     const command = client.c.slashCommands.get(commandName)
 
     if (!command) return
-
+    if (
+        !client.switches.slashCommands &&
+        !client.config.trustedAccess.includes(interaction.user.id)
+    ) {
+        return interaction.reply({
+            content: 'Slash Commands are disabled temporarily.',
+        })
+    }
     if (command.permissions) {
         if (!interaction.member.permissions.has(command.permissions)) {
             return interaction.reply({
@@ -215,6 +247,9 @@ client.on('messageCreate', async (message) => {
         )
 
     if (!command) return
+    if (client.c.disabledCommands.includes(command.name)) {
+        return message.reply('This command is temporarily disabled.')
+    }
     if (message.guild && message.guild.id !== config.guildId && command.fhOnly)
         return message.reply(
             `This command can only be run in FightHub temporarily.`

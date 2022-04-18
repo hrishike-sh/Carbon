@@ -5,7 +5,10 @@ const {
     Interaction,
     MessageActionRow,
     ButtonInteraction,
+    Message,
+    Collection,
 } = require('discord.js')
+const { Model } = require('mongoose')
 const giveawayModel = require('../database/models/giveaway')
 const bypassIds = ['825965323500126208', '876460154705555487']
 module.exports = {
@@ -23,7 +26,8 @@ module.exports = {
             button.customId !== 'giveaway-join' &&
             button.customId !== 'giveaway-info' &&
             button.customId !== 'giveaway-reroll' &&
-            button.customId !== 'giveaway-leave'
+            button.customId !== 'giveaway-leave' &&
+            button.customId !== 'giveaway-thank'
         )
             return
 
@@ -33,7 +37,7 @@ module.exports = {
 
         if (button.customId === 'giveaway-join') {
             if (gaw.hasEnded) {
-                await button.message.edit({
+                button.message.edit({
                     content: `🎉 Giveaway Ended 🎉`,
                     embeds: [
                         new MessageEmbed()
@@ -44,7 +48,11 @@ module.exports = {
                             .setTimestamp()
                             .setColor('NOT_QUITE_BLACK')
                             .setDescription(
-                                `Winner(s): Couldn't fetch\nHost: <@${gaw.hosterId}>`
+                                `Winner(s): ${
+                                    gaw.WWinners.map((w) => `<@${w}>`).join(
+                                        ' '
+                                    ) || "Couldn't fetch!"
+                                }\nHost: <@${gaw.hosterId}>`
                             )
                             .setFields(button.message.embeds[0].fields),
                     ],
@@ -82,6 +90,11 @@ module.exports = {
                                 .setLabel('Leave giveaway')
                                 .setCustomId('giveaway-leave')
                                 .setStyle('DANGER'),
+                            new MessageButton()
+                                .setLabel('Thank the sponsor')
+                                .setEmoji('♥')
+                                .setCustomId('giveaway-thank')
+                                .setStyle('PRIMARY'),
                         ]),
                     ],
                     ephemeral: true,
@@ -129,10 +142,16 @@ module.exports = {
                             .setLabel('Leave giveaway')
                             .setCustomId('giveaway-leave')
                             .setStyle('DANGER'),
+                        new MessageButton()
+                            .setLabel('Thank the sponsor')
+                            .setEmoji('♥')
+                            .setCustomId('giveaway-thank')
+                            .setStyle('PRIMARY'),
                     ]),
                 ],
                 ephemeral: true,
             })
+            editCount(button.message, gaw)
         } else if (button.customId === 'giveaway-reroll') {
             const giveawayMessageId =
                 button.message.components[0].components[0].url
@@ -206,7 +225,7 @@ module.exports = {
 
             gaw.entries.splice(gaw.entries.indexOf(button.user.id), 1)
             gaw.save()
-
+            editCount(button.message, gaw)
             return button.reply({
                 embeds: [
                     new MessageEmbed()
@@ -215,6 +234,47 @@ module.exports = {
                 ],
                 ephemeral: true,
             })
+        } else if (button.customId === 'giveaway-thank') {
+            const messageId = button.message.reference.messageId
+            const gaw = await giveawayModel.findOne({ messageId })
+            if (!gaw.sponsor.id) {
+                return button.reply({
+                    content: 'This feature only works for newer giveaways.',
+                    ephemeral: true,
+                })
+            }
+            gaw.sponsor.thanks++
+
+            button.reply({
+                embeds: [
+                    {
+                        description: `Thank you for thanking them!\nThey have been thanked ${gaw.sponsor.thanks.toLocaleString()} times.`,
+                        color: 'LUMINOUS_VIVID_PINK', // what color is this
+                    },
+                ],
+                ephemeral: true,
+            })
+            gaw.save()
+            return
         }
     },
+}
+
+let beingEdited = new Collection()
+/**
+ *
+ * @param {Message} msg
+ * @param {Model} model
+ */
+const editCount = async (msg, model) => {
+    if (beingEdited.get(msg.id)) return
+    beingEdited.set(msg.id, true)
+    await msg.client.functions.sleep(5000)
+    msg.components[0].components[0].setLabel(
+        model.entries.length.toLocaleString()
+    )
+    await msg.edit({
+        components: msg.components,
+    })
+    beingEdited.delete(msg.id)
 }

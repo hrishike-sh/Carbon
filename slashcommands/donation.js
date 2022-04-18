@@ -78,7 +78,7 @@ module.exports = {
                 if (!dbUser) {
                     dbUser = new MainDonoModel({
                         userID: data.user.id,
-                        guildID: interaction.guildId.at,
+                        guildID: interaction.guildId,
                         messages: 0,
                     })
                 }

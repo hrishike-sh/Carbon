@@ -69,13 +69,26 @@ module.exports = {
      * @param {CommandInteraction} interaction
      */
     async execute(interaction) {
+        const modRoles = [
+            '824348974449819658',
+            '824539655134773269',
+            '825783847622934549',
+            '858088054942203945',
+            '826002228828700718',
+        ]
+        if (!interaction.member.roles.cache.hasAny(...modRoles)) {
+            return interaction.reply({
+                content: 'You cannot host giveaways...',
+                ephemeral: true,
+            })
+        }
         const data = {
             prize: interaction.options.getString('prize'),
             winners: interaction.options.getNumber('winners'),
             time: interaction.options.getString('time'),
             channel: interaction.options.getChannel('channel'),
             req: interaction.options.getString('role_requirement') || null,
-            donor: interaction.options.getUser('donator') || null,
+            donor: interaction.options.getUser('donator') || interaction.user,
             message: interaction.options.getString('message') || null,
         }
 
@@ -125,7 +138,7 @@ module.exports = {
                 `Roles: ${req.map((val) => `<@&${val}>`).join(', ')}`,
                 false
             )
-        if (donor) embed.addField('Donator:', `${donor.toString()}`, false)
+        if (donor) embed.addField('Sponsor:', `${donor.toString()}`, false)
 
         interaction.reply({
             content: `Giveaway started in ${channel}`,
@@ -158,6 +171,7 @@ module.exports = {
             messageId: msg.id,
             hosterId: interaction.user.id,
             winners,
+            sponsor: { id: donor.id, thanks: 0 },
             prize: data.prize,
             endsAt: new Date().getTime() + time,
             hasEnded: false,

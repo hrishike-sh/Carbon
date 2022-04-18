@@ -10,8 +10,12 @@ module.exports = {
      * @param {String[]} args
      */
     async execute(message, args) {
-        if (message.content.includes(',')) {
-            const argarray = args.join(' ').split(',')
+        const improudofthis = /(http|https|.(png|com|mp4|mp3))/gi
+        if (improudofthis.test(message.content)) {
+            return message.reply('I choose not to choose between links!')
+        }
+        if (message.content.includes(', ')) {
+            const argarray = args.join(' ').split(', ')
             return message.reply(
                 `I choose ${
                     argarray[Math.floor(Math.random() * argarray.length)]
@@ -25,3 +29,5 @@ module.exports = {
             })
     },
 }
+
+// aaaaaaaaaaaaaa
