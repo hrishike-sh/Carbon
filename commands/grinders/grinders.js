@@ -180,9 +180,11 @@ module.exports = {
             }
             let mapp = ''
             for (const aa of q) {
-                const user = await client.users.fetch(aa.userID)
+                const user =
+                    (await client.users.fetch(aa.userID).catch(() => null)) ||
+                    null
                 mapp += `=> <@${aa.userID}>(${
-                    user.tag || 'dumbkesh'
+                    user?.tag || 'dumbkesh'
                 }) pending since <t:${(aa.time / 1000).toFixed(0)}:R>\n`
             }
 
