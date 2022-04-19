@@ -27,7 +27,7 @@ module.exports = {
             const all = await db.find({
                 'fighthub.investor.isInvestor': true,
             })
-            const mapp = ''
+            let mapp = ''
             let i = 0
             for (const one of all.sort(
                 (a, b) =>
