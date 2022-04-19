@@ -28,11 +28,6 @@ module.exports = {
                 'fighthub.investor.isInvestor': true,
             })
             const mapp = all
-                .sort(
-                    (a, b) =>
-                        b.fighthub.investor.expiresOn -
-                        a.fighthub.investor.expiresOn
-                )
                 .map((v, i) => {
                     ;`${i + 1}: <@${
                         v.userId
