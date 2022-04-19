@@ -180,9 +180,10 @@ module.exports = {
             }
             const mapp = q
                 .map(
-                    (v) =>
+                    async (v) =>
                         `=> <@${v.userID}>(${
-                            (await client.users.fetch(v.userID)).tag || 'dumbkesh'
+                            (await client.users.fetch(v.userID)).tag ||
+                            'dumbkesh'
                         }) pending since <t:${(v.time / 1000).toFixed(0)}:R>`
                 )
                 .join('\n')
