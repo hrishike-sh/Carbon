@@ -29,12 +29,16 @@ module.exports = {
             })
             console.log(all)
             const mapp = all
-                .sort((a, b) => b.investor.expiresOn - a.investor.expiresOn)
+                .sort(
+                    (a, b) =>
+                        b.fighthub.investor.expiresOn -
+                        a.fighthub.investor.expiresOn
+                )
                 .map((v, i) => {
                     ;`${i + 1}: <@${
                         v.userId
                     }> exipres ${message.client.functions.formatTime(
-                        v.investor.expiresOn,
+                        v.fighthub.investor.expiresOn,
                         'R'
                     )}`
                 })
