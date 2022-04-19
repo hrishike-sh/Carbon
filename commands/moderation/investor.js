@@ -70,7 +70,7 @@ module.exports = {
                 })
             }
             if (!dbUser.investor) {
-                dbUser.investor = {
+                dbUser.fighthub.investor = {
                     isInvestor: false,
                     expiresOn: new Date().getTime(),
                 }
@@ -80,8 +80,8 @@ module.exports = {
                 return message.reply('Provide number of days next time.')
 
             const amount = getMilliseconds(`${args[0]}d`)
-            dbUser.investor.isInvestor = true
-            dbUser.investor.expiresOn += amount
+            dbUser.fighthub.investor.isInvestor = true
+            dbUser.fighthub.investor.expiresOn += amount
             dbUser.save()
             message.react('☑')
         }
