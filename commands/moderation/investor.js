@@ -45,7 +45,7 @@ module.exports = {
                         title: 'Investors',
                         color: 'GREEN',
                         timestamp: new Date(),
-                        description: `**To add/remove days, type \`fh investor days +/-<amount>\`**\n\n${mapp}`,
+                        description: `**To add/remove days, type \`fh investor days <user_id> +/-<amount>\`**\n\n${mapp}`,
                     },
                 ],
             })
@@ -79,6 +79,7 @@ module.exports = {
                 return message.reply('Provide number of days next time.')
 
             const amount = getMilliseconds(`${args[0]}d`)
+            dbUser.investor.isInvestor = true
             dbUser.investor.expiresOn += amount
             dbUser.save()
             message.react('☑')
