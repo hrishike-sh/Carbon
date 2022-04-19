@@ -27,6 +27,7 @@ module.exports = {
             const all = await db.find({
                 'fighthub.investor.isInvestor': true,
             })
+            console.log(all)
             const mapp = all
                 .sort((a, b) => b.investor.expiresOn - a.investor.expiresOn)
                 .map((v, i) => {
