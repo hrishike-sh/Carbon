@@ -27,7 +27,6 @@ module.exports = {
             const all = await db.find({
                 'fighthub.investor.isInvestor': true,
             })
-            console.log(all)
             const mapp = all
                 .sort(
                     (a, b) =>
@@ -43,14 +42,16 @@ module.exports = {
                     )}`
                 })
                 .join('\n')
-
+            console.log(mapp)
             await message.channel.send({
                 embeds: [
                     {
                         title: 'Investors',
                         color: 'GREEN',
                         timestamp: new Date(),
-                        description: `**To add/remove days, type \`fh investor days <user_id> +/-<amount>\`**\n\n${mapp}`,
+                        description: `**To add/remove days, type \`fh investor days <user_id> +/-<amount>\`**\n\n${
+                            mapp || 'None!'
+                        }`,
                     },
                 ],
             })
