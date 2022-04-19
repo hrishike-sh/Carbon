@@ -27,17 +27,26 @@ module.exports = {
             const all = await db.find({
                 'fighthub.investor.isInvestor': true,
             })
-            const mapp = all
-                .map((v, i) => {
-                    ;`${i + 1}: <@${
-                        v.userId
-                    }> exipres ${message.client.functions.formatTime(
-                        v.fighthub.investor.expiresOn,
-                        'R'
-                    )}`
-                })
-                .join('\n')
-            console.log(mapp)
+            const mapp = ''
+            let i = 0
+            for (const one of all.sort(
+                (a, b) =>
+                    a.fighthub.investor.expiresOn -
+                    b.fighthub.investor.expiresOn
+            )) {
+                let user
+                try {
+                    user = await message.client.users.fetch(one.userId)
+                } catch (_) {
+                    continue
+                }
+                mapp += `${i + 1}: **${
+                    user.tag
+                }**(${user.toString()}) expires ${message.client.functions.formatTime(
+                    one.fighthub.investor.expiresOn,
+                    'R'
+                )}\n`
+            }
             await message.channel.send({
                 embeds: [
                     {
