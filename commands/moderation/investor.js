@@ -46,6 +46,7 @@ module.exports = {
                     one.fighthub.investor.expiresOn,
                     'R'
                 )}\n`
+                i++
             }
             await message.channel.send({
                 embeds: [
