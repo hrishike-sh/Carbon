@@ -79,7 +79,7 @@ module.exports = {
                     userId: user.id,
                 })
             }
-            if (!dbUser.investor) {
+            if (!dbUser.fighthub.investor) {
                 dbUser.fighthub.investor = {
                     isInvestor: false,
                     expiresOn: new Date().getTime(),
