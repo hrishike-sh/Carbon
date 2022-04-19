@@ -15,6 +15,10 @@ const UserSchema = new mongoose.Schema({
             lastVoted: Number,
             enabled: Boolean,
         },
+        investor: {
+            isInvestor: Boolean,
+            expiresOn: Number,
+        },
     },
 })
 
