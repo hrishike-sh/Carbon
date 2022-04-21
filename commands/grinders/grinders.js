@@ -178,14 +178,15 @@ module.exports = {
 
                 return message.channel.send({ embeds: [embed] })
             }
-            const mapp = q
-                .map(
-                    (v) =>
-                        `=> <@${v.userID}>(${
-                            client.users.fetch(v.userID).tag || 'dumbkesh'
-                        }) pending since <t:${(v.time / 1000).toFixed(0)}:R>`
-                )
-                .join('\n')
+            let mapp = ''
+            for (const aa of q) {
+                const user =
+                    (await client.users.fetch(aa.userID).catch(() => null)) ||
+                    null
+                mapp += `=> <@${aa.userID}>(${
+                    user?.tag || 'dumbkesh'
+                }) pending since <t:${(aa.time / 1000).toFixed(0)}:R>\n`
+            }
 
             if (mapp.length > 5500) {
                 await message.channel.send(
