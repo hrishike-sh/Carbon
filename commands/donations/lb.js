@@ -6,7 +6,6 @@ const { Message, Client, MessageEmbed } = require('discord.js')
 module.exports = {
     name: 'lb',
     aliases: ['lb', 'leaderboard'],
-    args: true,
     fhOnly: true,
     description: 'Check leaderboard for donations',
     /**
@@ -27,7 +26,7 @@ module.exports = {
             (e) =>
                 `${e.position}. ${e.username}#${
                     e.discriminator
-                }\nDonated coins: **${e.messages.toLocaleCase()}**`
+                }\nDonated coins: **${e.messages.toLocaleString()}**`
         )
         const hLb = (
             await Heists.computeLeaderboard(
@@ -39,7 +38,7 @@ module.exports = {
             (e) =>
                 `${e.position}. ${e.username}#${
                     e.discriminator
-                }\nDonated coins: **${e.amount.toLocaleCase()}**`
+                }\nDonated coins: **${e.amount.toLocaleString()}**`
         )
         const fLb = (
             await Special.computeLeaderboard(
@@ -51,7 +50,7 @@ module.exports = {
             (e) =>
                 `${e.position}. ${e.username}#${
                     e.discriminator
-                }\nDonated coins: **${e.amount.toLocaleCase()}**`
+                }\nDonated coins: **${e.amount.toLocaleString()}**`
         )
         const embed = new MessageEmbed().setColor('YELLOW').setTimestamp()
         embed.setDescription(dLb.join('\n\n'))
@@ -59,7 +58,7 @@ module.exports = {
             content: '',
             embeds: [embed],
         })
-
+        return
         if (args[0] === 'd') {
             const rawLBD = await Messages.fetchLeaderboard(message.guild.id, 10)
             if (rawLBD.length < 1)
