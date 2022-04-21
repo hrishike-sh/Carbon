@@ -29,9 +29,9 @@ module.exports = {
             )
         ).map(
             (e) =>
-                `${e.position}. ${e.username}#${
+                `> ${e.position}. ${e.username}#${
                     e.discriminator
-                }\nDonated coins: **${e.messages.toLocaleString()}**`
+                }\n> Donated coins: **${e.messages.toLocaleString()}**`
         )
         const hLb = (
             await Heists.computeLeaderboard(
@@ -41,9 +41,9 @@ module.exports = {
             )
         ).map(
             (e) =>
-                `${e.position}. ${e.username}#${
+                `> ${e.position}. ${e.username}#${
                     e.discriminator
-                }\nDonated coins: **${e.amount.toLocaleString()}**`
+                }\n> Donated coins: **${e.amount.toLocaleString()}**`
         )
         const fLb = (
             await Special.computeLeaderboard(
@@ -53,9 +53,9 @@ module.exports = {
             )
         ).map(
             (e) =>
-                `${e.position}. ${e.username}#${
+                `> ${e.position}. ${e.username}#${
                     e.discriminator
-                }\nDonated coins: **${e.amount.toLocaleString()}**`
+                }\n> Donated coins: **${e.amount.toLocaleString()}**`
         )
         const embed = new MessageEmbed()
             .setColor('YELLOW')
