@@ -86,7 +86,10 @@ module.exports = {
         const collector = mainMessage.createMessageComponentCollector({
             filter: (b) => {
                 if (b.user.id !== message.author.id) {
-                    return b.reply('Not for you')
+                    return b.reply({
+                        content: 'Not for you',
+                        ephemeral: true,
+                    })
                 } else return true
             },
             idle: 30_000,
