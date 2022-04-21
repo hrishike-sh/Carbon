@@ -1,8 +1,13 @@
 const Messages = require('discord-messages')
 const Heists = require('../../functions/heist-dono')
 const Special = require('../../functions/another-dono-thing-whyy')
-const { MessageEmbed: Embed } = require('discord.js')
-const { Message, Client, MessageEmbed } = require('discord.js')
+const {
+    Message,
+    Client,
+    MessageActionRow,
+    MessageButton,
+    MessageEmbed,
+} = require('discord.js')
 module.exports = {
     name: 'lb',
     aliases: ['lb', 'leaderboard'],
@@ -15,7 +20,7 @@ module.exports = {
      * @returns
      */
     async execute(message, args, client) {
-        const mainMessage = await message.channel.send('Loading...')
+        let mainMessage = await message.channel.send('Loading...')
         const dLb = (
             await Messages.computeLeaderboard(
                 client,
@@ -52,79 +57,95 @@ module.exports = {
                     e.discriminator
                 }\nDonated coins: **${e.amount.toLocaleString()}**`
         )
-        const embed = new MessageEmbed().setColor('YELLOW').setTimestamp()
+        const embed = new MessageEmbed()
+            .setColor('YELLOW')
+            .setTimestamp()
+            .setTitle('Main Donations')
         embed.setDescription(dLb.join('\n\n'))
-        const collector = await mainMessage.edit({
+        mainMessage = await mainMessage.edit({
             content: 'temp',
             embeds: [embed],
+            components: [
+                new MessageActionRow().addComponents([
+                    new MessageButton()
+                        .setLabel('Main')
+                        .setCustomId('main-lb')
+                        .setStyle('SUCCESS'),
+                    new MessageButton()
+                        .setLabel('Heists')
+                        .setCustomId('heist-lb')
+                        .setStyle('SUCCESS'),
+                    new MessageButton()
+                        .setLabel('Fighters Fiesta')
+                        .setCustomId('ff-lb')
+                        .setStyle('SUCCESS'),
+                ]),
+            ],
         })
-        return
-        if (args[0] === 'd') {
-            const rawLBD = await Messages.fetchLeaderboard(message.guild.id, 10)
-            if (rawLBD.length < 1)
-                return message.channel.send(
-                    'Nobody has done any donations yet... or they are not counted yet.'
-                )
+        const collector = mainMessage.createMessageComponentCollector({
+            filter: (b) => {
+                if (b.user.id !== message.author.id) {
+                    return b.reply('Not for you')
+                } else return true
+            },
+            idle: 30_000,
+        })
 
-            const leaderboard = await Messages.computeLeaderboard(
-                client,
-                rawLBD,
-                true
-            )
+        collector.on('collect', async (button) => {
+            const what = button.customId.replace('-lb', '')
 
-            const lb = leaderboard.map(
-                (e) =>
-                    `${e.position}. ${e.username}#${
-                        e.discriminator
-                    }\nDonated coins: **${e.messages.toLocaleString()}**`
-            )
-
-            message.channel.send(`**__LEADERBOARD__**\n\n${lb.join('\n\n')}`)
-        } else if (args[0] === 'h') {
-            const rawLBH = await Heists.fetchLeaderboard(message.guild.id, 10)
-            if (rawLBH.length < 1)
-                return message.channel.send(
-                    'Nobody has done any donations yet... or they are not counted yet.'
-                )
-            const leaderboard = await Heists.computeLeaderboard(
-                client,
-                rawLBH,
-                true
-            )
-            const lb = leaderboard.map(
-                (e) =>
-                    `${e.position}. ${e.username}#${
-                        e.discriminator
-                    }\nDonated coins: **${e.amount.toLocaleString()}**`
-            )
-
-            message.channel.send(`**__LEADERBOARD__**\n\n${lb.join('\n\n')}`)
-        } else if (args[0] === 'ff' || args[0] === 'special') {
-            const rawLBF = await Special.fetchLeaderboard(message.guild.id, 10)
-            if (rawLBF.length < 1)
-                return message.channel.send(
-                    'Nobody has done any donations yet... or they are not counted yet.'
-                )
-            const leaderboard = await Special.computeLeaderboard(
-                client,
-                rawLBF,
-                true
-            )
-            const lb = leaderboard.map(
-                (e) =>
-                    `${e.position}. ${e.username}#${
-                        e.discriminator
-                    }\nDonated coins: **${e.amount.toLocaleString()}**`
-            )
-
-            message.channel.send({
-                embeds: [
-                    new Embed({
-                        title: '**__Leaderboard__**',
-                        description: lb.join('\n\n'),
-                    }),
-                ],
-            })
-        }
+            if (what == 'main') {
+                button.deferUpdate()
+                mainMessage.components[0].components
+                    .find((c) => c.customId.includes('main'))
+                    .setDisabled()
+                mainMessage.components[0].components
+                    .filter((c) => !c.customId.includes(what))
+                    .forEach((b) => {
+                        b.setDisabled(false)
+                    })
+                embed
+                    .setDescription(dLb.join('\n\n'))
+                    .setTitle('Main Donations')
+                mainMessage.edit({
+                    embeds: [embed],
+                    components: mainMessage.components,
+                })
+            } else if (what == 'heist') {
+                button.deferUpdate()
+                mainMessage.components[0].components
+                    .find((c) => c.customId.includes('heist'))
+                    .setDisabled()
+                mainMessage.components[0].components
+                    .filter((c) => !c.customId.includes(what))
+                    .forEach((b) => {
+                        b.setDisabled(false)
+                    })
+                embed
+                    .setDescription(hLb.join('\n\n'))
+                    .setTitle('Heist Donations')
+                mainMessage.edit({
+                    embeds: [embed],
+                    components: mainMessage.components,
+                })
+            } else if (what == 'ff') {
+                button.deferUpdate()
+                mainMessage.components[0].components
+                    .find((c) => c.customId.includes('ff'))
+                    .setDisabled()
+                mainMessage.components[0].components
+                    .filter((c) => !c.customId.includes(what))
+                    .forEach((b) => {
+                        b.setDisabled(false)
+                    })
+                embed
+                    .setDescription(fLb.join('\n\n'))
+                    .setTitle('Fighters Fiesta Donations')
+                mainMessage.edit({
+                    embeds: [embed],
+                    components: mainMessage.components,
+                })
+            }
+        })
     },
 }
