@@ -55,7 +55,7 @@ module.exports = {
         const embed = new MessageEmbed().setColor('YELLOW').setTimestamp()
         embed.setDescription(dLb.join('\n\n'))
         const collector = await mainMessage.edit({
-            content: '',
+            content: 'temp',
             embeds: [embed],
         })
         return
