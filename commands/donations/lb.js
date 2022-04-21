@@ -63,14 +63,15 @@ module.exports = {
             .setTitle('Main Donations')
         embed.setDescription(dLb.join('\n\n'))
         mainMessage = await mainMessage.edit({
-            content: 'temp',
+            content: message.author.toString(),
             embeds: [embed],
             components: [
                 new MessageActionRow().addComponents([
                     new MessageButton()
                         .setLabel('Main')
                         .setCustomId('main-lb')
-                        .setStyle('SUCCESS'),
+                        .setStyle('SUCCESS')
+                        .setDisabled(),
                     new MessageButton()
                         .setLabel('Heists')
                         .setCustomId('heist-lb')
