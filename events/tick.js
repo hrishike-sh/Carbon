@@ -104,8 +104,6 @@ module.exports = {
             })
 
             for (const giveaway of Query) {
-                giveaway.hasEnded = true
-                giveaway.save()
                 try {
                     const channel = client.channels.cache.get(
                         giveaway.channelId
@@ -291,6 +289,8 @@ module.exports = {
                     }
                 } catch (_) {
                 } finally {
+                    giveaway.hasEnded = true
+                    giveaway.save()
                     continue
                 }
             }
