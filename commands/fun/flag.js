@@ -4,7 +4,7 @@ module.exports = {
     name: 'flag',
     execute(message) {
         const map = countries[Math.floor(Math.random() * countries.length)]
-        const url = `https://flagcdn.com/w1280/${map.toLowerCase()}.png`
+        const url = `https://flagcdn.com/w320/${map.toLowerCase()}.png`
         return message.reply({
             embeds: [
                 {
