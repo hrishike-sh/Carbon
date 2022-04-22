@@ -11,6 +11,7 @@ module.exports = {
             embeds: [
                 {
                     color: 'RANDOM',
+                    title: `Strafe r8 machine`,
                     description: `${
                         message.mentions.users?.first()?.username || 'You'
                     } are ${rate}% Strafe <:fh_strafe:864780923944828938>`,
