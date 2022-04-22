@@ -12,7 +12,7 @@ module.exports = {
                 .setRequired(true)
                 .setDescription('The channel you require middleman in.')
         }),
-    catehory: 'Utility',
+    category: 'Utility',
     /**
      * @param {CommandInteraction} interaction
      */
