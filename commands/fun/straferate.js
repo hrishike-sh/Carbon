@@ -14,7 +14,9 @@ module.exports = {
                     title: `Strafe r8 machine`,
                     description: `${
                         message.mentions.users?.first()?.username || 'You'
-                    } are ${rate}% Strafe <:fh_strafe:864780923944828938>`,
+                    } ${
+                        message.mentions.users.size ? 'is' : 'are'
+                    } ${rate}% Strafe <:fh_strafe:864780923944828938>`,
                 },
             ],
         })
