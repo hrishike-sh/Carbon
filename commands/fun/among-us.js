@@ -86,17 +86,17 @@ module.exports = {
                     ephemeral: true,
                 })
             }
-            const temp = gamedata.length || 1
+            const temp = gamedata.length
             gamedata.push({
                 user: button.member,
-                gameId: `${button.member.id}:${emojiIds[temp - 1]}`,
+                gameId: `${button.member.id}:${emojiIds[temp]}`,
                 impostor: false,
                 messages: 0,
             })
 
             button.reply({
                 content: `You have joined the game, you are ${emojis[
-                    temp - 1
+                    temp
                 ].toString()}`,
                 ephemeral: true,
             })

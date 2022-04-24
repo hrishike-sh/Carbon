@@ -24,7 +24,11 @@ module.exports = {
      * @param {CommandInteraction} interaction
      */
     async execute(interaction) {
-        let items = await db.find({})
+        let items = (await db.find({})).sort(function (a, b) {
+            var textA = a.item_id.toUpperCase()
+            var textB = b.item_id.toUpperCase()
+            return textA < textB ? -1 : textA > textB ? 1 : 0
+        })
         if (interaction.options.getString('query')) {
             items = items.filter((a) =>
                 a.item_id
