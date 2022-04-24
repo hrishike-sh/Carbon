@@ -10,7 +10,7 @@ module.exports = {
         if (message.mentions.users.size > 0) {
             what = message.mentions.users.first().username + ' is'
         }
-        if (args[0]) {
+        if (args[0] && !what) {
             what = args.join(' ') + ' is'
         }
         if (!what) what = 'You are'
