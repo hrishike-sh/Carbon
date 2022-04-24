@@ -102,7 +102,7 @@ module.exports = {
             })
         })
 
-        getPlayers.on('end', () => {
+        getPlayers.on('end', async () => {
             const components = [new MessageActionRow()]
 
             for (let i = 0; i < gamedata.length; i++) {
@@ -112,7 +112,7 @@ module.exports = {
                             .setLabel(`${gamedata[i].user.displayName}`)
                             .setCustomId(gamedata[i].gameId)
                             .setStyle('SECONDARY'),
-                    ]) 
+                    ])
                 } else {
                     if (!components[1]) components.push(new MessageActionRow())
                     components[1].addComponents([
@@ -126,7 +126,7 @@ module.exports = {
 
             await message.channel.send({
                 content: 'hey hrish',
-                components
+                components,
             })
         })
     },
