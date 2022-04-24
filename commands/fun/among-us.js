@@ -111,7 +111,8 @@ module.exports = {
                         new MessageButton()
                             .setLabel(`${gamedata[i].user.displayName}`)
                             .setCustomId(gamedata[i].gameId)
-                            .setStyle('SECONDARY'),
+                            .setStyle('SECONDARY')
+                            .setEmoji(gamedata[i].gameId.split(':')[1]),
                     ])
                 } else {
                     if (!components[1]) components.push(new MessageActionRow())
@@ -119,7 +120,8 @@ module.exports = {
                         new MessageButton()
                             .setLabel(`${gamedata[i].user.displayName}`)
                             .setCustomId(gamedata[i].gameId)
-                            .setStyle('SECONDARY'),
+                            .setStyle('SECONDARY')
+                            .setEmoji(gamedata[i].gameId.split(':')[1]),
                     ])
                 }
             }
