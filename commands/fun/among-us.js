@@ -112,7 +112,7 @@ module.exports = {
                             .setLabel(`${gamedata[i].user.displayName}`)
                             .setCustomId(gamedata[i].gameId)
                             .setStyle('SECONDARY'),
-                    ])
+                    ]) 
                 } else {
                     if (!components[1]) components.push(new MessageActionRow())
                     components[1].addComponents([
