@@ -103,15 +103,30 @@ module.exports = {
         })
 
         getPlayers.on('end', () => {
-            return message.channel.send({
-                content: `Hey hrish`,
-                embeds: [
-                    {
-                        description: `\`\`\`js\n${inspect(gamedata, {
-                            depth: 1,
-                        })}\n\`\`\``,
-                    },
-                ],
+            const components = [new MessageActionRow()]
+
+            for (let i = 0; i < gamedata.length; i++) {
+                if (components[0].components.length < 5) {
+                    components[0].addComponents([
+                        new MessageButton()
+                            .setLabel(`${gamedata[i].user.displayName}`)
+                            .setCustomId(gamedata[i].gameId)
+                            .setStyle('SECONDARY'),
+                    ])
+                } else {
+                    if (!components[1]) components.push(new MessageActionRow())
+                    components[1].addComponents([
+                        new MessageButton()
+                            .setLabel(`${gamedata[i].user.displayName}`)
+                            .setCustomId(gamedata[i].gameId)
+                            .setStyle('SECONDARY'),
+                    ])
+                }
+            }
+
+            await message.channel.send({
+                content: 'hey hrish',
+                components
             })
         })
     },
