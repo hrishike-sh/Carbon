@@ -103,6 +103,11 @@ module.exports = {
         })
 
         getPlayers.on('end', async () => {
+            if (gamedata.length < 3) {
+                return message.reply(
+                    'You need more friends to play this game.\nMinimum players: 3'
+                )
+            }
             const components = [new MessageActionRow()]
 
             for (let i = 0; i < gamedata.length; i++) {
@@ -112,7 +117,8 @@ module.exports = {
                             .setLabel(`${gamedata[i].user.displayName}`)
                             .setCustomId(gamedata[i].gameId)
                             .setStyle('SECONDARY')
-                            .setEmoji(gamedata[i].gameId.split(':')[1]),
+                            .setEmoji(gamedata[i].gameId.split(':')[1])
+                            .setDisabled(),
                     ])
                 } else {
                     if (!components[1]) components.push(new MessageActionRow())
@@ -121,14 +127,78 @@ module.exports = {
                             .setLabel(`${gamedata[i].user.displayName}`)
                             .setCustomId(gamedata[i].gameId)
                             .setStyle('SECONDARY')
-                            .setEmoji(gamedata[i].gameId.split(':')[1]),
+                            .setEmoji(gamedata[i].gameId.split(':')[1])
+                            .setDisabled(),
                     ])
                 }
             }
-
             await message.channel.send({
-                content: 'hey hrish',
+                embeds: [
+                    {
+                        title: `Among Us`,
+                        color: 'GREEN',
+                        description: `**HOW TO WIN**:\n\n__Impostor__:\n> Send atleast 15 messages in order to win!\n__Crewmate__:\n> Start an Emergency Meeting by typing __emergency__ in chat and vote out whoever is sus!`,
+                        footer: {
+                            text: "Check your DMs! You have been DM'd your role!",
+                            iconURL: emojis[0].url,
+                        },
+                    },
+                ],
                 components,
+            })
+
+            const impostor =
+                gamedata[Math.floor(Math.random() * gamedata.length)]
+            impostor.impostor = true
+            for await (const user of gamedata) {
+                await user.user.send({
+                    content: `You are ${
+                        user.impostor ? 'the **Impostor**' : 'a **Crewmate**'
+                    }`,
+                })
+            }
+
+            await message.channel.send(
+                `Everyone was DM'd and the game has started! Good luck.`
+            )
+
+            const collector = await message.channel.createMessageCollector({
+                filter: (msg) =>
+                    gamedata.some((v) => v.user.id === msg.author.id),
+            })
+            let emergencies = 3
+            collector.on('collect', async (msg) => {
+                const user = gamedata.find((u) => u.user.id === msg.author.id)
+                user.messages++
+                if (user.impostor && user.messages > 15) {
+                    collector.stop()
+                    return message.channel.send({
+                        content: `${emojis
+                            .map((a) => a.toString())
+                            .join(
+                                ''
+                            )}\n\n${user.user.toString()} was the impostor and they got more than 15 messages!\nThey have won the game!!\n\n${emojis
+                            .map((a) => a.toString())
+                            .join('')}`,
+                    })
+                }
+                if (msg.content.toLowerCase() === 'emergency') {
+                    if (emergencies < 1) {
+                        msg.reply({
+                            content:
+                                'You used the emergency button too many times and... IT BROKE!!!',
+                        })
+                        message.channel.send({
+                            content: `${emojis
+                                .map((a) => a.toString())
+                                .join(
+                                    ''
+                                )}\n\n${impostor.user.toString()} has won the game!! They were the impostor.\n\n${emojis
+                                .map((a) => a.toString())
+                                .join('')}`,
+                        })
+                    }
+                }
             })
         })
     },
