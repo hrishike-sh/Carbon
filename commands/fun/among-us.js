@@ -5,6 +5,7 @@ const {
     MessageButton,
     MessageActionRow,
 } = require('discord.js')
+const { inspect } = require('util')
 module.exports = {
     name: 'amongus',
     category: 'Fun',
@@ -23,8 +24,8 @@ module.exports = {
                 'You need the `MANAGE_GUILD` permission to run this command.'
             )
         }
-
-        const emojiArray = [
+        const sessionId = client.functions.randomHash()
+        const emojiIds = [
             '917726679214985246',
             '917726744457383936',
             '917726831485026314',
@@ -36,351 +37,167 @@ module.exports = {
             '917727491660083220',
             '917727535704457237',
         ]
-
-        const joinBut = new MessageButton()
-            .setLabel('Join')
-            .setCustomId('join-amongus')
-            .setStyle('SUCCESS')
-        const infoBut = new MessageButton()
-            .setLabel('Info')
-            .setCustomId('info-amongus')
-            .setStyle('SECONDARY')
-        const row = new MessageActionRow().addComponents([joinBut, infoBut])
-
-        const takePlayers = await message.channel.send({
-            embeds: [
-                new MessageEmbed()
-                    .setTitle('Among Us')
-                    .setDescription(
-                        'The game will begin in **30 seconds**\nOnly the first 10 people will be counted in!'
-                    ),
-            ],
-            components: [row],
+        const emojis = [
+            client.emojis.cache.get('917726679214985246'),
+            client.emojis.cache.get('917726744457383936'),
+            client.emojis.cache.get('917726831485026314'),
+            client.emojis.cache.get('917726919062077490'),
+            client.emojis.cache.get('917726981964058624'),
+            client.emojis.cache.get('917727061651640350'),
+            client.emojis.cache.get('917727115183530044'),
+            client.emojis.cache.get('917727205453365278'),
+            client.emojis.cache.get('917727491660083220'),
+            client.emojis.cache.get('917727535704457237'),
+        ]
+        const joinEmbed = new MessageEmbed()
+            .setTitle('Among Us ' + emojis[0].toString())
+            .setDescription(
+                'Click the **Join** button to enter the game!\n\nMax players: **10**'
+            )
+            .setColor('GREEN')
+        const getPlayers = (
+            await message.channel.send({
+                embeds: [joinEmbed],
+                components: [
+                    new MessageActionRow().addComponents([
+                        new MessageButton()
+                            .setLabel('Join')
+                            .setCustomId(`join:${sessionId}`)
+                            .setStyle('PRIMARY'),
+                    ]),
+                ],
+            })
+        ).createMessageComponentCollector({
+            time: 15_000,
         })
 
-        const takePlayersCollector =
-            takePlayers.createMessageComponentCollector((b) => b, {
-                time: 30 * 1000,
-            })
+        const gamedata = []
 
-        const joined = []
-        let gamedata = []
-
-        takePlayersCollector.on('collect', (button) => {
-            if (joined.includes(button.user.id)) {
-                button.reply({
-                    content: "You've already joined",
+        getPlayers.on('collect', async (button) => {
+            if (gamedata.find((v) => v.user.id === button.user.id)) {
+                return button.reply({
+                    content: 'You have already joined.',
                     ephemeral: true,
                 })
-                return
             }
-            if (joined.length && joined.length > 10) {
-                button.reply({
-                    content: 'The game is already full, too late',
+            if (gamedata.length > 9) {
+                return button.reply({
+                    content: 'The game is full.',
                     ephemeral: true,
                 })
-                return
             }
-            joined.push(button.user.id)
+            const temp = gamedata.length
             gamedata.push({
-                member: button.member,
-                color: emojiArray[joined.length - 1],
-                dead: false,
+                user: button.member,
+                gameId: `${button.member.id}:${emojiIds[temp]}`,
                 impostor: false,
-                id: `${emojiArray[joined.length - 1]}_${Math.floor(
-                    Math.random() * 1_000_000
-                )}`,
-                gotVoted: 0,
                 messages: 0,
             })
+
             button.reply({
-                content: `You have successfully joined the game and you are: ${client.emojis.cache
-                    .get(emojiArray[joined.length - 1])
-                    .toString()}`,
+                content: `You have joined the game, you are ${emojis[
+                    temp
+                ].toString()}`,
                 ephemeral: true,
             })
         })
 
-        takePlayersCollector.on('end', async (collected) => {
-            const randomNumber = Math.floor(Math.random() * gamedata.length)
-            gamedata[randomNumber].impostor = true
-            const whoAmI = new MessageButton()
-                .setLabel('Click me!')
-                .setStyle('SUCCESS')
-                .setCustomId('whoami-amogus')
-            const roleCollector = await message.channel.send({
-                content:
-                    'Click the button to check your role, the game will start in **10 seconds**...',
-                components: [whoAmI],
-            })
+        getPlayers.on('end', async () => {
+            if (gamedata.length < 3) {
+                return message.reply(
+                    'You need more friends to play this game.\nMinimum players: 3'
+                )
+            }
+            const components = [new MessageActionRow()]
 
-            const whoAmICollector =
-                roleCollector.createMessageComponentCollector((b) => b, {
-                    time: 10000,
-                })
-
-            whoAmICollector.on('collect', async (bbutton) => {
-                if (!joined.includes(bbutton.user.id)) {
-                    return bbutton.reply({
-                        content: "You're not even in the game.",
-                        ephemeral: true,
-                    })
-                }
-
-                const susUser = gamedata.filter(
-                    (u) => u.member.id === bbutton.user.id
-                )[0]
-
-                bbutton.reply({
-                    content: `You are **${
-                        susUser.impostor ? 'the Impostor.' : 'a Crewmate'
-                    }**`,
-                    ephemeral: true,
-                })
-            })
-
-            await sleep(10 * 1000)
-
-            let row1 = new MessageActionRow()
-            let row2 = new MessageActionRow()
-            let m
-            for (m = 0; m < gamedata.length; m++) {
-                if (m < 5) {
-                    row1 = row1.addComponents([
+            for (let i = 0; i < gamedata.length; i++) {
+                if (components[0].components.length < 5) {
+                    components[0].addComponents([
                         new MessageButton()
-                            .setLabel(gamedata[m].member.user.username)
+                            .setLabel(`${gamedata[i].user.displayName}`)
+                            .setCustomId(gamedata[i].gameId)
                             .setStyle('SECONDARY')
-                            .setCustomId(gamedata[m].id)
-                            .setEmoji(gamedata[m].color)
+                            .setEmoji(gamedata[i].gameId.split(':')[1])
                             .setDisabled(),
                     ])
                 } else {
-                    row2 = row2.addComponents([
+                    if (!components[1]) components.push(new MessageActionRow())
+                    components[1].addComponents([
                         new MessageButton()
-                            .setLabel(gamedata[m].member.user.username)
+                            .setLabel(`${gamedata[i].user.displayName}`)
+                            .setCustomId(gamedata[i].gameId)
                             .setStyle('SECONDARY')
-                            .setCustomId(gamedata[m].id)
-                            .setEmoji(gamedata[m].color)
+                            .setEmoji(gamedata[i].gameId.split(':')[1])
                             .setDisabled(),
                     ])
                 }
             }
-
-            let components = gamedata.length < 6 ? [row1] : [row1, row2]
-
             await message.channel.send({
-                content:
-                    '**How does the impostor win?**\n> The impostor has to send **15** messages in order to win or they have to not get caught for 2 minutes.\n\n**How do the crewmates win?**\n> The crewmates will have to work together to find out who the impostor is!\n\n**How do I call an emergency meeting?**\n> Type `emergency` to call a meeting. **NOTE** Only 3 meetings are allowed each game.',
+                embeds: [
+                    {
+                        title: `Among Us`,
+                        color: 'GREEN',
+                        description: `**HOW TO WIN**:\n\n__Impostor__:\n> Send atleast 15 messages in order to win!\n__Crewmate__:\n> Start an Emergency Meeting by typing __emergency__ in chat and vote out whoever is sus!`,
+                        footer: {
+                            text: "Check your DMs! You have been DM'd your role!",
+                            iconURL: emojis[0].url,
+                        },
+                    },
+                ],
                 components,
             })
 
-            const mainCol = message.channel.createMessageCollector({
-                filter: (m) => joined.includes(m.author.id),
+            const impostor =
+                gamedata[Math.floor(Math.random() * gamedata.length)]
+            impostor.impostor = true
+            for await (const user of gamedata) {
+                await user.user.send({
+                    content: `You are ${
+                        user.impostor ? 'the **Impostor**' : 'a **Crewmate**'
+                    }`,
+                })
+            }
+
+            await message.channel.send(
+                `Everyone was DM'd and the game has started! Good luck.`
+            )
+
+            const collector = await message.channel.createMessageCollector({
+                filter: (msg) =>
+                    gamedata.some((v) => v.user.id === msg.author.id),
             })
-            let impostorMessages = 0
-            let meetings = 3
-            let inMeeting = false
-            mainCol.on('collect', async (msg) => {
-                const user = gamedata.filter(
-                    (value) => value.member.id === msg.author.id
-                )[0]
+            let emergencies = 3
+            collector.on('collect', async (msg) => {
+                const user = gamedata.find((u) => u.user.id === msg.author.id)
                 user.messages++
-                if (user.impostor && !inMeeting) {
-                    impostorMessages++
-                }
-
-                if (user.impostor && impostorMessages > 15) {
-                    mainCol.stop('impostor')
-
-                    return message.channel.send(
-                        `After baiting a lot, and managing to not get caught, ${user.member} managed to send more than 15 messages...\n\nAll of the crewmates get killed and the ultimate winner is the impostor, which is ${user.member}!`
-                    )
-                }
-
-                if (msg.content.toLowerCase() === 'emergency' && !inMeeting) {
-                    meetings--
-                    if (meetings < 0) {
-                        message.channel.send(
-                            `The game has ended. After repeatedly using the Emergency button... it broke.\n\nResulting in the impostor killing everyone! The winner is ${
-                                gamedata.filter((u) => u.impostor)[0].member
-                            }`
-                        )
-                        mainCol.stop()
-                        return
-                    }
-                    inMeeting = true
-                    const row3 = new MessageActionRow().addComponents([
-                        new MessageButton()
-                            .setStyle('PRIMARY')
-                            .setLabel('Messages')
-                            .setEmoji('📖')
-                            .setCustomId('message-am'),
-                    ])
-                    row1 = new MessageActionRow()
-                    row2 = new MessageActionRow()
-
-                    for (let a = 0; a < gamedata.length; a++) {
-                        if (a < 5) {
-                            if (gamedata[a].dead) {
-                                row1 = row1.addComponents([
-                                    new MessageButton()
-                                        .setLabel(
-                                            gamedata[a].member.user.username
-                                        )
-                                        .setStyle('DANGER')
-                                        .setCustomId(gamedata[a].id)
-                                        .setEmoji(gamedata[a].color)
-                                        .setDisabled(),
-                                ])
-                            } else {
-                                row1 = row1.addComponents([
-                                    new MessageButton()
-                                        .setLabel(
-                                            gamedata[a].member.user.username
-                                        )
-                                        .setStyle('SECONDARY')
-                                        .setCustomId(gamedata[a].id)
-                                        .setEmoji(gamedata[a].color),
-                                ])
-                            }
-                        } else {
-                            if (gamedata[a].dead) {
-                                row2 = row2.addComponents([
-                                    new MessageButton()
-                                        .setLabel(
-                                            gamedata[a].member.user.username
-                                        )
-                                        .setStyle('DANGER')
-                                        .setCustomId(gamedata[a].id)
-                                        .setEmoji(gamedata[a].color)
-                                        .setDisabled(),
-                                ])
-                            } else {
-                                row2 = row2.addComponents([
-                                    new MessageButton()
-                                        .setLabel(
-                                            gamedata[a].member.user.username
-                                        )
-                                        .setStyle('SECONDARY')
-                                        .setCustomId(gamedata[a].id)
-                                        .setEmoji(gamedata[a].color),
-                                ])
-                            }
-                        }
-                    }
-                    components = m < 6 ? [row1, row3] : [row1, row2, row3]
-
-                    const meetingMessage = await message.channel.send({
-                        content: `${gamedata
-                            .map((m) => m.member)
+                if (user.impostor && user.messages > 15) {
+                    collector.stop()
+                    return message.channel.send({
+                        content: `${emojis
+                            .map((a) => a.toString())
                             .join(
-                                ' '
-                            )}\n\n**__EMERGENCY MEETING__**\nThe impostor's messages __won't__ be counted while the meeting is going on.\n\nYou have 15 seconds to vote someone out, good luck.`,
-                        components,
+                                ''
+                            )}\n\n${user.user.toString()} was the impostor and they got more than 15 messages!\nThey have won the game!!\n\n${emojis
+                            .map((a) => a.toString())
+                            .join('')}`,
                     })
-                    const meetingMessageContent = meetingMessage.content
-                    const voteCollector =
-                        meetingMessage.createMessageComponentCollector({
-                            filter: (b) => b,
-                            time: 15000,
+                }
+                if (msg.content.toLowerCase() === 'emergency') {
+                    if (emergencies < 1) {
+                        msg.reply({
+                            content:
+                                'You used the emergency button too many times and... IT BROKE!!!',
                         })
-                    let voted = []
-                    voteCollector.on('collect', async (button) => {
-                        if (button.customId === 'message-am') {
-                            const map = gamedata
-                                .sort((a, b) => b.messages - a.messages)
-                                .map(
-                                    (value, i) =>
-                                        `**${i + 1}**. ${
-                                            value.member.user.tag
-                                        } with ${value.messages} messages.`
-                                )
-                                .join('\n')
-
-                            button.reply({
-                                content: `**Most Messages**\n\n${map}`,
-                                ephemeral: true,
-                            })
-                        }
-                        if (!joined.includes(button.user.id)) {
-                            button.reply({
-                                content:
-                                    'You are not even in the game, wtf are you trying to do??',
-                                ephemeral: true,
-                            })
-                            return
-                        }
-                        const voter = gamedata.filter(
-                            (u) => u.member.id === button.user.id
-                        )[0]
-                        if (voter.dead) {
-                            button.reply({
-                                content:
-                                    "You're already dead, why're you voting?",
-                                ephemeral: true,
-                            })
-                            return
-                        }
-                        const buttonId = button.customId
-
-                        if (voted.includes(button.user.id)) {
-                            button.reply({
-                                content: 'You have already voted.',
-                                ephemeral: true,
-                            })
-                            return
-                        }
-
-                        const votedTo = gamedata.filter(
-                            (user) => user.id === buttonId
-                        )[0]
-                        button.reply({
-                            content: `You voted for ${votedTo.member}.`,
-                            ephemeral: true,
+                        message.channel.send({
+                            content: `${emojis
+                                .map((a) => a.toString())
+                                .join(
+                                    ''
+                                )}\n\n${impostor.user.toString()} has won the game!! They were the impostor.\n\n${emojis
+                                .map((a) => a.toString())
+                                .join('')}`,
                         })
-                        votedTo.gotVoted++
-
-                        voted.push(button.user.id)
-
-                        meetingMessage.edit(
-                            `${meetingMessageContent}\n\nVoted: ${voted
-                                .map((u) => `<@${u}>`)
-                                .join(' ')}`
-                        )
-                    })
-
-                    voteCollector.on('end', async () => {
-                        inMeeting = false
-
-                        const mm = await message.channel.send(
-                            'The voting has ended and...'
-                        )
-                        await sleep(1000)
-
-                        const votedOut = gamedata.sort(
-                            (a, b) => b.gotVoted - a.gotVoted
-                        )[0]
-                        votedOut.dead = true
-
-                        if (votedOut.impostor) {
-                            message.channel.send(
-                                `${votedOut.member} was voted out. And they were the impostor.\n\nCongrats to all the crewmates that survived!`
-                            )
-                            mainCol.stop()
-                        } else {
-                            message.channel.send(
-                                `${votedOut.member} was voted out. And they were not the impostor.`
-                            )
-                        }
-
-                        for (
-                            let amogus = 0;
-                            amogus < gamedata.length;
-                            amogus++
-                        ) {
-                            gamedata[amogus].gotVoted = 0
-                        }
-                    })
+                    }
                 }
             })
         })
