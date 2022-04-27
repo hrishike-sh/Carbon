@@ -22,7 +22,7 @@ module.exports = {
                 )
             ) {
                 if (
-                    !message.member
+                    !member
                         .permissionsIn(message.channel.id)
                         .has('VIEW_CHANNEL')
                 ) {
