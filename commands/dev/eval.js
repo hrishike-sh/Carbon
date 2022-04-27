@@ -57,8 +57,8 @@ module.exports = {
         const tokenRegex2 = new RegExp(process.env.amariToken, 'gi')
         let button = false
         let hasteURL = ''
-        result = result.replace(tokenRegex, 'nice try but no')
-        result = result.replace(tokenRegex2, '🤡🤡🤡🤡🤡')
+        result = result.replace(tokenRegex, 'ok kiddo.')
+        result = result.replace(tokenRegex2, 'https://youtu.be/iik25wqIuFo')
         if (result.length > 1000) {
             if (result.length >= 1024) {
                 hasteURL = await uploadResult(result, {
