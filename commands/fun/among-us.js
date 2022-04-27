@@ -168,9 +168,11 @@ module.exports = {
                     gamedata.some((v) => v.user.id === msg.author.id),
             })
             let emergencies = 3
+            let inEmergency = false
             collector.on('collect', async (msg) => {
                 const user = gamedata.find((u) => u.user.id === msg.author.id)
-                user.messages++
+                if (!inEmergency) user.messages++
+
                 if (user.impostor && user.messages > 15) {
                     collector.stop()
                     return message.channel.send({
