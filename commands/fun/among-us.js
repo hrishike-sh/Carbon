@@ -91,6 +91,7 @@ module.exports = {
                 user: button.member,
                 gameId: `${button.member.id}:${emojiIds[temp]}`,
                 impostor: false,
+                votes: 0,
                 messages: 0,
             })
 
