@@ -127,10 +127,9 @@ module.exports = {
         }
         embed.addField('Amount added:', `⏣ ${toAdd.toLocaleString()}`, true)
         embed.addField(
-            `Total amount donated by ${message.mentions.users
-                .filter((u) => !u.bot)
-                .first()
-                .toString()}:`,
+            `Total amount donated by ${
+                message.mentions.users.filter((u) => !u.bot).first().tag
+            }:`,
             `⏣ ${dbUser.messages.toLocaleString()}`,
             true
         )
