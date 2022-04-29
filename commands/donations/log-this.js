@@ -10,7 +10,12 @@ module.exports = {
      * @param {String[]} args
      */
     async execute(message, args) {
-        const modRoles = ['824348974449819658', '824539655134773269']
+        const modRoles = [
+            '824348974449819658',
+            '824539655134773269',
+            '825783847622934549',
+            '858088054942203945',
+        ]
         if (!message.member.roles.cache.hasAny(...modRoles)) {
             return message.reply("You can't use this command bozo")
         }
@@ -19,7 +24,7 @@ module.exports = {
             return message.reply('You must reply to the message.')
         }
 
-        if (!message.mentions.users.size) {
+        if (!message.mentions.users.filter((b) => !b.bot).size) {
             return message.reply('You must @ the user.')
         }
 
@@ -83,15 +88,6 @@ module.exports = {
                         console.log(`will add ${value}`)
                         toAdd += value
                     } else {
-                        if (
-                            !erray.includes(
-                                `Couldn't find any item in the database with the ID \`${ktem}\``
-                            )
-                        ) {
-                            erray.push(
-                                `Couldn't find any item in the database with the ID \`${ktem}\``
-                            )
-                        }
                     }
                 }
             } else {
@@ -104,18 +100,19 @@ module.exports = {
         }
 
         const embed = new MessageEmbed()
-            .setTitle('temp')
+            .setTitle('Donation Added')
             .setDescription(`Logged items:\n> ${doneTems.join('\n> ')}`)
             .setColor('GREEN')
         let dbUser
         try {
             dbUser = await db.findOne({
-                userID: message.mentions.users.first().id,
+                userID: message.mentions.users.filter((u) => !u.bot).first().id,
                 guildID: message.guild.id,
             })
             if (!dbUser) {
                 dbUser = new db({
-                    userID: message.mentions.users.first().id,
+                    userID: message.mentions.users.filter((u) => !u.bot).first()
+                        .id,
                     guildID: message.guild.id,
                     messages: 0,
                 })
@@ -130,7 +127,10 @@ module.exports = {
         }
         embed.addField('Amount added:', `⏣ ${toAdd.toLocaleString()}`, true)
         embed.addField(
-            'Total amount donated:',
+            `Total amount donated by ${message.mentions.users
+                .filter((u) => !u.bot)
+                .first()
+                .toString()}:`,
             `⏣ ${dbUser.messages.toLocaleString()}`,
             true
         )
