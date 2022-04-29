@@ -54,8 +54,6 @@ module.exports = {
                     if (got) continue
                     const res = i.localeCompare(ktem)
                     if (res === 0) {
-                        if (!doneTems.includes(`${amount}x ${ktem}`))
-                            doneTems.push(`${amount}x ${ktem}`)
                         got = true
                         const value =
                             amount *
@@ -74,7 +72,14 @@ module.exports = {
                                               .toLowerCase() === ktem
                                   ).value
                                 : 0)
-
+                        if (
+                            !doneTems.includes(
+                                `${amount}x ${ktem}: ⏣ ${value.toLocaleString()}`
+                            )
+                        )
+                            doneTems.push(
+                                `${amount}x ${ktem}: ⏣ ${value.toLocaleString()}`
+                            )
                         console.log(`will add ${value}`)
                         toAdd += value
                     } else {
@@ -84,6 +89,9 @@ module.exports = {
                     }
                 }
             } else {
+                if (!doneTems.includes(`⏣ ${parseInt(item)}`)) {
+                    doneTems.push(`⏣ ${parseInt(item)}`)
+                }
                 toAdd += parseInt(item)
                 console.log(`will add ${item}`)
             }
@@ -91,7 +99,7 @@ module.exports = {
         console.log(erray)
         const embed = new MessageEmbed()
             .setTitle('temp')
-            .setDescription(`Logged items:\n> ${doneTems.join('\n')}`)
+            .setDescription(`Logged items:\n${doneTems.join('\n>')}`)
             .addField(`Amount to be added:`, toAdd.toLocaleString(), true)
             .setColor('GREEN')
         // if (erray.length) {
