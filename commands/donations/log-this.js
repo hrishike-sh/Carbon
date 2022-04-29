@@ -107,8 +107,9 @@ module.exports = {
             .setTitle('temp')
             .setDescription(`Logged items:\n> ${doneTems.join('\n> ')}`)
             .setColor('GREEN')
+        let dbUser
         try {
-            let dbUser = await db.findOne({
+            dbUser = await db.findOne({
                 userID: message.mentions.users.first().id,
                 guildID: message.guild.id,
             })
