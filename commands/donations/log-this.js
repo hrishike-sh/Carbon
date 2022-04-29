@@ -99,7 +99,7 @@ module.exports = {
         console.log(erray)
         const embed = new MessageEmbed()
             .setTitle('temp')
-            .setDescription(`Logged items:\n${doneTems.join('\n>')}`)
+            .setDescription(`Logged items:\n> ${doneTems.join('\n> ')}`)
             .addField(`Amount to be added:`, toAdd.toLocaleString(), true)
             .setColor('GREEN')
         // if (erray.length) {
