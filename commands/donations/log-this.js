@@ -10,7 +10,7 @@ module.exports = {
      * @param {String[]} args
      */
     async execute(message, args) {
-        const modRoles = ['824348974449819658']
+        const modRoles = ['824348974449819658', '824539655134773269']
         if (!message.member.roles.cache.hasAny(...modRoles)) {
             return message.reply("You can't use this command bozo")
         }
@@ -41,6 +41,7 @@ module.exports = {
         )
         let toAdd = 0
         const erray = []
+        let doneTems = []
         for (const item of itemArray.split('\n')) {
             if (!item.length) continue
             console.log(item)
@@ -53,6 +54,8 @@ module.exports = {
                     if (got) continue
                     const res = i.localeCompare(ktem)
                     if (res === 0) {
+                        if (!doneTems.includes(`${amount}x ${ktem}`))
+                            doneTems.push(`${amount}x ${ktem}`)
                         got = true
                         const value =
                             amount *
@@ -88,7 +91,7 @@ module.exports = {
         console.log(erray)
         const embed = new MessageEmbed()
             .setTitle('temp')
-            .setDescription('temp2')
+            .setDescription(`Logged items:\n> ${doneTems.join('\n')}`)
             .addField(`Amount to be added:`, toAdd.toLocaleString(), true)
             .setColor('GREEN')
         // if (erray.length) {
