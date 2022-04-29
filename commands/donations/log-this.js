@@ -1,6 +1,6 @@
 const { Message, MessageEmbed } = require('discord.js')
 const itemsDb = require('../../database/models/itemSchema')
-
+const db = require('../../node_modules/discord-messages/models/messages')
 module.exports = {
     name: 'log-this',
     aliases: ['logthis'],
@@ -19,7 +19,7 @@ module.exports = {
             return message.reply('You must reply to the message.')
         }
 
-        if (!args[0]) {
+        if (!message.mentions.users.size) {
             return message.reply('You must @ the user.')
         }
 
@@ -83,9 +83,15 @@ module.exports = {
                         console.log(`will add ${value}`)
                         toAdd += value
                     } else {
-                        erray.push(
-                            `Couldn't find any item in the database with the ID \`${ktem}\``
-                        )
+                        if (
+                            !erray.includes(
+                                `Couldn't find any item in the database with the ID \`${ktem}\``
+                            )
+                        ) {
+                            erray.push(
+                                `Couldn't find any item in the database with the ID \`${ktem}\``
+                            )
+                        }
                     }
                 }
             } else {
@@ -96,15 +102,40 @@ module.exports = {
                 console.log(`will add ${item}`)
             }
         }
-        console.log(erray)
+
         const embed = new MessageEmbed()
             .setTitle('temp')
             .setDescription(`Logged items:\n> ${doneTems.join('\n> ')}`)
-            .addField(`Amount to be added:`, toAdd.toLocaleString(), true)
             .setColor('GREEN')
-        // if (erray.length) {
-        //     embed.addField('ERRORS:', erray.join('\n'))
-        // }
+        try {
+            let dbUser = await db.findOne({
+                userID: message.mentions.users.first().id,
+                guildID: message.guild.id,
+            })
+            if (!dbUser) {
+                dbUser = new db({
+                    userID: message.mentions.users.first().id,
+                    guildID: message.guild.id,
+                    messages: 0,
+                })
+            }
+
+            dbUser.messages += toAdd
+            dbUser.save()
+        } catch (e) {
+            return message.reply(
+                `An error occured while saving amount to database.\nError: ${e.message}`
+            )
+        }
+        embed.addField('Amount added:', `⏣ ${toAdd.toLocaleString()}`, true)
+        embed.addField(
+            'Total amount donated:',
+            `⏣ ${dbUser.messages.toLocaleString()}`,
+            true
+        )
+        if (erray.length) {
+            embed.addField('ERRORS:', erray.join('\n'))
+        }
         return message.reply({
             embeds: [embed],
         })
