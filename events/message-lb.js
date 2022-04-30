@@ -21,6 +21,13 @@ module.exports = {
                     '828048225096826890'
                 )
             ) {
+                if (
+                    !member
+                        .permissionsIn(message.channel.id)
+                        .has('VIEW_CHANNEL')
+                ) {
+                    return
+                }
                 let user = await pings.findOne({ userId: member.id })
                 if (!user) {
                     user = new pings({

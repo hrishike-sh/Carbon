@@ -92,6 +92,7 @@ module.exports = {
                 }
             }
         }
+        const processing = new Collection()
         // GIVEAWAYS
         if (gawCounter1 > 5) {
             gawCounter1 = 0
@@ -104,6 +105,10 @@ module.exports = {
             })
 
             for (const giveaway of Query) {
+                if (processing.has(giveaway.messageId)) continue
+
+                processing.set(giveaway.messageId, 'x')
+
                 try {
                     const channel = client.channels.cache.get(
                         giveaway.channelId
@@ -289,6 +294,7 @@ module.exports = {
                     }
                 } catch (_) {
                 } finally {
+                    processing.delete(giveaway.messageId)
                     giveaway.hasEnded = true
                     giveaway.save()
                     continue

@@ -1,6 +1,6 @@
 const { Message, MessageEmbed } = require('discord.js')
 const itemsDb = require('../../database/models/itemSchema')
-
+const db = require('../../node_modules/discord-messages/models/messages')
 module.exports = {
     name: 'log-this',
     aliases: ['logthis'],
@@ -10,7 +10,12 @@ module.exports = {
      * @param {String[]} args
      */
     async execute(message, args) {
-        const modRoles = ['824348974449819658']
+        const modRoles = [
+            '824348974449819658',
+            '824539655134773269',
+            '825783847622934549',
+            '858088054942203945',
+        ]
         if (!message.member.roles.cache.hasAny(...modRoles)) {
             return message.reply("You can't use this command bozo")
         }
@@ -19,7 +24,7 @@ module.exports = {
             return message.reply('You must reply to the message.')
         }
 
-        if (!args[0]) {
+        if (!message.mentions.users.filter((b) => !b.bot).size) {
             return message.reply('You must @ the user.')
         }
 
@@ -41,6 +46,7 @@ module.exports = {
         )
         let toAdd = 0
         const erray = []
+        let doneTems = []
         for (const item of itemArray.split('\n')) {
             if (!item.length) continue
             console.log(item)
@@ -71,29 +77,65 @@ module.exports = {
                                               .toLowerCase() === ktem
                                   ).value
                                 : 0)
-
+                        if (
+                            !doneTems.includes(
+                                `${amount}x ${ktem}: ⏣ ${value.toLocaleString()}`
+                            )
+                        )
+                            doneTems.push(
+                                `${amount}x ${ktem}: ⏣ ${value.toLocaleString()}`
+                            )
                         console.log(`will add ${value}`)
                         toAdd += value
                     } else {
-                        erray.push(
-                            `Couldn't find any item in the database with the ID \`${ktem}\``
-                        )
                     }
                 }
             } else {
+                if (!doneTems.includes(`⏣ ${parseInt(item)}`)) {
+                    doneTems.push(`⏣ ${parseInt(item)}`)
+                }
                 toAdd += parseInt(item)
                 console.log(`will add ${item}`)
             }
         }
-        console.log(erray)
+
         const embed = new MessageEmbed()
-            .setTitle('temp')
-            .setDescription('temp2')
-            .addField(`Amount to be added:`, toAdd.toLocaleString(), true)
+            .setTitle('Donation Added')
+            .setDescription(`Logged items:\n> ${doneTems.join('\n> ')}`)
             .setColor('GREEN')
-        // if (erray.length) {
-        //     embed.addField('ERRORS:', erray.join('\n'))
-        // }
+        let dbUser
+        try {
+            dbUser = await db.findOne({
+                userID: message.mentions.users.filter((u) => !u.bot).first().id,
+                guildID: message.guild.id,
+            })
+            if (!dbUser) {
+                dbUser = new db({
+                    userID: message.mentions.users.filter((u) => !u.bot).first()
+                        .id,
+                    guildID: message.guild.id,
+                    messages: 0,
+                })
+            }
+
+            dbUser.messages += toAdd
+            dbUser.save()
+        } catch (e) {
+            return message.reply(
+                `An error occured while saving amount to database.\nError: ${e.message}`
+            )
+        }
+        embed.addField('Amount added:', `⏣ ${toAdd.toLocaleString()}`, true)
+        embed.addField(
+            `Total amount donated by ${
+                message.mentions.users.filter((u) => !u.bot).first().tag
+            }:`,
+            `⏣ ${dbUser.messages.toLocaleString()}`,
+            true
+        )
+        if (erray.length) {
+            embed.addField('ERRORS:', erray.join('\n'))
+        }
         return message.reply({
             embeds: [embed],
         })
