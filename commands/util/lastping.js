@@ -31,6 +31,13 @@ module.exports = {
             )
         }
 
+        
+        if (message.channel.id === '870240187198885888') {
+            return message.channel.send(
+                'No.'
+            )
+        };
+        
         const DBUser = await Pings.findOne({ userId: message.author.id })
 
         const PingBed = new MessageEmbed()
