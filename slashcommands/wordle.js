@@ -136,6 +136,7 @@ module.exports = {
             if (msg.content.toLowerCase() === wOrD) win = true
             if (currentLine > 4 && !win) {
                 mainCollector.stop();
+                confirmation.stop();
                 return msg.reply(
                     `You could not finish the game in 5 tries... The word was \`${wOrD}\``
                 )
