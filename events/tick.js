@@ -130,7 +130,12 @@ module.exports = {
                                             )[
                                                 Math.floor(
                                                     Math.random() *
-                                                        giveaway.entries.length
+                                                        giveaway.entries.filter(
+                                                            (val) =>
+                                                                !winners.includes(
+                                                                    val
+                                                                )
+                                                        ).length
                                                 )
                                             ]
                                         )
