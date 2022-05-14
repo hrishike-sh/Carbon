@@ -11,16 +11,19 @@ module.exports = {
             !message.member.roles.cache.some(
                 (role) => role.id === '824348974449819658'
             ) &&
-            message.author.id !== '598918643727990784'
+            !message.member.roles.cache.some(
+                (role) => role.id === '824539655134773269'
+            ) &&
+            message.author.id !== '598918643727990784' // hrish you are dumb istg 
         ) {
             message.channel.send(
-                'You need the `・ Administrator` role to perform this action.'
+                'Only staff can perform this action.'
             )
             return
         }
 
         const embed = {
-            title: '**__SERVER PINGS__**',
+            title: '**SERVER PINGS**',
             description:
                 '<a:fh_announcement:824918261086945280> • <@&824916329848111114>\n' +
                 '<a:fh_Nitroboostrgb:825302229853405184> • <@&832066859653398549>\n' +
