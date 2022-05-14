@@ -1,14 +1,16 @@
-const ms = require('ms')
+const ms = require('better-ms')
 const giveawayModel = require('../../database/models/giveaway')
 const {
     Message,
     Client,
     MessageButton,
     MessageActionRow,
+    MessageEmbed,
 } = require('discord.js')
 module.exports = {
     name: 'gstart',
     alises: ['g', 'giveaway', 'gaw'],
+    fhOnly: true,
     description: 'start giveaways (testing only)',
     /**
      *
@@ -17,146 +19,160 @@ module.exports = {
      * @param {Client} client
      */
     async execute(message, args, client) {
-        if (
-            !message.member.roles.cache.some(
-                (role) => role.id === '824348974449819658'
-            ) &&
-            !message.member.roles.cache.some(
-                (role) => role.id === '825783847622934549'
-            ) &&
-            !message.member.roles.cache.some(
-                (role) => role.id === '858088054942203945'
-            )
-        ) {
-            return message.channel.send(
-                `You do not have perms to run this command.`
-            )
+        // time winners req prize --tags
+        const allowedRoles = []
+        const example = `\n\nfh gstart 1h20m 5 roleId1.roleId2 Pepe Trophy each --msg Hrish was here --donor userId`
+        if (!message.member.roles.cache.hasAny(...allowedRoles)) {
+            return message.reply(`You cannot run this command!`)
         }
 
-        //fh gstart 10s 1w [requirements] prize
+        if (!args[0]) return message.reply(`Please provide time!${example}`)
+        const time = ms(args[0])
 
-        let time = args[0]
-        if (time === 'help')
-            return message.channel.send({
-                embeds: [
-                    {
-                        title: 'Giveaway Help',
-                        description: 'Here is some help:',
-                        fields: [
-                            {
-                                name: 'Arguments',
-                                value: `fh gstart <Time> <No. of winners (Currently 1 Max)> <Requirements> <Prize>`,
-                                inline: true,
-                            },
-                            {
-                                name: 'Requirements',
-                                value: `To provide valid requirements, use the role id(s). To give multiple requirements, seperate the role ids with a "."\nUse "None" if there are no requirements.`,
-                                inline: true,
-                            },
-                            {
-                                name: 'Examples',
-                                value: `\`fh gstart 10m 1w none Trophy\`\n\`fh gstart 1h 1w 824687107192520705 Pepe Medal\`\n\`fh gstart 6h 1w 824329689534431302.826099300383457341 DN Joke Pass\``,
-                            },
-                        ],
-                    },
-                ],
-            })
-        if (!time) return message.channel.send('You must specify time.')
-        if (isNaN(ms(time)))
-            return message.channel.send('Please specify valid time.')
-        args.shift()
-        time = ms(time)
-        let winners = args[0]
-        if (!winners || isNaN(parseInt(winners)))
-            return message.channel.send(
-                'You must specify the number of winners.'
+        if (!time)
+            return message.reply(
+                `Could not parse \`${args[0]}\` as time.${example}`
             )
-        winners = parseInt(winners)
-        //requirements
         args.shift()
-        const rawquirement = args[0]
-        if (!rawquirement)
-            return message.channel.send(
-                `You must specify a requirement or \`none\`.`
+        // winners req prize --tags
+        if (!args[0])
+            return message.reply(`Please provide number of winners!${example}`)
+
+        if (Number.isNaN(args[0]))
+            return message.reply(
+                `I don't thing \`${args[0]}\` is a number.${example}`
             )
-        let requirement = []
-        if (rawquirement.toLowerCase() === 'none') {
-            requirement = null
-        } else {
-            const reqs = rawquirement.split('.')
-            for (const req of reqs) {
-                const role = message.guild.roles.cache.some(
-                    (role) => role.id === req
-                )
-                if (!role)
-                    return message.channel.send(
-                        `I couldn't find any role with the ID "${req}"!`
+        const winners = parseInt(args[0])
+        args.shift()
+        // req prize --tags
+        if (!args[0])
+            return message.reply(
+                `Please provide Requirements or "none"!${example}`
+            )
+        const rawq = args[0]
+        let requirements = []
+        if (rawq.toLowerCase() === 'none') {
+            requirements = false
+        } else if (rawq.includes('.')) {
+            const roles = rawq.split('.')
+            for (const role of roles) {
+                if (!message.guild.roles.cache.has(role)) {
+                    return message.reply(
+                        `Could not find any role with the ID ${role} in this server.`
                     )
-
-                requirement.push(req)
+                } else {
+                    requirements.push(role)
+                }
             }
-        }
-
-        //requirements
-        args.shift()
-        let prize = args.join(' ')
-        if (!prize) prize = 'Prize'
-
-        if (time > 1) {
-            // database giveaway
-            const enterBut = new MessageButton()
-                .setLabel('Enter')
-                .setStyle('SUCCESS')
-                .setCustomId('giveaway-join')
-            const infoBut = new MessageButton()
-                .setLabel('View Info')
-                .setStyle('SECONDARY')
-                .setCustomId('giveaway-info')
-            const row = new MessageActionRow().addComponents([
-                enterBut,
-                infoBut,
-            ])
-            const hrish = await message.channel.send({
-                embed: {
-                    title: prize,
-                    color: 'RANDOM',
-                    description: `Use the button to enter!!\nTime: **${ms(
-                        time,
-                        { long: true }
-                    )}** (ends <t:${(
-                        (new Date().getTime() + time) /
-                        1000
-                    ).toFixed(0)}:R>)\nHosted by: ${message.member}`,
-                    fields: [
-                        {
-                            name: 'Requirements:',
-                            value: `Roles: ${
-                                requirement
-                                    ? requirement
-                                          .map((x) => `<@&${x}>`)
-                                          .join(', ')
-                                    : 'None!'
-                            }`,
-                        },
-                    ],
-                },
-                components: [row],
-            })
-            const gaw = new giveawayModel({
-                guildId: message.guild.id,
-                channelId: message.channel.id,
-                messageId: hrish.id,
-                hosterId: message.author.id,
-                winners: winners,
-                prize: prize,
-                requirements: requirement,
-                endsAt: new Date().getTime() + time,
-                hasEnded: false,
-            })
-            gaw.save()
         } else {
-            // regular giveaway
+            requirements.push(role)
         }
+
+        args.shift()
+        // prize --tags
+        let prize = ''
+        let dMessage = false
+        let donor = false
+        if (message.content.includes('--')) {
+            let safeArgs = args
+            prize = args.join(' ').split('--')[0]
+            safeArgs.join(' ').split('--').shift()
+            const possibleTags = ['msg', 'donor']
+            for (const tag of safeArgs) {
+                const a = tag.split(' ')
+                if (!possibleTags.includes(a[0])) {
+                    return message.reply(
+                        `\`${a[0]}\` is not a valid tag!\n\nValid tags are: \`--msg <msg>\` and \`--donor <userId>\``
+                    )
+                }
+                if (a[0] === 'msg') {
+                    dMessage = a.shift().join(' ')
+                } else if (a[0] === 'donor') {
+                    a.shift()
+                    if (!a[0])
+                        return message.reply(
+                            `Please provide the userId of the donor (if any). Else, do not use the \`--donor\` tag!`
+                        )
+                    const userId = a[0]
+                    let user
+                    try {
+                        user = await client.users.fetch(userId)
+                    } catch (_) {
+                        return message.reply(
+                            `Could not find any user with the ID \`${userId}\`!`
+                        )
+                    }
+                    donor = user
+                }
+            }
+        } else prize = args.join(' ')
+
+        const embed = new MessageEmbed()
+            .setTitle(prize)
+            .setDescription(
+                `Use the button to enter!\n**Time**: ${require('ms')(time, {
+                    long: true,
+                })} (<t:${(
+                    (new Date().getTime() + parseInt(time)) /
+                    1000
+                ).toFixed(0)}:R>)\n**Host**: ${message.member.toString()}`
+            )
+            .setFooter({
+                text: `Winners: ${winners} | Ends at `,
+            })
+            .setColor('GREEN')
+            .setTimestamp(new Date().getTime() + time)
+        if (requirements && requirements.length) {
+            embed.addField(
+                'Requirements:',
+                `Roles: ${requirements.map((val) => `<@&${val}>`).join(', ')}`,
+                false
+            )
+        }
+        if (!donor) donor = message.member
+        if (donor) embed.addField('Sponsor:', `${donor.toString()}`, false)
+
+        let embeds = []
+        embeds.push(embed)
+        if (dMessage) {
+            embeds.push(
+                new MessageEmbed()
+                    .setDescription(`**Sponsor's message:** ${dMessage}`)
+                    .setColor('GREEN')
+            )
+        }
+
+        const row = new MessageActionRow().addComponents([
+            new MessageButton()
+                .setEmoji('🎉')
+                .setCustomId('giveaway-join')
+                .setStyle('SUCCESS'),
+        ])
+
+        await message.delete()
+        const mmmm = await message.channel.send({
+            embeds,
+            components: [row],
+        })
+
+        const dbDat = {
+            guildId: message.guild.id,
+            channelId: message.channel.id,
+            messageId: mmmm.id,
+            hosterId: message.author.id,
+            winners,
+            sponsor: { id: donor.id, thanks: 0 },
+            prize,
+            endsAt: new Date().getTime() + time,
+            hasEnded: false,
+            requirements: [],
+            entries: [],
+        }
+        if (requirements) {
+            dbDat.requirements = requirements
+        }
+
+        const dbGaw = new giveawayModel(dbDat).save()
     },
 }
 
