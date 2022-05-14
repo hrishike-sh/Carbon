@@ -158,7 +158,7 @@ module.exports = {
         const dbDat = {
             guildId: message.guild.id,
             channelId: message.channel.id,
-            messageId: mmmm.id,
+            messageId: mmmm.id, //
             hosterId: message.author.id,
             winners,
             sponsor: { id: donor.id, thanks: 0 },
