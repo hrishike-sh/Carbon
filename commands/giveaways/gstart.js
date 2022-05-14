@@ -82,7 +82,7 @@ module.exports = {
         if (message.content.includes('--')) {
             let safeArgs = args
             prize = args.join(' ').split('--')[0]
-            safeArgs.join(' ').split('--').shift()
+            safeArgs = safeArgs.join(' ').split('--').shift()
             const possibleTags = ['msg', 'donor']
             for (const tag of safeArgs) {
                 const a = tag.split(' ')
