@@ -82,9 +82,13 @@ module.exports = {
         if (message.content.includes('--')) {
             let safeArgs = args
             prize = args.join(' ').split('--')[0]
+            console.log(prize)
+            console.log(`ARGS: ${args}\nSAFE ARGS: ${safeArgs}\n\n`)
             safeArgs = safeArgs.join(' ').split('--').shift()
+            console.log(`ARGS: ${args}\nSAFE ARGS: ${safeArgs}`)
             const possibleTags = ['msg', 'donor']
             for (const tag of safeArgs) {
+                console.log(tag)
                 const a = tag.split(' ')
                 if (!possibleTags.includes(a[0])) {
                     return message.reply(
