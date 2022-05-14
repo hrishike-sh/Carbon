@@ -34,9 +34,25 @@ module.exports = {
      * @param {CommandInteraction} interaction
      */
     async execute(interaction) {
-        if (!interaction.member.roles.cache.has('824348974449819658')) {
-            return interaction.reply('Only admins can run this.')
-        }
+        if (
+            !interaction.member.roles.cache.some(
+                 (role) => role.id === '824539655134773269'
+           ) &&
+           !interaction.member.roles.cache.some(
+                 (role) => role.id === '825783847622934549'
+           ) &&
+           !interaction.member.roles.cache.some(
+                 (role) => role.id === '858088054942203945'
+           ) &&
+           !interaction.member.roles.cache.some(
+                 (role) => role.id === '824348974449819658'
+        } { 
+           return interaction.reply( {
+               content: 'No, Only staff can use this.',
+               ephemeral: true,
+           }
+           ) 
+        } 
         const data = {
             itemId: interaction.options.getString('item_id'),
             url: interaction.options?.getString('new_url'),
