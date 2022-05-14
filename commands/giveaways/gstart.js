@@ -71,7 +71,7 @@ module.exports = {
                 }
             }
         } else {
-            requirements.push(role)
+            requirements.push(rawq)
         }
 
         args.shift()
