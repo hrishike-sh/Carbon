@@ -97,7 +97,8 @@ module.exports = {
                     )
                 }
                 if (a[0] === 'msg') {
-                    dMessage = a.shift().join(' ')
+                    a.shift()
+                    dMessage = a.join(' ')
                 } else if (a[0] === 'donor') {
                     a.shift()
                     if (!a[0])
