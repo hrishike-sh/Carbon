@@ -84,7 +84,8 @@ module.exports = {
             prize = args.join(' ').split('--')[0]
             console.log(prize)
             console.log(`ARGS: ${args}\nSAFE ARGS: ${safeArgs}\n\n`)
-            safeArgs = safeArgs.join(' ').split('--').shift()
+            safeArgs = safeArgs.join(' ').split('--')
+            safeArgs.shift()
             console.log(`ARGS: ${args}\nSAFE ARGS: ${safeArgs}`)
             const possibleTags = ['msg', 'donor']
             for (const tag of safeArgs) {
