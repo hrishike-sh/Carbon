@@ -27,13 +27,13 @@ module.exports = {
             '858088054942203945',
             '826002228828700718',
         ]
-        const example = `\n\nfh gstart 1h20m 5 roleId1.roleId2 Pepe Trophy each --msg Hrish was here --donor userId`
+        const example = `\n\n\`fh gstart 1h20m 5 roleId1.roleId2 Pepe Trophy each --msg Hrish was here --donor userId\``
         if (!message.member.roles.cache.hasAny(...allowedRoles)) {
             return message.reply(`You cannot run this command!`)
         }
 
         if (!args[0]) return message.reply(`Please provide time!${example}`)
-        const time = ms(args[0])
+        const time = ms.getMilliseconds(args[0])
 
         if (!time)
             return message.reply(
