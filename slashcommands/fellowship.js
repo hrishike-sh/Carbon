@@ -65,7 +65,7 @@ module.exports = {
                         .setDescription(
                             'Choose your fellowship channel (Fellowship Owners Only)'
                         )
-                        .setRequired()
+                        .setRequired(true)
                 })
                 .addUserOption((o) => {
                     return o
@@ -84,7 +84,7 @@ module.exports = {
                         .setDescription(
                             'Choose your fellowship channel (Fellowship Owners Only)'
                         )
-                        .setRequired()
+                        .setRequired(true)
                 })
                 .addUserOption((o) => {
                     return o
