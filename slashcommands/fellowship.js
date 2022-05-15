@@ -117,7 +117,10 @@ module.exports = {
                 owner3Invites: interaction.options.getNumber('owner_3_invites'),
             }
 
-            const exists = await Database.find({ channelId: data.channel.id })
+            const exists = await Database.findOne({
+                channelId: data.channel.id,
+            })
+            console.log(exists)
             if (exists) {
                 return interaction.reply(
                     'A fellowship for that channel already exists!'
