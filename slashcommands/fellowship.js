@@ -120,13 +120,12 @@ module.exports = {
             const exists = await Database.findOne({
                 channelId: data.channel.id,
             })
-            console.log(exists)
             if (exists) {
                 return interaction.reply(
                     'A fellowship for that channel already exists!'
                 )
             }
-            new Database({
+            const amogus = new Database({
                 guildId: interaction.guild.id,
                 channelId: data.channel.id,
                 ownerIds: [data.owner1.id, data.owner2.id, data.owner3.id],
@@ -148,7 +147,19 @@ module.exports = {
                     },
                 },
             }).save()
-
+            for (const sus of amogus.ownerIds) {
+                data.channel.permissionOverwrites.edit(sus, {
+                    VIEW_CHANNEL: true,
+                    SEND_MESSAGES: true,
+                })
+            }
+            channel.send(
+                `${amogus.ownerIds
+                    .map((a) => `<@${a}>`)
+                    .join(
+                        ' '
+                    )}\n\n${interaction.user.toString()} has created your fellowship! You are the owners and here is how you can add/remove members from your fellowshio:\n\nTo add: /fellowship add\nTo remove: /fellowship remove`
+            )
             return interaction.reply(`☑ Fellowship has been created.`)
         } else if (command === 'add') {
             const data = {
