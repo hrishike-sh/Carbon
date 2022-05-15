@@ -149,7 +149,96 @@ module.exports = {
                 },
             }).save()
 
-            return interaction.reply(`✔ Fellowship has been created.`)
+            return interaction.reply(`☑ Fellowship has been created.`)
+        } else if (command === 'add') {
+            const data = {
+                channel: interaction.options.getChannel('fellowship'),
+                user: interaction.options.getUser('user'),
+            }
+            const fellowship = await Database.findOne({
+                channelId: data.channel.id,
+            })
+            if (!fellowship)
+                return interaction.reply({
+                    content: "That's not even a valid fellowship.",
+                })
+
+            const owner = fellowship.ownerIds.includes(interaction.user.id)
+            if (!owner)
+                return interaction.reply(
+                    'You are not an owner of that fellowship!'
+                )
+
+            const dbUser =
+                fellowship.owners.one.userId == interaction.user.id
+                    ? fellowship.owners.one
+                    : fellowship.owners.two.userId == interaction.user.id
+                    ? fellowship.owners.two
+                    : fellowship.owners.three
+
+            if (dbUser.invited.length == dbUser.invites) {
+                return interaction.reply({
+                    content: `You have already reached your max invites. (${dbUser.invites})`,
+                })
+            }
+            if (dbUser.invited.includes(data.user.id))
+                return interaction.reply(
+                    'That user is already a part of your fellowship!'
+                )
+            dbUser.invited.push(data.user.id)
+            await interaction.guild.channels.cache
+                .get(fellowship.channelId)
+                .permissionOverwrites.edit(data.user.id, {
+                    VIEW_CHANNEL: true,
+                    SEND_MESSAGES: true,
+                })
+            fellowship.save()
+
+            interaction.reply(
+                `Done! Added ${data.user.toString()} to your fellowship ${data.channel.toString()}`
+            )
+        } else if (command === 'remove') {
+            const data = {
+                channel: interaction.options.getChannel('fellowship'),
+                user: interaction.options.getUser('user'),
+            }
+            const fellowship = await Database.findOne({
+                channelId: data.channel.id,
+            })
+            if (!fellowship)
+                return interaction.reply({
+                    content: "That's not even a valid fellowship.",
+                })
+
+            const owner = fellowship.ownerIds.includes(interaction.user.id)
+            if (!owner)
+                return interaction.reply(
+                    'You are not an owner of that fellowship!'
+                )
+
+            const dbUser =
+                fellowship.owners.one.userId == interaction.user.id
+                    ? fellowship.owners.one
+                    : fellowship.owners.two.userId == interaction.user.id
+                    ? fellowship.owners.two
+                    : fellowship.owners.three
+
+            if (!dbUser.invited.includes(data.user.id))
+                return interaction.reply(
+                    'That user is not a part of your fellowship!'
+                )
+            dbUser.invited = dbUser.invited.filter((a) => a === data.user.id)
+            await interaction.guild.channels.cache
+                .get(fellowship.channelId)
+                .permissionOverwrites.edit(data.user.id, {
+                    VIEW_CHANNEL: false,
+                    SEND_MESSAGES: false,
+                })
+            fellowship.save()
+
+            interaction.reply(
+                `Done! Removed ${data.user.toString()} from your fellowship ${data.channel.toString()}!`
+            )
         }
     },
 }
