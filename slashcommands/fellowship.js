@@ -147,14 +147,18 @@ module.exports = {
                     },
                 },
             }).save()
-            for (const sus of amogus.ownerIds) {
+            for (const sus of [
+                data.owner1.id,
+                data.owner2.id,
+                data.owner3.id,
+            ]) {
                 data.channel.permissionOverwrites.edit(sus, {
                     VIEW_CHANNEL: true,
                     SEND_MESSAGES: true,
                 })
             }
             channel.send(
-                `${amogus.ownerIds
+                `${[data.owner1.id, data.owner2.id, data.owner3.id]
                     .map((a) => `<@${a}>`)
                     .join(
                         ' '
