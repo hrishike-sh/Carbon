@@ -157,7 +157,7 @@ module.exports = {
                     SEND_MESSAGES: true,
                 })
             }
-            channel.send(
+            data.channel.send(
                 `${[data.owner1.id, data.owner2.id, data.owner3.id]
                     .map((a) => `<@${a}>`)
                     .join(
