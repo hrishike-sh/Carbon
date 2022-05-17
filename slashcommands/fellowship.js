@@ -242,7 +242,7 @@ module.exports = {
                 return interaction.reply(
                     'That user is not a part of your fellowship!'
                 )
-            dbUser.invited = dbUser.invited.filter((a) => a === data.user.id)
+            dbUser.invited = dbUser.invited.filter((a) => a !== data.user.id)
             await interaction.guild.channels.cache
                 .get(fellowship.channelId)
                 .permissionOverwrites.edit(data.user.id, {
