@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require('@discordjs/builders')
-const { CommandInteraction } = require('discord.js')
+const { CommandInteraction, MessageEmbed } = require('discord.js')
 const Database = require('../database/models/fellowship')
 module.exports = {
     data: new SlashCommandBuilder()
@@ -90,6 +90,19 @@ module.exports = {
                     return o
                         .setName('user')
                         .setDescription('Mention the user you want to remove.')
+                        .setRequired(true)
+                })
+        })
+        .addSubcommand((cmd) => {
+            return cmd
+                .setName('view')
+                .setDescription('Get info about a fellowship.')
+                .addChannelOption((c) => {
+                    return c
+                        .setName('fellowship')
+                        .setDescription(
+                            'The channel to which the fellowship belongs.'
+                        )
                         .setRequired(true)
                 })
         }),
@@ -254,6 +267,59 @@ module.exports = {
             interaction.reply(
                 `Done! Removed ${data.user.toString()} from your fellowship ${data.channel.toString()}!`
             )
+        } else if (command == 'view') {
+            const channel = interaction.options.getChannel('fellowship')
+
+            const dbChannel = await Database.findOne({
+                channelId: channel.id,
+            })
+            if (!dbChannel)
+                return interaction.reply(
+                    'There is no fellowship for that channel.'
+                )
+
+            const embed = new MessageEmbed()
+                .setTitle('Fellowship')
+                .setDescription('Here are the details for this fellowship.')
+                .addField(
+                    `Owner 1: ${await (
+                        await interaction.client.users.fetch(
+                            dbChannel.owners.one.userId
+                        )
+                    ).tag}`,
+                    `**__Invites:__**\n${dbChannel.owners.one.invited
+                        .map((a, b) => `${b + 1}: <@${a}>`)
+                        .join('\n')}`,
+                    false
+                )
+                .addField(
+                    `Owner 2: ${await (
+                        await interaction.client.users.fetch(
+                            dbChannel.owners.two.userId
+                        )
+                    ).tag}`,
+                    `**__Invites:__**\n${dbChannel.owners.two.invited
+                        .map((a, b) => `${b + 1}: <@${a}>`)
+                        .join('\n')}`,
+                    false
+                )
+                .addField(
+                    `Owner 3: ${await (
+                        await interaction.client.users.fetch(
+                            dbChannel.owners.three.userId
+                        )
+                    ).tag}`,
+                    `**__Invites:__**\n${dbChannel.owners.three.invited
+                        .map((a, b) => `${b + 1}: <@${a}>`)
+                        .join('\n')}`,
+                    false
+                )
+                .setColor('GREEN')
+                .setTimestamp()
+
+            await interaction.reply({
+                embeds: [embed],
+            })
         }
     },
 }
