@@ -65,6 +65,12 @@ module.exports = {
                 })
                 .addStringOption((o) => {
                     return o
+                        .setName('requirement')
+                        .setDescription('Requirements for event.')
+                        .setRequired(false)
+                })
+                .addStringOption((o) => {
+                    return o
                         .setName('message')
                         .setRequired(false)
                         .setDescription('Optional message.')
@@ -195,6 +201,7 @@ module.exports = {
             const data = {
                 type: interaction.options.getString('type'),
                 prize: interaction.options.getString('prize'),
+                req: interaction.options.getString('requirement') || null,
                 msg: interaction.options.getString('message') || null,
                 explain:
                     interaction.options.getString('explain-the-event') || null,
@@ -216,8 +223,9 @@ module.exports = {
                     "Please wait patiently until an Event Manager is here.\nYou will be DM'd when they are ready to take your donation."
                 )
                 .addField('Type', data.type, true)
-                .addField('Prize', data.prize, false)
+                .addField('Prize', data.prize, true)
                 .setColor('YELLOW')
+            if (data.req) embed.addField('Requirement: ', data.req, true)
             if (data.msg) embed.addField('Message', data.msg, true)
             if (data.explain)
                 embed.addField('Explaination: ', data.explain, true)
