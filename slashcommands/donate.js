@@ -190,7 +190,7 @@ module.exports = {
             })
         } else {
             const eventManRole = '858088054942203945'
-            const eventChannel = '858295915428315136'
+            const eventChannel = '857223712193511434'
 
             const data = {
                 type: interaction.options.getString('type'),
@@ -202,7 +202,7 @@ module.exports = {
 
             if (interaction.channel.id !== eventChannel) {
                 return interaction.reply({
-                    content: `This can only be used in <#{${eventChannel}}>`,
+                    content: `This can only be used in <#${eventChannel}>`,
                 })
             }
 
