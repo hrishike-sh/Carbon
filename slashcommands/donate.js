@@ -189,8 +189,8 @@ module.exports = {
                 }
             })
         } else {
-            const eventManRole = ''
-            const eventChannel = ''
+            const eventManRole = '858088054942203945'
+            const eventChannel = '858295915428315136'
 
             const data = {
                 type: interaction.options.getString('type'),
