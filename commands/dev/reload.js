@@ -29,7 +29,7 @@ module.exports = {
             client.c.commands.get(command) ||
             client.c.commands.find((a) => a.aliases.includes(command))
 
-        const folders = fs.readdirSync('../../commands')
+        const folders = fs.readdirSync('../../commands/')
         const fName = folders.find((f) =>
             fs
                 .readdirSync(`../../commands/$${f}`)
