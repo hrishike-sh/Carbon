@@ -20,7 +20,7 @@ module.exports = {
     async execute(message, args, client) {
         const switches = client.switches
 
-        if (!client.config.trustedAccess.includes(message.author.id)) return
+        if (!client.config.idiots.includes(message.author.id)) return
         const allDbCommands = await DBCommands.find({})
         const embed = new MessageEmbed()
             .setTitle('SwitchBoard')
