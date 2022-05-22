@@ -31,13 +31,10 @@ module.exports = {
             )
         }
 
-        
         if (message.channel.id === '870240187198885888') {
-            return message.channel.send(
-                'No.'
-            )
-        };
-        
+            return message.channel.send('Try this command elsewhere.')
+        }
+
         const DBUser = await Pings.findOne({ userId: message.author.id })
 
         const PingBed = new MessageEmbed()
