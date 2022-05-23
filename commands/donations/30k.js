@@ -95,7 +95,7 @@ module.exports = {
             button.deferUpdate()
             if (id == 'lb') {
                 const rawLB = all
-                    .sort((a, b) => a.amount - b.amount)
+                    .sort((a, b) => b.amount - a.amount)
                     .slice(0, 9)
                 let data = ''
                 let inLb = false
