@@ -100,7 +100,7 @@ module.exports = {
             if (id == 'lb') {
                 const rawLB = all
                     .sort((a, b) => b.amount - a.amount)
-                    .slice(0, 9)
+                    .slice(0, 10)
                 let data = ''
                 let inLb = false
                 for (const x of rawLB) {
@@ -118,9 +118,11 @@ module.exports = {
                 }
 
                 if (!inLb && dbUser) {
-                    data += `\n${all.indexOf(dbUser) + 1}: ${
-                        target.tag
-                    } => ⏣ ${dbUser.amount.toLocaleString()}`
+                    data += `\n${
+                        all
+                            .sort((a, b) => b.amount - a.amount)
+                            .indexOf(dbUser) + 1
+                    }: ${target.tag} => ⏣ ${dbUser.amount.toLocaleString()}`
                 }
                 button.message.components[0].components
                     .find((a) => a.customId === '30k-lb')
