@@ -33,7 +33,7 @@ module.exports = {
 
         const folders = fs.readdirSync('./commands')
         const fName = folders.find((f) =>
-            fs.readdirSync(`./commands/$${f}`).includes(`${command.name}.js`)
+            fs.readdirSync(`./commands/${f}`).includes(`${command.name}.js`)
         )
 
         //delete command from cache
