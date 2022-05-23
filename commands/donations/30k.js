@@ -52,7 +52,11 @@ module.exports = {
                 )
                 .addField(
                     'Position on leaderboard:',
-                    `#${all.indexOf(dbUser) + 1}`
+                    `#${
+                        all
+                            .sort((a, b) => b.amount - a.amount)
+                            .indexOf(dbUser) + 1
+                    }`
                 )
         } else {
             donoEmbed
