@@ -2,6 +2,7 @@ const { SlashCommandBuilder } = require('@discordjs/builders')
 const { CommandInteraction, Client, MessageEmbed } = require('discord.js')
 const MainDonoModel = require('../node_modules/discord-messages/models/messages')
 const GrindDonoModel = require('../database/models/grindm')
+const EventDonoModel = require('../database/models/30k')
 module.exports = {
     category: 'Donation',
     data: new SlashCommandBuilder()
@@ -17,6 +18,7 @@ module.exports = {
             return option
                 .setName('type')
                 .setDescription('Where do you want to add their donations to?')
+                .addChoice('30k Event Donation', '30k')
                 .addChoice('Main Donation', 'main_dono')
                 .addChoice('Grinder Donation', 'grind_dono')
                 .setRequired(true)
@@ -233,6 +235,82 @@ module.exports = {
                     client.channels.cache
                         .get('845043301937315870')
                         .send({ embeds: [embed] })
+            case '30k':
+                if (!interaction.member.roles.cache.hasAny(...roles.maindono)) {
+                    return interaction.reply({
+                        content: `You must have one of these roles to run the command:\n${roles.maindono
+                            .map((v) => `<@&${v}>`)
+                            .join(' ')}`,
+                        ephemeral: true,
+                    })
+                }
+
+                let d = await EventDonoModel.findOne({
+                    userId: data.user.id,
+                })
+
+                if (!d) {
+                    d = new EventDonoModel({
+                        userId: data.user.id,
+                        amount: 0,
+                    })
+                }
+
+                if (data.action === 'dono_add') {
+                    d.amount += data.amount
+
+                    interaction.reply({
+                        embeds: [
+                            {
+                                title: 'Donation added!',
+                                color: 'GREEN',
+                                timestamp: new Date(),
+                                footer: {
+                                    text: 'Thank you for donating!',
+                                    iconURL: data.user.displayAvatarURL(),
+                                },
+                                fields: [
+                                    {
+                                        name: 'Amount added:',
+                                        value: data.amount.toLocaleString(),
+                                        inline: true,
+                                    },
+                                    {
+                                        name: 'Total donated for 30k Event:',
+                                        value: d.amount.toLocaleString(),
+                                        inline: true,
+                                    },
+                                ],
+                            },
+                        ],
+                    })
+                } else if (data.action === 'dono_remove') {
+                    d.amount -= data.amount
+
+                    interaction.reply({
+                        embeds: [
+                            {
+                                title: 'Donation removed.',
+                                color: 'RED',
+                                timestamp: new Date(),
+                                fields: [
+                                    {
+                                        name: 'Amount removed:',
+                                        value: data.amount.toLocaleString(),
+                                        inline: true,
+                                    },
+                                    {
+                                        name: 'Total donated for 30k Event:',
+                                        value: d.amount.toLocaleString(),
+                                        inline: true,
+                                    },
+                                ],
+                            },
+                        ],
+                    })
+                }
+
+                d.save()
         }
     },
 }
