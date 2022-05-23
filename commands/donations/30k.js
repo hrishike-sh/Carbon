@@ -113,7 +113,7 @@ module.exports = {
                     }
                 }
 
-                if (inLb && dbUser) {
+                if (!inLb && dbUser) {
                     data += `\n${all.indexOf(dbUser) + 1}: ${
                         target.tag
                     } => ⏣ ${dbUser.amount.toLocaleString()}`
