@@ -122,7 +122,9 @@ module.exports = {
                         all
                             .sort((a, b) => b.amount - a.amount)
                             .indexOf(dbUser) + 1
-                    }: ${target.tag} => ⏣ ${dbUser.amount.toLocaleString()}`
+                    }: ${
+                        target.user.tag
+                    } => ⏣ ${dbUser.amount.toLocaleString()}`
                 }
                 button.message.components[0].components
                     .find((a) => a.customId === '30k-lb')
