@@ -16,7 +16,7 @@ module.exports = {
 
         let command = args[0]?.toString()
         if (!command) return message.reply('Please provide command name.')
-
+        // .
         if (
             !client.c.commands.has(command) &&
             !client.c.commands.find(
