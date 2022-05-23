@@ -29,23 +29,21 @@ module.exports = {
             client.c.commands.get(command) ||
             client.c.commands.find((a) => a.aliases.includes(command))
 
-        const folders = fs.readdirSync('../../commands')
+        const folders = fs.readdirSync('./commands')
         const fName = folders.find((f) =>
-            fs
-                .readdirSync(`../../commands/$${f}`)
-                .includes(`${command.name}.js`)
+            fs.readdirSync(`./commands/$${f}`).includes(`${command.name}.js`)
         )
 
         //delete command from cache
 
         delete require.cache[
-            require.resolve(`../../commands/${fName}/${command.name}.js`)
+            require.resolve(`./commands/${fName}/${command.name}.js`)
         ]
 
         //set new command
 
         try {
-            const newCommand = require(`../../commands/${fName}/${command.name}.js`)
+            const newCommand = require(`./commands/${fName}/${command.name}.js`)
             client.c.commands.set(newCommand.name, newCommand)
 
             message.channel.send(`Command ${command.name} has been reloaded.`)
