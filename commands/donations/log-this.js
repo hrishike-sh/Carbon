@@ -155,12 +155,12 @@ function getItems(arr) {
                 .join('')
                 .replace(/(>|:)/g, ' ')
                 .split(' ')
-            console.log(array)
             a +=
                 '\n' +
                 array.join(' ').match(/[0-9]x/i) +
                 array[array.length - 1].toLowerCase()
         }
     })
+    console.log(a)
     return a
 }
