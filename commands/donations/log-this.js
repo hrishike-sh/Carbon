@@ -158,10 +158,7 @@ function getItems(arr) {
                 .filter((a) => a.includes('x'))[0]
                 .replace(/(<|,)/g, '')
             console.log(array)
-            a +=
-                '\n' +
-                array.match(/[0-9]x/g) +
-                array[array.length - 1].toLowerCase()
+            a += '\n' + array.match(/[0-9]x/g) + array.toLowerCase()
         }
     })
     return a
