@@ -184,7 +184,7 @@ module.exports = {
                                 )
                                 .setTimestamp()
                                 .addField(
-                                    "Added to user's Main Donation!",
+                                    "Added to user's Grinder Donation!",
                                     `**Total amount donated by this user:** ${
                                         DBUser.messages
                                             ? DBUser.messages.toLocaleString()
