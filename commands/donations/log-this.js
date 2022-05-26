@@ -155,7 +155,8 @@ function getItems(arr) {
                 .join('')
                 .replace(/(>|:)/g, ' ')
                 .split(' ')
-                .join(' ')
+                .filter((a) => a.includes('x'))[0]
+                .replace('<', '')
             console.log(array)
             a +=
                 '\n' +
