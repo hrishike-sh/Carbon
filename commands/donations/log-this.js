@@ -165,8 +165,10 @@ function getItems(arr) {
                 .filter((a) => a.includes('x'))[0]
                 .replace(/(<|,)/g, '')
                 .match(/[0-9]x/g)
+            console.log(`a: ${a}\nnumber: ${number}`)
             a += '\n' + number + a[a.length - 1]
         }
     })
+    console.log(a)
     return a
 }
