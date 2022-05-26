@@ -6,6 +6,18 @@ const {
     MessageButton,
 } = require('discord.js')
 const EventModel = require('../../database/models/30k')
+const emojis = [
+    '<:bo:919555310228742144>',
+    '<:black1:919554266929197117>',
+    '<:b2:919554323363557396>',
+    '<:b3:919559077485486091>',
+    '<:b4:919559410668425266>',
+    '<:b5:919554441525493760>',
+    '<:b6:919554511247388712>',
+    '<:b7:920240450667950101>',
+    '<:b8:931434424787148840>',
+    '<:b9:919554613840076840>',
+]
 const emo_jis = [
     '<:blank:914473340129906708><:black1:919554266929197117>',
     '<:blank:914473340129906708><:b2:919554323363557396>',
@@ -111,7 +123,7 @@ module.exports = {
                             user.tag
                         } => ⏣ ${x.amount.toLocaleString()}**\n`
                     } else {
-                        data += `${emo_jis[rawLB.indexOf(x)]}: ${
+                        data += `${getBmotes(rawLB.indexOf(x) + 1)}: ${
                             user.tag
                         } => ⏣ ${x.amount.toLocaleString()}\n`
                     }
@@ -172,4 +184,13 @@ module.exports = {
             })
         })
     },
+}
+
+function getBmotes(number) {
+    const str = `${number}`
+    let final = ''
+    for (const char of str) {
+        final += `${emojis[parseInt(char)]}`
+    }
+    return final
 }
