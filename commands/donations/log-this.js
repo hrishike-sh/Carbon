@@ -163,7 +163,7 @@ function getItems(arr) {
                 .replace(/(>|:)/g, ' ')
                 .split(' ')
                 .filter((a) => a.includes('x'))[0]
-                .replace(/(<|,)/g, '')
+                .replace(/(<a|,|a)/g, '')
             console.log(`a: ${aa}\nnumber: ${number}`)
             a += '\n' + number + aa[aa.length - 1].toLowerCase()
         }
