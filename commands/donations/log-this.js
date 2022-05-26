@@ -157,7 +157,7 @@ function getItems(arr) {
                 .split(' ')
             a +=
                 '\n' +
-                array.join(' ').match(/[0-9]x/i) +
+                array.join(' ').match(/[0-9]x/g) +
                 array[array.length - 1].toLowerCase()
         }
     })
