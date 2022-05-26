@@ -153,12 +153,12 @@ function getItems(arr) {
                 .join('')
                 .split(' ')
                 .join('')
-                .replace(/(>|:|,)/g, ' ')
+                .replace(/(>|:)/g, ' ')
                 .split(' ')
             console.log(array)
             a +=
                 '\n' +
-                array.join(' ').match(/\d+/g) +
+                array.join(' ').match(/[0-9]x/i) +
                 array[array.length - 1].toLowerCase()
         }
     })
