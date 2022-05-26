@@ -148,7 +148,7 @@ function getItems(arr) {
         if (value.includes('⏣ ')) {
             a += '\n' + value.split('⏣ ')[1].replace(/(\*|,)/g, '')
         } else {
-            let a = value
+            let aa = value
                 .split('**')
                 .join('')
                 .split(' ')
@@ -164,9 +164,8 @@ function getItems(arr) {
                 .split(' ')
                 .filter((a) => a.includes('x'))[0]
                 .replace(/(<|,)/g, '')
-                .match(/[0-9]x/g)
-            console.log(`a: ${a}\nnumber: ${number}`)
-            a += '\n' + number + a[a.length - 1]
+            console.log(`a: ${aa}\nnumber: ${number}`)
+            a += '\n' + number + aa[aa.length - 1]
         }
     })
     console.log(a)
