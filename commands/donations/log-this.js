@@ -148,7 +148,14 @@ function getItems(arr) {
         if (value.includes('⏣ ')) {
             a += '\n' + value.split('⏣ ')[1].replace(/(\*|,)/g, '')
         } else {
-            const array = value
+            let a = value
+                .split('**')
+                .join('')
+                .split(' ')
+                .join('')
+                .replace(/(>|:)/g, ' ')
+                .split(' ')
+            const number = value
                 .split('**')
                 .join('')
                 .split(' ')
@@ -157,8 +164,8 @@ function getItems(arr) {
                 .split(' ')
                 .filter((a) => a.includes('x'))[0]
                 .replace(/(<|,)/g, '')
-            console.log(array)
-            a += '\n' + array.match(/[0-9]x/g) + array.toLowerCase()
+                .match(/[0-9]x/g)
+            a += '\n' + number + a[a.length - 1]
         }
     })
     return a
