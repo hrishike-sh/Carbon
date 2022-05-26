@@ -5,7 +5,7 @@ module.exports = {
     name: 'commands',
     async execute(x, client) {
         client.c.commands = new Collection()
-        const commandDir = '../commands'
+        const commandDir = './commands'
         const commandFolders = fs.readdirSync(commandDir)
 
         for (const folder of commandFolders) {
