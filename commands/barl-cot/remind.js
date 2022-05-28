@@ -3,8 +3,8 @@ const Database = require('../../database/models/remind')
 const { getMilliseconds } = require('better-ms')
 
 module.exports = {
-    name: 'remindme',
-    aliases: ['rm', 'remind'],
+    name: 'remind',
+    aliases: ['rm', 'remindme'],
     fhOnly: true,
     category: 'Utility',
     usage: '<reason> in <time>',
