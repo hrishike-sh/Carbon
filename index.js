@@ -164,7 +164,7 @@ client.on('ready', async () => {
         client.c.disabledCommands.push(val.name)
     })
     // Disabled Commands
-}) 
+})
 
 client.on('interactionCreate', async (interaction) => {
     if (!interaction.isCommand()) return
@@ -221,7 +221,18 @@ client.on('interactionCreate', async (interaction) => {
         })
     }
 })
-
+client.on('messageCreate', (msg) => {
+    const regex = new RegExp(`<@(!|${msg.client.user.id})}> help`, 'g')
+    if (regex.test(msg.content.toLowerCase())) {
+        msg.reply(`Hello :wave:\nMy prefix in this server is \`fh \`!`).then(
+            async (m) => {
+                await msg.client.functions.sleep(2500)
+                m.delete()
+                return
+            }
+        )
+    }
+})
 client.on('messageCreate', async (message) => {
     if (!message.content.toLowerCase().startsWith(config.prefix)) return
     if (message.author.bot) return
