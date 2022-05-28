@@ -1,0 +1,125 @@
+const {
+    Message,
+    MessageButton,
+    MessageActionRow,
+    MessageEmbed,
+} = require('discord.js')
+
+// Models
+const base = '../../database/models/'
+const thirty = require(`${base}30k`)
+const heist = require(base + 'heistm')
+const grind = require(base + 'grindm')
+const special = require(base + 'specialm')
+const main = require('../../node_modules/discord-messages/models/messages')
+
+const remind = require(base + 'remind')
+
+// Models
+
+module.exports = {
+    name: 'removemydata',
+    aliases: ['clearmydata'],
+    description: 'Remove all your data from the database.',
+    category: 'Other',
+    /**
+     *
+     * @param {Message} message
+     */
+    async execute(message) {
+        const userId = [remind, thirty]
+        const userID = [heist, grind, special, main]
+
+        const confirmation = await message.reply({
+            embeds: [
+                new MessageEmbed()
+                    .setTitle(':warning: Are you sure you want to do this?')
+                    .setDescription(
+                        'Doing this will __erase__ all your data from the database.\nThis includes:\n> __All__ your donations.\n> __All__ your reminders.\n\n**Are you sure you want to do this? __This change is irreversible!__**'
+                    )
+                    .setColor('RED')
+                    .setFooter({
+                        text: 'Use the buttons',
+                    }),
+            ],
+            components: [
+                new MessageActionRow().addComponents([
+                    new MessageButton()
+                        .setLabel('REMOVE MY DATA')
+                        .setCustomId('rmd-remove')
+                        .setStyle('DANGER'),
+                    new MessageButton()
+                        .setLabel('GO BACK')
+                        .setStyle('SUCCESS')
+                        .setCustomId('rmd-no'),
+                ]),
+            ],
+        })
+        const collector = confirmation.createMessageComponentCollector({
+            filter: (b) => {
+                if (b.user.id !== message.author.id) {
+                    return b.deferUpdate()
+                } else return true
+            },
+            idle: 15 * 1000,
+        })
+
+        collector.on('collect', async (button) => {
+            const d = button.customId.includes('remove')
+            if (d) {
+                confirmation.components[0].components.forEach((c) => {
+                    c.setDisabled()
+                })
+                await confirmation.edit({
+                    embeds: [
+                        new MessageEmbed()
+                            .setDescription('Deleting all your data...')
+                            .setColor('YELLOW'),
+                    ],
+                    components: confirmation.components,
+                })
+                for (const db of userId) {
+                    await db.deleteMany({
+                        userId: message.author.id,
+                    })
+                }
+                for (const dB of userID) {
+                    await dB.deleteMany({
+                        userID: message.author.id,
+                    })
+                }
+                await message.client.functions.sleep(2500)
+                collector.stop('okay')
+                confirmation.edit({
+                    embeds: [
+                        new MessageEmbed()
+                            .setDescription(
+                                ':ballot_box_with_check: All your data has been __erased__.'
+                            )
+                            .setColor('GREEN'),
+                    ],
+                })
+            } else {
+                collector.stop('cancel')
+            }
+        })
+
+        collector.on('end', (res) => {
+            if (!res) {
+                confirmation.components[0].components.forEach((a) => {
+                    a.setDisabled()
+                })
+                return confirmation.reply(
+                    'Not erasing your data as I got left on read...'
+                )
+            }
+
+            if (res == 'cancel') {
+                confirmation.components[0].components.forEach((a) => {
+                    a.setDisabled()
+                })
+                return confirmation.reply('Well, I guess I keep your data.')
+            }
+        })
+    },
+}
