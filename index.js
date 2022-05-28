@@ -223,7 +223,10 @@ client.on('interactionCreate', async (interaction) => {
 })
 client.on('messageCreate', (msg) => {
     const regex = new RegExp(`<@(!|${msg.client.user.id})}> help`, 'g')
-    if (regex.test(msg.content.toLowerCase())) {
+    if (
+        regex.test(msg.content.toLowerCase()) &&
+        msg.content.toLowerCase().includes('help')
+    ) {
         msg.reply(`Hello :wave:\nMy prefix in this server is \`fh \`!`).then(
             async (m) => {
                 await msg.client.functions.sleep(2500)
