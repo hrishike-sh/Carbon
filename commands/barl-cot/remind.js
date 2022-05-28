@@ -5,7 +5,6 @@ const { getMilliseconds } = require('better-ms')
 module.exports = {
     name: 'remind',
     aliases: ['rm', 'remindme'],
-    fhOnly: true,
     category: 'Utility',
     usage: '<reason> in <time>',
     /**
