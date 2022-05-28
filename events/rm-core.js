@@ -19,15 +19,18 @@ module.exports = {
         processing = true
         ;(async () => {
             for (const reminder of remind) {
+                await removeEntry(reminder.id, client)
                 const user = await client.users.fetch(reminder.userId)
-                if (!user) await removeEntry(id, client)
+                if (!user) continue
 
                 try {
                     await user.send({
                         embeds: [
                             new MessageEmbed()
                                 .setTimestamp()
-                                .setTitle(':clock: Reminder :clocl:')
+                                .setTitle(
+                                    ':alarm_clock: Reminder :alarm_clock:'
+                                )
                                 .setDescription(
                                     `${client.functions.formatTime(
                                         reminder.time
