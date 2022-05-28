@@ -53,6 +53,11 @@ module.exports = {
             )
 
         time = new Date().getTime() + getMilliseconds(time)
+        if (time > 157788000000) {
+            return message.reply(
+                `No, I will probably forget things that are to be reminded 5 years later.`
+            )
+        }
         const id = (Math.random() + 1).toString(36).substring(7)
         const dbEntry = new Database({
             id,
