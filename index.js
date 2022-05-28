@@ -104,7 +104,7 @@ client.on('ready', async () => {
     console.log('Logged in.')
     client.emit('tick')
     client.user.setActivity({
-        name: 'banning users',
+        name: '/suggest',
         type: 'dnd',
     })
     client.db.fighthub = client.guilds.cache.get(config.guildId)
