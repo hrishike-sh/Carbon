@@ -222,7 +222,7 @@ client.on('interactionCreate', async (interaction) => {
     }
 })
 client.on('messageCreate', (msg) => {
-    const regex = new RegExp(`<@(!|${msg.client.user.id})}> help`, 'g')
+    const regex = new RegExp(`<@(!|${msg.client.user.id})}>`, 'g')
     if (
         regex.test(msg.content.toLowerCase()) &&
         msg.content.toLowerCase().includes('help')
