@@ -45,7 +45,9 @@ module.exports = {
             const newCommand = require(`../${fName}/${command.name}.js`)
             client.c.commands.set(newCommand.name, newCommand)
 
-            message.channel.send(`Command ${command.name} has been reloaded.`)
+            message.channel.send(
+                `Command \`${command.name}\` has been reloaded.`
+            )
         } catch (e) {
             message.reply(
                 `Couldn't reload command!\nError:\n\`\`\`js\n${e.message}\n\`\`\``

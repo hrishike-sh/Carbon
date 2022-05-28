@@ -130,11 +130,11 @@ module.exports = {
                 }
 
                 if (!inLb && dbUser) {
-                    data += `\n${
+                    data += `\n${getBmotes(
                         all
                             .sort((a, b) => b.amount - a.amount)
                             .indexOf(dbUser) + 1
-                    }: ${
+                    )}: ${
                         target.user.tag
                     } => ⏣ ${dbUser.amount.toLocaleString()}`
                 }
