@@ -103,6 +103,9 @@ module.exports = {
                 confirmation.components[0].components.forEach((a) => {
                     a.setDisabled()
                 })
+                confirmation.edit({
+                    components: confirmation.components
+                })
                 collector.stop()
                 return confirmation.reply('Well, I guess I keep your data.')
             }
@@ -112,6 +115,9 @@ module.exports = {
             if (!res) {
                 confirmation.components[0].components.forEach((a) => {
                     a.setDisabled()
+                })
+                confirmation.edit({
+                    components: confirmation.components,
                 })
                 return confirmation.reply(
                     'Not erasing your data as I got left on read...'
