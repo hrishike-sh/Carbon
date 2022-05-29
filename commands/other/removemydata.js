@@ -100,7 +100,11 @@ module.exports = {
                     ],
                 })
             } else {
-                collector.stop('cancel')
+                confirmation.components[0].components.forEach((a) => {
+                    a.setDisabled()
+                })
+                collector.stop()
+                return confirmation.reply('Well, I guess I keep your data.')
             }
         })
 
@@ -114,12 +118,6 @@ module.exports = {
                 )
             }
 
-            if (res == 'cancel') {
-                confirmation.components[0].components.forEach((a) => {
-                    a.setDisabled()
-                })
-                return confirmation.reply('Well, I guess I keep your data.')
-            }
         })
     },
 }
