@@ -63,7 +63,7 @@ module.exports = {
             },
             idle: 15 * 1000,
         })
-
+        let edited = false
         collector.on('collect', async (button) => {
             const d = button.customId.includes('remove')
             if (d) {
@@ -89,6 +89,7 @@ module.exports = {
                     })
                 }
                 await message.client.functions.sleep(2500)
+                edited = true
                 collector.stop('okay')
                 confirmation.edit({
                     embeds: [
@@ -104,15 +105,16 @@ module.exports = {
                     a.setDisabled()
                 })
                 confirmation.edit({
-                    components: confirmation.components
+                    components: confirmation.components,
                 })
+                edited = true
                 collector.stop()
                 return confirmation.reply('Well, I guess I keep your data.')
             }
         })
 
         collector.on('end', (res) => {
-            if (!res) {
+            if (!edited) {
                 confirmation.components[0].components.forEach((a) => {
                     a.setDisabled()
                 })
@@ -123,7 +125,6 @@ module.exports = {
                     'Not erasing your data as I got left on read...'
                 )
             }
-
         })
     },
 }
