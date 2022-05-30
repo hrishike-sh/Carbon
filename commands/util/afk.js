@@ -16,50 +16,12 @@ module.exports = {
      * @returns
      */
     async execute(message, args, client) {
-        const admin = message.member.permissions.has('ADMINISTRATOR')
         let server = await dbServer.findOne({ guildID: message.guild.id })
         if (!server) {
             server = new dbServer({
                 guildID: message.guild.id,
                 afkIgnore: [],
             }).save()
-        }
-        if (args[0] == 'ignore' && admin) {
-            const channel = message.mentions.channels.first() || message.channel
-
-            if (server.afkIgnore) {
-                server.afkIgnore.push(channel.id)
-            } else {
-                server.afkIgnore = [channel.id]
-            }
-            server.save()
-            client.afkIgnore.push(channel.id)
-            return message.channel.send(
-                `Done! <#${channel.id}> is now AFK ignored.`
-            )
-        }
-        if (['clear', 'remove'].includes(args[0]) && admin) {
-            args.shift()
-            if (!args[0])
-                return message.channel.send(
-                    'Either @ping the member or give me their id in order to remove their AFK.'
-                )
-
-            const mention =
-                message.mentions.members.size > 0
-                    ? message.mentions.members.first()
-                    : message.guild.members.cache.get(args[0]) || null
-
-            if (!mention)
-                return message.channel.send('I could not find that user.')
-
-            const dbUser = await db.findOne({ userId: mention.id })
-            if (!dbUser || dbUser.afk.afk == false)
-                return message.channel.send('The user is not AFK.')
-
-            dbUser.afk.afk = false
-            dbUser.save()
-            return message.react('☑️')
         }
         if (
             !message.member.roles.cache.some(
