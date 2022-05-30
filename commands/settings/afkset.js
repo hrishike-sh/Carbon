@@ -34,17 +34,17 @@ module.exports = {
 
         switch (args[0].toLocaleLowerCase()) {
             case 'ignores':
-                const server = await serverDb.findOne({
+                const Server = await serverDb.findOne({
                     guildID: message.guild.id,
                 })
 
-                if (!server || !server.afkIgnore.length) {
+                if (!Server || !Server.afkIgnore.length) {
                     return message.reply(
                         'This server has not ignored any channels!'
                     )
                 }
 
-                const map = server.afkIgnore.map((a, i) => `${i + 1}\) <#${a}>`)
+                const map = Server.afkIgnore.map((a, i) => `${i + 1}\) <#${a}>`)
 
                 return message.reply({
                     embeds: [
