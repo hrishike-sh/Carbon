@@ -82,7 +82,7 @@ module.exports = {
                 if (!dBUser || !dbUser.afk.afK) {
                     return message.reply(`${user.toString()} is not AFK!`)
                 }
-
+                client.db.afks = client.db.afks.filter((a) => a !== user.id)
                 dbUser.afk.afk = false
                 dbUser.save()
 
@@ -107,6 +107,9 @@ module.exports = {
                     server.afkIgnore = server.afkIgnore.filter(
                         (a) => a !== channel.id
                     )
+                    client.db.afkIgnore = client.db.afkIgnore.filter(
+                        (a) => a !== channel.id
+                    )
                     server.save()
                     return message.reply(
                         `${channel.toString()} is no longer AFK Ignored.`
@@ -117,7 +120,7 @@ module.exports = {
                     } else {
                         server.afkIgnore = [channel.id]
                     }
-
+                    client.db.afkIgnore.push(channel.id)
                     server.save()
 
                     return message.reply(
