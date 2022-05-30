@@ -124,7 +124,7 @@ module.exports = {
                     server.save()
 
                     return message.reply(
-                        `${channel.toString()} is not AFK Ignored!`
+                        `${channel.toString()} is now AFK Ignored!`
                     )
                 }
         }
