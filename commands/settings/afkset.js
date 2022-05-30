@@ -23,7 +23,7 @@ module.exports = {
         }
         if (
             !args[0] ||
-            ['remove', 'ignore', 'clear', 'ignores'].includes(
+            !['remove', 'ignore', 'clear', 'ignores'].includes(
                 args[0].toLocaleLowerCase()
             )
         ) {
