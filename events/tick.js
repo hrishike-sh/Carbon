@@ -35,7 +35,30 @@ module.exports = {
         // Incrementing everything
 
         // Random Color
+        if (randomColorCounter > 119) {
+            randomColorCounter = 0
 
+            const fh = client.guilds.cache.get(client.db.fighthub.id)
+            const random = [
+                'WHITE',
+                'AQUA',
+                'GREEN',
+                'BLUE',
+                'YELLOW',
+                'PURPLE',
+                'LUMINOUS_VIVID_PINK',
+                'FUCHSIA',
+                'GOLD',
+                'ORANGE',
+                'RED',
+                'GREY',
+                'DARKER_GREY',
+                'NAVY',
+            ]
+            fh.roles.cache
+                .get('857817197417594921')
+                .setColor(random[Math.floor(Math.random() * random.length)])
+        }
         // Random Color
 
         if (voteReminderCounter == 30) {
