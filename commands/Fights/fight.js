@@ -1,5 +1,5 @@
 const { Message } = require('discord.js')
-const fighting = []
+let fighting = []
 module.exports = {
     name: 'fight',
     args: true,
