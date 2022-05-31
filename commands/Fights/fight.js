@@ -1,5 +1,5 @@
 const { Message } = require('discord.js')
-
+const fighting = []
 module.exports = {
     name: 'fight',
     args: true,
@@ -21,6 +21,15 @@ module.exports = {
 
         if (!target)
             return message.reply('You must mention someone to fight with.')
+
+        if (
+            fighting.includes(target.id) ||
+            fighting.includes(message.author.id)
+        ) {
+            return message.reply(
+                `Either you or your opponent is already in a fight!`
+            )
+        }
         if (target.user.bot) return message.reply('The bot would win.')
         if (target.id === message.author.id)
             return message.reply('You fight yourself... and win!')
@@ -37,7 +46,9 @@ module.exports = {
                 name: target.user.username,
                 mention: `<@${target.id}>`,
             },
-        ]
+        ][(target.id, message.author.id)].forEach((a) => {
+            fighting.push(a)
+        })
 
         let current = gamedata[getRandom(0, 2)]
         await message.channel.send(
@@ -159,6 +170,11 @@ module.exports = {
                     `🏆🏆 **${opponent.name} has won the game** 🏆🏆`
                 )
             }
+        })
+        collector.on('end', () => {
+            fighting = fighting.filter(
+                (a) => ![target.id, message.author.id].includes(a)
+            )
         })
     },
 }
