@@ -46,7 +46,8 @@ module.exports = {
                 name: target.user.username,
                 mention: `<@${target.id}>`,
             },
-        ][(target.id, message.author.id)].forEach((a) => {
+        ]
+        ;[(target.id, message.author.id)].forEach((a) => {
             fighting.push(a)
         })
 
