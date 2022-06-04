@@ -232,7 +232,7 @@ module.exports = {
                     : fellowship.owners.three
 
             dbUser.invites = data.invites
-            dbUser.save()
+            fellowship.save()
 
             return interaction.reply(
                 `<@${dbUser.userId}> now has **\`${dbUser.invites}\`** invites!`
