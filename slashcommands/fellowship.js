@@ -225,9 +225,9 @@ module.exports = {
             })
 
             const dbUser =
-                fellowship.owners.one.userId == data.owner.user.id
+                fellowship.owners.one.userId == data.owner.id
                     ? fellowship.owners.one
-                    : fellowship.owners.two.userId == data.owner.user.id
+                    : fellowship.owners.two.userId == data.owner.id
                     ? fellowship.owners.two
                     : fellowship.owners.three
 
