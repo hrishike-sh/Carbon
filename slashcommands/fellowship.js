@@ -95,6 +95,35 @@ module.exports = {
         })
         .addSubcommand((cmd) => {
             return cmd
+                .setName('update_invites')
+                .setDescription(
+                    'Admins only: Change the number of invites someone has!'
+                )
+                .addChannelOption((c) => {
+                    return c
+                        .setName('fellowship')
+                        .setDescription(
+                            'The channel to which the fellowship belongs.'
+                        )
+                        .setRequired(true)
+                })
+                .addUserOption((a) => {
+                    return a
+                        .setName('owner')
+                        .setDescription(
+                            'The owner whose invites you want to change.'
+                        )
+                        .setRequired(true)
+                })
+                .addNumberOption((a) => {
+                    return a
+                        .setName('invites')
+                        .setDescription('New number of invites for the user.')
+                        .setRequired(true)
+                })
+        })
+        .addSubcommand((cmd) => {
+            return cmd
                 .setName('view')
                 .setDescription('Get info about a fellowship.')
                 .addChannelOption((c) => {
@@ -178,6 +207,36 @@ module.exports = {
                     )}\n\n${interaction.user.toString()} has created your fellowship! You are the owners and here is how you can add/remove members from your fellowshio:\n\nTo add: /fellowship add\nTo remove: /fellowship remove`
             )
             return interaction.reply(`☑ Fellowship has been created.`)
+        } else if (command === 'update_invites') {
+            if (!interaction.member.permissions.has('ADMINISTRATOR')) {
+                return interaction.reply(
+                    'Only admins can run this sub-command.'
+                )
+            }
+
+            const data = {
+                channel: interaction.options.getChannel('fellowship'),
+                owner: interaction.options.getUser('owner'),
+                invites: interaction.options.getNumber('invites'),
+            }
+
+            const fellowship = await Database.findOne({
+                channelId: data.channel.id,
+            })
+
+            const dbUser =
+                fellowship.owners.one.userId == interaction.user.id
+                    ? fellowship.owners.one
+                    : fellowship.owners.two.userId == interaction.user.id
+                    ? fellowship.owners.two
+                    : fellowship.owners.three
+
+            dbUser.invites = data.invites
+            dbUser.save()
+
+            return interaction.reply(
+                `<@${dbUser.userId}> now has **\`${dbUser.invites}\`** invites!`
+            )
         } else if (command === 'add') {
             const data = {
                 channel: interaction.options.getChannel('fellowship'),
@@ -287,7 +346,9 @@ module.exports = {
                             dbChannel.owners.one.userId
                         )
                     ).tag}`,
-                    `**__Invites:__**\n${dbChannel.owners.one.invited
+                    `**__Invites:__**(${
+                        dbChannel.owners.one.invited.length
+                    }/${dbChannel.owners.one.invites.toString()})\n${dbChannel.owners.one.invited
                         .map((a, b) => `${b + 1}: <@${a}>`)
                         .join('\n')}`,
                     false
@@ -298,7 +359,9 @@ module.exports = {
                             dbChannel.owners.two.userId
                         )
                     ).tag}`,
-                    `**__Invites:__**\n${dbChannel.owners.two.invited
+                    `**__Invites:__**(${
+                        dbChannel.owners.two.invited.length
+                    }/${dbChannel.owners.two.invites.toString()})\n${dbChannel.owners.two.invited
                         .map((a, b) => `${b + 1}: <@${a}>`)
                         .join('\n')}`,
                     false
@@ -309,7 +372,9 @@ module.exports = {
                             dbChannel.owners.three.userId
                         )
                     ).tag}`,
-                    `**__Invites:__**\n${dbChannel.owners.three.invited
+                    `**__Invites:__**(${
+                        dbChannel.owners.three.invited.length
+                    }/${dbChannel.owners.three.invites.toString()})\n${dbChannel.owners.three.invited
                         .map((a, b) => `${b + 1}: <@${a}>`)
                         .join('\n')}`,
                     false
