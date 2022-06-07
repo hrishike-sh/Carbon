@@ -83,9 +83,9 @@ module.exports = {
                     'Please provide the word you want to highlight.'
                 )
             }
-            if (word.length < 4) {
+            if (word.length < 3) {
                 return message.reply(
-                    `The word must be atleast 4 characters long.`
+                    `The word must be atleast 3 characters long.`
                 )
             }
             if (dbUser.highlight && dbUser.highlight.words) {
