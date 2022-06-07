@@ -49,7 +49,7 @@ module.exports = {
             }
             let i = 1
             for (const word of dbUser.highlight.words) {
-                data.push(`${i}: ${word}\n`)
+                data += `${i}: ${word}\n`
 
                 i++
             }
@@ -79,11 +79,11 @@ module.exports = {
                 )
             }
             if (dbUser.highlight && dbUser.highlight.words) {
-                const hasWord = dbUser.highlight.words.filter((a) =>
-                    a.includes(word.toLowerCase())
+                const hasWord = dbUser.highlight.words.filter(
+                    (a) => a && a.includes(word.toLowerCase())
                 )
                 if (
-                    dbUser.highlight.words.has(word.toLocaleLowerCase()) ||
+                    dbUser.highlight.words.includes(word.toLocaleLowerCase()) ||
                     hasWord.length
                 ) {
                     return message.reply('This word is already highlighted!')
@@ -91,10 +91,9 @@ module.exports = {
                 dbUser.highlight.words.push(word.toLowerCase())
             } else {
                 dbUser.highlight = {
-                    words: [word],
+                    words: [word.toLowerCase()],
                 }
             }
-            ;[].find()
             dbUser.save()
             if (!client.db.hl.all.includes(word.toLowerCase())) {
                 client.db.hl.all.push(word.toLowerCase())
