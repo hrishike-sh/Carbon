@@ -9,6 +9,12 @@ const UserSchema = new mongoose.Schema({
             afk: false,
         },
     },
+    highlight: {
+        type: Object,
+        default: {
+            words: [String],
+        },
+    },
     fighthub: {
         voting: {
             hasVoted: Boolean,

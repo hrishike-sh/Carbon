@@ -39,6 +39,10 @@ client.db = {
     ars: [],
     messages: new Collection(),
     censors: [],
+    hl: {
+        db: [],
+        all: [],
+    },
 }
 const skripts = require('./scripts')
 client.functions = {
@@ -116,6 +120,20 @@ client.on('ready', async () => {
         embeds: [restartEmbed],
     })
     //LOGS
+    //
+    const hls = require('./database/models/user')
+    const All = await hls.find()
+    client.db.hl.db = All
+    for (const s of All) {
+        if (!s.highlight || !s.highlight.words.length) continue
+
+        for (const word of s.highlight.word) {
+            if (client.db.hl.all.includes(word)) continue
+
+            client.db.hl.all.push(word)
+        }
+    }
+    //
     //AFKS
     const afks = require('./database/models/user')
     const serverIgnores = require('./database/models/settingsSchema')
