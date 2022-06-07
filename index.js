@@ -26,6 +26,10 @@ client.c = {
     disabledCommands: [],
     slashCommands: new Collection(),
 }
+client.counts = {
+    messages: 0,
+    hls: 0,
+}
 client.snipes = {
     snipes: new Collection(),
     esnipes: new Collection(),

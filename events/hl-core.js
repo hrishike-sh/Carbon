@@ -16,6 +16,7 @@ module.exports = {
      * @param {Client} client
      */
     async execute(message, client) {
+        client.counts.messages++
         if (!message.guild) return
         if (message.guild.id !== client.db.fighthub.id) return
         if (message.author.bot) return
@@ -30,7 +31,6 @@ module.exports = {
             message.content.toLowerCase().includes(a.toLowerCase())
         )
         if (!hasHlWord) return
-        console.log(`[HL-CORE] Message has HL word`)
         const hlWord = hlWords.filter((word) =>
             message.content.toLowerCase().includes(word)
         )[0]
@@ -40,26 +40,26 @@ module.exports = {
                 a.highlight.words.length &&
                 a.highlight.words.includes(hlWord)
         )
-        console.log(`[HL-CORE] Found ${users.length} users with the highlight!`)
         for (const user of users) {
             if (talked.includes(user.userId)) continue
-            console.log(`[HL-CORE] Loop ran`)
             let member
             try {
                 member = await message.guild.members.fetch({
                     user: user.userId,
                 })
-                console.log(`[HL-CORE] Member found`)
             } catch (e) {
-                console.log(`[HL-CORE] Member not found`)
                 continue
             }
+            addUser(member, client)
+            if (!member.permissionsIn(message.channel).has('VIEW_CHANNEL'))
+                continue
             if (talked.includes(member.id)) continue
             await client.functions.sleep(2500)
             const messages = await message.channel.messages.fetch({
                 around: message.id,
                 limit: 5,
             })
+            client.counts.hls++
             let data = []
             for (const msg of messages) {
                 data.push(
@@ -73,8 +73,10 @@ module.exports = {
                     }`
                 )
             }
-            console.log(data)
             const embed = new MessageEmbed()
+                .setAuthor({
+                    name: 'One of your highlight has triggered!',
+                })
                 .setTitle(`Word: ${hlWord}`)
                 .setDescription(data.reverse().join('\n'))
                 .setTimestamp()
@@ -90,7 +92,6 @@ module.exports = {
                     ]),
                 ],
             })
-            addUser(member, client)
         }
     },
 }
