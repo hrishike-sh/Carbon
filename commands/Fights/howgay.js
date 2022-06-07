@@ -23,7 +23,7 @@ module.exports = {
             return message.reply(`You have to mention someone to fight them.`)
         args.shift()
         const what = args[0].toLowerCase()
-        if (!['low', 'high'].includes(what))
+        if (!['low', 'high'].includes(what) || !what)
             return message.reply(
                 `You have to specify either high or low.\n\nExample: \`fh howgay @Hrishikesh#0369 low\``
             )
