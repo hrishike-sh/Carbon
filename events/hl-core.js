@@ -19,7 +19,6 @@ module.exports = {
         if (!message.guild) return
         if (message.guild.id !== client.db.fighthub.id) return
         if (message.author.bot) return
-        console.log(`[HL-CORE] Message Received`)
         const DB = client.db.hl.db
         const hlWords = client.db.hl.all
         const userInDb = client.db.hl.db.find(
@@ -66,10 +65,11 @@ module.exports = {
                     `[${client.functions.formatTime(
                         msg[1].createdTimestamp,
                         'T'
-                    )}] **${message.author.tag}**: ${message.content.replace(
-                        hlWord,
-                        `__${hlWord}__`
-                    )}`
+                    )}] **${message.author.tag}**: ${
+                        (msg[1].content.includes(hlWord)
+                            ? msg[1].content.replace(hlWord, `__${hlWord}__`)
+                            : msg[1].content) || ' '
+                    }`
                 )
             }
             console.log(data)
