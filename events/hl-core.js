@@ -90,7 +90,7 @@ module.exports = {
 }
 
 const addUser = async (user, client) => {
-    talked.push(user.id)
-    await client.functions.sleep(60 * 1000)
-    talked.splice(talked.indexOf(user.id), 1)
+    // talked.push(user.id)
+    // await client.functions.sleep(60 * 1000)
+    // talked.splice(talked.indexOf(user.id), 1)
 }
