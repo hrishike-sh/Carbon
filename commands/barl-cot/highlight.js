@@ -117,7 +117,7 @@ module.exports = {
             if (
                 !dbUser.highlight ||
                 !dbUser.highlight.words.length ||
-                !dbUser.highlight.words.includes(word.toLowerCase)
+                !dbUser.highlight.words.includes(word.toLowerCase())
             ) {
                 return message.reply('That word is not in your HL list.')
             }
