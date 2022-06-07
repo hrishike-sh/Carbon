@@ -77,7 +77,7 @@ module.exports = {
 
         if (['+', 'add'].includes(action)) {
             args.shift()
-            const word = args[0]
+            const word = args.join(' ')
             if (!word) {
                 return message.reply(
                     'Please provide the word you want to highlight.'
@@ -120,7 +120,7 @@ module.exports = {
             )
         } else if (['remove', '-'].includes(action)) {
             args.shift()
-            const word = args[0]
+            const word = args.join(' ')
             if (!word)
                 return message.reply('Provide the word you want me to remove.')
 
