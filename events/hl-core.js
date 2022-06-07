@@ -50,10 +50,12 @@ module.exports = {
             } catch (e) {
                 continue
             }
-            addUser(member, client)
-            // if (!member.permissionsIn(message.channel).has('VIEW_CHANNEL'))
-                //continue
+            
+            if (!member.permissionsIn(message.channel).has('VIEW_CHANNEL'))
+                continue
             if (talked.includes(member.id)) continue
+            
+            addUser(member, client)
             await client.functions.sleep(2500)
             const messages = await message.channel.messages.fetch({
                 around: message.id,
