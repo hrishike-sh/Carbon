@@ -114,16 +114,18 @@ module.exports = {
             let winner
             if (gamedata[0].rate == gamedata[1].rate) {
                 winner = "It's a tie!!"
-            }
-            if (what === 'low') {
-                winner = `${gamedata
-                    .sort((a, b) => a.rate - b.rate)[0]
-                    .user.toString()} has won the howgay!`
             } else {
-                winner = `${gamedata
-                    .sort((a, b) => b.rate - a.rate)[0]
-                    .user.toString()} has won the howgay!`
+                if (what === 'low') {
+                    winner = `${gamedata
+                        .sort((a, b) => a.rate - b.rate)[0]
+                        .user.toString()} has won the howgay!`
+                } else {
+                    winner = `${gamedata
+                        .sort((a, b) => b.rate - a.rate)[0]
+                        .user.toString()} has won the howgay!`
+                }
             }
+
             fancy.reply(winner)
         })
         confirmation.on('end', () => {
