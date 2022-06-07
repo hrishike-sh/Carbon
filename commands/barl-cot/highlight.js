@@ -5,6 +5,7 @@ module.exports = {
     aliases: ['hl'],
     usage: '<add/remove/list> <highlight>',
     description: "Carl bot's highlight feature.",
+    fhOnly: true,
     subcommands: ['add', 'remove', 'list', '+', '-'],
     /**
      * @param {Message} message
@@ -23,7 +24,16 @@ module.exports = {
          * here
          * yuh
          */
-
+        const roles = [
+            '824687430753189902',
+            '828048225096826890',
+            '825283097830096908',
+            '839803117646512128',
+        ]
+        if (!message.member.roles.cache.hasAny(...roles))
+            return message.reply(
+                `You cannot run this command! Check <#843943148945276949> for more info!`
+            )
         const action = args[0]
         if (!action) {
             return message.reply('You must tell me what to do!' + example)
