@@ -22,8 +22,8 @@ module.exports = {
         if (!target)
             return message.reply(`You have to mention someone to fight them.`)
         args.shift()
-        const what = args[0].toLowerCase()
-        if (!['low', 'high'].includes(what) || !what)
+        const what = args[0]
+        if (!['low', 'high'].includes(what.toLocaleLowerCase()) || !what)
             return message.reply(
                 `You have to specify either high or low.\n\nExample: \`fh howgay @Hrishikesh#0369 low\``
             )
@@ -67,7 +67,11 @@ module.exports = {
 
         confirmation.on('collect', async (button) => {
             confirmation.stop()
-
+            button.deferUpdate()
+            if (button.customId.includes('no'))
+                return message.channel.send(
+                    `The challange was denied by ${button.user.toString()}`
+                )
             const gamedata = [
                 {
                     user: message.author,
