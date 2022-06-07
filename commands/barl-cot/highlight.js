@@ -6,6 +6,7 @@ module.exports = {
     usage: '<add/remove/list> <highlight>',
     description: "Carl bot's highlight feature.",
     subcommands: ['add', 'remove', 'list', '+', '-'],
+    fhOnly: true,
     /**
      * @param {Message} message
      * @param {String[]} args
