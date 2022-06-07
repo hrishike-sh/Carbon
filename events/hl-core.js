@@ -16,7 +16,7 @@ module.exports = {
      * @param {Client} client
      */
     async execute(message, client) {
-        if (message.guild) return
+        if (!message.guild) return
         if (message.guild.id !== client.db.fighthub.id) return
         if (message.author.bot) return
         console.log(`[HL-CORE] Message Received`)
