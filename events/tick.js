@@ -53,7 +53,7 @@ module.exports = {
                 'RED',
                 'GREY',
                 'DARKER_GREY',
-                'NAVY',
+                'NAVY',"FF355E","FD5B78","FF6037","FF9966","FF9933","FFCC33","FFFF66","FFFF66","CCFF00","66FF66","AAF0D1","50BFE6","FF6EFF","EE34D2","FF00CC","FF00CC"
             ]
             fh.roles.cache
                 .get('857817197417594921')
