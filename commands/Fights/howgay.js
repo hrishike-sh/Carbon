@@ -84,13 +84,15 @@ module.exports = {
                 .setFooter({
                     text: "isn't that gay",
                 })
+                .setColor('AQUA')
             const fancy = await message.channel.send({
                 embeds: [embed],
             })
             await client.functions.sleep(500)
             embed.addField(
                 `${gamedata[0].user.tag}`,
-                `Rate: ${gamedata[0].rate}%`
+                `Rate: ${gamedata[0].rate}%`,
+                true
             )
             await fancy.edit({
                 embeds: [embed],
@@ -98,7 +100,8 @@ module.exports = {
             await client.functions.sleep(2500)
             embed.addField(
                 `${gamedata[1].user.tag}`,
-                `Rate: ${gamedata[1].rate}%`
+                `Rate: ${gamedata[1].rate}%`,
+                true
             )
             await fancy.edit({
                 embeds: [embed],
@@ -109,13 +112,13 @@ module.exports = {
                 winner = "It's a tie!!"
             }
             if (what === 'low') {
-                winner = `${
-                    gamedata.sort((a, b) => a.rate - b.rate)[0]
-                } has won the howgay!`
+                winner = `${gamedata
+                    .sort((a, b) => a.rate - b.rate)[0]
+                    .user.toString()} has won the howgay!`
             } else {
-                winner = `${
-                    gamedata.sort((a, b) => b.rate - a.rate)[0]
-                } has won the howgay!`
+                winner = `${gamedata
+                    .sort((a, b) => b.rate - a.rate)[0]
+                    .user.toString()} has won the howgay!`
             }
             fancy.reply(winner)
         })
