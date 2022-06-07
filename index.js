@@ -127,7 +127,7 @@ client.on('ready', async () => {
     for (const s of All) {
         if (!s.highlight || !s.highlight.words.length) continue
 
-        for (const word of s.highlight.word) {
+        for (const word of s.highlight.words) {
             if (client.db.hl.all.includes(word)) continue
 
             client.db.hl.all.push(word)

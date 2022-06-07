@@ -79,12 +79,12 @@ module.exports = {
                 )
             }
             if (dbUser.highlight && dbUser.highlight.words) {
-                const hasWord = dbUser.highlight.words.some((a) =>
+                const hasWord = dbUser.highlight.words.filter((a) =>
                     a.includes(word.toLowerCase())
                 )
                 if (
                     dbUser.highlight.words.has(word.toLocaleLowerCase()) ||
-                    hasWord
+                    hasWord.length
                 ) {
                     return message.reply('This word is already highlighted!')
                 }
