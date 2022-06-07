@@ -15,133 +15,118 @@ module.exports = {
      *
      * @param {Message} message
      * @param {String[]} args
-     * @returns
+     * @param {Client} client
      */
-    async execute(message, args) {
-        const opponent =
-            message.mentions.users.size > 0
-                ? message.mentions.users.first()
-                : null
+    async execute(message, args, client) {
+        const target = message.mentions.users?.first()
+        if (!target)
+            return message.reply(`You have to mention someone to fight them.`)
         args.shift()
-        let horll = args[0]
-        if (!opponent)
-            return message.channel.send(
-                'You must mention someone to fight with them.'
-            )
-        if (
-            !horll ||
-            (horll.toLowerCase() !== 'low' && horll.toLowerCase() !== 'high')
-        ) {
+        const what = args[0].toLowerCase()
+        if (!['low', 'high'].includes(what))
             return message.reply(
-                'Please specify high or low\n\nExample: `fh howgay @user high`'
+                `You have to specify either high or low.\n\nExample: \`fh howgay @Hrishikesh#0369 low\``
             )
-        }
-        let player1rate = Math.floor(Math.random() * 100)
-        let player2rate = Math.floor(Math.random() * 100)
-        horll = horll.toLowerCase()
-        const yesbut = new MessageButton()
-            .setCustomId('yes-hg')
-            .setLabel('Confirm')
-            .setStyle('SUCCESS')
-        const nobut = new MessageButton()
-            .setCustomId('no-hg')
-            .setLabel('Deny')
-            .setStyle('DANGER')
-        const row = new MessageActionRow().addComponents([yesbut, nobut])
-        let thisMessage = await message.channel.send({
-            content: `${opponent.toString()}`,
-            embeds: [
-                {
-                    title: 'Confirmation',
-                    description: `${message.member.toString()} wants to challenge you for a game of howgay.\nWhat do you say?`,
-                    color: 'YELLOW',
-                    timestamp: new Date(),
-                },
-            ],
-            components: [row],
-        })
-
-        const collector = thisMessage.createMessageComponentCollector({
-            time: 25000,
-        })
-        collector.on('collect', async (button) => {
-            if (button.user.id !== opponent.id) {
-                return button.reply({
-                    content: 'This is not for you.',
-                    ephemeral: true,
-                })
-            }
-            if (button.customId == 'no-hg') {
-                button.deferUpdate()
-                thisMessage.delete()
-                message.channel.send('The fight was cancelled.')
-                return
-            }
-            button.deferUpdate()
-            thisMessage.delete()
-            let gayBed = {
-                title: 'HOWGAY',
-                description: 'Starting soon',
-                color: 'RANDOM',
-                footer: {
-                    text: 'Good Luck',
-                },
-                timestamp: new Date(),
-                thumbnail: {
-                    url: 'https://cdn.discordapp.com/avatars/855652438919872552/a3f12433ad44ff43bb9568222b4c4a4b.png?size=1024',
-                },
-            }
-
-            const mainMessage = await message.channel.send({
-                embeds: [gayBed],
+        const confirmation = (
+            await message.channel.send({
+                content: target.toString(),
+                embeds: [
+                    {
+                        title: 'Confirmation',
+                        color: 'GREEN',
+                        description: `${message.author.toString()} has challenged you for a game of howgay!\nDo you accept their challenge?`,
+                        footer: {
+                            text: 'Use the buttons.',
+                        },
+                    },
+                ],
+                components: [
+                    new MessageActionRow().addComponents([
+                        new MessageButton()
+                            .setStyle('SUCCESS')
+                            .setCustomId('hg-yes')
+                            .setLabel('Accept'),
+                        new MessageButton()
+                            .setStyle('DANGER')
+                            .setCustomId('hg-no')
+                            .setLabel('Deny'),
+                    ]),
+                ],
             })
-            await sleep(1000)
-            gayBed.fields = [
+        ).createMessageComponentCollector({
+            filter: (b) => {
+                if (b.user.id !== target.id) {
+                    return b.reply({
+                        content: 'This is not your challenge.',
+                        ephemeral: true,
+                    })
+                } else return true
+            },
+            idle: 10 * 1000,
+        })
+
+        confirmation.on('collect', async (button) => {
+            confirmation.stop()
+
+            const gamedata = [
                 {
-                    name: message.author.tag,
-                    value: `Rate: **${player1rate}**`,
+                    user: message.author,
+                    rate: Math.floor(Math.random() * 100),
+                },
+                {
+                    user: target,
+                    rate: Math.floor(Math.random() * 100),
                 },
             ]
-            gayBed.description = 'Good Luck!'
-            mainMessage.edit({ embeds: [gayBed] })
+            const embed = new MessageEmbed()
+                .setTitle(`Howgay [${what.toUpperCase()}]`)
+                .setDescription('The bot will automatically show the winner!')
+                .setFooter({
+                    text: "isn't that gay",
+                })
+            const fancy = await message.channel.send({
+                embeds: [embed],
+            })
+            await client.functions.sleep(500)
+            embed.addField(
+                `${gamedata[0].user.tag}`,
+                `Rate: ${gamedata[0].rate}%`
+            )
+            await fancy.edit({
+                embeds: [embed],
+            })
+            await client.functions.sleep(2500)
+            embed.addField(
+                `${gamedata[1].user.tag}`,
+                `Rate: ${gamedata[1].rate}%`
+            )
+            await fancy.edit({
+                embeds: [embed],
+            })
 
-            await sleep(1000)
-            gayBed.fields = [
-                {
-                    name: message.author.tag,
-                    value: `Rate: **${player1rate}**`,
-                    inline: true,
-                },
-                {
-                    name: opponent.tag,
-                    value: `Rate: **${player2rate}**`,
-                    inline: true,
-                },
-            ]
-            mainMessage.edit({ embeds: [gayBed] })
-
-            let finalD = ''
-            if (horll === 'low') {
-                if (player1rate > player2rate) {
-                    finalD = `${opponent} has won the howgay!`
-                } else if (player2rate >= player1rate) {
-                    finalD = `${message.author} has won the howgay!`
-                } else {
-                    finalD = `Its a tie?!`
-                }
-            } else {
-                if (player1rate > player2rate) {
-                    finalD = `${message.author} has won the howgay!`
-                } else if (player2rate >= player1rate) {
-                    finalD = `${opponent} has won the howgay!`
-                } else {
-                    finalD = `Its a tie?!`
-                }
+            let winner
+            if (gamedata[0].rate == gamedata[1].rate) {
+                winner = "It's a tie!!"
             }
-
-            gayBed.description = finalD
-
-            mainMessage.edit({ embeds: [gayBed], content: finalD })
+            if (what === 'low') {
+                winner = `${
+                    gamedata.sort((a, b) => a.rate - b.rate)[0]
+                } has won the howgay!`
+            } else {
+                winner = `${
+                    gamedata.sort((a, b) => b.rate - a.rate)[0]
+                } has won the howgay!`
+            }
+            fancy.reply(winner)
+        })
+        confirmation.on('end', () => {
+            const msg = message.channel.messages.cache.get(
+                confirmation.messageId
+            )
+            msg.components[0].components.forEach((c) => c.setDisabled())
+            msg.edit({
+                components: msg.components,
+            })
         })
     },
 }
