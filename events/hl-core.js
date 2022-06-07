@@ -55,6 +55,7 @@ module.exports = {
                 continue
             }
             if (talked.includes(member.id)) continue
+            await client.functions.sleep(2500)
             const messages = await message.channel.messages.fetch({
                 around: message.id,
                 limit: 5,
@@ -65,7 +66,7 @@ module.exports = {
                     `[${client.functions.formatTime(
                         msg[1].createdTimestamp,
                         'T'
-                    )}] **${message.author.tag}**: ${
+                    )}] **${msg[1].author.tag}**: ${
                         (msg[1].content.includes(hlWord)
                             ? msg[1].content.replace(hlWord, `__${hlWord}__`)
                             : msg[1].content) || ' '
