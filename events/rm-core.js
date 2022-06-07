@@ -33,9 +33,13 @@ module.exports = {
                                 )
                                 .setDescription(
                                     `${client.functions.formatTime(
-                                        reminder.time - new Date().getTime()
+                                        new Date().getTime() -
+                                            (new Date().getTime() -
+                                                reminder.time)
                                     )} (${client.functions.formatTime(
-                                        reminder.time - new Date().getTime(),
+                                        new Date().getTime() -
+                                            (new Date().getTime() -
+                                                reminder.time),
                                         'f'
                                     )}) you asked me to remind you about **${
                                         reminder.reason
