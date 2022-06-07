@@ -10,10 +10,7 @@ const UserSchema = new mongoose.Schema({
         },
     },
     highlight: {
-        type: Object,
-        default: {
-            words: [String],
-        },
+        words: [String],
     },
     fighthub: {
         voting: {

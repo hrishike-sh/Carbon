@@ -83,7 +83,7 @@ module.exports = {
                     (a) => a && a.includes(word.toLowerCase())
                 )
                 if (
-                    dbUser.highlight.words.includes(word.toLocaleLowerCase()) ||
+                    dbUser.highlight.words.includes(word.toLowerCase()) ||
                     hasWord.length
                 ) {
                     return message.reply('This word is already highlighted!')
