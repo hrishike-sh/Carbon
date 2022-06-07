@@ -130,7 +130,7 @@ module.exports = {
             ).highlight.words = client.db.hl.db
                 .find((a) => a.userId === message.author.id)
                 .highlight.words.filter((a) => a !== word.toLowerCase())
-            return message.react(':ballot_box_with_check:')
+            return message.react('☑️')
         }
     },
 }
