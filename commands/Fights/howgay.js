@@ -75,11 +75,11 @@ module.exports = {
             const gamedata = [
                 {
                     user: message.author,
-                    rate: Math.floor(Math.random() * 100),
+                    rate: 69, //Math.floor(Math.random() * 100),
                 },
                 {
                     user: target,
-                    rate: Math.floor(Math.random() * 100),
+                    rate: 69, //Math.floor(Math.random() * 100),
                 },
             ]
             const embed = new MessageEmbed()
