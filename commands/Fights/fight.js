@@ -235,6 +235,7 @@ module.exports = {
                         return button.reply({
                             content:
                                 'You cannot heal when your Health is more than 80!',
+                            ephemeral: true,
                         })
                     }
                     if (current.hp + health > 100) health = 100 - current.hp
