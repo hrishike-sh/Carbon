@@ -18,7 +18,7 @@ module.exports = {
             collector.stop()
             message.components[0].components.forEach((c) => c.setDisabled())
             message.edit({
-                content: `${current} has won the game! :trophy:`,
+                content: `${current.user.toString()} has won the game! :trophy:`,
                 components: message.components,
             })
             return true
