@@ -227,6 +227,21 @@ module.exports = {
                         this.updateMessage(mainMessage, gamedata, what, current)
                     }
                 } else if (action === 'heal') {
+                    let health = client.functions.getRandom(
+                        CONSTANTS.heal.min,
+                        CONSTANTS.heal.max
+                    )
+                    if (current.hp > 80) {
+                        return button.reply({
+                            content:
+                                'You cannot heal when your Health is more than 80!',
+                        })
+                    }
+                    if (current.hp + health > 100) health = 100 - current.hp
+                    current.hp += health
+                    let what = `**${current.user.username}** heals **${health}** hp!`
+                    button.deferUpdate()
+                    this.updateMessage(mainMessage, gamedata, what, current)
                 } else;
             })
         })
