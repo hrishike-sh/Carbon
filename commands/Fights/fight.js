@@ -12,7 +12,7 @@ module.exports = {
     category: 'Fights',
     aliases: ['ffight'],
     description: 'Fight someone in the old dank memer style!',
-    disabledChannels: ['870240187198885888', '796729013456470036'],
+    // disabledChannels: ['870240187198885888', '796729013456470036'],
     checkDeath: (user, collector, message, current, gamedata, logs) => {
         if (user.hp < 1) {
             collector.stop()
