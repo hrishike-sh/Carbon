@@ -46,7 +46,7 @@ module.exports = {
      * @param {Message} message
      * @param {String[]} args
      */
-    async execute(message, args) {
+    async execute(message, args, client) {
         const CONSTANTS = {
             dmg: {
                 max: 40,
