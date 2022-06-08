@@ -73,8 +73,9 @@ module.exports = {
                 btn.deferUpdate()
                 return
             }
+            btn.deferUpdate()
             status = 'asdkjgnasg'
-
+            collector.stop()
             const gamedata = [
                 {
                     user: message.author,
@@ -94,6 +95,7 @@ module.exports = {
                 .addField(gamedata[0].user.tag, `Health: **100 %**`, true)
                 .addField(gamedata[1].user.tag, `Health: **100 %**`, true)
                 .addField('Last Action', 'The game has started!', false)
+                .setColor('RANDOM')
 
             const mainMessage = await message.channel.send({
                 embeds: [fightEmbed],
