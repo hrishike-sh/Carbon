@@ -35,8 +35,8 @@ module.exports = {
             return message.reply(`You have to mention someone to fight with.`)
 
         if (target.bot) return message.reply(`The bot won!`)
-        if (target.id === message.author.id)
-            return message.reply('The bot does not promote self-harm.')
+        // if (target.id === message.author.id)
+        //     return message.reply('The bot does not promote self-harm.')
 
         const confirMessage = await message.reply({
             content: `${target.toString()} do you accept their challenge?`,
