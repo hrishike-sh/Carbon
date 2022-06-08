@@ -15,6 +15,34 @@ module.exports = {
     disabledChannels: ['870240187198885888', '796729013456470036'],
     /**
      *
+     * @param {Message} msg
+     * @param {Object[]} gamedata
+     */
+    updateMessage: (msg, gamedata, logs, current) => {
+        msg.embeds[0].setColor('RANDOM').setFields([
+            {
+                name: gamedata[0].user.tag,
+                value: `Health: **${gamedata[0].hp}%**`,
+                inline: true,
+            },
+            {
+                name: gamedata[1].user.tag,
+                value: `Health: **${gamedata[1].hp}%**`,
+                inline: true,
+            },
+            {
+                name: 'Last Action',
+                value: logs[0],
+                inline: false,
+            },
+        ])
+        msg.edit({
+            content: `${current.user.toString()} its your turn!`,
+            embeds: msg.embeds,
+        })
+    },
+    /**
+     *
      * @param {Message} message
      * @param {String[]} args
      */
@@ -92,12 +120,13 @@ module.exports = {
 
             const fightEmbed = new MessageEmbed()
                 .setTitle('Fight')
-                .addField(gamedata[0].user.tag, `Health: **100 %**`, true)
-                .addField(gamedata[1].user.tag, `Health: **100 %**`, true)
+                .addField(gamedata[0].user.tag, `Health: **100%**`, true)
+                .addField(gamedata[1].user.tag, `Health: **100%**`, true)
                 .addField('Last Action', 'The game has started!', false)
                 .setColor('RANDOM')
-
+            let logs = []
             const mainMessage = await message.channel.send({
+                content: `${current.user.toString()} its your turn!`,
                 embeds: [fightEmbed],
                 components: [
                     new MessageActionRow().addComponents([
@@ -113,6 +142,43 @@ module.exports = {
                             .setEmoji('❤️'),
                     ]),
                 ],
+            })
+            const mainCollector = mainMessage.createMessageComponentCollector({
+                filter: (b) => {
+                    if (![target.id, message.author.id].includes(b.user.id)) {
+                        return b.reply({
+                            content: 'go away this is not your game',
+                            ephemeral: true,
+                        })
+                    } else if (b.user.id !== current.user.id) {
+                        return b.reply({
+                            content: 'Wait for your turn.',
+                            ephemeral: true,
+                        })
+                    } else return true
+                },
+                idle: 30 * 1000,
+            })
+            mainCollector.on('collect', async (button) => {
+                const action = button.customId
+                const opponent = gamedata.find(
+                    (a) => a.user.id !== button.user.id
+                )
+                if (action === 'attack') {
+                    const damage = client.functions.getRandom(
+                        CONSTANTS.dmg.min,
+                        CONSTANTS.dmg.max
+                    )
+
+                    button.deferUpdate()
+                    logs.push(
+                        `${current.user.tag} deals ${damage} damage to ${opponent.user.tag}!`
+                    )
+                    current = opponent
+
+                    this.updateMessage(mainMessage, gamedata, logs, current)
+                } else if (action === 'heal') {
+                } else;
             })
         })
 
