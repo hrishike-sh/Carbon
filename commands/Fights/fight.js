@@ -241,6 +241,7 @@ module.exports = {
                     current.hp += health
                     let what = `**${current.user.username}** heals **${health}** hp!`
                     button.deferUpdate()
+                    current = opponent
                     this.updateMessage(mainMessage, gamedata, what, current)
                 } else;
             })
