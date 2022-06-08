@@ -17,8 +17,30 @@ module.exports = {
         if (user.hp < 1) {
             collector.stop()
             message.components[0].components.forEach((c) => c.setDisabled())
+            message.embeds[0].setColor('RANDOM').setFields([
+                {
+                    name: gamedata[0].user.tag,
+                    value: `Health: **${
+                        gamedata[0].hp < 1 ? 0 : gamedata[0].hp
+                    }%**`,
+                    inline: true,
+                },
+                {
+                    name: gamedata[1].user.tag,
+                    value: `Health: **${
+                        gamedata[1].hp < 1 ? 0 : gamedata[1].hp
+                    }%**`,
+                    inline: true,
+                },
+                {
+                    name: 'Last Action',
+                    value: logs,
+                    inline: false,
+                },
+            ])
             message.edit({
                 content: `${current.user.toString()} has won the game! :trophy:`,
+                embeds: message.embeds,
                 components: message.components,
             })
             return true
