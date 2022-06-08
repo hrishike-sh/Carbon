@@ -28,7 +28,7 @@ module.exports = {
         addUser(message.author, client)
 
         const hasHlWord = hlWords.some((a) =>
-            message.content.toLowerCase().includes(a.toLowerCase())
+            message.content.toLowerCase().includes(` ${a.toLowerCase()} `)
         )
         if (!hasHlWord) return
         const hlWord = hlWords.filter((word) =>
@@ -50,11 +50,11 @@ module.exports = {
             } catch (e) {
                 continue
             }
-            
+
             if (!member.permissionsIn(message.channel).has('VIEW_CHANNEL'))
                 continue
             if (talked.includes(member.id)) continue
-            
+
             addUser(member, client)
             await client.functions.sleep(2500)
             const messages = await message.channel.messages.fetch({
