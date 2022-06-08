@@ -99,6 +99,20 @@ module.exports = {
 
             const mainMessage = await message.channel.send({
                 embeds: [fightEmbed],
+                components: [
+                    new MessageActionRow().addComponents([
+                        new MessageButton()
+                            .setStyle('PRIMARY')
+                            .setCustomId('attack')
+                            .setLabel('Attack')
+                            .setEmoji('🗡️'),
+                        new MessageButton()
+                            .setStyle('PRIMARY')
+                            .setCustomId('heal')
+                            .setLabel('Heal')
+                            .setEmoji('❤️'),
+                    ]),
+                ],
             })
         })
 
