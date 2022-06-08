@@ -13,6 +13,17 @@ module.exports = {
     aliases: ['ffight'],
     description: 'Fight someone in the old dank memer style!',
     disabledChannels: ['870240187198885888', '796729013456470036'],
+    checkDeath: (user, collector, message, current) => {
+        if (user.hp < 1) {
+            collector.stop()
+            message.components[0].components.forEach((c) => c.setDisabled())
+            message.edit({
+                content: `${current} has won the game! :trophy:`,
+                components: message.components,
+            })
+            return true
+        } else return false
+    },
     /**
      *
      * @param {Message} msg
@@ -22,12 +33,16 @@ module.exports = {
         msg.embeds[0].setColor('RANDOM').setFields([
             {
                 name: gamedata[0].user.tag,
-                value: `Health: **${gamedata[0].hp}%**`,
+                value: `Health: **${
+                    gamedata[0].hp < 1 ? 0 : gamedata[0].hp
+                }%**`,
                 inline: true,
             },
             {
                 name: gamedata[1].user.tag,
-                value: `Health: **${gamedata[1].hp}%**`,
+                value: `Health: **${
+                    gamedata[1].hp < 1 ? 0 : gamedata[1].hp
+                }%**`,
                 inline: true,
             },
             {
@@ -171,12 +186,22 @@ module.exports = {
                     )
 
                     button.deferUpdate()
-                    let what = `${current.user.tag} deals ${damage} damage to ${opponent.user.tag}!`
+                    let what = `**${current.user.username}** deals **${damage}** damage to **${opponent.user.username}**!`
                     logs.push(what)
                     opponent.hp -= damage
-                    current = opponent
-
-                    this.updateMessage(mainMessage, gamedata, what, current)
+                    if (
+                        this.checkDeath(
+                            opponent,
+                            mainCollector,
+                            mainMessage,
+                            current
+                        )
+                    ) {
+                        return
+                    } else {
+                        current = opponent
+                        this.updateMessage(mainMessage, gamedata, what, current)
+                    }
                 } else if (action === 'heal') {
                 } else;
             })
