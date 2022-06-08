@@ -32,7 +32,7 @@ module.exports = {
             },
             {
                 name: 'Last Action',
-                value: logs[0],
+                value: logs,
                 inline: false,
             },
         ])
@@ -171,13 +171,12 @@ module.exports = {
                     )
 
                     button.deferUpdate()
-                    logs.push(
-                        `${current.user.tag} deals ${damage} damage to ${opponent.user.tag}!`
-                    )
+                    let what = `${current.user.tag} deals ${damage} damage to ${opponent.user.tag}!`
+                    logs.push(what)
                     opponent.hp -= damage
                     current = opponent
 
-                    this.updateMessage(mainMessage, gamedata, logs, current)
+                    this.updateMessage(mainMessage, gamedata, what, current)
                 } else if (action === 'heal') {
                 } else;
             })
