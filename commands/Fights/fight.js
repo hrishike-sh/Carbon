@@ -34,7 +34,7 @@ module.exports = {
                 },
                 {
                     name: 'Last Action',
-                    value: logs,
+                    value: `${current.user.toString()} has won!`,
                     inline: false,
                 },
             ])
