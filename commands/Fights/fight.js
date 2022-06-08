@@ -13,7 +13,7 @@ module.exports = {
     aliases: ['ffight'],
     description: 'Fight someone in the old dank memer style!',
     disabledChannels: ['870240187198885888', '796729013456470036'],
-    checkDeath: (user, collector, message, current) => {
+    checkDeath: (user, collector, message, current, gamedata) => {
         if (user.hp < 1) {
             collector.stop()
             message.components[0].components.forEach((c) => c.setDisabled())
@@ -216,7 +216,8 @@ module.exports = {
                             opponent,
                             mainCollector,
                             mainMessage,
-                            current
+                            current,
+                            gamedata
                         )
                     ) {
                         return
