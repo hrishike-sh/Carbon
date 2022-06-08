@@ -174,6 +174,7 @@ module.exports = {
                     logs.push(
                         `${current.user.tag} deals ${damage} damage to ${opponent.user.tag}!`
                     )
+                    opponent.hp -= damage
                     current = opponent
 
                     this.updateMessage(mainMessage, gamedata, logs, current)
