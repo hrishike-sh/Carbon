@@ -302,13 +302,15 @@ client.on('messageCreate', async (message) => {
         if (now < expirationTime) {
             const timeLeft = (expirationTime - now) / 1000
             return message.reply({
-                embed: new MessageEmbed()
-                    .setDescription(
-                        `:x: You have to wait for **${Math.ceil(
-                            timeLeft
-                        )} seconds** before running this command again!`
-                    )
-                    .setColor('RED'),
+                embeds: [
+                    new MessageEmbed()
+                        .setDescription(
+                            `:x: You have to wait for **${Math.ceil(
+                                timeLeft
+                            )} seconds** before running this command again!`
+                        )
+                        .setColor('RED'),
+                ],
             })
         }
     }
