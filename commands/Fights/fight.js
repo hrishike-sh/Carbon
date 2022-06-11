@@ -95,6 +95,10 @@ module.exports = {
             },
         }
 
+        if (message.channel.id === '834394537249996810') {
+            return message.channel.send('This command isn\'t meant for you bozos')
+        }
+
         const target = message.mentions.users?.first()
         if (!target)
             return message.reply(`You have to mention someone to fight with.`)
