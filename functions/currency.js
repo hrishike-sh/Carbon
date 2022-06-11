@@ -27,7 +27,15 @@ class Currency {
      * @returns {Number} Total Balance of the user
      */
     static async addCoins(userId, amount) {
-        const user = await this.getUser(userId)
+        let user = await DB.findOne({
+            userId,
+        })
+        if (!user) {
+            user = new DB({
+                userId,
+                Balance: 0,
+            })
+        }
 
         if (isNaN(amount))
             throw new Error('Amount provided is not a valid Number.')
