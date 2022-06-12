@@ -22,6 +22,7 @@ module.exports = {
                     index < 10 ? `0${index}` : index
                 )}: ${user.toString()} => ${x.Balance.toLocaleString()} coins**`
             } else {
+                const index = sorted.indexOf(x) + 1
                 data += `${getBmotes(
                     index < 10 ? `0${index}` : index
                 )}: ${user.toString()} => ${x.Balance.toLocaleString()} coins`
