@@ -80,7 +80,7 @@ module.exports = {
 
         collector.on('collect', async (button) => {
             collector.stop()
-
+            button.deferUpdate()
             if (button.customId.includes('no'))
                 return message.channel.send('The fight offer was declined.')
 
