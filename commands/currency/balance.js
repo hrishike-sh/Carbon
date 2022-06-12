@@ -16,7 +16,7 @@ module.exports = {
                 target = message.mentions.members?.first()
             } else {
                 try {
-                    target = message.guild.members.fetch({
+                    target = await message.guild.members.fetch({
                         user: args[0],
                     })
                 } catch (e) {
