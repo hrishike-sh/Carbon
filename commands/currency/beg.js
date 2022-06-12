@@ -19,6 +19,7 @@ module.exports = {
             "You get access to Hrish's database and give yourself {{coins}} coins!",
             "You go through mirror's DMs and you find a lot of Nitro Gifts!! You RMT them for {{coins}} coins. SIMPS!!",
             "You kill all the spiders in Stacey's australian house and you're awarded with {{coins}} coins!!",
+            "Your inner-self blesses you with {{coins}} coins for seeing Naomi's cat on a daily basis.",
             'Deep gave you {{coins}} coins for not calling him peeD!',
             'You keep annoying Snoooted for toe pics and he gives you {{coins}} to stop.',
             'You find Glitch getting mass pinged in blacklist-appeal, you decide to help him and he gives you {{coins}} coins!',
