@@ -14,7 +14,7 @@ module.exports = {
         const MESSAGES = [
             'Hrish has not added any cool comments here. In compensation you receive {{coins}} coins.',
             "You stole one of Tee's shoes and sold it for {{coins}} coins!",
-            'You find Fellintron crying in a corner. He gives you {{coins}} coins to leave him alone!',
+            'You find Felli crying in a corner. He gives you {{coins}} coins to leave him alone!',
             "While going through Sunny's E-Girl PFP collection you manage to find a NFT! You sell it for {{coins}} coins",
             "You get access to Hrish's database and give yourself {{coins}} coins!",
             "You go through mirror's DMs and you find a lot of Nitro Gifts!! You RMT them for {{coins}} coins. SIMPS!!",
