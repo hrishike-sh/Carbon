@@ -24,6 +24,11 @@ module.exports = {
             'You keep annoying Snoooted for toe pics and he gives you {{coins}} to stop.',
             'You find Glitch getting mass pinged in blacklist-appeal, you decide to help him and he gives you {{coins}} coins!',
         ]
+
+        if (message.channel.id === '834394537249996810') {
+            return message.channel.send('Blacklisted users can\'t use this command')
+        }
+
         const randomComment =
             MESSAGES[Math.floor(Math.random() * MESSAGES.length)]
 

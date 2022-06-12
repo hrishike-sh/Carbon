@@ -28,6 +28,11 @@ module.exports = {
                 )}: ${user.toString()} => ${x.Balance.toLocaleString()} coins\n`
             }
         }
+
+        if (message.channel.id === '834394537249996810') {
+            return message.channel.send('Blacklisted users can\'t use this command')
+        }
+
         const dbUser = ALL.find((a) => a.userId === message.author.id)
         if (!inLb && dbUser) {
             data += `\n\n${getBmotes(

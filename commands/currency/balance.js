@@ -24,6 +24,11 @@ module.exports = {
                 }
             }
         }
+
+        if (message.channel.id === '834394537249996810') {
+            return message.channel.send('Blacklisted users can\'t use this command')
+        }
+
         if (!target) target = message.member
 
         const user = await getUser(target.id)

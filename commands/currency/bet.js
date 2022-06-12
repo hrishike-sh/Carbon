@@ -31,6 +31,10 @@ module.exports = {
                 `Could not parse \`${args[0]}\` as valid amount!`
             )
 
+            if (message.channel.id === '834394537249996810') {
+                return message.channel.send('Blacklisted users can\'t use this command')
+            }        
+
         const player = await getUser(target.id)
         const opponent = await getUser(message.author.id)
         if (amount > opponent.Balance)
