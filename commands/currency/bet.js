@@ -88,9 +88,8 @@ module.exports = {
                 { user: message.member, roll: Math.floor(Math.random() * 100) },
                 { user: target, roll: Math.floor(Math.random() * 100) },
             ]
-            ;[target.id, message.author.id].forEach((a) => {
-                removeCoins(a, amount)
-            })
+            await removeCoins(message.author.id, amount)
+            await removeCoins(target.id, amount)
             const msg = await message.channel.send(`Rolling...`)
 
             for await (const a of gamedat) {
