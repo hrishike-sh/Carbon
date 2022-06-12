@@ -93,14 +93,12 @@ module.exports = {
             })
             const msg = await message.channel.send(`Rolling...`)
 
-            await (async () => {
-                gamedat.forEach(async (a) => {
-                    await message.client.functions.sleep(1500)
-                    msg.edit(
-                        `${msg.content}\n${a.user.toString()} rolls ${a.roll}`
-                    )
-                })
-            })()
+            for await (const a of gamedat) {
+                await message.client.functions.sleep(1500)
+                await msg.edit(
+                    `${msg.content}\n${a.user.toString()} rolls ${a.roll}`
+                )
+            }
 
             await message.client.functions.sleep(1500)
             const winner = gamedat.sort((a, b) => a.roll - b.roll)[0]
