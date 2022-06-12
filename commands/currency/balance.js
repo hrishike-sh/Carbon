@@ -13,7 +13,7 @@ module.exports = {
         let target = args[0]
         if (target) {
             if (message.content.includes('@')) {
-                target = message.mentions.users?.first()
+                target = message.mentions.members?.first()
             } else {
                 try {
                     target = message.guild.members.fetch({
