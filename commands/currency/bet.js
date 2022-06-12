@@ -101,7 +101,7 @@ module.exports = {
             }
 
             await message.client.functions.sleep(1500)
-            const winner = gamedat.sort((a, b) => a.roll - b.roll)[0]
+            const winner = gamedat.sort((a, b) => a.roll - b.roll)[1]
             msg.edit(
                 `~~${
                     msg.content
