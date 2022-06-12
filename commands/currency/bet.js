@@ -19,6 +19,8 @@ module.exports = {
     async execute(message, args) {
         const target = message.mentions.members?.first()
         if (!target) return message.reply(`You must ping someone to play with!`)
+        if (message.author.id == target.id)
+            return message.reply(`You can't gamble your coins with yourself.`)
         args.shift()
         let amount = args[0]
         if (!amount) return message.reply(`Specify your bet.`)
@@ -88,8 +90,8 @@ module.exports = {
                 { user: message.member, roll: Math.floor(Math.random() * 100) },
                 { user: target, roll: Math.floor(Math.random() * 100) },
             ]
-            await removeCoins(message.author.id, amount)
-            await removeCoins(target.id, amount)
+            removeCoins(target.id, amount)
+            removeCoins(message.author.id, amount)
             const msg = await message.channel.send(`Rolling...`)
 
             for await (const a of gamedat) {

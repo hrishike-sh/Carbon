@@ -21,6 +21,7 @@ module.exports = {
             "You kill all the spiders in Stacey's australian house and you're awarded with {{coins}} coins!!",
             'Deep gave you {{coins}} coins for not calling him peeD!',
             'You keep annoying Snoooted for toe pics and he gives you {{coins}} to stop.',
+            'You find Glitch getting mass pinged in blacklist-appeal, you decide to help him and he gives you {{coins}} coins!',
         ]
         const randomComment =
             MESSAGES[Math.floor(Math.random() * MESSAGES.length)]
