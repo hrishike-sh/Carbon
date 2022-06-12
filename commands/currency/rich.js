@@ -20,12 +20,12 @@ module.exports = {
                 const index = sorted.indexOf(x) + 1
                 data += `**${getBmotes(
                     index < 10 ? `0${index}` : index
-                )}: ${user.toString()} => ${x.Balance.toLocaleString()} coins**`
+                )}: ${user.toString()} => ${x.Balance.toLocaleString()} coins**\n`
             } else {
                 const index = sorted.indexOf(x) + 1
                 data += `${getBmotes(
                     index < 10 ? `0${index}` : index
-                )}: ${user.toString()} => ${x.Balance.toLocaleString()} coins`
+                )}: ${user.toString()} => ${x.Balance.toLocaleString()} coins\n`
             }
         }
         const dbUser = ALL.find((a) => a.userId === message.author.id)
