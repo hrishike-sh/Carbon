@@ -13,13 +13,14 @@ module.exports = {
     async execute(message, args, client) {
         const MESSAGES = [
             'Hrish has not added any cool comments here. In compensation you receive {{coins}} coins.',
-            "You stole one of Tee's shoes and sell it for {{coins}} coins!",
+            "You stole one of Tee's shoes and sold it for {{coins}} coins!",
             'You find Fellintron crying in a corner. He gives you {{coins}} coins to leave him alone!',
             "While going through Sunny's E-Girl PFP collection you manage to find a NFT! You sell it for {{coins}} coins",
             "You get access to Hrish's database and give yourself {{coins}} coins!",
             "You go through mirror's DMs and you find a lot of Nitro Gifts!! You RMT them for {{coins}} coins. SIMPS!!",
             "You kill all the spiders in Stacey's australian house and you're awarded with {{coins}} coins!!",
             'Deep gave you {{coins}} coins for not calling him peeD!',
+            'You keep annoying Snoooted for toe pics and he gives you {{coins}} to stop.',
         ]
         const randomComment =
             MESSAGES[Math.floor(Math.random() * MESSAGES.length)]
