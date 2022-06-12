@@ -18,6 +18,8 @@ module.exports = {
             "While going through Sunny's E-Girl PFP collection you manage to find a NFT! You sell it for {{coins}} coins",
             "You get access to Hrish's database and give yourself {{coins}} coins!",
             "You go through mirror's DMs and you find a lot of Nitro Gifts!! You RMT them for {{coins}} coins. SIMPS!!",
+            "You kill all the spiders in Stacey's australian house and you're awarded with {{coins}} coins!!",
+            'Deep gave you {{coins}} coins for not calling him peeD!',
         ]
         const randomComment =
             MESSAGES[Math.floor(Math.random() * MESSAGES.length)]
