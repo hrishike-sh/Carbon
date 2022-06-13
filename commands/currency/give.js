@@ -41,6 +41,6 @@ module.exports = {
                     color: 'GREEN',
                 },
             ],
-        })
+        }) // .
     },
 }
