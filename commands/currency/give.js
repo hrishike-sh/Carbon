@@ -13,14 +13,16 @@ module.exports = {
      * @param {Client} client
      */
     async execute(message, args, client) {
-        return message.reply('Not yet')
         const { Balance } = await getUser(message.author.id)
-        const amount = args[0]
+        let amount = args[0]
         if (amount > Balance) {
             return message.reply(
                 `You have ${Balance.toLocaleString()} coins. You cannot share ${amount.toLocaleString()} coins??!`
             )
         }
+        amount = client.functions.parseAmount(amount)
+        if (!amount)
+            return message.reply(`Could not parse ${args[0]} as valid amount!`)
 
         args.shift()
         let target = message.mentions.users?.first()
