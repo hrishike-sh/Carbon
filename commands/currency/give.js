@@ -14,7 +14,7 @@ module.exports = {
     async execute(message, args, client) {
         const { Balance } = await getUser(message.author.id)
         const amount = args[0]
-        if (amount > user.Balance) {
+        if (amount > Balance) {
             return message.reply(
                 `You have ${Balance.toLocaleString()} coins. You cannot share ${amount.toLocaleString()} coins??!`
             )
