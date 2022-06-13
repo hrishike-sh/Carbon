@@ -5,6 +5,7 @@ module.exports = {
     aliases: ['slide', 'share'],
     description: 'Give some coins to other users.',
     usage: '<amount> <user>',
+    args: true,
     /**
      *
      * @param {Message} message
@@ -12,6 +13,7 @@ module.exports = {
      * @param {Client} client
      */
     async execute(message, args, client) {
+        return message.reply('Not yet')
         const { Balance } = await getUser(message.author.id)
         const amount = args[0]
         if (amount > Balance) {
