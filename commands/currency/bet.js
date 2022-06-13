@@ -13,6 +13,7 @@ module.exports = {
     aliases: ['gamble', 'wager'],
     usage: '<@user> <amount>',
     args: true,
+    cooldown: 5,
     description: 'Gamble all your coins away!',
     /**
      *

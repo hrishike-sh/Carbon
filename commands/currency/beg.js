@@ -4,7 +4,7 @@ const { addCoins } = require('../../functions/currency')
 module.exports = {
     name: 'beg',
     fhOnly: true,
-    cooldown: 15,
+    cooldown: 2,
     /**
      * @param {Client} client
      * @param {Message} message
@@ -26,7 +26,9 @@ module.exports = {
         ]
 
         if (message.channel.id === '834394537249996810') {
-            return message.channel.send('Blacklisted users can\'t use this command')
+            return message.channel.send(
+                "Blacklisted users can't use this command"
+            )
         }
 
         const randomComment =

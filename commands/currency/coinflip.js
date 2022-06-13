@@ -5,6 +5,7 @@ module.exports = {
     aliases: ['cf'],
     usage: '<h/t><amount>',
     args: true,
+    cooldown: 15,
     description: 'Gamble all your coins away.',
     /**
      *

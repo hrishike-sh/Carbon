@@ -6,6 +6,7 @@ module.exports = {
     description: 'Give some coins to other users.',
     usage: '<amount> <user>',
     args: true,
+    cooldown: 10,
     /**
      *
      * @param {Message} message
