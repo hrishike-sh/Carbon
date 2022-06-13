@@ -27,7 +27,7 @@ module.exports = {
 
         args.shift()
         let target = message.mentions.users?.first()
-
+        if(target.id === message.author.id) return message.reply("You cannot share coins with yourself.")
         if (!target) return message.reply(`You must ping the user!`)
 
         const author = await removeCoins(message.author.id, amount)
@@ -36,8 +36,8 @@ module.exports = {
         return message.reply({
             embeds: [
                 {
-                    title: 'Transfered',
-                    description: `You sent ${target.toString()} ${amount.toLocaleString()} coins.\nNow you have ${author.toLocaleString()} and they have ${targetCoins.toLocaleString()}`,
+                    title: 'Transferred',
+                    description: `You sent ${target.toString()} **${amount.toLocaleString()}** coins.`,
                     color: 'GREEN',
                 },
             ],
