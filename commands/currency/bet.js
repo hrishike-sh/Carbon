@@ -5,6 +5,9 @@ const {
     MessageButton,
 } = require('discord.js')
 const { addCoins, removeCoins, getUser } = require('../../functions/currency')
+
+let betting = []
+
 module.exports = {
     name: 'bet',
     aliases: ['gamble', 'wager'],
@@ -21,6 +24,11 @@ module.exports = {
         if (!target) return message.reply(`You must ping someone to play with!`)
         if (message.author.id == target.id)
             return message.reply(`You can't gamble your coins with yourself.`)
+        if (betting.includes(target.id) || betting.includes(message.author.id))
+            return message.reply(
+                `Either you or your opponent is already fighting...`
+            )
+
         args.shift()
         let amount = args[0]
         if (!amount) return message.reply(`Specify your bet.`)
@@ -30,10 +38,6 @@ module.exports = {
             return message.reply(
                 `Could not parse \`${args[0]}\` as valid amount!`
             )
-
-            if (message.channel.id === '834394537249996810') {
-                return message.channel.send('Blacklisted users can\'t use this command')
-            }        
 
         const player = await getUser(target.id)
         const opponent = await getUser(message.author.id)
@@ -45,7 +49,8 @@ module.exports = {
             return message.reply(
                 `${target.toString()} doesn't even have ${amount.toLocaleString()} coins :skull:`
             )
-
+        betting.push(target.id)
+        betting.push(message.author.id)
         const confirmation = await message.channel.send({
             embeds: [
                 new MessageEmbed()
@@ -85,11 +90,14 @@ module.exports = {
         })
 
         collector.on('collect', async (button) => {
-            collector.stop()
             button.deferUpdate()
-            if (button.customId.includes('no'))
+            if (button.customId.includes('no')) {
+                collector.stop()
+                confirmation.delete()
                 return message.channel.send('The fight offer was declined.')
+            }
 
+            confirmation.delete()
             const gamedat = [
                 { user: message.member, roll: Math.floor(Math.random() * 100) },
                 { user: target, roll: Math.floor(Math.random() * 100) },
@@ -114,7 +122,7 @@ module.exports = {
                     amount * 2
                 ).toLocaleString()} coins!! :trophy:`
             )
-
+            collector.stop()
             addCoins(winner.user.id, amount * 2)
         })
 
@@ -122,7 +130,9 @@ module.exports = {
             confirmation.components[0].components.forEach((c) =>
                 c.setDisabled()
             )
-
+            betting = betting.filter(
+                (a) => ![target.id, message.author.id].includes(a)
+            )
             confirmation.edit({
                 components: confirmation.components,
             })
