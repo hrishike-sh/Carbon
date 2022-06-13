@@ -1,3 +1,6 @@
+
+// -.-- --- ..- .-. . / -.. ..- -- -...
+
 const { Collection, Intents, Client, MessageEmbed } = require('discord.js')
 const fs = require('fs')
 const shell = require('shelljs')
