@@ -1,44 +1,35 @@
+const { Formatters, MessageEmbed } = require('discord.js');
+
 module.exports = {
     name: 'whois',
     aliases: ['wi'],
-    usage: 'user_id',
-    description: 'Shows mutuals and userinfo about a certain user.',
+    description: 'Shows mutual guilds with the bot and information about them.',
+    usage: '[user]',
     async execute(message, args, client) {
-        let userid =
-            message.mentions.users.size > 0
-                ? message.mentions.users.first().id
-                : args[0]
+        try {
+            const user = message.mentions.users.last() || (await client.users.fetch(args[0]).catch(() => null)) || client.users.cache.find((user) => user.username === args[0] || user.tag === args[0]) || message.author;
+        
+            const mutuals = new Array();
+        
+            const guilds = client.guilds.cache.values();
+            
+            for (const guild of guilds) {
+                if (guild.members.cache.has(user.id) {
+                    mutuals.push(`${Formatters.inlineCode(guild.id)} - ${Formatters.bold(guild.name)}`)
+                } else {
+                    continue;
+                }
+            }
+        
+            const embed = new MessageEmbed()
+                .setAuthor({ name: `${user.tag} - ${user.id}`, iconURL: user.displayAvatarURL({ dynamic: true }) })
+                .setThumbnail(user.displayAvatarURL({ dynamic: true }))
+                .setDescription(`${Formatters.bold('Mutual Guilds')}\n${mutuals.join('\n')}`)
+                .setColor('RANDOM');
 
-        if (!userid) userid = message.author.id
-        if (!client.users.cache.get(userid))
-            return message.channel.send(`The user_id was not found.`)
-
-        let results = ''
-        client.guilds.cache.forEach((guild) => {
-            if (guild.members.cache.has(userid))
-                results += `(\`${guild.id}\`) - **${guild.name}**\n`
-        })
-        message.channel.send({
-            embeds: [
-                {
-                    author: {
-                        name:
-                            '| ' +
-                            client.users.cache.get(userid).tag +
-                            ` -- ${userid}`,
-                        icon_url: client.users.cache
-                            .get(userid)
-                            .displayAvatarURL({ dynamic: false }),
-                    },
-                    description: `**Mutual Servers**\n` + results,
-                    color: 'RANDOM',
-                    thumbnail: {
-                        url: client.users.cache
-                            .get(userid)
-                            .displayAvatarURL({ dynamic: true }),
-                    },
-                },
-            ],
-        })
+            await message.channel.send({ embeds: [embed] });
+        } catch (error) {
+            console.error(error);
+        }
     },
-}
+};
