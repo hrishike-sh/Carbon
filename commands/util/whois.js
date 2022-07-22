@@ -7,7 +7,7 @@ module.exports = {
     usage: '[user]',
     async execute(message, args, client) {
         try {
-            const user = message.mentions.users.last() || (await client.users.fetch(args[0]).catch(() => null)) || client.users.cache.find((user) => user.username === args[0]) || client.users.cache.find((user) => user.tag === args[0]) || message.author;
+            const user = message.mentions.users.last() || (await client.users.fetch(args[0]).catch(() => null)) || client.users.cache.find((user) => user.username === args[0] || user.tag === args[0]) || message.author;
         
             const mutuals = new Array();
         
