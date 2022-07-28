@@ -55,6 +55,12 @@ module.exports = {
                 ) &&
                 !message.member.roles.cache.some(
                     (role) => role.id === '824348974449819658'
+                ) &&
+                !message.member.roles.cache.some(
+                    (role) => role.id === '969870378811916408'
+                ) &&
+                !message.member.roles.cache.some(
+                    (role) => role.id === '999911429421408346'
                 )
             ) {
                 return message.channel.send(
