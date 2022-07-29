@@ -18,11 +18,11 @@ module.exports = {
                     )
                     .setFooter({
                         text: `The message took ${(
-                            Date.now() - interaction.createdTimestamp
+                            Date.now() - message.createdTimestamp
                         ).toLocaleString()}ms to send.`,
                         iconURL:
                             client.user.displayAvatarURL({ dynamic: true }) ??
-                            interaction.user.displayAvatarURL({
+                            client.user.displayAvatarURL({
                                 dynamic: true,
                             }),
                     })
