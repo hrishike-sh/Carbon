@@ -26,7 +26,7 @@ module.exports = {
             userId: message.author.id,
         })
 
-        if (userSettings.messagesettings?.highlightsDisabled === true) return
+        if (userSettings?.messagesettings?.highlightsDisabled === true) return
 
         const DB = client.db.hl.db
         const hlWords = client.db.hl.all
