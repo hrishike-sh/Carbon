@@ -11,10 +11,29 @@ module.exports = {
         await message.channel.send({
             embeds: [
                 new MessageEmbed()
-                    .setTitle('Pong 🏓')
-                    .setDescription(
-                        `**Client latency:** ${client.ws.ping}ms\nUp since <t:${uptime}:R>`
-                    ),
+                    .addFields(
+                        {
+                            name: 'Discord WebSocket',
+                            value: `${client.ws.ping.toLocaleString()}ms`,
+                            inline: true,
+                        },
+                        {
+                            name: 'Round Trip',
+                            value: `${(
+                                Date.now() - message.createdTimestamp
+                            ).toLocaleString()}ms`,
+                            inline: true,
+                        }
+                    )
+                    .setFooter({
+                        text: client.user.tag,
+                        iconURL:
+                            client.user.displayAvatarURL({ dynamic: true }) ??
+                            interaction.user.displayAvatarURL({
+                                dynamic: true,
+                            }),
+                    })
+                    .setTimestamp(),
             ],
         })
     },
