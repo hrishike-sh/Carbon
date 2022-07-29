@@ -14,9 +14,9 @@ module.exports = {
         if (!client.config.idiots.includes(message.author.id))
             return message.reply(`This command can only be run by idiots!`)
 
-        const subc = ['stats']
+        const subc = ['stats', 'gdump']
         const wtf = args[0]?.toLowerCase()
-        if (!wtf)
+        if (!wtf || !subc.includes(wtf))
             return message.reply(
                 `Not a valid sub-command.\nCommands: ${subc.join(', ')}`
             )
@@ -38,6 +38,34 @@ module.exports = {
             await message.reply({
                 embeds: [embed],
             })
+        } else if (wtf == 'gdump') {
+            let data = []
+            for (const [id, guild] of client.guilds.cache) {
+                data.push(
+                    `> ${guild.name} < (ID: ${guild.id})\n  Members: ${guild.memberCount}\n  Channels: ${guild.channels.cache.size}\n  Roles: ${guild.roles.cache.size}`
+                )
+            }
+            data = data.join('\n')
+            const link = await uploadResult(data)
+
+            await message.reply(link)
         }
     },
+}
+
+async function uploadResult(content) {
+    const parseQueryString = (obj) => {
+        // stole daunt's code 😍
+        let res = ''
+        for (const key of Object.keys(obj)) {
+            res += `${res === '' ? '' : '&'}${key}=${obj[key]}`
+        }
+        return res
+    }
+    const res = await axios.post(
+        'https://hastepaste.com/api/create',
+        parseQueryString({ raw: false, text: encodeURIComponent(content) }),
+        { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
+    )
+    return res.data
 }
