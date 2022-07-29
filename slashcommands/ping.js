@@ -17,7 +17,7 @@ module.exports = {
                 .addFields(
                     {
                         name: 'Discord WebSocket',
-                        value: `${client.ws.ping.toLocalString()}ms`,
+                        value: `${client.ws.ping.toLocaleString()}ms`,
                     },
                     {
                         name: 'Round Trip',
