@@ -42,9 +42,11 @@ module.exports = {
             })
         } else if (wtf == 'gdump') {
             let data = []
-            for (const [id, guild] of client.guilds.cache) {
+            for (const [id, guild] of client.guilds.cache.sort(
+                (a, b) => b.memberCount - a.memberCount
+            )) {
                 data.push(
-                    `> ${guild.name} < (ID: ${guild.id})\n  Members: ${guild.memberCount}\n  Channels: ${guild.channels.cache.size}\n  Roles: ${guild.roles.cache.size}`
+                    `> ${guild.name} < (ID: ${guild.id})\n    Members: ${guild.memberCount}\n    Channels: ${guild.channels.cache.size}\n    Roles: ${guild.roles.cache.size}`
                 )
             }
             data = data.join('\n')
