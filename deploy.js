@@ -37,7 +37,7 @@ const rest = new REST({ version: '9' }).setToken(process.env.token)
 ;(async () => {
     try {
         console.log('[GLOBAL]: Started refreshing application (/) commands.')
-
+        console.log(globalCommands)
         await rest.put(Routes.applicationCommand(clientId), {
             body: globalCommands,
         })
