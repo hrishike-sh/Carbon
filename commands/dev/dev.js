@@ -1,4 +1,6 @@
 const { Message, Client, MessageEmbed } = require('discord.js')
+const axios = require('axios')
+const { inspect } = require('util')
 
 module.exports = {
     name: 'dev',
