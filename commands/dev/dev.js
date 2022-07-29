@@ -24,6 +24,16 @@ module.exports = {
             )
 
         if (wtf == 'stats') {
+            let total = {
+                users: 0,
+                channels: 0,
+                roles: 0,
+            }
+            client.guilds.cache.forEach((guild) => {
+                total.users += guild.memberCount
+                total.channels += guild.channels.cache.size
+                total.roles += guild.channels.cache.size
+            })
             const embed = new MessageEmbed()
                 .setTitle('Bot Stats')
                 .addField(
@@ -33,7 +43,11 @@ module.exports = {
                 )
                 .addField(
                     'Cache',
-                    `\`\`\`js\nUSERS: ${client.users.cache.size.toLocaleString()}\nGUILDS: ${client.users.cache.size.toLocaleString()}\nCHANNELS: ${client.channels.cache.size.toLocaleString()}\`\`\``
+                    `\`\`\`js\nUSERS: ${client.users.cache.size.toLocaleString()}\nGUILDS: ${client.guilds.cache.size.toLocaleString()}\nCHANNELS: ${client.channels.cache.size.toLocaleString()}\`\`\``
+                )
+                .addField(
+                    'Total',
+                    `\`\`\`js\nUSERS: ${total.users.toLocaleString()}\nCHANNELS: ${total.channels.toLocaleString()}\nROLES: ${total.roles.toLocaleString()}\`\`\``
                 )
                 .setColor('RANDOM')
 
