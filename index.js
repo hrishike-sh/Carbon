@@ -1,4 +1,3 @@
-
 // -.-- --- ..- .-. . / -.. ..- -- -...
 
 const { Collection, Intents, Client, MessageEmbed } = require('discord.js')
@@ -9,12 +8,7 @@ const config = require('./config.json')
 require('dotenv').config()
 
 const client = new Client({
-    intents: [
-        Intents.FLAGS.GUILDS,
-        Intents.FLAGS.GUILD_MESSAGES,
-        Intents.FLAGS.GUILD_MEMBERS,
-        Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
-    ],
+    intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES],
 })
 
 let dbURL = process.env.mongopath
