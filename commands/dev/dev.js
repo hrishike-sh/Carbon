@@ -43,7 +43,8 @@ module.exports = {
                 )
                 .addField(
                     'Cache',
-                    `\`\`\`js\nUSERS: ${client.users.cache.size.toLocaleString()}\nGUILDS: ${client.guilds.cache.size.toLocaleString()}\nCHANNELS: ${client.channels.cache.size.toLocaleString()}\`\`\``
+                    `\`\`\`js\nUSERS: ${client.users.cache.size.toLocaleString()}\nGUILDS: ${client.guilds.cache.size.toLocaleString()}\nCHANNELS: ${client.channels.cache.size.toLocaleString()}\`\`\``,
+                    true
                 )
                 .addField(
                     'Total',
