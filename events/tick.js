@@ -56,7 +56,7 @@ module.exports = {
                                 [
                                     'Minecraft',
                                     'Valorant',
-                                    'Rainbow Six Seige',
+                                    'Rainbow Six Siege',
                                     'Genshin Impact',
                                     'Counter Strike',
                                 ][Math.floor(Math.random() * 5)]
