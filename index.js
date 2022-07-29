@@ -97,13 +97,17 @@ for (const file of commandFiles) {
     client.c.slashCommands.set(command.data.name, command)
 }
 
-process.on('uncaughtException', (err) => {
-    console.log(err)
-})
+process.on('uncaughtException', (error) => {
+    console.log(error)
+});
 
-process.on('unhandledRejection', (err) => {
-    console.log(err)
-})
+process.on('unhandledRejection', (error) => {
+    console.log(error)
+});
+
+client
+    .on('debug', console.log)
+    .on('warn', console.debug);
 
 client.on('ready', async () => {
     console.log('Logged in.')
