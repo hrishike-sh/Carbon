@@ -18,7 +18,7 @@ module.exports = {
             userId: message.author.id,
         })
 
-        if (userSettings.messagesettings?.lastPingDisabled === true) return
+        if (userSettings?.messagesettings?.lastPingDisabled === true) return
 
         message.mentions.members.forEach(async (member) => {
             if (
