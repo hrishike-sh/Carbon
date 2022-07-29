@@ -34,6 +34,10 @@ module.exports = {
                     `\`\`\`js\nUSERS: ${client.users.cache.size.toLocaleString()}\nGUILDS: ${client.users.cache.size.toLocaleString()}\nCHANNELS: ${client.channels.cache.size.toLocaleString()}\`\`\``
                 )
                 .setColor('RANDOM')
+
+            await message.reply({
+                embeds: [embed],
+            })
         }
     },
 }
