@@ -2,6 +2,7 @@ const { SlashCommandBuilder } = require('@discordjs/builders')
 const { CommandInteraction, Client, MessageEmbed } = require('discord.js')
 const Database = require('../database/models/settingsSchema')
 module.exports = {
+    global: true,
     data: new SlashCommandBuilder()
         .setName('gconfig')
         .setDescription("Configure your server's giveaway settings!")
