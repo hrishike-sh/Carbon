@@ -76,7 +76,71 @@ module.exports = {
                                 server.giveaway_config.manager_roles
                                     .map((v, i) => `${i + 1}: <@&${v}>`)
                                     .join('\n') || 'None.'
-                            ),
+                            )
+                            .setColor('RANDOM'),
+                    ],
+                })
+            } else if (command == 'add') {
+                const role = interaction.options.getRole('role')
+
+                if (server.giveaway_config.manager_roles.includes(role.id)) {
+                    return interaction.reply({
+                        embeds: [
+                            new MessageEmbed()
+                                .setDescription(
+                                    `${role.toString()} is already in the list.`
+                                )
+                                .setColor('RED'),
+                        ],
+                    })
+                }
+                server.giveaway_config.manager_roles.push(role.id)
+                server.save()
+
+                return interaction.reply({
+                    embeds: [
+                        new MessageEmbed()
+                            .setTitle('Giveaway Manager Role')
+                            .setDescription(
+                                `Added ${role.toString()} to the list!`
+                            )
+                            .setColor('GREEN')
+                            .setFooter({
+                                text: 'You can check the list via /gconfig manager-role list',
+                            }),
+                    ],
+                })
+            } else if (command == 'remove') {
+                const role = interaction.options.getRole('role')
+
+                if (!server.giveaway_config.manager_roles.includes(role.id)) {
+                    return interaction.reply({
+                        embeds: [
+                            new MessageEmbed()
+                                .setDescription(
+                                    `${role.toString()} is not a giveaway manager role.`
+                                )
+                                .setColor('RED'),
+                        ],
+                    })
+                }
+                server.giveaway_config.manager_roles =
+                    server.giveaway_config.manager_roles.filter(
+                        (r) => r.id !== role.id
+                    )
+                server.save()
+
+                return interaction.reply({
+                    embeds: [
+                        new MessageEmbed()
+                            .setTitle('Giveaway Manager Role')
+                            .setDescription(
+                                `Removed ${role.toString()} from the list!`
+                            )
+                            .setColor('RED')
+                            .setFooter({
+                                text: 'You can check the list via /gconfig manager-role list',
+                            }),
                     ],
                 })
             }
