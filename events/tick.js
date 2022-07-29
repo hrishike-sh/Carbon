@@ -15,7 +15,7 @@ let presenceCounter1 = 0
 let presenceCounter2 = 0
 let gawCounter1 = 0
 let randomColorCounter = 0
-let timerCounter = 0
+let statusCounter = 0
 let voteReminderCounter = 0
 let messageCounter = 0
 const entries = new Collection()
@@ -31,8 +31,73 @@ module.exports = {
         voteReminderCounter++
         randomColorCounter++
         messageCounter++
+        statusCounter++
         gawCounter1++
         // Incrementing everything
+
+        // Hot status
+        if (statusCounter > 59) {
+            statusCounter = 0
+            const statuses = [
+                {
+                    status: 'dnd',
+                    activities: [
+                        {
+                            name: `${client.counts.messages.toLocaleString()} messages!`,
+                            type: 2,
+                        },
+                    ],
+                },
+                {
+                    status: 'dnd',
+                    activities: [
+                        {
+                            name: `${
+                                [
+                                    'Minecraft',
+                                    'Valorant',
+                                    'Rainbow Six Seige',
+                                    'Genshin Impact',
+                                    'Counter Strike',
+                                ][Math.floor(Math.random() * 5)]
+                            }`,
+                            type: 0,
+                        },
+                    ],
+                },
+                {
+                    status: 'dnd',
+                    activities: [
+                        {
+                            name: `${
+                                [
+                                    'Naruto',
+                                    'Naruto: Shippuden',
+                                    'Bleach',
+                                    'One Piece',
+                                    'Attack on Titan',
+                                    'One Punch Man',
+                                    'Death Note',
+                                    'Vinland Saga',
+                                    'Demon Slayer (mid)',
+                                    "JoJo's Bizzare Adventures",
+                                    'Hrish',
+                                    'over my orphanage',
+                                    'Jujutsu Kaisen',
+                                    'Your Name.',
+                                ][Math.floor(Math.random() * 14)]
+                            }`,
+                            type: 3,
+                        },
+                    ],
+                },
+            ]
+
+            client.user.setPresence(
+                statuses[Math.floor(Math.random() * statuses.length)]
+            )
+        }
+        // Hot status
 
         // Random Color
         if (randomColorCounter > 119) {
@@ -53,7 +118,23 @@ module.exports = {
                 'RED',
                 'GREY',
                 'DARKER_GREY',
-                'NAVY',"FF355E","FD5B78","FF6037","FF9966","FF9933","FFCC33","FFFF66","FFFF66","CCFF00","66FF66","AAF0D1","50BFE6","FF6EFF","EE34D2","FF00CC","FF00CC"
+                'NAVY',
+                'FF355E',
+                'FD5B78',
+                'FF6037',
+                'FF9966',
+                'FF9933',
+                'FFCC33',
+                'FFFF66',
+                'FFFF66',
+                'CCFF00',
+                '66FF66',
+                'AAF0D1',
+                '50BFE6',
+                'FF6EFF',
+                'EE34D2',
+                'FF00CC',
+                'FF00CC',
             ]
             fh.roles.cache
                 .get('857817197417594921')
