@@ -11,22 +11,15 @@ module.exports = {
         await message.channel.send({
             embeds: [
                 new MessageEmbed()
-                    .addFields(
-                        {
-                            name: 'Discord WebSocket',
-                            value: `${client.ws.ping.toLocaleString()}ms`,
-                            inline: true,
-                        },
-                        {
-                            name: 'Round Trip',
-                            value: `${(
-                                Date.now() - message.createdTimestamp
-                            ).toLocaleString()}ms`,
-                            inline: true,
-                        }
+                    .setDescription(
+                        `Latency: ${
+                            client.ws.ping
+                        }ms\nUptime: ${client.functions.formatTime(uptime)}`
                     )
                     .setFooter({
-                        text: client.user.tag,
+                        text: `The message took ${(
+                            Date.now() - interaction.createdTimestamp
+                        ).toLocaleString()}ms to send.`,
                         iconURL:
                             client.user.displayAvatarURL({ dynamic: true }) ??
                             interaction.user.displayAvatarURL({
