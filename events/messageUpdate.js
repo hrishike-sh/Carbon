@@ -1,28 +1,28 @@
-const userSchema = require('../database/models/user');
+const userSchema = require('../database/models/user')
 
 module.exports = {
-  name: 'messageUpdate',
-  once: false,
-  async execute(oldMessage, newMessage, client) {
-    if (newMessage.author.bot) return;
+    name: 'messageUpdate',
+    once: false,
+    async execute(oldMessage, newMessage, client) {
+        if (newMessage.author.bot) return
 
-    const userSettings = await userSchema.findOne({
-      userId: newMessage.author.id
-    });
+        const userSettings = await userSchema.findOne({
+            userId: newMessage.author.id,
+        })
 
-    if (userSettings.messageSettings.snipesDisabled === true) return;
+        if (userSettings.messagesettings?.snipesDisabled === true) return
 
-    let snipes = client.snipes.esnipes.get(oldMessage.channel.id) || [];
+        let snipes = client.snipes.esnipes.get(oldMessage.channel.id) || []
 
-    snipes.unshift({
-      oldContent: oldMessage.content,
-      newContent: newMessage.content,
-      editedIn: newMessage.createdAt - oldMessage.editedAt,
-      member: newMessage.member,
-      author: newMessage.author,
-      msg: newMessage
-    });
+        snipes.unshift({
+            oldContent: oldMessage.content,
+            newContent: newMessage.content,
+            editedIn: newMessage.createdAt - oldMessage.editedAt,
+            member: newMessage.member,
+            author: newMessage.author,
+            msg: newMessage,
+        })
 
-    client.snipes.esnipes.set(oldMessage.channel.id, snipes);
-  }
-};
+        client.snipes.esnipes.set(oldMessage.channel.id, snipes)
+    },
+}

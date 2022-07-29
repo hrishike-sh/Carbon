@@ -33,11 +33,11 @@ module.exports = {
           {
             title: 'Your Message Content Settings',
             description: `Highlights Disabled: ${
-              user.messageSettings.highlightsDisabled ?? false
+              user.messagesettings?.highlightsDisabled ?? false
             }\nSnipes/Edit Snipes Disabled: ${
-              user.messageSettings.snipesDisabled ?? false
+              user.messagesettings?.snipesDisabled ?? false
             }\nLast Ping Messages Disabled: ${
-              user.messageSettings.lastPingDisabled ?? false
+              user.messagesettings?.lastPingDisabled ?? false
             }`
           },
           {
@@ -51,15 +51,15 @@ module.exports = {
     }
 
     if (options[0] === args[0]) {
-      if (user.messageSettings.highlightsDisabled === false) {
-        user.messageSettings.highlightsDisabled = true;
+      if (user.messagesettings?.highlightsDisabled === false) {
+        user.messagesettings?.highlightsDisabled = true;
         user.save();
 
         return message.channel.send(
           `Toggled the highlight message setting.\nIt is now **enabled** which means your messages **won't** be tracked for other users' highlights.`
         );
       } else {
-        user.messageSettings.highlightsDisabled = false;
+        user.messagesettings?.highlightsDisabled = false;
         user.save();
 
         return message.channel.send(
@@ -67,15 +67,15 @@ module.exports = {
         );
       }
     } else if (options[1] === args[0]) {
-      if (user.messageSettings.snipesDisabled === false) {
-        user.messageSettings.snipesDisabled = true;
+      if (user.messagesettings?.snipesDisabled === false) {
+        user.messagesettings?.snipesDisabled = true;
         user.save();
 
         return message.channel.send(
           `Toggled the snipe/esnipe message setting.\nIt is now **disabled** which means your messages **won't** be tracked for snipes/edit snipes (message deletions & edits).`
         );
       } else {
-        user.messageSettings.snipesDisabled = false;
+        user.messagesettings?.snipesDisabled = false;
         user.save();
 
         return message.channel.send(
@@ -83,15 +83,15 @@ module.exports = {
         );
       }
     } else if (options[2] === args[0]) {
-      if (user.messageSettings.lastPingDisabled === false) {
-        user.messageSettings.lastPingDisabled = true;
+      if (user.messagesettings?.lastPingDisabled === false) {
+        user.messagesettings?.lastPingDisabled = true;
         user.save();
 
         return message.channel.send(
           `Toggled the last ping message setting.\nIt is now **enabled** which means your messages **won't** be logged when you ping a user/they check their last pings through the command.`
         );
       } else {
-        user.messageSettings.lastPingDisabled = false;
+        user.messagesettings?.lastPingDisabled = false;
         user.save();
 
         return message.channel.send(
