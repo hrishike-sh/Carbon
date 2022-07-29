@@ -32,7 +32,7 @@ module.exports = {
             client.guilds.cache.forEach((guild) => {
                 total.users += guild.memberCount
                 total.channels += guild.channels.cache.size
-                total.roles += guild.channels.cache.size
+                total.roles += guild.roles.cache.size
             })
             const embed = new MessageEmbed()
                 .setTitle('Bot Stats')
