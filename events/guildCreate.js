@@ -17,7 +17,9 @@ module.exports = {
                     .setAuthor({
                         name: guild.name,
                         iconURL: guild.iconURL(),
-                        url: guild.vanityURLCode || null,
+                        url:
+                            `https://discord.com/${guild.vanityURLCode}` ||
+                            null,
                     })
                     .setTitle('Server Joined')
                     .addField(
