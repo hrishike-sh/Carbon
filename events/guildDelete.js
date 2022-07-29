@@ -1,35 +1,47 @@
+const { Guild, Client, MessageEmbed } = require('discord.js')
+
 module.exports = {
     name: 'guildDelete',
     once: false,
+    /**
+     *
+     * @param {Guild} guild
+     * @param {Client} client
+     */
     async execute(guild, client) {
-        const logChannel = client.channels.cache.get('897100473184686110')
-        logChannel.send({
-            embed: {
-                title: 'Server Left',
-                thumbnail: {
-                    url: guild.iconURL({ dynamic: true }),
-                },
-                color: 'RED',
-                fields: [
-                    {
-                        name: 'Total Members',
-                        value: guild.memberCount.toLocaleString(),
-                        inline: true,
-                    },
-                    {
-                        name: 'Owner info',
-                        value: `Tag: \`${guild.owner.user.tag}\`\nID: ${guild.owner.user.id}`,
-                        inline: true,
-                    },
-                    {
-                        name: 'Joined at',
-                        value: `<t:${(
-                            new Date() / 1000 -
-                            guild.joinedTimestamp / 1000
-                        ).toFixed(0)}>`,
-                    },
-                ],
-            },
+        if (!guild.available) return
+        const channel = client.channels.cache.get('897100473184686110')
+
+        channel.send({
+            embeds: [
+                new MessageEmbed()
+                    .setAuthor({
+                        name: guild.name,
+                        iconURL: guild.iconURL(),
+                        url:
+                            `https://discord.com/${guild.vanityURLCode}` ||
+                            null,
+                    })
+                    .setTitle('Server Left')
+                    .addField(
+                        'Members',
+                        guild.memberCount.toLocaleString(),
+                        true
+                    )
+                    .addField(
+                        'Owner',
+                        (await client.users.fetch(guild.ownerId)).tag +
+                            ` (${guild.ownerId})`,
+                        true
+                    )
+                    .addField(
+                        'Useless info',
+                        `Guild was created ${client.functions.formatTime(
+                            guild.createdAt
+                        )}}`
+                    )
+                    .setColor('RED'),
+            ],
         })
     },
 }

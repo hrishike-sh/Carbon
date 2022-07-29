@@ -40,7 +40,8 @@ module.exports = {
                         )} and the bot joined the server ${client.functions.formatTime(
                             new Date().getTime()
                         )}`
-                    ),
+                    )
+                    .setColor('GREEN'),
             ],
         })
     },
