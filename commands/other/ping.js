@@ -6,15 +6,15 @@ module.exports = {
     category: 'Other',
     description: 'Bot Uptime and ping',
     async execute(message, args, client) {
-        const uptime = (new Date() / 1000 - client.uptime / 1000).toFixed()
-
         await message.channel.send({
             embeds: [
                 new MessageEmbed()
                     .setDescription(
                         `Latency: ${
                             client.ws.ping
-                        }ms\nUptime: ${client.functions.formatTime(uptime)}`
+                        }ms\nUptime: ${client.functions.formatTime(
+                            client.readyAt
+                        )}`
                     )
                     .setFooter({
                         text: `The message took ${(
