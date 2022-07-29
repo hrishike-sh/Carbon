@@ -126,7 +126,7 @@ module.exports = {
                 }
                 server.giveaway_config.manager_roles =
                     server.giveaway_config.manager_roles.filter(
-                        (r) => r.id !== role.id
+                        (r) => r !== role.id
                     )
                 server.save()
 
