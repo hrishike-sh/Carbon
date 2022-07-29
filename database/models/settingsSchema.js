@@ -7,6 +7,9 @@ const SettingsSchema = new mongoose.Schema({
     gtnRole: { type: [String] },
     disabledDrop: { type: [String] },
     snipes: { type: Boolean },
+    giveaway_config: {
+        manager_roles: [String],
+    },
     lockdownSet: {
         channels: [String],
         lockDowned: Boolean,

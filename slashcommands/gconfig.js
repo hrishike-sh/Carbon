@@ -1,6 +1,6 @@
 const { SlashCommandBuilder } = require('@discordjs/builders')
-const { CommandInteraction, Client } = require('discord.js')
-
+const { CommandInteraction, Client, MessageEmbed } = require('discord.js')
+const Database = require('../database/models/settingsSchema')
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('gconfig')
@@ -44,8 +44,42 @@ module.exports = {
      * @param {Client} client
      */
     async execute(interaction, client) {
-        return interaction.reply(
-            `Group: ${interaction.options.getSubcommandGroup()}\nCommand: ${interaction.options.getSubcommand()}`
-        )
+        if (!interaction.member.permissions.has('ADMINISTRATOR')) {
+            return interaction.reply(
+                'You need `ADMINISTRATOR` permission to mess with this.'
+            )
+        }
+        let server = await Database.findOne({
+            guildID: interaction.guild.id,
+        })
+        if (!server) {
+            server = new Database({
+                guildID: interaction.guild.id,
+            })
+        }
+        const group = interaction.options.getSubcommandGroup()
+        if (group === 'manager-role') {
+            const command = interaction.options.getSubcommand()
+            if (!server.giveaway_config?.manager_roles) {
+                server.giveaway_config.manager_roles = []
+            }
+            if (command == 'list') {
+                return interaction.reply({
+                    embeds: [
+                        new MessageEmbed()
+                            .setTitle('Giveaway Manager Roles')
+                            .setDescription(
+                                'You can change these roles by using /gconfig!'
+                            )
+                            .addField(
+                                'Roles',
+                                server.giveaway_config.manager_roles
+                                    .map((v, i) => `${i + 1}: <@&${v}>`)
+                                    .join('\n') || 'None.'
+                            ),
+                    ],
+                })
+            }
+        }
     },
 }
