@@ -6,6 +6,11 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName('gconfig')
         .setDescription("Configure your server's giveaway settings!")
+        .addSubcommand((c) => {
+            return c
+                .setName('view')
+                .setDescription('View all your server configurations!')
+        })
         .addSubcommandGroup((group) => {
             return group
                 .setName('manager-role')
@@ -129,6 +134,41 @@ module.exports = {
             })
         }
         const group = interaction.options.getSubcommandGroup()
+
+        if (interaction.options?.getSubcommand() ?? 'view') {
+            return interaction.reply({
+                embeds: [
+                    new MessageEmbed()
+                        .setTitle(
+                            `${interaction.guild.name}'s Giveaway Configurations`
+                        )
+                        .setDescription(
+                            'These roles can be edited using /gconfig!'
+                        )
+                        .addField(
+                            'Giveaway Manager Roles',
+                            `**__Users with any of these roles can host giveaways__**:\n${server?.giveaway_config.manager_roles
+                                .map((v, i) => `${i + 1}: <@&${v}>`)
+                                .join('\n')}`,
+                            true
+                        )
+                        .addField(
+                            'Blacklisted Roles',
+                            `**__Users with any of these roles cannot join giveaways__**:\n${server?.giveaway_config.blacklisted_roles
+                                .map((v, i) => `${i + 1}: <@&${v}>`)
+                                .join('\n')}`,
+                            true
+                        )
+                        .addField(
+                            'Bypass Roles',
+                            `**__Users with any of these roles can bypass any giveaways hosted in the server__**:${server?.giveaway_config.bypass_roles
+                                .map((v, i) => `${i + 1}: <@&${v}>`)
+                                .join('\n')}`
+                        ),
+                ],
+            })
+        }
+
         if (group === 'manager-role') {
             const command = interaction.options.getSubcommand()
             if (!server.giveaway_config?.manager_roles) {
