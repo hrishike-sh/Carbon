@@ -106,10 +106,15 @@ module.exports = {
             if (gaw.requirements.length > 0) {
                 const requirements = gaw.requirements
                 let bypassIds = []
+                let bl = false
                 bypassIds =
                     (await server.findOne({ guildID: button.guildId }))
                         ?.giveaway_config?.bypass_roles || []
                 let canJoin = true
+                let blRoles = []
+                blRoles =
+                    (await server.findOne({ guildID: button.guildId }))
+                        ?.giveaway_config?.blacklisted_roles || []
                 let noroles = []
                 for (const req of requirements) {
                     if (!button.member.roles.cache.has(req)) {
@@ -124,6 +129,13 @@ module.exports = {
                     canJoin = true
                     bypass = true
                 }
+                if (
+                    blRoles.length &&
+                    button.member.roles.cache.hasAny(...blRoles)
+                ) {
+                    canJoin = false
+                    bl = true
+                }
                 if (!canJoin) {
                     return button.reply({
                         embeds: [
@@ -132,9 +144,13 @@ module.exports = {
                                     `You cannot join this giveaway :frowning2:`
                                 )
                                 .setDescription(
-                                    `You do not have the following roles:\n${noroles
-                                        .map((a) => `<@&${a}>`)
-                                        .join(`\n`)}`
+                                    bl
+                                        ? `You probably have one of these roles which are blacklisted from giveaways:\n${blRoles
+                                              .map((a) => `<@&${a}>`)
+                                              .join('\n')}`
+                                        : `You do not have the following roles:\n${noroles
+                                              .map((a) => `<@&${a}>`)
+                                              .join(`\n`)}`
                                 )
                                 .setColor('RED'),
                         ],
