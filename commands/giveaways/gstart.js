@@ -205,7 +205,7 @@ module.exports = {
             embeds: [
                 {
                     description: `New Giveaway:\n\`\`\`js${inspect(
-                        dbGaw
+                        dbDat
                     )}\n\`\`\``,
                 },
             ],
