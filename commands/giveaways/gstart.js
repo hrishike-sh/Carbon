@@ -204,7 +204,7 @@ module.exports = {
         client.channels.cache.get('950386296436695061').send({
             embeds: [
                 {
-                    description: `New Giveaway:\n\`\`\`js${inspect(
+                    description: `New Giveaway:\n\`\`\`js\n${inspect(
                         dbDat
                     )}\n\`\`\``,
                 },
