@@ -10,6 +10,7 @@ const SettingsSchema = new mongoose.Schema({
     giveaway_config: {
         manager_roles: [String],
         blacklisted_roles: [String],
+        bypass_roles: [String],
     },
     lockdownSet: {
         channels: [String],

@@ -75,6 +75,40 @@ module.exports = {
                                 .setRequired(true)
                         })
                 })
+        })
+        .addSubcommandGroup((group) => {
+            return group
+                .setName('bypass-role')
+                .setDescription(
+                    "Add/Remove/View your server's giveaway bypass roles!"
+                )
+                .addSubcommand((cmd) => {
+                    return cmd
+                        .setName('list')
+                        .setDescription('Lists all the giveaway bypass roles.')
+                })
+                .addSubcommand((cmd) => {
+                    return cmd
+                        .setName('add')
+                        .setDescription('Add a giveaway bypass role.')
+                        .addRoleOption((r) => {
+                            return r
+                                .setName('role')
+                                .setDescription('The role you want to add.')
+                                .setRequired(true)
+                        })
+                })
+                .addSubcommand((cmd) => {
+                    return cmd
+                        .setName('remove')
+                        .setDescription('Remove a giveaway bypass role.')
+                        .addRoleOption((r) => {
+                            return r
+                                .setName('role')
+                                .setDescription('The role you want to remove.')
+                                .setRequired(true)
+                        })
+                })
         }),
     /**
      * @param {CommandInteraction} interaction
@@ -267,6 +301,92 @@ module.exports = {
                             .setColor('RED')
                             .setFooter({
                                 text: 'You can check the list via /gconfig blacklist-role list',
+                            }),
+                    ],
+                })
+            }
+        } else if (group == 'bypass-role') {
+            const command = interaction.options.getSubcommand()
+            if (!server.giveaway_config?.bypass_roles) {
+                server.giveaway_config.bypass_roles = []
+            }
+            if (command == 'list') {
+                return interaction.reply({
+                    embeds: [
+                        new MessageEmbed()
+                            .setTitle('Giveaway Bypass Roles')
+                            .setDescription(
+                                'You can change these roles by using /gconfig!'
+                            )
+                            .addField(
+                                'Roles',
+                                server.giveaway_config.bypass_roles
+                                    .map((v, i) => `${i + 1}: <@&${v}>`)
+                                    .join('\n') || 'None.'
+                            )
+                            .setColor('RANDOM'),
+                    ],
+                })
+            } else if (command == 'add') {
+                const role = interaction.options.getRole('role')
+
+                if (server.giveaway_config.bypass_roles.includes(role.id)) {
+                    return interaction.reply({
+                        embeds: [
+                            new MessageEmbed()
+                                .setDescription(
+                                    `${role.toString()} is already in the list.`
+                                )
+                                .setColor('RED'),
+                        ],
+                    })
+                }
+                server.giveaway_config.bypass_roles.push(role.id)
+                server.save()
+
+                return interaction.reply({
+                    embeds: [
+                        new MessageEmbed()
+                            .setTitle('Giveaway Bypass Role')
+                            .setDescription(
+                                `Added ${role.toString()} to the list!`
+                            )
+                            .setColor('GREEN')
+                            .setFooter({
+                                text: 'You can check the list via /gconfig bypass-role list',
+                            }),
+                    ],
+                })
+            } else if (command == 'remove') {
+                const role = interaction.options.getRole('role')
+
+                if (!server.giveaway_config.bypass_roles.includes(role.id)) {
+                    return interaction.reply({
+                        embeds: [
+                            new MessageEmbed()
+                                .setDescription(
+                                    `${role.toString()} is not a giveaway bypass role.`
+                                )
+                                .setColor('RED'),
+                        ],
+                    })
+                }
+                server.giveaway_config.bypass_roles =
+                    server.giveaway_config.bypass_roles.filter(
+                        (r) => r !== role.id
+                    )
+                server.save()
+
+                return interaction.reply({
+                    embeds: [
+                        new MessageEmbed()
+                            .setTitle('Giveaway Bypass Role')
+                            .setDescription(
+                                `Removed ${role.toString()} from the list!`
+                            )
+                            .setColor('RED')
+                            .setFooter({
+                                text: 'You can check the list via /gconfig bypass-role list',
                             }),
                     ],
                 })

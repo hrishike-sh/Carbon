@@ -10,7 +10,7 @@ const {
 } = require('discord.js')
 const { Model } = require('mongoose')
 const giveawayModel = require('../database/models/giveaway')
-const bypassIds = ['825965323500126208', '876460154705555487']
+const server = require('../database/models/settingsSchema')
 module.exports = {
     name: 'interactionCreate',
     once: false,
@@ -103,21 +103,40 @@ module.exports = {
             }
             if (gaw.requirements.length > 0) {
                 const requirements = gaw.requirements
-
+                let bypassIds = []
+                bypassIds =
+                    (await server.findOne({ guildID: button.guildId }))
+                        ?.giveaway_config?.bypass_roles || []
+                let bypass = false
                 let canJoin = true
-
+                let noroles = []
                 for (const req of requirements) {
-                    if (!canJoin) continue
-                    if (!button.member.roles.cache.has(req)) canJoin = false
+                    if (!button.member.roles.cache.has(req)) {
+                        noroles.push(req)
+                        canJoin = false
+                    }
                 }
-                if (button.member.roles.cache.hasAny(...bypassIds))
+                if (
+                    bypassIds.length &&
+                    button.member.roles.cache.hasAny(...bypassIds)
+                ) {
                     canJoin = true
+                    bypass = true
+                }
                 if (!canJoin) {
                     return button.reply({
-                        content:
-                            'You do not meet the requirements to join this giveaway!',
-
-                        ephemeral: true,
+                        embeds: [
+                            new MessageEmbed()
+                                .setTitle(
+                                    `You cannot join this giveaway :frowning2:`
+                                )
+                                .setDescription(
+                                    `You do not have the following roles:\n${noroles
+                                        .map((a) => `<@&${a}>`)
+                                        .join(`\n`)}`
+                                )
+                                .setColor('RED'),
+                        ],
                     })
                 }
             }
@@ -127,12 +146,16 @@ module.exports = {
             button.reply({
                 embeds: [
                     new MessageEmbed()
-                        .setTitle('🎉You have joined the giveaway!')
+                        .setTitle(
+                            bypass
+                                ? `You have bypassed this giveaway with your cool perks :sunglasses:`
+                                : `🎉 You have joined this giveaway 🎉`
+                        )
                         .setDescription(
                             `You will receive a DM if you win.\nThe chances of you winning this giveaway are **${(
                                 (1 / gaw.entries.length) *
                                 100
-                            ).toFixed(3)}%**!`
+                            ).toFixed(2)}%**!`
                         )
                         .setColor('GREEN'),
                 ],
