@@ -73,6 +73,10 @@ module.exports = {
                 `The bot provides a "Thank the Sponsor" button on joined giveaway message. When users click this +1 thank is added. When the giveaway ends, the Sponsor or host(if sponsor is not provided) gets a dm from the bot showing how many thanks they got!`,
                 true
             )
+            .addField(
+                'Examples',
+                `\`\`fh gstart 1h20m 5 12391238123123.12391239123 Nitro Classic --donor 8971238123912312\`\`\n\`\`fh gstart 90m92s 2 none Absolutely Nothing! --donor 128931237123 --msg im so generous\`\`\n\`\`fh gstart 30s 1 none test\`\``
+            )
         if (!args[0])
             return message.reply({
                 embeds: [helpBed],
