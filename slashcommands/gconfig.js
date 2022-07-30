@@ -39,6 +39,42 @@ module.exports = {
                                 .setRequired(true)
                         })
                 })
+        })
+        .addSubcommandGroup((group) => {
+            return group
+                .setName('blacklist-role')
+                .setDescription(
+                    "Add/Remove/View your server's giveaway blacklisted roles!"
+                )
+                .addSubcommand((cmd) => {
+                    return cmd
+                        .setName('list')
+                        .setDescription(
+                            'Lists all the giveaway blacklisted roles.'
+                        )
+                })
+                .addSubcommand((cmd) => {
+                    return cmd
+                        .setName('add')
+                        .setDescription('Add a giveaway blacklist role.')
+                        .addRoleOption((r) => {
+                            return r
+                                .setName('role')
+                                .setDescription('The role you want to add.')
+                                .setRequired(true)
+                        })
+                })
+                .addSubcommand((cmd) => {
+                    return cmd
+                        .setName('remove')
+                        .setDescription('Remove a giveaway blacklist role.')
+                        .addRoleOption((r) => {
+                            return r
+                                .setName('role')
+                                .setDescription('The role you want to remove.')
+                                .setRequired(true)
+                        })
+                })
         }),
     /**
      * @param {CommandInteraction} interaction
@@ -141,6 +177,96 @@ module.exports = {
                             .setColor('RED')
                             .setFooter({
                                 text: 'You can check the list via /gconfig manager-role list',
+                            }),
+                    ],
+                })
+            }
+        } else if (group == 'blacklist-role') {
+            const command = interaction.options.getSubcommand()
+            if (!server.giveaway_config?.blacklisted_roles) {
+                server.giveaway_config.blacklisted_roles = []
+            }
+            if (command == 'list') {
+                return interaction.reply({
+                    embeds: [
+                        new MessageEmbed()
+                            .setTitle('Giveaway Blacklisted Roles')
+                            .setDescription(
+                                'You can change these roles by using /gconfig!'
+                            )
+                            .addField(
+                                'Roles',
+                                server.giveaway_config.blacklisted_roles
+                                    .map((v, i) => `${i + 1}: <@&${v}>`)
+                                    .join('\n') || 'None.'
+                            )
+                            .setColor('RANDOM'),
+                    ],
+                })
+            } else if (command == 'add') {
+                const role = interaction.options.getRole('role')
+
+                if (
+                    server.giveaway_config.blacklisted_roles.includes(role.id)
+                ) {
+                    return interaction.reply({
+                        embeds: [
+                            new MessageEmbed()
+                                .setDescription(
+                                    `${role.toString()} is already in the list.`
+                                )
+                                .setColor('RED'),
+                        ],
+                    })
+                }
+                server.giveaway_config.blacklisted_roles.push(role.id)
+                server.save()
+
+                return interaction.reply({
+                    embeds: [
+                        new MessageEmbed()
+                            .setTitle('Giveaway Blacklisted Role')
+                            .setDescription(
+                                `Added ${role.toString()} to the list!`
+                            )
+                            .setColor('GREEN')
+                            .setFooter({
+                                text: 'You can check the list via /gconfig blacklist-role list',
+                            }),
+                    ],
+                })
+            } else if (command == 'remove') {
+                const role = interaction.options.getRole('role')
+
+                if (
+                    !server.giveaway_config.blacklisted_roles.includes(role.id)
+                ) {
+                    return interaction.reply({
+                        embeds: [
+                            new MessageEmbed()
+                                .setDescription(
+                                    `${role.toString()} is not a giveaway blacklisted role.`
+                                )
+                                .setColor('RED'),
+                        ],
+                    })
+                }
+                server.giveaway_config.blacklisted_roles =
+                    server.giveaway_config.blacklisted_roles.filter(
+                        (r) => r !== role.id
+                    )
+                server.save()
+
+                return interaction.reply({
+                    embeds: [
+                        new MessageEmbed()
+                            .setTitle('Giveaway Blacklist Role')
+                            .setDescription(
+                                `Removed ${role.toString()} from the list!`
+                            )
+                            .setColor('RED')
+                            .setFooter({
+                                text: 'You can check the list via /gconfig blacklist-role list',
                             }),
                     ],
                 })

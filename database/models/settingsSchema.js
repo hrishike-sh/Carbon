@@ -9,6 +9,7 @@ const SettingsSchema = new mongoose.Schema({
     snipes: { type: Boolean },
     giveaway_config: {
         manager_roles: [String],
+        blacklisted_roles: [String],
     },
     lockdownSet: {
         channels: [String],
