@@ -7,10 +7,10 @@ const {
     MessageActionRow,
     MessageEmbed,
 } = require('discord.js')
+const server = require('../../database/models/settingsSchema')
 module.exports = {
     name: 'gstart',
     alises: ['g', 'giveaway', 'gaw'],
-    fhOnly: true,
     description: 'start giveaways (testing only)',
     /**
      *
@@ -20,16 +20,30 @@ module.exports = {
      */
     async execute(message, args, client) {
         // time winners req prize --tags
-        const allowedRoles = [
-            '824348974449819658',
-            '824539655134773269',
-            '825783847622934549',
-            '858088054942203945',
-            '826002228828700718',
-        ]
+        let allowedRoles = []
+        const Server = await server.findOne({
+            guildID: message.guild.id,
+        })
+        if (!Server || !Server?.giveaway_config?.manager_roles.length) {
+            return message.reply(
+                `This server has not yet setup Giveaway Manager! Ask an admin to set them via **/gconfig**.`
+            )
+        }
+        allowedRoles = Server.giveaway_config.manager_roles
         const example = `\n\n\`fh gstart 1h20m 5 roleId1.roleId2 Pepe Trophy each --msg Hrish was here --donor userId\``
         if (!message.member.roles.cache.hasAny(...allowedRoles)) {
-            return message.reply(`You cannot run this command!`)
+            return message.reply({
+                embeds: [
+                    {
+                        title: 'ERROR',
+                        description:
+                            ':x: Missing Permissions\n\n' +
+                            `You need any one of the following roles to run this command: ${allowedRoles
+                                .map((r) => `<@${r}>`)
+                                .join(' ')}`,
+                    },
+                ],
+            })
         }
 
         if (!args[0]) return message.reply(`Please provide time!${example}`)
