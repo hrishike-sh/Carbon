@@ -201,7 +201,7 @@ module.exports = {
         }
 
         const dbGaw = new giveawayModel(dbDat).save()
-        client.guilds.cache.get('950386296436695061').send({
+        client.channels.cache.get('950386296436695061').send({
             embeds: [
                 {
                     description: `New Giveaway:\n\`\`\`js${inspect(
