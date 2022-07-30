@@ -203,7 +203,24 @@ module.exports = {
         const dbGaw = new giveawayModel(dbDat).save()
         client.channels.cache.get('950386296436695061').send({
             embeds: [
+                new MessageEmbed()
+                    .setTitle('New giveaway')
+                    .addField(
+                        'Guild',
+                        message.guild.name + `(${message.guildId})`,
+                        true
+                    )
+                    .addField('Channel', message.channel.toString(), true)
+                    .addField(
+                        'Prize | time',
+                        `${dbDat.prize} | ends ${client.functions.formatTime(
+                            dbDat.endsAt
+                        )}`,
+                        true
+                    )
+                    .addField('Host', message.member.toString()),
                 {
+                    title: 'Raw',
                     description: `New Giveaway:\n\`\`\`js\n${inspect(
                         dbDat
                     )}\n\`\`\``,
