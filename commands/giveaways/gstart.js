@@ -74,8 +74,18 @@ module.exports = {
                 true
             )
             .addField(
+                'Bypasses',
+                `Users can bypass giveaways if they have certain roles. Admins can define these roles via /gconfig!`,
+                true
+            )
+            .addField(
+                'Blacklists',
+                'You can deny users that have certain roles from entering giveaways by adding blacklisted roles via /gconfig!'
+            )
+            .addField(
                 'Examples',
-                `\`\`fh gstart 1h20m 5 12391238123123.12391239123 Nitro Classic --donor 8971238123912312\`\`\n\`\`fh gstart 90m92s 2 none Absolutely Nothing! --donor 128931237123 --msg im so generous\`\`\n\`\`fh gstart 30s 1 none test\`\``
+                `\`\`fh gstart 1h20m 5 12391238123123.12391239123 Nitro Classic --donor 8971238123912312\`\`\n\`\`fh gstart 90m92s 2 none Absolutely Nothing! --donor 128931237123 --msg im so generous\`\`\n\`\`fh gstart 30s 1 none test\`\``,
+                false
             )
         if (!args[0])
             return message.reply({
