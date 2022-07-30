@@ -39,7 +39,7 @@ module.exports = {
                         description:
                             ':x: Missing Permissions\n\n' +
                             `You need any one of the following roles to run this command: ${allowedRoles
-                                .map((r) => `<@${r}>`)
+                                .map((r) => `<@&${r}>`)
                                 .join(' ')}`,
                     },
                 ],
