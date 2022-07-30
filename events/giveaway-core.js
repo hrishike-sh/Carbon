@@ -101,13 +101,14 @@ module.exports = {
                 })
                 return
             }
+            let bypass = false
+
             if (gaw.requirements.length > 0) {
                 const requirements = gaw.requirements
                 let bypassIds = []
                 bypassIds =
                     (await server.findOne({ guildID: button.guildId }))
                         ?.giveaway_config?.bypass_roles || []
-                let bypass = false
                 let canJoin = true
                 let noroles = []
                 for (const req of requirements) {
