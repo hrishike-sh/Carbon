@@ -133,7 +133,6 @@ module.exports = {
                 guildID: interaction.guild.id,
             })
         }
-        const group = interaction.options.getSubcommandGroup()
 
         if (interaction.options?.getSubcommand() ?? 'view') {
             return interaction.reply({
@@ -169,6 +168,7 @@ module.exports = {
                 ],
             })
         }
+        const group = interaction.options?.getSubcommandGroup()
 
         if (group === 'manager-role') {
             const command = interaction.options.getSubcommand()
