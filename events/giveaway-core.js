@@ -138,6 +138,7 @@ module.exports = {
                                 )
                                 .setColor('RED'),
                         ],
+                        ephemeral: true,
                     })
                 }
             }
