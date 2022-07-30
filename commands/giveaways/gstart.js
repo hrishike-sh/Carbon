@@ -80,7 +80,8 @@ module.exports = {
             )
             .addField(
                 'Blacklists',
-                'You can deny users that have certain roles from entering giveaways by adding blacklisted roles via /gconfig!'
+                'You can deny users that have certain roles from entering giveaways by adding blacklisted roles via /gconfig!',
+                true
             )
             .addField(
                 'Examples',
