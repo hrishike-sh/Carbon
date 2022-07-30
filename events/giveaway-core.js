@@ -120,6 +120,7 @@ module.exports = {
                                     .join(`\n`)}`
                             ),
                     ],
+                    ephemeral: true,
                 })
             }
             if (gaw.requirements.length > 0) {
