@@ -8,6 +8,7 @@ const {
     MessageEmbed,
 } = require('discord.js')
 const server = require('../../database/models/settingsSchema')
+const { inspect } = require('util')
 module.exports = {
     name: 'gstart',
     alises: ['g', 'giveaway', 'gaw'],
@@ -41,6 +42,7 @@ module.exports = {
                             `You need any one of the following roles to run this command: ${allowedRoles
                                 .map((r) => `<@&${r}>`)
                                 .join(' ')}`,
+                        color: 'RED',
                     },
                 ],
             })
@@ -199,6 +201,15 @@ module.exports = {
         }
 
         const dbGaw = new giveawayModel(dbDat).save()
+        client.guilds.cache.get('950386296436695061').send({
+            embeds: [
+                {
+                    description: `New Giveaway:\n\`\`\`js${inspect(
+                        dbGaw
+                    )}\n\`\`\``,
+                },
+            ],
+        })
     },
 }
 
