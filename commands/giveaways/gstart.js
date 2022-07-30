@@ -47,8 +47,36 @@ module.exports = {
                 ],
             })
         }
-
-        if (!args[0]) return message.reply(`Please provide time!${example}`)
+        const helpBed = new MessageEmbed()
+            .setTitle('Giveaway Help')
+            .setColor('RANDOM')
+            .setDescription(
+                'To start giveaways you first need to have valid permissions and to add these ask an admin to add certain roles that can create giveaways by /gconfig.\n'
+            )
+            .addField(
+                `Format`,
+                `\`fh g <time> <winners> <requirements> <prize> --donor <user_id> --msg <message>\``,
+                false
+            )
+            .addField(
+                'Requirements',
+                `Requirements should be role ids and multiple role requirements can be seperated by ".".\n\nExample: \`\`fh gstart 24h 1 123456.123457 DN\`\``,
+                true
+            )
+            .addField(
+                `Message`,
+                `You can provide a message from the sponsor via the --msg tag.\n\nExample: \`\`fh gstart 2h 1 none Trophy --msg i scammed a kid\`\``,
+                true
+            )
+            .addField(
+                `Thank feature`,
+                `The bot provides a "Thank the Sponsor" button on joined giveaway message. When users click this +1 thank is added. When the giveaway ends, the Sponsor or host(if sponsor is not provided) gets a dm from the bot showing how many thanks they got!`,
+                true
+            )
+        if (!args[0])
+            return message.reply({
+                embeds: [helpBed],
+            })
         const time = ms.getMilliseconds(args[0])
 
         if (!time)
