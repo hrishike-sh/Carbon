@@ -102,19 +102,33 @@ module.exports = {
                 return
             }
             let bypass = false
-
+            let blRoles = []
+            blRoles =
+                (await server.findOne({ guildID: button.guildId }))
+                    ?.giveaway_config?.blacklisted_roles || []
+            if (
+                blRoles.length &&
+                button.member.roles.cache.hasAny(...blRoles)
+            ) {
+                return button.reply({
+                    embeds: [
+                        new MessageEmbed()
+                            .setTitle('You have been blacklisted.')
+                            .setDescription(
+                                `You have one of these roles which do not allow you to enter giveaways:\n${blRoles
+                                    .map((a) => `<@&${a}>`)
+                                    .join(`\n`)}`
+                            ),
+                    ],
+                })
+            }
             if (gaw.requirements.length > 0) {
                 const requirements = gaw.requirements
                 let bypassIds = []
-                let bl = false
                 bypassIds =
                     (await server.findOne({ guildID: button.guildId }))
                         ?.giveaway_config?.bypass_roles || []
                 let canJoin = true
-                let blRoles = []
-                blRoles =
-                    (await server.findOne({ guildID: button.guildId }))
-                        ?.giveaway_config?.blacklisted_roles || []
                 let noroles = []
                 for (const req of requirements) {
                     if (!button.member.roles.cache.has(req)) {
@@ -129,13 +143,7 @@ module.exports = {
                     canJoin = true
                     bypass = true
                 }
-                if (
-                    blRoles.length &&
-                    button.member.roles.cache.hasAny(...blRoles)
-                ) {
-                    canJoin = false
-                    bl = true
-                }
+
                 if (!canJoin) {
                     return button.reply({
                         embeds: [
@@ -144,13 +152,9 @@ module.exports = {
                                     `You cannot join this giveaway :frowning2:`
                                 )
                                 .setDescription(
-                                    bl
-                                        ? `You probably have one of these roles which are blacklisted from giveaways:\n${blRoles
-                                              .map((a) => `<@&${a}>`)
-                                              .join('\n')}`
-                                        : `You do not have the following roles:\n${noroles
-                                              .map((a) => `<@&${a}>`)
-                                              .join(`\n`)}`
+                                    `You do not have the following roles:\n${noroles
+                                        .map((a) => `<@&${a}>`)
+                                        .join(`\n`)}`
                                 )
                                 .setColor('RED'),
                         ],
