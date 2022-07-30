@@ -149,21 +149,22 @@ module.exports = {
                             'Giveaway Manager Roles',
                             `**__Users with any of these roles can host giveaways__**:\n${server?.giveaway_config.manager_roles
                                 .map((v, i) => `${i + 1}: <@&${v}>`)
-                                .join('\n')}`,
+                                .join('\n')}` || 'Nothing here.',
                             true
                         )
                         .addField(
                             'Blacklisted Roles',
                             `**__Users with any of these roles cannot join giveaways__**:\n${server?.giveaway_config.blacklisted_roles
                                 .map((v, i) => `${i + 1}: <@&${v}>`)
-                                .join('\n')}`,
+                                .join('\n')}` || 'Nothing here.',
                             true
                         )
                         .addField(
                             'Bypass Roles',
                             `**__Users with any of these roles can bypass any giveaways hosted in the server__**:${server?.giveaway_config.bypass_roles
                                 .map((v, i) => `${i + 1}: <@&${v}>`)
-                                .join('\n')}`
+                                .join('\n')}` || 'Nothing here.',
+                            true
                         ),
                 ],
             })
