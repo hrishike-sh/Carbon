@@ -92,6 +92,11 @@ module.exports = {
             return message.reply({
                 embeds: [helpBed],
             })
+        if (args[0].toLowerCase() === 'help') {
+            return message.reply({
+                embeds: [helpBed],
+            })
+        }
         const time = ms.getMilliseconds(args[0])
 
         if (!time)
