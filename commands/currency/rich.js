@@ -1,5 +1,5 @@
 const { Message, MessageEmbed } = require('discord.js')
-const DB = require('../../database/models/currency')
+const DB = require('../../database/models/token')
 module.exports = {
     name: 'rich',
     description: 'Check who the richest is!',
@@ -8,7 +8,7 @@ module.exports = {
      */
     async execute(message) {
         const ALL = await DB.find()
-        const sorted = ALL.sort((a, b) => b.Balance - a.Balance).slice(0, 10)
+        const sorted = ALL.sort((a, b) => b.tokens - a.tokens).slice(0, 10)
         const thisUser = ALL.find((a) => a.userId === message.author.id)
 
         let data = ''
@@ -20,24 +20,26 @@ module.exports = {
                 const index = sorted.indexOf(x) + 1
                 data += `**${getBmotes(
                     index < 10 ? `0${index}` : index
-                )}: ${user.toString()} => ${x.Balance.toLocaleString()} coins**\n`
+                )}: ${user.toString()} => ${x.tokens.toLocaleString()} <:token:1003272629286883450>**\n`
             } else {
                 const index = sorted.indexOf(x) + 1
                 data += `${getBmotes(
                     index < 10 ? `0${index}` : index
-                )}: ${user.toString()} => ${x.Balance.toLocaleString()} coins\n`
+                )}: ${user.toString()} => ${x.tokens.toLocaleString()} <:token:1003272629286883450>.\n`
             }
         }
 
         if (message.channel.id === '834394537249996810') {
-            return message.channel.send('Blacklisted users can\'t use this command')
+            return message.channel.send(
+                "Blacklisted users can't use this command"
+            )
         }
 
         const dbUser = ALL.find((a) => a.userId === message.author.id)
         if (!inLb && dbUser) {
             data += `\n\n${getBmotes(
-                ALL.sort((a, b) => b.Balance - a.Balance).indexOf(dbUser) + 1
-            )}: ${message.author.toString()} => ${dbUser.Balance.toLocaleString()} coins`
+                ALL.sort((a, b) => b.tokens - a.tokens).indexOf(dbUser) + 1
+            )}: ${message.author.toString()} => ${dbUser.tokens.toLocaleString()} <:token:1003272629286883450>.`
         }
 
         return message.reply({
