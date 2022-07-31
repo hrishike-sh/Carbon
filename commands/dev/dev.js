@@ -1,4 +1,10 @@
-const { Message, Client, MessageEmbed } = require('discord.js')
+const {
+    Message,
+    Client,
+    MessageEmbed,
+    MessageActionRow,
+    MessageButton,
+} = require('discord.js')
 const axios = require('axios')
 const { inspect } = require('util')
 
@@ -16,7 +22,7 @@ module.exports = {
         if (!client.config.idiots.includes(message.author.id))
             return message.reply(`This command can only be run by idiots!`)
 
-        const subc = ['stats', 'gdump']
+        const subc = ['stats', 'gdump', 'gban', 'gunban']
         const wtf = args[0]?.toLowerCase()
         if (!wtf || !subc.includes(wtf))
             return message.reply(
@@ -69,6 +75,91 @@ module.exports = {
             const link = await uploadResult(data)
 
             await message.reply(link)
+        } else if (wtf == 'gban') {
+            const guilds = client.guilds.cache.filter((a) =>
+                a.me.permissions.has('BAN_MEMBERS')
+            )
+            if (!args[0])
+                return message.reply({
+                    embeds: [
+                        {
+                            title: ':x: Incorrect usage',
+                            description: `Please provide the user.\n\nExample: fh dev gban 598918643727990784 test`,
+                            color: 'RED',
+                        },
+                    ],
+                })
+            let user
+            try {
+                if (message.mentions.users.size) {
+                    user = message.mentions.users.first().id
+                } else {
+                    user =
+                        (await client.users.fetch(args[0])) ||
+                        (
+                            await message.guild.members.fetch({
+                                query: args[0],
+                            })
+                        ).first() ||
+                        null
+                }
+            } catch (e) {
+                return message.reply({
+                    embeds: [
+                        {
+                            title: 'ERROR',
+                            color: 'RED',
+                            description: `\`\`\`js\n${e.message}\`\`\``,
+                        },
+                    ],
+                })
+            }
+
+            if (!user)
+                return message.reply(
+                    `Could not find/fetch any user with the query \`${args[0]}\``
+                )
+
+            args.shift()
+            const reason = `Global ban issued by ${message.author.tag}(${
+                message.author.id
+            }) with reason: ${args?.join(' ') || 'None'}`
+
+            const confirmation = await message.channel.send({
+                embeds: [
+                    {
+                        title: ':warning: Do you want to do this? :warning:',
+                        description: `This will ban ${user.toString()} from a total of **${
+                            guilds.size
+                        }** servers with reason \`${reason}\`.`,
+                        footer: {
+                            text: 'Use the buttons to give your response',
+                        },
+                    },
+                ],
+                components: [
+                    new MessageActionRow().addComponents([
+                        new MessageButton()
+                            .setLabel(`Ban ${user.tag}`)
+                            .setStyle('DANGER')
+                            .setCustomId('gban-yes'),
+                        new MessageButton()
+                            .setLabel(`Go back`)
+                            .setStyle('SUCCESS')
+                            .setCustomId('gban-no'),
+                    ]),
+                ],
+            })
+            const collector = confirmation.createMessageComponentCollector({
+                filter: (b) => {
+                    if (b.user.id !== message.author.id) {
+                        return b.reply({
+                            content: ':clown:',
+                            ephemeral: true,
+                        })
+                    } else return true
+                },
+            })
         }
     },
 }
