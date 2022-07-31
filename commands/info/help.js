@@ -22,7 +22,7 @@ module.exports = {
                 client.c.commands.find(
                     (c) =>
                         c.name == args[0].toLowerCase ||
-                        c.aliases.includes(args[0].toLowerCase())
+                        (c.aliases && c.aliases.includes(args[0].toLowerCase()))
                 ) ||
                 client.c.slashCommands.find(
                     (c) => c.name == args[0].toLowerCase()
