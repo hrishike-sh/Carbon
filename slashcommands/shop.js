@@ -23,6 +23,14 @@ module.exports = {
                 '<:text_channel:1003342275037888522> Private Channel [Temporary]',
                 `\` 💲 \` **Price** - 25,000 ${token}\n\` ⏰ \` **Time** - 7 Days\n\` 🔄 \` **Upkeep** - 500 ${token} / Day`
             )
+            .addField(
+                `<:role:1003345268751741099> Custom Role [Temporary]`,
+                `\` 💲 \` **Price** - 50,000 ${token}\n\` ⏰ \` **Time** - 7 Days\n\` 🔄 \` **Upkeep** - 5000 ${token} / Week`
+            )
+            .addField(
+                `🫂 Fellowship Invites [Permanent]`,
+                `\` 💲 \` **Price** - 70,000 ${token}\n\` ⏰ \` **Time** - ♾`
+            )
 
         interaction.reply({
             embeds: [Shop],
