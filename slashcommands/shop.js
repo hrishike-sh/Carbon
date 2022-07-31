@@ -31,6 +31,9 @@ module.exports = {
                 `🫂 Fellowship Invites [Permanent]`,
                 `\` 💲 \` **Price** - 70,000 ${token}\n\` ⏰ \` **Time** - ♾`
             )
+            .setFooter({
+                text: 'Your perks may be revoked by an admin if the system is abused in any way.',
+            })
 
         interaction.reply({
             embeds: [Shop],
