@@ -163,8 +163,17 @@ module.exports = {
                     })
                 }
             }
-            gaw.entries.push(button.user.id)
-            gaw.save()
+
+            await giveawayModel.findOneAndUpdate(
+                {
+                    messageId: gaw.messageId,
+                },
+                {
+                    $push: {
+                        entries: `${button.user.id}`,
+                    },
+                }
+            )
 
             button.reply({
                 embeds: [
