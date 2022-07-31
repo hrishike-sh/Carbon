@@ -35,7 +35,7 @@ module.exports = {
             const embed = new MessageEmbed()
                 .setTitle(command.name || command?.data.name)
                 .setColor('RANDOM')
-            if (command.options) {
+            if (command.data) {
                 embed.setTitle(
                     `<:slash_command:1003221544203468820> ${embed.title}`
                 )
@@ -76,6 +76,9 @@ module.exports = {
             .setColor('GREEN')
             .setDescription(`Select a Category to see the commands!`)
             .setThumbnail(client.user.displayAvatarURL())
+            .setFooter({
+                text: 'Use fh help [command/alias] for more info!',
+            })
 
         const selection = new MessageSelectMenu()
             .setPlaceholder('Choose a Category...')
