@@ -57,7 +57,7 @@ module.exports = {
                 if (command.usage) {
                     embed.addField(
                         'Usage',
-                        `\`\`\`yaml\n${command.usage}\`\`\``
+                        `\`\`\`yaml\nfh ${command.name} ${command.usage}\`\`\``
                     )
                 }
                 if (command.fhOnly) {
