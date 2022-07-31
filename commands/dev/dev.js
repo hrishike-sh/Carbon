@@ -169,7 +169,7 @@ module.exports = {
                         c.setDisabled()
                     })
                     button.message.embeds[0].setTitle('Action Cancelled')
-                    button.message.edit({
+                    await button.message.edit({
                         components: button.message.components,
                         embeds: button.message.embeds,
                     })
