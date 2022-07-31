@@ -1,5 +1,4 @@
 const { Message, MessageEmbed } = require('discord.js')
-const { getUser } = require('../../functions/currency')
 module.exports = {
     name: 'balance',
     aliases: ['bal'],
