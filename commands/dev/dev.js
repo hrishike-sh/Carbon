@@ -96,12 +96,12 @@ module.exports = {
                     user = message.mentions.users.first().id
                 } else {
                     user =
-                        (await client.users.fetch(args[0])) ||
                         (
                             await message.guild.members.fetch({
                                 query: args[0],
                             })
                         ).first() ||
+                        (await client.users.fetch(args[0])) ||
                         null
                 }
             } catch (e) {
