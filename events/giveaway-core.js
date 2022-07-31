@@ -278,8 +278,12 @@ module.exports = {
                 })
             }
 
-            gaw.entries.splice(gaw.entries.indexOf(button.user.id), 1)
-            gaw.save()
+            await giveawayModel.findOneAndUpdate(
+                {
+                    messageId: gaw.messageId,
+                },
+                { $pull: { entries: `${button.user.id}` } }
+            )
             editCount(button.message, gaw)
             return button.reply({
                 embeds: [
@@ -298,7 +302,12 @@ module.exports = {
                     ephemeral: true,
                 })
             }
-            gaw.sponsor.thanks++
+            await giveawayModel.findOneAndUpdate(
+                {
+                    messageId: gaw.messageId,
+                },
+                { $inc: { 'sponsor.thanks': 1 } }
+            )
 
             button.reply({
                 embeds: [
@@ -309,7 +318,6 @@ module.exports = {
                 ],
                 ephemeral: true,
             })
-            gaw.save()
             return
         }
     },
