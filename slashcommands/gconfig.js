@@ -134,7 +134,7 @@ module.exports = {
             })
         }
 
-        if (interaction.options?.getSubcommand() ?? 'view') {
+        if (interaction.options?.getSubcommand() == 'view') {
             return interaction.reply({
                 embeds: [
                     new MessageEmbed()
