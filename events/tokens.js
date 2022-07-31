@@ -41,6 +41,7 @@ module.exports = {
         user.messageCount++
         user.lastTalked = new Date().getTime()
         if (user.messageCount > 9) {
+            user.lastTalked += 30 * 60 * 1000
             user.messagecount = 0
             const amt = Math.ceil(Math.random() * 5)
             return await addTokens(userId, amt)
