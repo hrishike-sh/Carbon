@@ -185,7 +185,7 @@ module.exports = {
                         )
                         .setDescription(
                             `You will receive a DM if you win.\nThe chances of you winning this giveaway are **${(
-                                (1 / gaw.entries.length) *
+                                (1 / (gaw.entries.length + 1)) *
                                 100
                             ).toFixed(2)}%**!`
                         )
@@ -326,7 +326,7 @@ const editCount = async (msg, model) => {
     beingEdited.set(msg.id, true)
     await msg.client.functions.sleep(5000)
     msg.components[0].components[0].setLabel(
-        model.entries.length.toLocaleString()
+        (model.entries.length + 1).toLocaleString()
     )
     await msg.edit({
         components: msg.components,
