@@ -79,6 +79,7 @@ module.exports = {
             const guilds = client.guilds.cache.filter((a) =>
                 a.me.permissions.has('BAN_MEMBERS')
             )
+            args.shift()
             if (!args[0])
                 return message.reply({
                     embeds: [
