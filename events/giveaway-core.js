@@ -187,9 +187,12 @@ module.exports = {
                             `You will receive a DM if you win.\nThe chances of you winning this giveaway are **${(
                                 (1 / (gaw.entries.length + 1)) *
                                 100
-                            ).toFixed(2)}%**!`
+                            ).toFixed(2)}%***!`
                         )
-                        .setColor('GREEN'),
+                        .setColor('GREEN')
+                        .setFooter({
+                            text: '*Winning chance may change overtime!',
+                        }),
                 ],
                 components: [
                     new MessageActionRow().addComponents([

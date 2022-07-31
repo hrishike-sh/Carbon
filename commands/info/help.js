@@ -17,7 +17,59 @@ module.exports = {
      * @param {String[]} args
      */
     async execute(message, args, client) {
-        if (args) {
+        if (args[0]) {
+            const command =
+                client.c.commands.find(
+                    (c) =>
+                        c.name == args[0].toLowerCase ||
+                        c.aliases.includes(args[0].toLowerCase())
+                ) ||
+                client.c.slashCommands.find(
+                    (c) => c.name == args[0].toLowerCase()
+                )
+            if (!command) {
+                return message.reply(
+                    `No command \`${args[0].toLocaleLowerCase()}\` found.`
+                )
+            }
+            const embed = new MessageEmbed()
+                .setTitle(command.name || command?.data.name)
+                .setColor('RANDOM')
+            if (command.options) {
+                embed.setTitle(
+                    `<:slash_command:1003221544203468820> ${embed.title}`
+                )
+                embed.setDescription(command.data.description).setFooter({
+                    text: 'This command is a slash command',
+                })
+            } else {
+                if (command.description) {
+                    embed.setDescription(
+                        command.description || command?.data.description
+                    )
+                }
+                if (command.aliases) {
+                    embed.addField(
+                        'Aliases',
+                        command.aliases.map((c) => `**\`${c}\`**`).join(', ')
+                    )
+                }
+                if (command.usage) {
+                    embed.addField(
+                        'Usage',
+                        `\`\`\`yaml\n${command.usage}\`\`\``
+                    )
+                }
+                if (command.fhOnly) {
+                    embed.setFooter({
+                        text: 'Note: This command can only be used in FightHub!',
+                    })
+                }
+            }
+
+            return message.reply({
+                embeds: [embed],
+            })
         }
         const embed = new MessageEmbed()
             .setTitle('❓ Help Command')
