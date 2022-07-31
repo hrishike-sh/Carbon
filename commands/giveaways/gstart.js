@@ -12,7 +12,9 @@ const { inspect } = require('util')
 module.exports = {
     name: 'gstart',
     alises: ['g', 'giveaway', 'gaw'],
-    description: 'start giveaways (testing only)',
+    description:
+        'Host a giveaway in your server!\n\nUse `fh gstart help` for more info!',
+    category: 'Giveaways',
     /**
      *
      * @param {Message} message
