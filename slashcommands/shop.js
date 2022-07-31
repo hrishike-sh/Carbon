@@ -49,26 +49,29 @@ module.exports = {
             .addOptions([
                 {
                     label: 'Buy a Private Channel',
-                    value:
+                    description:
                         bal1?.tokens > 25000
                             ? 'Select this to buy a Private Channel!'
                             : 'You cannot afford this purchase!',
                     emoji: '1003342275037888522',
+                    value: 'buy-channel',
                 },
                 {
                     label: 'Buy a Custom Role',
-                    value:
+                    description:
                         bal1?.tokens > 50000
                             ? 'Select this to buy a Custom Role!'
                             : 'You cannot afford this purchase!',
+                    value: 'buy-role',
                     emoji: '1003345268751741099',
                 },
                 {
                     label: 'Buy a Fellowship Invite',
-                    value:
+                    description:
                         bal1?.tokens > 70000
                             ? 'Select this to buy a Fellowship Invite!'
                             : 'You cannot afford this purchase!',
+                    value: 'buy-invite',
                     emoji: '🫂',
                 },
             ])
