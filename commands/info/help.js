@@ -25,7 +25,7 @@ module.exports = {
                         (c.aliases && c.aliases.includes(args[0].toLowerCase()))
                 ) ||
                 client.c.slashCommands.find(
-                    (c) => c.name == args[0].toLowerCase()
+                    (c) => c.data.name == args[0].toLowerCase()
                 )
             if (!command) {
                 return message.reply(
