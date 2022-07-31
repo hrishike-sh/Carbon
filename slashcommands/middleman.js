@@ -1,5 +1,9 @@
 const { SlashCommandBuilder } = require('@discordjs/builders')
-const { CommandInteraction } = require('discord.js')
+const {
+    CommandInteraction,
+    MessageActionRow,
+    MessageButton,
+} = require('discord.js')
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -35,18 +39,59 @@ module.exports = {
             content: 'Middleman request sent!',
             ephemeral: true,
         })
-        interaction.channel.send({
+        const msg = await interaction.channel.send({
             content: `<@&824329689534431302> ${guildChannel.toString()}`,
             embeds: [
                 {
                     title: 'Middleman Request! 🙋‍♂️',
                     color: 'YELLOW',
                     description: `${interaction.user.toString()} requests for a middleman in ${guildChannel.toString()}!`,
+                    footer: {
+                        text: 'This can be accepted within 5 minutes.',
+                    },
                 },
+            ],
+            components: [
+                new MessageActionRow().addComponents([
+                    new MessageButton()
+                        .setLabel('Accept')
+                        .setStyle('PRIMARY')
+                        .setCustomId('mm-accept'),
+                ]),
             ],
             allowedMentions: {
                 parse: ['roles'],
             },
+        })
+
+        const collector = msg.createMessageComponentCollector({
+            filter: (b) => {
+                if (!b.member.roles.cache.has('824329689534431302')) {
+                    return b.reply({
+                        content: `You need to have the <@&824329689534431302> to accept this!`,
+                        ephemeral: true,
+                    })
+                } else return true
+            },
+            idle: 5 * 60 * 1000,
+        })
+        collector.on('collect', async (button) => {
+            button.reply({
+                content: `${button.user.toString()} Please check ${channel.toString()}`,
+            })
+            collector.stop()
+            channel.send(
+                `${interaction.user.toString()} your middleman has arrived! Please send your stuff to ${button.user.toString()}`
+            )
+        })
+
+        collector.on('end', () => {
+            msg.components[0].components.forEach((c) => {
+                c.setDisabled()
+            })
+            msg.edit({
+                components: msg.components,
+            })
         })
     },
 }
