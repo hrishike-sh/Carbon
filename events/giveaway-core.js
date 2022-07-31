@@ -312,7 +312,9 @@ module.exports = {
             button.reply({
                 embeds: [
                     {
-                        description: `Thank you for thanking them!\nThey have been thanked ${gaw.sponsor.thanks.toLocaleString()} times.`,
+                        description: `Thank you for thanking them!\nThey have been thanked ${(
+                            gaw.sponsor.thanks + 1
+                        ).toLocaleString()} times.`,
                         color: 'LUMINOUS_VIVID_PINK', // what color is this
                     },
                 ],
