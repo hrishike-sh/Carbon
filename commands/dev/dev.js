@@ -132,10 +132,11 @@ module.exports = {
                         title: ':warning: Do you want to do this? :warning:',
                         description: `This will ban ${user.toString()} from a total of **${
                             guilds.size
-                        }** servers with reason \`${reason}\`.`,
+                        }** servers with reason: \`${reason}\`.`,
                         footer: {
                             text: 'Use the buttons to give your response',
                         },
+                        color: 'RED',
                     },
                 ],
                 components: [
@@ -160,6 +161,72 @@ module.exports = {
                         })
                     } else return true
                 },
+            })
+
+            collector.on('collect', async (button) => {
+                if (button.customId.includes('no')) {
+                    button.message.components[0].components.forEach((c) => {
+                        c.setDisabled()
+                    })
+                    button.message.embeds[0].setTitle('Action Cancelled')
+                    button.message.edit({
+                        components: button.message.components,
+                        embeds: button.message.embeds,
+                    })
+                    button.reply({
+                        content: ':expressionless:',
+                        ephemeral: true,
+                    })
+                    collector.stop()
+                } else {
+                    collector.stop()
+                    let failed = []
+                    let success = []
+                    guilds.forEach(async (guild) => {
+                        await guild.bans
+                            .create(user.id, {
+                                reason,
+                            })
+                            .then((b) => {
+                                success.push(`Banned from ${guild.name}`)
+                            })
+                            .catch((e) => {
+                                failed.push(
+                                    `Failed to ban from: ${guild.name}\nError: ${e.message}`
+                                )
+                            })
+                    })
+                    button.message.components[0].components.forEach((c) => {
+                        c.setDisabled()
+                    })
+                    button.message.embeds[0].setTitle('Action Completed')
+                    button.message.edit({
+                        components: button.message.components,
+                        embeds: button.message.embeds,
+                    })
+                    button.deferUpdate()
+                    const embed = new MessageEmbed()
+                        .setTitle('Global Ban Info')
+                        .setDescription(
+                            `${user.toString()} was banned from ${
+                                success.length
+                            }/${success.length + failed.length} guilds.`
+                        )
+                        .setColor('YELLOW')
+                        .setTimestamp()
+                    const successBed = new MessageEmbed()
+                        .setDescription(
+                            `\`\`\`css\n${success.join('\n')}\`\`\``
+                        )
+                        .setColor('GREEN')
+                    const failBed = new MessageEmbed().setDescription(
+                        `\`\`\`css\n${failed.join('\n\n')}\`\`\``
+                    )
+
+                    await button.channel.send({
+                        embeds: [embed, successBed, failBed],
+                    })
+                }
             })
         }
     },
