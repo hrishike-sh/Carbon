@@ -2,6 +2,7 @@ const { SlashCommandBuilder } = require('@discordjs/builders')
 const { CommandInteraction, Client, MessageEmbed } = require('discord.js')
 const SETTINGS = require('../database/models/settingsSchema')
 module.exports = {
+    global: true,
     data: new SlashCommandBuilder()
         .setName('snipe-config')
         .setDescription('Configure the snipe settings for your server!')
