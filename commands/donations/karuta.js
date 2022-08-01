@@ -46,7 +46,7 @@ module.exports = {
         const target = message.mentions.members?.first() || message.member
 
         const all = await EventModel.find()
-        const dbUser = all.find((a) => a.userId === target.id) || null
+        const dbUser = all.find((a) => a.userId === target.id) || { tickets: 0 }
         let donoEmbed = new MessageEmbed()
         let donated = true
 
