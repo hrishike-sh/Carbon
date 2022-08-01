@@ -6,7 +6,10 @@ const SettingsSchema = new mongoose.Schema({
     logChannel: { type: String },
     gtnRole: { type: [String] },
     disabledDrop: { type: [String] },
-    snipes: { type: Boolean },
+    snipe_config: {
+        enabled: true,
+        allowed_roles: [String],
+    },
     giveaway_config: {
         manager_roles: [String],
         blacklisted_roles: [String],

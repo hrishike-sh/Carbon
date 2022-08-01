@@ -5,6 +5,7 @@ const {
     MessageEmbed,
     MessageSelectMenu,
     MessageActionRow,
+    SelectMenuInteraction,
 } = require('discord.js')
 const token = `<:token:1003272629286883450>`
 const db = require('../database/models/token')
@@ -88,12 +89,19 @@ module.exports = {
                         content: 'This is not your menu',
                         ephemeral: true,
                     })
-                } else {
-                    b.reply({
-                        content: 'test',
-                    })
-                }
+                } else return true
             },
+        })
+
+        collector.on('collect', async (button) => {
+            const what = button.value[0]
+            if (what.includes('channel')) {
+                // channel
+            } else if (what.includes('role')) {
+                // role
+            } else if (what.includes('invite')) {
+                // invite
+            }
         })
     },
 }
