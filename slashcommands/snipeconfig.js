@@ -11,7 +11,7 @@ module.exports = {
                 .setDescription('Roles which can use the snipe command!')
                 .addSubcommand((cmd) => {
                     return cmd
-                        .setName('view')
+                        .setName('list')
                         .setDescription(
                             'View all the roles that can run the `fh snipe` and `fh esnipe` command.'
                         )
