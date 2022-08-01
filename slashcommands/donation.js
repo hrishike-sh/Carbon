@@ -18,7 +18,8 @@ module.exports = {
             return option
                 .setName('type')
                 .setDescription('Where do you want to add their donations to?')
-                .addChoice('30k Event Donation', '30k')
+                .addChoice('30k Dank Donation', '30k')
+                .addChoice('30k Karuta Donation', '30kk')
                 .addChoice('Main Donation', 'main_dono')
                 .addChoice('Grinder Donation', 'grind_dono')
                 .setRequired(true)
@@ -302,6 +303,82 @@ module.exports = {
                                     {
                                         name: 'Total donated for 30k Event:',
                                         value: d.amount.toLocaleString(),
+                                        inline: true,
+                                    },
+                                ],
+                            },
+                        ],
+                    })
+                }
+
+                d.save()
+            case '30kk':
+                if (!interaction.member.roles.cache.hasAny(...roles.maindono)) {
+                    return interaction.reply({
+                        content: `You must have one of these roles to run the command:\n${roles.maindono
+                            .map((v) => `<@&${v}>`)
+                            .join(' ')}`,
+                        ephemeral: true,
+                    })
+                }
+
+                let D = await EventDonoModel.findOne({
+                    userId: data.user.id,
+                })
+
+                if (!D) {
+                    D = new EventDonoModel({
+                        userId: data.user.id,
+                        tickets: 0,
+                    })
+                }
+
+                if (data.action === 'dono_add') {
+                    D.tickets += data.amount
+
+                    interaction.reply({
+                        embeds: [
+                            {
+                                title: 'Donation added!',
+                                color: 'GREEN',
+                                timestamp: new Date(),
+                                footer: {
+                                    text: 'Thank you for donating!',
+                                    iconURL: data.user.displayAvatarURL(),
+                                },
+                                fields: [
+                                    {
+                                        name: 'Amount added:',
+                                        value: data.amount.toLocaleString(),
+                                        inline: true,
+                                    },
+                                    {
+                                        name: 'Total Ticekts donated for 30k Event:',
+                                        value: D.tickets.toLocaleString(),
+                                        inline: true,
+                                    },
+                                ],
+                            },
+                        ],
+                    })
+                } else if (data.action === 'dono_remove') {
+                    D.tickets -= data.amount
+
+                    interaction.reply({
+                        embeds: [
+                            {
+                                title: 'Donation removed.',
+                                color: 'RED',
+                                timestamp: new Date(),
+                                fields: [
+                                    {
+                                        name: 'Amount removed:',
+                                        value: data.amount.toLocaleString(),
+                                        inline: true,
+                                    },
+                                    {
+                                        name: 'Total Tickets donated for 30k Event:',
+                                        value: D.tickets.toLocaleString(),
                                         inline: true,
                                     },
                                 ],
