@@ -60,7 +60,7 @@ module.exports = {
                 .setColor('RANDOM')
                 .addField(
                     'Tickets donated:',
-                    `${dbUser.tickets.toLocaleString()} 🎟️`,
+                    `${dbUser?.tickets.toLocaleString() || 0} 🎟️`,
                     true
                 )
                 .addField(
