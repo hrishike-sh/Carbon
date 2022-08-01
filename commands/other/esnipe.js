@@ -6,6 +6,7 @@ const {
     MessageButton,
     MessageActionRow,
 } = require('discord.js')
+const settings = require('../../database/models/settingsSchema')
 module.exports = {
     name: 'esnipe',
     aliases: ['editsnipe'],
@@ -13,37 +14,41 @@ module.exports = {
     description: 'Dank Memer esnipe but better',
     async execute(message, args, client) {
         const sniped = client.snipes.esnipes.get(message.channel.id)
-        if (message.guild.id === client.config.guildId) {
-            if (
-                !message.member.roles.cache.some(
-                    (role) => role.id === '839803117646512128'
-                ) &&
-                !message.member.roles.cache.some(
-                    (role) => role.id === '826196972167757875'
-                ) &&
-                !message.member.roles.cache.some(
-                    (role) => role.id === '825283097830096908'
-                ) &&
-                !message.member.roles.cache.some(
-                    (role) => role.id === '824687393868742696'
-                ) &&
-                !message.member.roles.cache.some(
-                    (role) => role.id === '828048225096826890'
-                ) &&
-                !message.member.roles.some(
-                    (role) => role.id === '824348974449819658'
-                ) &&
-                !message.member.roles.cache.some(
-                    (role) => role.id === '969870378811916408'
-                ) &&
-                !message.member.roles.cache.some(
-                    (role) => role.id === '999911429421408346'
-                )
-            ) {
-                return message.channel.send(
-                    'You do not have permission to use this command, read <#843943148945276949> for more info.'
-                )
-            }
+        const server = await settings.findOne({
+            guildID: message.guild.id,
+        })
+
+        if (!server || !server.snipe_config?.allowed_roles.length) {
+            return message.reply(
+                'This server has not yet setup the Snipe Feature.\nPlease ask an admin to run `/snipe-config` to set it up. If you cant see the slash commands please reinvite the bot using `fh invite`.'
+            )
+        }
+
+        if (!server.snipe_config.enabled) {
+            return message.reply(
+                'Snipes are disabled in this server! (/snipe-config)'
+            )
+        }
+
+        if (
+            server.snipe_config.allowed_roles.length &&
+            !message.member.roles.cache.hasAny(
+                ...server.snipe_config.allowed_roles
+            )
+        ) {
+            return message.reply({
+                embeds: [
+                    {
+                        title: 'No permission!',
+                        description:
+                            'You need to have one of the following roles to use this command:' +
+                            `\n${server.snipe_config.allowed_roles.map(
+                                (a) => `<:bdash:919555889239822477><@&${a}>`
+                            )}`,
+                        color: 'RED',
+                    },
+                ],
+            })
         }
 
         if (!sniped || sniped == undefined) {
