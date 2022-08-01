@@ -16,7 +16,7 @@ module.exports = {
             userId: message.author.id,
         })
 
-        if (userSettings.messagesettings?.snipesDisabled === true) return
+        if (userSettings?.messagesettings?.snipesDisabled === true) return
 
         let snipes = client.snipes.snipes.get(message.channel.id) || []
 
