@@ -7,7 +7,7 @@ const SettingsSchema = new mongoose.Schema({
     gtnRole: { type: [String] },
     disabledDrop: { type: [String] },
     snipe_config: {
-        enabled: true,
+        enabled: Boolean,
         allowed_roles: [String],
     },
     giveaway_config: {
