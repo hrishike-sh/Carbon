@@ -49,9 +49,11 @@ module.exports = {
                         title: 'No permission!',
                         description:
                             'You need to have one of the following roles to use this command:' +
-                            `\n${server.snipe_config.allowed_roles.map(
-                                (a) => `<:bdash:919555889239822477><@&${a}>`
-                            )}`,
+                            `\n${server.snipe_config.allowed_roles
+                                .map(
+                                    (a) => `<:bdash:919555889239822477><@&${a}>`
+                                )
+                                .join('\n')}`,
                         color: 'RED',
                     },
                 ],
