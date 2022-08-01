@@ -254,6 +254,7 @@ module.exports = {
                     d = new EventDonoModel({
                         userId: data.user.id,
                         amount: 0,
+                        tickets: 0,
                     })
                 }
 
@@ -387,7 +388,7 @@ module.exports = {
                     })
                 }
 
-                d.save()
+                D.save()
         }
     },
 }
