@@ -31,8 +31,8 @@ const emo_jis = [
     '<:black1:919554266929197117><:bo:919555310228742144>',
 ]
 module.exports = {
-    name: '30kkaruta',
-    aliases: ['karu'],
+    name: 'karuta',
+    aliases: ['karu', '30kkaruta'],
     usage: `<USER>`,
     description: 'Check your donation/leaderboard for the 30k event! [Karuta]',
     category: 'Donation',
