@@ -312,7 +312,7 @@ module.exports = {
                     })
                 }
 
-                d.save()
+                return d.save()
             case 'karuta':
                 if (!interaction.member.roles.cache.hasAny(...roles.maindono)) {
                     return interaction.reply({
