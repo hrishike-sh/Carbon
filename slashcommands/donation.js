@@ -354,7 +354,7 @@ module.exports = {
                                         inline: true,
                                     },
                                     {
-                                        name: 'Total Ticekts donated for 30k Event:',
+                                        name: 'Total Tickets donated for 30k Event:',
                                         value: D.tickets.toLocaleString(),
                                         inline: true,
                                     },
