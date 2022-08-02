@@ -19,7 +19,7 @@ module.exports = {
                 .setName('type')
                 .setDescription('Where do you want to add their donations to?')
                 .addChoice('30k Dank Donation', '30k')
-                .addChoice('30k Karuta Donation', '30kk')
+                .addChoice('30k Karuta Donation', 'karuta')
                 .addChoice('Main Donation', 'main_dono')
                 .addChoice('Grinder Donation', 'grind_dono')
                 .setRequired(true)
@@ -313,7 +313,7 @@ module.exports = {
                 }
 
                 d.save()
-            case '30kk':
+            case 'karuta':
                 if (!interaction.member.roles.cache.hasAny(...roles.maindono)) {
                     return interaction.reply({
                         content: `You must have one of these roles to run the command:\n${roles.maindono
