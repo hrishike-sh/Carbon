@@ -35,7 +35,6 @@ module.exports = {
                 .setAuthor({
                     name: `${user.tag} - ${user.id}`,
                     iconURL: user.displayAvatarURL({ dynamic: true }),
-                    timestamp: new Date(),
                 })
                 .setThumbnail(user.displayAvatarURL({ dynamic: true }))
                 .setDescription(
