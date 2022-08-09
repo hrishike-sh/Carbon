@@ -147,9 +147,9 @@ module.exports = {
                 dbUser.save()
                 break
             case 'grind_dono':
-                if (!interaction.memberPermissions.has('ADMINISTRATOR')) {
+                if (!interaction.memberPermissions.has('BAN_MEMBERS')) {
                     return interaction.reply({
-                        content: `You need to have \`ADMINISTRATOR\` to run this command`,
+                        content: `You need to have \`BAN_MEMBERS\` to run this command`,
                         ephemeral: true,
                     })
                 }
