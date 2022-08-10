@@ -92,7 +92,7 @@ module.exports = {
                 .setTimestamp()
                 .setColor('RANDOM')
             ;(await member.user.createDM()).send({
-                content: "Your HL was triggered in " + message.channel.toString()
+                content: "Your HL was triggered in " + message.channel.toString(),
                 embeds: [embed],
                 components: [
                     new MessageActionRow().addComponents([
