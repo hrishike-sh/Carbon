@@ -12,7 +12,7 @@ module.exports = {
      * @param {Client} client
      */
     async execute(message, args, client) {
-        if (!message.member.permissions.has('ADMINISTRATOR')) return
+        if (!message.member.permissions.has('BAN_MEMBERS')) return
 
         if (!args[0] || !this.subcommands.includes(args[0]))
             return message.reply('Not a valid sub-command')
