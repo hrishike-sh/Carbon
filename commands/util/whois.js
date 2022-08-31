@@ -23,13 +23,13 @@ module.exports = {
 
             const Mutuals = []
             for await (const guild of client.guilds.cache) {
-                let member
                 try {
-                    member = await guild.members.fetch(user.id)
+                    if (!(await guild.members.fetch(user.id))) {
+                        continue
+                    }
                 } catch (e) {
                     continue
                 }
-                if (!member) continue
 
                 Mutuals.push(
                     `**${guild.name}** (\`${
