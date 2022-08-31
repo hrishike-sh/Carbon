@@ -22,7 +22,7 @@ module.exports = {
                 message.author
 
             const Mutuals = []
-            for (const guild of client.guilds.cache) {
+            for await (const guild of client.guilds.cache) {
                 let member
                 try {
                     member = await guild.members.fetch(user.id)
