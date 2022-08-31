@@ -22,9 +22,9 @@ module.exports = {
                 message.author
 
             const Mutuals = []
-            for await (const guild of client.guilds.cache) {
+            for await (const guild of client.guilds.cache.values()) {
                 try {
-                    if (guild.members.cache.has(user.id)) {
+                    if (await guild.member.fetch(user.id)) {
                         Mutuals.push(
                             `**${guild.name}** (\`${
                                 guild.id
