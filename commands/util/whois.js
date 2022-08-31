@@ -20,8 +20,15 @@ module.exports = {
                     (user) => user.username === args[0] || user.tag === args[0]
                 ) ||
                 message.author
-
+            if (user.bot) return message.reply('no')
             const Mutuals = []
+            const mess = await message.reply({
+                embeds: [
+                    {
+                        description: `Fetching ${client.guilds.cache.size} guilds...`,
+                    },
+                ],
+            })
             for await (const guild of client.guilds.cache.values()) {
                 try {
                     if (await guild.members.fetch(user.id)) {
@@ -51,7 +58,7 @@ module.exports = {
                 )
                 .setColor('RANDOM')
 
-            return message.reply({
+            return mess.edit({
                 embeds: [embed],
             })
         } catch (error) {
