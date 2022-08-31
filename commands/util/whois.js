@@ -1,10 +1,16 @@
-const { Formatters, MessageEmbed } = require('discord.js')
+const { Formatters, MessageEmbed, Client, Message } = require('discord.js')
 
 module.exports = {
     name: 'whois',
     aliases: ['wi'],
     description: 'Shows mutual guilds with the bot and information about them.',
     usage: '[user]',
+    /**
+     *
+     * @param {Message} message
+     * @param {String[]} args
+     * @param {Client} client
+     */
     async execute(message, args, client) {
         try {
             const user =
@@ -15,22 +21,22 @@ module.exports = {
                 ) ||
                 message.author
 
-            const mutuals = new Array()
-
-            const guilds = client.guilds.cache.values()
-
-            for (const guild of guilds) {
-                if (guild.members.cache.has(user.id)) {
-                    mutuals.push(
-                        `${Formatters.inlineCode(guild.id)} - ${Formatters.bold(
-                            guild.name
-                        )}`
-                    )
-                } else {
+            const Mutuals = []
+            for (const guild of client.guilds.cache) {
+                let member
+                try {
+                    member = await guild.members.fetch(user.id)
+                } catch (e) {
                     continue
                 }
-            }
+                if (!member) continue
 
+                Mutuals.push(
+                    `**${guild.name}** (\`${
+                        guild.id
+                    }\`) *${guild.memberCount.toLocaleString()} members*`
+                )
+            }
             const embed = new MessageEmbed()
                 .setAuthor({
                     name: `${user.tag} - ${user.id}`,
@@ -38,11 +44,15 @@ module.exports = {
                 })
                 .setThumbnail(user.displayAvatarURL({ dynamic: true }))
                 .setDescription(
-                    `${Formatters.bold('Mutual Guilds')}\n${mutuals.join('\n')}`
+                    `Account was created ${client.functions.formatTime(
+                        user.createdAt
+                    )}`
                 )
                 .setColor('RANDOM')
 
-            await message.channel.send({ embeds: [embed] })
+            return message.reply({
+                embeds: [embed],
+            })
         } catch (error) {
             console.error(error)
         }
