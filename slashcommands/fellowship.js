@@ -367,7 +367,7 @@ module.exports = {
                 data.channel.permissionOverwrites.delete(invite)
             })
             dbUser.invited = []
-
+            fellowship.save()
             return interaction.reply('Your invites have been cleared.')
         } else if (command == 'view') {
             const channel = interaction.options.getChannel('fellowship')
