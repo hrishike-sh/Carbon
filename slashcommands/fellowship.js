@@ -134,6 +134,17 @@ module.exports = {
                         )
                         .setRequired(true)
                 })
+        })
+        .addSubcommand((cmd) => {
+            return cmd
+                .setName('clear_invites')
+                .setDescription('Clear your fellowship invites.')
+                .addChannelOption((c) => {
+                    return c
+                        .setName('channel')
+                        .setDescription('Your fellowship channel.')
+                        .setRequired(true)
+                })
         }),
     /**
      *
@@ -326,6 +337,38 @@ module.exports = {
             interaction.reply(
                 `Done! Removed ${data.user.toString()} from your fellowship ${data.channel.toString()}!`
             )
+        } else if (command == 'clear_invites') {
+            const data = {
+                channel: interaction.options.getChannel('channel'),
+            }
+            const fellowship = await Database.findOne({
+                channelId: data.channel.id,
+            })
+            if (!fellowship)
+                return interaction.reply({
+                    content: "That's not even a valid fellowship.",
+                })
+
+            const owner = fellowship.ownerIds.includes(interaction.user.id)
+            if (!owner)
+                return interaction.reply(
+                    'You are not an owner of that fellowship!'
+                )
+
+            const dbUser =
+                fellowship.owners.one.userId == interaction.user.id
+                    ? fellowship.owners.one
+                    : fellowship.owners.two.userId == interaction.user.id
+                    ? fellowship.owners.two
+                    : fellowship.owners.three
+
+            const allInvites = dbUser.invited
+            allInvites.forEach((invite) => {
+                data.channel.permissionOverwrites.delete(invite)
+            })
+            dbUser.invited = []
+
+            return interaction.reply('Your invites have been cleared.')
         } else if (command == 'view') {
             const channel = interaction.options.getChannel('fellowship')
 
