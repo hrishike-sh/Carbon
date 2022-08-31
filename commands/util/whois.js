@@ -24,18 +24,16 @@ module.exports = {
             const Mutuals = []
             for await (const guild of client.guilds.cache) {
                 try {
-                    if (!(await guild.members.cache.has(user.id))) {
-                        continue
+                    if (guild.members.cache.has(user.id)) {
+                        Mutuals.push(
+                            `**${guild.name}** (\`${
+                                guild.id
+                            }\`) *${guild.memberCount.toLocaleString()} members*`
+                        )
                     }
                 } catch (e) {
                     continue
                 }
-
-                Mutuals.push(
-                    `**${guild.name}** (\`${
-                        guild.id
-                    }\`) *${guild.memberCount.toLocaleString()} members*`
-                )
             }
             const embed = new MessageEmbed()
                 .setAuthor({
