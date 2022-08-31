@@ -24,7 +24,7 @@ module.exports = {
             const Mutuals = []
             for await (const guild of client.guilds.cache) {
                 try {
-                    if (!(await guild.members.fetch(user.id))) {
+                    if (!(await guild.members.cache.has(user.id))) {
                         continue
                     }
                 } catch (e) {
