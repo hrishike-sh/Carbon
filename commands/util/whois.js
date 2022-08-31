@@ -46,7 +46,10 @@ module.exports = {
                 .setDescription(
                     `Account was created ${client.functions.formatTime(
                         user.createdAt
-                    )}`
+                    )}(${client.functions.formatTime(
+                        user.createdAt,
+                        'd'
+                    )})\n\n**__Mutual Servers__**\n${Mutuals.join('\n')}`
                 )
                 .setColor('RANDOM')
 
