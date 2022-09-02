@@ -5,9 +5,9 @@ module.exports = {
     name: 'unlockdown',
     category: 'Moderation',
     async execute(message, args) {
-        if (!message.member.permissions.has('ADMINISTRATOR'))
+        if (!message.member.permissions.has('BAN_MEMBERS'))
             return message.channel.send(
-                `You must have the ADMINISTATOR permission to run this command`
+                `You must have the BAN_MEMBERS permission to run this command`
             )
 
         const server = await db.findOne({ guildID: message.guild.id })
