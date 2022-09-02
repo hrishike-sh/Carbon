@@ -215,7 +215,7 @@ module.exports = {
                     .map((a) => `<@${a}>`)
                     .join(
                         ' '
-                    )}\n\n${interaction.user.toString()} has created your fellowship! You are the owners and here is how you can add/remove members from your fellowshio:\n\nTo add: /fellowship add\nTo remove: /fellowship remove`
+                    )}\n\n${interaction.user.toString()} has created your fellowship! You are the owners and here is how you can add/remove members from your fellowship:\n\nTo add: /fellowship add\nTo remove: /fellowship remove`
             )
             return interaction.reply(`☑ Fellowship has been created.`)
         } else if (command === 'update_invites') {
