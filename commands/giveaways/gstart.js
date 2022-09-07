@@ -112,7 +112,7 @@ module.exports = {
 
         if (Number.isNaN(args[0]))
             return message.reply(
-                `I don't thing \`${args[0]}\` is a number.${example}`
+                `I don't think \`${args[0]}\` is a number.${example}`
             )
         const winners = parseInt(args[0])
         args.shift()
