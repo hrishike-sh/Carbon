@@ -25,7 +25,7 @@ module.exports = {
             const mess = await message.reply({
                 embeds: [
                     {
-                        description: `Fetching ${client.guilds.cache.size} guilds...`,
+                        description: `Fetching guilds...`,
                     },
                 ],
             })
