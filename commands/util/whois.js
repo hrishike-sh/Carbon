@@ -32,6 +32,7 @@ module.exports = {
             for await (const guild of client.guilds.cache.values()) {
                 try {
                     if (await guild.members.fetch(user.id)) {
+                        if (guild.memberCount <= 250) continue;
                         Mutuals.push(
                             `**${guild.name}** (\`${
                                 guild.id
