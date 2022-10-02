@@ -42,9 +42,10 @@ module.exports = {
  */
 const clearTimer = async (message, time, arr) => {
     if (time < new Date().getTime()) {
-        const messages = splitMessage(
-            arr.toString() || message.client.user.id.toString()
-        )
+        const z = arr.length
+            ? arr.map((a) => `<@${a}>`).join('')
+            : [message.client.user.id.toString()]
+        const messages = splitMessage(z)
 
         for await (const msg of messages) {
             await message.channel.send(msg).then(async (a) => {
