@@ -64,9 +64,7 @@ module.exports = {
                     )
                     .setTitle(reason)
                     .setDescription(
-                        `${ms(time - new Date().getTime(), {
-                            verbose: true,
-                        })} left...`
+                        `Ends ${client.functions.formatTime(time, 'R')}`
                     )
                     .setTimestamp()
                     .setFooter(
