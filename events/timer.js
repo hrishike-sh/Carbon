@@ -43,6 +43,7 @@ module.exports = {
  */
 const clearTimer = async (message, time, arr) => {
     if (time < new Date().getTime()) {
+        console.log(arr)
         const messages = splitMessage(arr) || 'z'
 
         for await (const msg of messages) {
