@@ -54,7 +54,7 @@ module.exports = {
                             .setFooter(
                                 `Reminded a total of ${a.reminders.length.toLocaleString()} users!`
                             )
-                        message.edit({ embeds: message.embeds })
+                        message.edit({ embeds: message.embeds, components: [] })
 
                         const z = a.reminders.length
                             ? a.reminders.map((a) => `<@${a}>`).join('')
