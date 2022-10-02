@@ -70,6 +70,7 @@ const clearTimer = async (message, time, arr) => {
                 ]),
             ],
         })
+        return
     }
     const formatted = ms.prettyMs(
         Number((time - new Date().getTime()).toString().slice(0, -3) + '000'),
