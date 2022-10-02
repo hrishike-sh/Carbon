@@ -1,4 +1,7 @@
-const { Client, Message, splitMessage } = require('discord.js')
+const { Client, Message } = require('discord.js')
+const {
+    splitMessage,
+} = require('../node_modules/.staging/discord.js-37b8208d/src/util/Util')
 const timers = require('../database/models/timer')
 const ms = require('better-ms')
 let counter = 0
