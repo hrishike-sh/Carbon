@@ -58,19 +58,11 @@ module.exports = {
         const msg = await message.channel.send({
             embeds: [
                 new MessageEmbed()
-                    .setAuthor(
-                        message.member.displayName,
-                        message.author.displayAvatarURL()
-                    )
                     .setTitle(reason)
                     .setDescription(
                         `Ends ${client.functions.formatTime(time, 'R')}`
                     )
-                    .setTimestamp()
-                    .setFooter(
-                        'Click the button to be reminded',
-                        client.user.displayAvatarURL()
-                    ),
+                    .setTimestamp(),
             ],
             components: [row],
         })
