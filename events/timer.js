@@ -37,15 +37,15 @@ module.exports = {
                 const channel = client.channels.cache.get(timer.channelId)
                 const message = await channel.messages.fetch(timer.messageId)
                 if (!message) return
-                clearTimer(message, timer.time, timer.reminders)
                 toEdit.set(timer.messageId, 'a')
+                clearTimer(message, timer.time, timer.reminders)
                 setTimeout(
                     async () => {
                         toEdit.delete(timer.messageId)
                         const a = await timers.findOne({
                             messageId: timer.messageId,
                         })
-                        const em = message.embeds[0]
+                        message.embeds[0]
                             .setDescription(
                                 `Ended ${client.functions.formatTime(
                                     timer.time
@@ -54,7 +54,7 @@ module.exports = {
                             .setFooter(
                                 `Reminded a total of ${a.reminders.length.toLocaleString()} users!`
                             )
-                        message.edit({ embeds: em })
+                        message.edit({ embeds: message.embeds })
 
                         const z = a.reminders.length
                             ? a.reminders.map((a) => `<@${a}>`).join('')
