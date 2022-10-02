@@ -43,7 +43,7 @@ module.exports = {
 const clearTimer = async (message, time) => {
     if (time < new Date().getTime()) return
     const formatted = ms.prettyMs(
-        (time - new Date().getTime()).toString().slice(0, -3) + '000',
+        Number((time - new Date().getTime()).toString().slice(0, -3) + '000'),
         {
             long: true,
         }
