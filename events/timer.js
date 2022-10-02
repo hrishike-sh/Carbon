@@ -24,7 +24,6 @@ module.exports = {
         for (const timer of all) {
             const t = 300_000
             const n = new Date().getTime()
-            console.log('First loop ran')
             if (timer.time - n < t) {
                 timer.ended = true
                 timer.save()
@@ -43,7 +42,6 @@ module.exports = {
  */
 const clearTimer = async (message, time, arr) => {
     if (time < new Date().getTime()) {
-        console.log(arr)
         const messages = splitMessage(arr) || 'z'
 
         for await (const msg of messages) {
@@ -77,7 +75,6 @@ const clearTimer = async (message, time, arr) => {
     })
 
     await setTimeout((a) => {
-        console.log('edited message')
-        clearTimer(message, time, reminders)
+        clearTimer(message, time, arr)
     }, 10_000)
 }
