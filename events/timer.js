@@ -29,7 +29,7 @@ module.exports = {
                 timer.save()
 
                 const channel = client.channels.cache.get(timer.channelId)
-                const message = await channel.fetchMessages(messageId)
+                const message = await channel.fetchMessages(timer.messageId)
                 if (!message) return
 
                 clearTimer(message, timer.time)
