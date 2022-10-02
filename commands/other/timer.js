@@ -56,22 +56,24 @@ module.exports = {
             .setCustomId('remind_me')
         const row = new MessageActionRow().addComponents([RemindBut])
         const msg = await message.channel.send({
-            embed: new MessageEmbed()
-                .setAuthor(
-                    message.member.displayName,
-                    message.author.displayAvatarURL()
-                )
-                .setTitle(reason)
-                .setDescription(
-                    `${ms(time - new Date().getTime(), {
-                        verbose: true,
-                    })} left...`
-                )
-                .setTimestamp()
-                .setFooter(
-                    'Click the button to be reminded',
-                    client.user.displayAvatarURL()
-                ),
+            embeds: [
+                new MessageEmbed()
+                    .setAuthor(
+                        message.member.displayName,
+                        message.author.displayAvatarURL()
+                    )
+                    .setTitle(reason)
+                    .setDescription(
+                        `${ms(time - new Date().getTime(), {
+                            verbose: true,
+                        })} left...`
+                    )
+                    .setTimestamp()
+                    .setFooter(
+                        'Click the button to be reminded',
+                        client.user.displayAvatarURL()
+                    ),
+            ],
             components: [row],
         })
 
