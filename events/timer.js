@@ -31,7 +31,7 @@ module.exports = {
                 const channel = client.channels.cache.get(timer.channelId)
                 const message = await channel.messages.fetch(timer.messageId)
                 if (!message) return
-                clearTimer(message, timer.time)
+                clearTimer(message, timer.time, timer.reminders)
             } else continue
         }
     },
@@ -43,7 +43,7 @@ module.exports = {
  */
 const clearTimer = async (message, time, arr) => {
     if (time < new Date().getTime()) {
-        const messages = splitMessage(arr)
+        const messages = splitMessage(arr) || 'z'
 
         for await (const msg of messages) {
             await message.channel.send(msg).then(async (a) => {
