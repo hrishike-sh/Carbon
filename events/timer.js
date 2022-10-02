@@ -17,7 +17,7 @@ module.exports = {
             time: {
                 $gte: new Date().getTime(),
             },
-            ended: true,
+            ended: false,
         })
         console.log('Fetched all timers...')
         if (!all.length) return
