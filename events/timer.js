@@ -19,8 +19,9 @@ module.exports = {
             },
             ended: true,
         })
+        console.log('Fetched all timers...')
         if (!all.length) return
-
+        console.log('Found timers!')
         for (const timer of all) {
             const t = 300_000
             const n = new Date().getTime()
