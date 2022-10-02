@@ -45,7 +45,7 @@ const clearTimer = async (message, time) => {
     const formatted = ms.prettyMs(
         Number((time - new Date().getTime()).toString().slice(0, -3) + '000'),
         {
-            long: true,
+            verbose: true,
         }
     )
     message.embeds[0].setDescription(`Ends in ${formatted}`)
