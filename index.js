@@ -7,6 +7,7 @@ const mongoose = require('mongoose')
 const config = require('./config.json')
 require('dotenv').config()
 
+shell().exec('git pull')
 const client = new Client({
     intents: [
         Intents.FLAGS.GUILDS,
