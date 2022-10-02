@@ -14,8 +14,8 @@ module.exports = {
         } else return
 
         const all = await timers.find({
-            $gte: {
-                time: new Date(),
+            time: {
+                $gte: new Date().getTime(),
             },
             ended: true,
         })
