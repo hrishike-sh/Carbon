@@ -19,9 +19,7 @@ module.exports = {
             },
             ended: false,
         })
-        console.log('Fetched all timers...')
         if (!all.length) return
-        console.log('Found timers!')
         for (const timer of all) {
             const t = 300_000
             const n = new Date().getTime()
@@ -29,11 +27,9 @@ module.exports = {
             if (timer.time - n < t) {
                 timer.ended = true
                 timer.save()
-                console.log('Found timer')
                 const channel = client.channels.cache.get(timer.channelId)
                 const message = await channel.messages.fetch(timer.messageId)
                 if (!message) return
-                console.log('Valid message, running loop 2.')
                 clearTimer(message, timer.time)
             } else continue
         }
@@ -45,9 +41,7 @@ module.exports = {
  * @param {Number} time
  */
 const clearTimer = async (message, time) => {
-    console.log('Loop 2 ran')
     if (time < new Date().getTime()) return
-    console.log('Time is valid.')
     const formatted = ms.prettyMs(new Date().getTime() - time, {
         verbose: true,
     })
@@ -56,5 +50,8 @@ const clearTimer = async (message, time) => {
         embeds: message.embeds,
     })
 
-    setTimeout(clearTimer(message, time), 10_000)
+    await setTimeout((a) => {
+        console.log('edited message')
+        clearTimer(message, time)
+    }, 10_000)
 }
