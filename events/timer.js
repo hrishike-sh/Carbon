@@ -78,6 +78,6 @@ const clearTimer = async (message, time, arr) => {
 
     await setTimeout((a) => {
         console.log('edited message')
-        clearTimer(message, time)
+        clearTimer(message, time, reminders)
     }, 10_000)
 }
