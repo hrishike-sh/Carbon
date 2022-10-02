@@ -6,7 +6,6 @@ const {
     MessageActionRow,
 } = require('discord.js')
 const ms = require('pretty-ms')
-const ms2 = require('ms')
 const db = require('../../database/models/timer')
 module.exports = {
     name: 'timer',
@@ -29,7 +28,7 @@ module.exports = {
                 'Please specify the time.\nExample: `fh timer 30s`'
             )
 
-        const time = new Date().getTime() + ms.getMilliseconds(args[0])
+        const time = new Date().getTime() + ms.ms(args[0])
 
         if (isNaN(time)) {
             return message.channel.send(
