@@ -46,7 +46,7 @@ module.exports = {
                     })
                     const em = message.embeds[0]
                         .setDescription(
-                            `Ended ${client.functions.format(timer.time)}`
+                            `Ended ${client.functions.formatTime(timer.time)}`
                         )
                         .setFooter(
                             `Reminded a total of ${a.reminders.length.toLocaleString()} users!`
