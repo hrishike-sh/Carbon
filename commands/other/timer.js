@@ -29,7 +29,7 @@ module.exports = {
                 'Please specify the time.\nExample: `fh timer 30s`'
             )
 
-        const time = new Date().getTime() + ms2(args[0])
+        const time = new Date().getTime() + ms.getMilliseconds(args[0])
 
         if (isNaN(time)) {
             return message.channel.send(
