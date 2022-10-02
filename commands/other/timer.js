@@ -5,7 +5,7 @@ const {
     MessageButton,
     MessageActionRow,
 } = require('discord.js')
-const ms = require('pretty-ms')
+const ms = require('better-ms')
 const db = require('../../database/models/timer')
 module.exports = {
     name: 'timer',
