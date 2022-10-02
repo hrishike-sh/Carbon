@@ -42,8 +42,8 @@ module.exports = {
  */
 const clearTimer = async (message, time) => {
     if (time < new Date().getTime()) return
-    const formatted = ms.prettyMs(new Date().getTime() - time, {
-        verbose: true,
+    const formatted = ms.prettyMs(time - new Date().getTime(), {
+        long: true,
     })
     message.embeds[0].setDescription(`Ends in ${formatted}`)
     await message.edit({
