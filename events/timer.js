@@ -87,6 +87,7 @@ module.exports = {
  * @param {Number} time
  */
 const clearTimer = async (message, time, arr) => {
+    if (!toEdit.has(message.id)) return
     const formatted = ms.prettyMs(
         Number((time - new Date().getTime()).toString().slice(0, -3) + '000'),
         {
