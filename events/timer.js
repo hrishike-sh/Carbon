@@ -39,44 +39,49 @@ module.exports = {
                 if (!message) return
                 clearTimer(message, timer.time, timer.reminders)
                 toEdit.set(timer.messageId, 'a')
-                setTimeout(async () => {
-                    toEdit.delete(timer.messageId)
-                    const a = await timers.findOne({
-                        messageId: timer.messageId,
-                    })
-                    const em = message.embeds[0]
-                        .setDescription(
-                            `Ended ${client.functions.formatTime(timer.time)}`
-                        )
-                        .setFooter(
-                            `Reminded a total of ${a.reminders.length.toLocaleString()} users!`
-                        )
-                    message.edit({ embeds: em })
-
-                    const z = a.reminders.length
-                        ? a.reminders.map((a) => `<@${a}>`).join('')
-                        : client.user.id.toString()
-                    const messages = splitMessage(z)
-
-                    for await (const msg of messages) {
-                        await message.channel.send(msg).then(async (a) => {
-                            await message.client.functions.sleep(1000)
-                            a.delete()
+                setTimeout(
+                    async () => {
+                        toEdit.delete(timer.messageId)
+                        const a = await timers.findOne({
+                            messageId: timer.messageId,
                         })
-                    }
+                        const em = message.embeds[0]
+                            .setDescription(
+                                `Ended ${client.functions.formatTime(
+                                    timer.time
+                                )}`
+                            )
+                            .setFooter(
+                                `Reminded a total of ${a.reminders.length.toLocaleString()} users!`
+                            )
+                        message.edit({ embeds: em })
 
-                    message.channel.send({
-                        content: `The timer for **${message.embeds[0].title}** has ended!`,
-                        components: [
-                            new MessageActionRow().addComponents([
-                                new MessageButton()
-                                    .setLabel('Jump')
-                                    .setStyle('LINK')
-                                    .setURL(message.url),
-                            ]),
-                        ],
-                    })
-                }, timer.time - n)
+                        const z = a.reminders.length
+                            ? a.reminders.map((a) => `<@${a}>`).join('')
+                            : client.user.id.toString()
+                        const messages = splitMessage(z)
+
+                        for await (const msg of messages) {
+                            await message.channel.send(msg).then(async (a) => {
+                                await message.client.functions.sleep(1000)
+                                a.delete()
+                            })
+                        }
+
+                        message.channel.send({
+                            content: `The timer for **${message.embeds[0].title}** has ended!`,
+                            components: [
+                                new MessageActionRow().addComponents([
+                                    new MessageButton()
+                                        .setLabel('Jump')
+                                        .setStyle('LINK')
+                                        .setURL(message.url),
+                                ]),
+                            ],
+                        })
+                    },
+                    timer.time - n < 0 ? 1000 : timer.time - n
+                )
             } else continue
         }
     },
