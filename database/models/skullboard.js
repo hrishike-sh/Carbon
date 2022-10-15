@@ -1,0 +1,1 @@
+// initial commit because hrish doesn't want me to use npm package and create a skullboard :cries: , he'll do from scratch so stay tuned
