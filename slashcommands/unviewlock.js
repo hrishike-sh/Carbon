@@ -43,7 +43,7 @@ module.exports = {
             user: interaction.options.getUser('user') || null,
             role: interaction.options.getRole('role') || null,
         }
-        const yes = ['824348974449819658' , '824348974449819658']
+        const yes = ['824348974449819658' , '1016728636365209631']
         if (!interaction.member.roles.cache.hasAny(...yes)) {
             return interaction.reply({
                 content: `You must have the role <@&1016728636365209631> to run the command`,
