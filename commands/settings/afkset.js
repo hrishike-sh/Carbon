@@ -13,8 +13,9 @@ module.exports = {
      * @param {Client} client
      */
     async execute(message, args, client) {
-        const admin = message.member.permissions.has('ADMINISTRATOR')
-        if (!admin) return message.reply('Only admins can run this command!')
+        const dumbPeople = ['824348974449819658','1016728636365209631']
+        if(!message.member.roles.cache.hasAny(...dumbPeople))
+        return message.reply('Only Community Managers+ can run this command!')
 
         const examples = {
             ignore: `\`fh afkset ignore #${message.channel.name}\``,
