@@ -80,7 +80,7 @@ module.exports = {
                 let dbUser = await userDb.findOne({
                     userId: user.id,
                 })
-                if (!dBUser || !dbUser.afk.afK) {
+                if (!dbUser || !dbUser.afk.afK) {
                     return message.reply(`${user.toString()} is not AFK!`)
                 }
                 client.db.afks = client.db.afks.filter((a) => a !== user.id)
