@@ -32,6 +32,11 @@ module.exports = {
             })
             exists.save()
             return
+        } else {
+            exists = {
+                messageId: message.id,
+                count: reaction.count,
+            }
         }
 
         const embed = new EmbedBuilder()

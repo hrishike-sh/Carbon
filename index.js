@@ -22,7 +22,7 @@ const client = new Client({
         GatewayIntentBits.GuildMembers,
         GatewayIntentBits.GuildMessageReactions,
     ],
-    partials: [Partials.Reaction],
+    partials: [Partials.Reaction, Partials.Message],
 })
 
 let dbURL = process.env.mongopath
