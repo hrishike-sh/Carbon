@@ -86,7 +86,6 @@ module.exports = {
                         value: `<#${server.skullBoard.channelId}>`,
                     },
                 ])
-                .setColor('GREEN')
                 .setFooter({
                     text: 'z',
                 })
