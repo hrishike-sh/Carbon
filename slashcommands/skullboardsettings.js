@@ -56,7 +56,7 @@ module.exports = {
             guildID: interaction.guild.id,
         })
 
-        if (!server || !server?.skullboard) {
+        if (!server || !server?.skullBoard) {
             server.skullBoard = {
                 enabled: false,
                 count: 5,
