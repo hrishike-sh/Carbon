@@ -24,7 +24,7 @@ module.exports = {
         if (exists) {
             exists.count++
             const c = client.channels.cache?.get(channelId)
-            let msg = c.messages.fetch(exists.skullBoardMessageId)
+            let msg = await c.messages.fetch(exists.skullBoardMessageId)
             msg.embeds[0].setTitle(`**${exists.count} :skull:**`)
             msg.edit({
                 embeds: msg.embeds,
