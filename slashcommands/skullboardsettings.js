@@ -7,12 +7,12 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName('skullboard')
         .setDescription("Setup/Edit your server's SkullBoard!")
-        .addSubCommand((cmd) => {
+        .addSubcommand((cmd) => {
             return cmd
                 .setName('toggle')
                 .setDescription('Enable/Disable SkullBoard for your server!')
         })
-        .addSubCommand((cmd) => {
+        .addSubcommand((cmd) => {
             return cmd
                 .setName('minimum-skulls')
                 .setDescription(
@@ -25,7 +25,7 @@ module.exports = {
                         .setRequired(true)
                 })
         })
-        .addSubCommand((cmd) => {
+        .addSubcommand((cmd) => {
             return cmd
                 .setName('channel')
                 .setDescription(
@@ -38,7 +38,7 @@ module.exports = {
                         .setRequired(true)
                 })
         })
-        .addSubCommand((cmd) => {
+        .addSubcommand((cmd) => {
             return cmd
                 .setName('show')
                 .setDescription("See your server's SkullBoard settings!")
