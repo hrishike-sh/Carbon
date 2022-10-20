@@ -5,6 +5,7 @@ module.exports = {
     name: 'messageReactionAdd',
     once: false,
     async execute(reaction, user, client) {
+        console.log(`Reaction Added; name: ${reaction.name}`)
         if (reaction.name !== 'skull') return
 
         const message = reaction.message
