@@ -61,7 +61,6 @@ module.exports = {
                 enabled: false,
                 count: 5,
             }
-            server.save()
         }
         if (command == 'show') {
             const embed = new MessageEmbed()
@@ -135,7 +134,7 @@ module.exports = {
             server.skullBoard.count = count
             server.save()
 
-            interaction.reply(
+            return interaction.reply(
                 'Done! Any message with ' +
                     count.toString() +
                     ' :skull: reaction will be posted in ' +
