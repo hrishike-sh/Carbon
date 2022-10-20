@@ -1,6 +1,12 @@
 // -.-- --- ..- .-. . / -.. ..- -- -...
 
-const { Collection, Intents, Client, MessageEmbed } = require('discord.js')
+const {
+    Collection,
+    Intents,
+    Client,
+    MessageEmbed,
+    Partials,
+} = require('discord.js')
 const fs = require('fs')
 const shell = require('shelljs')
 const mongoose = require('mongoose')
@@ -14,9 +20,8 @@ const client = new Client({
         Intents.FLAGS.GUILD_MESSAGES,
         Intents.FLAGS.GUILD_MEMBERS,
         Intents.FLAGS.GUILD_BANS,
-        Intents.FLAGS.MESSAGE_REACTION_ADD,
-        Intents.FLAGS.MESSAGE_REACTION_REMOVE,
     ],
+    partials: [Partials.Reaction],
 })
 
 let dbURL = process.env.mongopath
