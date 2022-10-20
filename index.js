@@ -21,6 +21,7 @@ const client = new Client({
         Intents.FLAGS.GUILD_MEMBERS,
         Intents.FLAGS.GUILD_BANS,
     ],
+    partials: [Partials.Reaction],
 })
 
 let dbURL = process.env.mongopath
