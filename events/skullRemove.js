@@ -27,7 +27,7 @@ module.exports = {
                     messageId: message.id,
                 })
 
-                const m = client.channels.cache
+                const m = await client.channels.cache
                     .get(valid.skullBoard.channelId)
                     .messages.fetch(mesId)
                 if (!m) return
