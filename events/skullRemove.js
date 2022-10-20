@@ -32,7 +32,7 @@ module.exports = {
                     .messages.fetch(mesId)
                 if (!m) return
 
-                m.delete()
+                m.first().delete()
                 return
             }
         }
