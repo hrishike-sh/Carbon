@@ -51,7 +51,7 @@ module.exports = {
             count: interaction.options.getNumber('count'),
             channel: interaction.options.getChannel('channel'),
         }
-        const command = interaction.options.getSubCommand()
+        const command = interaction.options.getSubcommand()
         let server = await SETTINGS.findOne({
             guildID: interaction.guild.id,
         })
