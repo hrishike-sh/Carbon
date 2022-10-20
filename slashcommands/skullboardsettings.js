@@ -68,22 +68,25 @@ module.exports = {
                 .setDescription(
                     `These settings can be changed by using */skullboard*!`
                 )
-                .addField(
-                    'Status',
-                    `SkullBoard for this server is currently ${
-                        server.skullBoard.enabled
-                            ? '**enabled**'
-                            : '**disabled**'
-                    }! You can toggle this via /skullboard toggle`
-                )
-                .addField(
-                    'Reaction Threshold',
-                    server.skullBoard.count.toString()
-                )
-                .addField(
-                    'Redirect Channel',
-                    `<#${server.skullBoard.channelId}>`
-                )
+                .addFields([
+                    {
+                        name: 'Status',
+                        value: `SkullBoard for this server is currently ${
+                            server.skullBoard.enabled
+                                ? '**enabled**'
+                                : '**disabled**'
+                        }! You can toggle this via /skullboard toggle`,
+                    },
+                    {
+                        name: 'Reaction Threshold',
+                        value: server.skullBoard.count.toString(),
+                    },
+                    {
+                        name: 'Redirect Channel',
+                        value: `<#${server.skullBoard.channelId}>`,
+                    },
+                ])
+
                 .setColor('GREEN')
                 .setFooter({
                     text: 'z',
