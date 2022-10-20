@@ -60,7 +60,7 @@ module.exports = {
                 new ActionRowBuilder().addComponents([
                     new ButtonBuilder()
                         .setEmoji('skull')
-                        .setStyle('LINK')
+                        .setStyle(5)
                         .setURL(message.url)
                         .setLabel('Message'),
                 ]),
