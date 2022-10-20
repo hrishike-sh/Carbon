@@ -2,9 +2,9 @@
 
 const {
     Collection,
-    Intents,
     Client,
     MessageEmbed,
+    GatewayIntentBits,
     Partials,
 } = require('discord.js')
 const fs = require('fs')
@@ -16,10 +16,11 @@ require('dotenv').config()
 shell.exec('git pull')
 const client = new Client({
     intents: [
-        Intents.FLAGS.GUILDS,
-        Intents.FLAGS.GUILD_MESSAGES,
-        Intents.FLAGS.GUILD_MEMBERS,
-        Intents.FLAGS.GUILD_BANS,
+        GatewayIntentBits.Guilds,
+        GatewayIntentBits.GuildMessages,
+        GatewayIntentBits.MessageContent,
+        GatewayIntentBits.GuildMembers,
+        GatewayIntentBits.GuildMessageReactions,
     ],
     partials: [Partials.Reaction],
 })
