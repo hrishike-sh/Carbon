@@ -59,7 +59,7 @@ module.exports = {
             components: [
                 new ActionRowBuilder().addComponents([
                     new ButtonBuilder()
-                        .setEmoji('skull')
+                        .setEmoji('💀')
                         .setStyle(5)
                         .setURL(message.url)
                         .setLabel('Message'),
