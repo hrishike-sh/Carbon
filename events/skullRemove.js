@@ -26,13 +26,11 @@ module.exports = {
                 skulls.deleteOne({
                     messageId: message.id,
                 })
-
-                const m = await client.channels.cache
-                    .get(valid.skullBoard.channelId)
-                    .messages.fetch(mesId)
+                const c = client.channels.cache.get(valid.skullBoard.channelId)
+                const m = await c.messages.fetch(mesId)
                 if (!m) return
 
-                m.first().delete()
+                m.delete()
                 return
             }
         }
