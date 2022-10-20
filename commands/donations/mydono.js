@@ -3,7 +3,7 @@ const Heists = require('../../functions/heist-dono')
 const Grinds = require('../../functions/grind-dono')
 const Special = require('../../functions/another-dono-thing-whyy')
 const {
-    MessageEmbed,
+    EmbedBuilder,
     MessageButton,
     MessageActionRow,
     Message,

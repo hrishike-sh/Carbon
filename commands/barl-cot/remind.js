@@ -1,4 +1,4 @@
-const { Client, Message, MessageEmbed } = require('discord.js')
+const { Client, Message, EmbedBuilder } = require('discord.js')
 const Database = require('../../database/models/remind')
 const { getMilliseconds } = require('better-ms')
 
@@ -16,7 +16,7 @@ module.exports = {
         const example = '\n\n`fh rm work in 1h`'
         if (!args[0]) return message.reply('Provide valid arguments.' + example)
         if (args[0] == 'list') {
-            const eembed = new MessageEmbed()
+            const eembed = new EmbedBuilder()
                 .setTitle('Reminders')
                 .setColor('GREEN')
                 .setDescription('Your reminders are as follows:')

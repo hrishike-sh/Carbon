@@ -1,4 +1,4 @@
-const { MessageEmbed } = require('discord.js')
+const { EmbedBuilder } = require('discord.js')
 
 module.exports = {
     name: 'ping',
@@ -9,7 +9,7 @@ module.exports = {
 
         await message.channel.send({
             embeds: [
-                new MessageEmbed()
+                new EmbedBuilder()
                     .setTitle('Pong 🏓')
                     .setDescription(
                         `**Client latency:** ${client.ws.ping}ms\nUp since <t:${uptime}:R>`

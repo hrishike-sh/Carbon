@@ -1,4 +1,4 @@
-const { Message, MessageEmbed } = require('discord.js')
+const { Message, EmbedBuilder } = require('discord.js')
 const itemsDb = require('../../database/models/itemSchema')
 const db = require('../../node_modules/discord-messages/models/messages')
 module.exports = {
@@ -99,7 +99,7 @@ module.exports = {
             }
         }
 
-        const embed = new MessageEmbed()
+        const embed = new EmbedBuilder()
             .setTitle('Donation Added')
             .setDescription(`Logged items:\n> ${doneTems.join('\n> ')}`)
             .setColor('GREEN')

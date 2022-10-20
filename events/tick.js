@@ -1,6 +1,6 @@
 const {
     Client,
-    MessageEmbed,
+    EmbedBuilder,
     MessageActionRow,
     MessageButton,
     Message,
@@ -163,7 +163,7 @@ module.exports = {
                         try {
                             ;(await user.createDM()).send({
                                 embeds: [
-                                    new MessageEmbed()
+                                    new EmbedBuilder()
                                         .setTitle('Vote Reminder')
                                         .setColor('GREEN')
                                         .setTimestamp()
@@ -256,7 +256,7 @@ module.exports = {
                                 }
 
                                 for (let win = 0; win < winners.length; win++) {
-                                    const embed = new MessageEmbed()
+                                    const embed = new EmbedBuilder()
                                         .setTitle(
                                             '🎊 You have won a giveaway! 🎊'
                                         )
@@ -295,7 +295,7 @@ module.exports = {
                                 message.edit({
                                     content: `🎉 Giveaway Ended 🎉`,
                                     embeds: [
-                                        new MessageEmbed()
+                                        new EmbedBuilder()
                                             .setTitle(giveaway.prize)
                                             .setFooter({
                                                 text: `Winners: ${giveaway.winners} | Ended at`,
@@ -352,7 +352,7 @@ module.exports = {
                                         )
                                     ).send({
                                         embeds: [
-                                            new MessageEmbed()
+                                            new EmbedBuilder()
                                                 .setTitle(
                                                     'Your giveaway has ended!'
                                                 )
@@ -383,7 +383,7 @@ module.exports = {
                                                 )
                                             ).send({
                                                 embeds: [
-                                                    new MessageEmbed()
+                                                    new EmbedBuilder()
                                                         .setTitle(
                                                             'Thank you for sponsoring!'
                                                         )

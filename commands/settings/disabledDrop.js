@@ -1,4 +1,4 @@
-const { Client, Message, MessageEmbed } = require('discord.js')
+const { Client, Message, EmbedBuilder } = require('discord.js')
 const db = require('../../database/models/settingsSchema')
 module.exports = {
     name: 'disabledDrop',

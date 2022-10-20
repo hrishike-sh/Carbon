@@ -1,5 +1,5 @@
 const {
-    MessageEmbed,
+    EmbedBuilder,
     MessageButton,
     MessageActionRow,
     Message,
@@ -82,7 +82,7 @@ module.exports = {
                     rate: Math.floor(Math.random() * 100),
                 },
             ]
-            const embed = new MessageEmbed()
+            const embed = new EmbedBuilder()
                 .setTitle(`Howgay [${what.toUpperCase()}]`)
                 .setDescription('The bot will automatically show the winner!')
                 .setFooter({

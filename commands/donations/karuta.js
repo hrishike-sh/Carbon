@@ -1,7 +1,7 @@
 const {
     Message,
     Client,
-    MessageEmbed,
+    EmbedBuilder,
     MessageActionRow,
     MessageButton,
 } = require('discord.js')
@@ -47,7 +47,7 @@ module.exports = {
 
         const all = await EventModel.find()
         const dbUser = all.find((a) => a.userId === target.id) || { tickets: 0 }
-        let donoEmbed = new MessageEmbed()
+        let donoEmbed = new EmbedBuilder()
         let donated = true
 
         if (!dbUser) donated = false

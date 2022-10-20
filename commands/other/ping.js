@@ -1,4 +1,4 @@
-const { MessageEmbed } = require('discord.js')
+const { EmbedBuilder } = require('discord.js')
 
 module.exports = {
     name: 'ping',
@@ -8,7 +8,7 @@ module.exports = {
     async execute(message, args, client) {
         await message.channel.send({
             embeds: [
-                new MessageEmbed()
+                new EmbedBuilder()
                     .setDescription(
                         `Latency: ${
                             client.ws.ping

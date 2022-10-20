@@ -1,7 +1,7 @@
 const {
     Message,
     Client,
-    MessageEmbed,
+    EmbedBuilder,
     MessageButton,
     MessageActionRow,
     Collection,
@@ -83,7 +83,7 @@ module.exports = {
                     }`
                 )
             }
-            const embed = new MessageEmbed()
+            const embed = new EmbedBuilder()
                 .setAuthor({
                     name: 'One of your highlight has triggered!',
                 })
@@ -92,7 +92,8 @@ module.exports = {
                 .setTimestamp()
                 .setColor('RANDOM')
             ;(await member.user.createDM()).send({
-                content: "Your HL was triggered in " + message.channel.toString(),
+                content:
+                    'Your HL was triggered in ' + message.channel.toString(),
                 embeds: [embed],
                 components: [
                     new MessageActionRow().addComponents([

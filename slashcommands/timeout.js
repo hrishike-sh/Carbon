@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require('@discordjs/builders')
-const { CommandInteraction, MessageEmbed } = require('discord.js')
+const { CommandInteraction, EmbedBuilder } = require('discord.js')
 const ms = require('ms')
 module.exports = {
     category: 'Utility',
@@ -70,7 +70,7 @@ module.exports = {
             try {
                 ;(await target.createDM()).send({
                     embeds: [
-                        new MessageEmbed()
+                        new EmbedBuilder()
                             .setTitle('Timed out')
                             .setDescription(
                                 `You have been timed out in FightHub with the reason: **${

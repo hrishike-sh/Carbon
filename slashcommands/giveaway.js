@@ -2,7 +2,7 @@ const { SlashCommandBuilder } = require('@discordjs/builders')
 const { ChannelType } = require('discord-api-types/v9')
 const {
     CommandInteraction,
-    MessageEmbed,
+    EmbedBuilder,
     MessageActionRow,
     MessageButton,
 } = require('discord.js')
@@ -117,7 +117,7 @@ module.exports = {
             } else req = rawQuirement
         } else req = false
 
-        const embed = new MessageEmbed()
+        const embed = new EmbedBuilder()
             .setTitle(data.prize)
             .setDescription(
                 `Use the button to enter!\n**Time**: ${ms(time, {
@@ -148,7 +148,7 @@ module.exports = {
         bemBeds.push(embed)
         if (data.message)
             bemBeds.push(
-                new MessageEmbed()
+                new EmbedBuilder()
                     .setDescription(`**Sponsor's message:** ${data.message}`)
                     .setColor('GREEN')
             )

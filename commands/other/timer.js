@@ -1,7 +1,7 @@
 const {
     Client,
     Message,
-    MessageEmbed,
+    EmbedBuilder,
     MessageButton,
     MessageActionRow,
 } = require('discord.js')
@@ -56,7 +56,7 @@ module.exports = {
         const row = new MessageActionRow().addComponents([RemindBut])
         const msg = await message.channel.send({
             embeds: [
-                new MessageEmbed()
+                new EmbedBuilder()
                     .setTitle(reason)
                     .setDescription(
                         `Ends ${client.functions.formatTime(time, 'R')}`

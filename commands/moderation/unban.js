@@ -1,4 +1,4 @@
-const { Client, Message, MessageEmbed } = require('discord.js')
+const { Client, Message, EmbedBuilder } = require('discord.js')
 
 module.exports = {
     name: 'unban',
@@ -83,7 +83,7 @@ module.exports = {
         })
         return message.reply({
             embeds: [
-                new MessageEmbed()
+                new EmbedBuilder()
                     .setTitle('Member unban')
                     .setColor('GREEN')
                     .setDescription(

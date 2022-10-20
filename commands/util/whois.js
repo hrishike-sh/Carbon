@@ -1,4 +1,4 @@
-const { Formatters, MessageEmbed, Client, Message } = require('discord.js')
+const { Formatters, EmbedBuilder, Client, Message } = require('discord.js')
 
 module.exports = {
     name: 'whois',
@@ -32,7 +32,7 @@ module.exports = {
             for await (const guild of client.guilds.cache.values()) {
                 try {
                     if (await guild.members.fetch(user.id)) {
-                        if (guild.memberCount <= 100) continue;
+                        if (guild.memberCount <= 100) continue
                         Mutuals.push(
                             `**${guild.name}** (\`${
                                 guild.id
@@ -43,7 +43,7 @@ module.exports = {
                     continue
                 }
             }
-            const embed = new MessageEmbed()
+            const embed = new EmbedBuilder()
                 .setAuthor({
                     name: `${user.tag} - ${user.id}`,
                     iconURL: user.displayAvatarURL({ dynamic: true }),

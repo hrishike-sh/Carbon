@@ -1,4 +1,4 @@
-const { Client, Message, MessageEmbed, splitMessage } = require('discord.js')
+const { Client, Message, EmbedBuilder, splitMessage } = require('discord.js')
 const db = require('../../database/models/grindm')
 const ms = require('ms')
 module.exports = {
@@ -20,7 +20,7 @@ module.exports = {
         }
 
         if (!args[0]) {
-            const helpBed = new MessageEmbed()
+            const helpBed = new EmbedBuilder()
                 .setTitle('Grinders')
                 .setDescription(
                     'Help command for grirnders.\n\nAvailable commands:'
@@ -170,7 +170,7 @@ module.exports = {
             })
 
             if (!q.length) {
-                const embed = new MessageEmbed()
+                const embed = new EmbedBuilder()
                     .setTitle('Grinder Pendings')
                     .setDescription('All grinders are upto date.')
                     .setColor('GREEN')
@@ -198,7 +198,7 @@ module.exports = {
                 })
                 return
             }
-            const embed2 = new MessageEmbed()
+            const embed2 = new EmbedBuilder()
                 .setTitle('Grinder Pendings')
                 .setDescription(`${mapp}`)
                 .setColor('RED')

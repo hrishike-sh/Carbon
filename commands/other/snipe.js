@@ -1,5 +1,5 @@
 const {
-    MessageEmbed,
+    EmbedBuilder,
     Client,
     Message,
     MessageButton,
@@ -71,7 +71,7 @@ module.exports = {
 
         let { msg, time, image } = target
 
-        let snipeBed = new MessageEmbed()
+        let snipeBed = new EmbedBuilder()
             .setAuthor({
                 name: msg.author.tag,
                 iconURL: msg.author.displayAvatarURL() || null,
@@ -125,7 +125,7 @@ module.exports = {
                 }
                 target = sniped[snipe]
                 let { msg, time, image } = target
-                snipeBed = new MessageEmbed()
+                snipeBed = new EmbedBuilder()
                     .setAuthor({
                         name: msg.author.tag,
                         iconURL: msg.author.displayAvatarURL() || null,
@@ -148,7 +148,7 @@ module.exports = {
                 }
                 target = sniped[snipe]
                 let { msg, time, image } = target
-                snipeBed = new MessageEmbed()
+                snipeBed = new EmbedBuilder()
                     .setAuthor({
                         name: msg.author.tag,
                         iconURL: msg.author.displayAvatarURL() || null,
@@ -175,7 +175,7 @@ module.exports = {
             row = new MessageActionRow().addComponents([prevBut, nextBut])
             target = sniped[snipe]
             let { msg, time, image } = target
-            snipeBed = new MessageEmbed()
+            snipeBed = new EmbedBuilder()
                 .setAuthor({
                     name: msg.author.tag,
                     iconURL: msg.author.displayAvatarURL() || null,

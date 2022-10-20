@@ -1,4 +1,4 @@
-const { Message, Client, MessageEmbed } = require('discord.js')
+const { Message, Client, EmbedBuilder } = require('discord.js')
 const db = require('../database/models/user')
 const ms = require('ms')
 require('dotenv').config()
@@ -54,7 +54,7 @@ module.exports = {
 
         a.send({
             embeds: [
-                new MessageEmbed()
+                new EmbedBuilder()
                     .setTitle('Thank you for voting!')
                     .setDescription(
                         `You have voted for **[FightHub](https://discord.gg/fight)** and got the \`・Voter\` role for 12 hours!\n\nYou will be reminded <t:${(

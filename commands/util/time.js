@@ -1,7 +1,7 @@
 const {
     Message,
     Client,
-    MessageEmbed,
+    EmbedBuilder,
     MessageActionRow,
     MessageButton,
 } = require('discord.js')
@@ -30,7 +30,7 @@ module.exports = {
                 `Couldn't parse \`${rawTime}\` as valid time.\n\nExample: \`fh time 30 minutes\``
             )
 
-        const embed = new MessageEmbed()
+        const embed = new EmbedBuilder()
             .setTitle('Time Formatter')
             .setDescription(
                 'Choose a format and click the button to get text that you can copy.'

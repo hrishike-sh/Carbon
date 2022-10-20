@@ -2,7 +2,7 @@ const { SlashCommandBuilder } = require('@discordjs/builders')
 const {
     CommandInteraction,
     Client,
-    MessageEmbed,
+    EmbedBuilder,
     MessageActionRow,
     MessageButton,
     Collection,
@@ -29,7 +29,7 @@ module.exports = {
         let wOrD = require('random-words')({ maxLength: 5, exactly: 1 })[0]
         console.log(wOrD)
         await interaction.reply({ content: 'Game started', ephemeral: true })
-        const embed = new MessageEmbed()
+        const embed = new EmbedBuilder()
             .setTitle('📕 Wordle')
             .setDescription(
                 'World is a word guessing game. You have to guess the correct word in 5 tries or less.'
@@ -135,8 +135,8 @@ module.exports = {
                 )
             if (msg.content.toLowerCase() === wOrD) win = true
             if (currentLine > 4 && !win) {
-                mainCollector.stop();
-                confirmation.stop();
+                mainCollector.stop()
+                confirmation.stop()
                 return msg.reply(
                     `You could not finish the game in 5 tries... The word was \`${wOrD}\``
                 )

@@ -1,4 +1,4 @@
-const { Message, Client, MessageEmbed } = require('discord.js')
+const { Message, Client, EmbedBuilder } = require('discord.js')
 const userDb = require('../../database/models/user')
 const serverDb = require('../../database/models/settingsSchema')
 module.exports = {
@@ -13,9 +13,11 @@ module.exports = {
      * @param {Client} client
      */
     async execute(message, args, client) {
-        const dumbPeople = ['824348974449819658','1016728636365209631']
-        if(!message.member.roles.cache.hasAny(...dumbPeople))
-        return message.reply('Only Community Managers+ can run this command!')
+        const dumbPeople = ['824348974449819658', '1016728636365209631']
+        if (!message.member.roles.cache.hasAny(...dumbPeople))
+            return message.reply(
+                'Only Community Managers+ can run this command!'
+            )
 
         const examples = {
             ignore: `\`fh afkset ignore #${message.channel.name}\``,
@@ -49,7 +51,7 @@ module.exports = {
 
                 return message.reply({
                     embeds: [
-                        new MessageEmbed()
+                        new EmbedBuilder()
                             .setTitle('Ignored Channels')
                             .setDescription(map.join('\n'))
                             .setColor('YELLOW'),

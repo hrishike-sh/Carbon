@@ -5,7 +5,7 @@ const {
     Client,
     MessageButton,
     MessageActionRow,
-    MessageEmbed,
+    EmbedBuilder,
 } = require('discord.js')
 const server = require('../../database/models/settingsSchema')
 const { inspect } = require('util')
@@ -49,7 +49,7 @@ module.exports = {
                 ],
             })
         }
-        const helpBed = new MessageEmbed()
+        const helpBed = new EmbedBuilder()
             .setTitle('Giveaway Help')
             .setColor('RANDOM')
             .setDescription(
@@ -185,7 +185,7 @@ module.exports = {
             }
         } else prize = args.join(' ')
 
-        const embed = new MessageEmbed()
+        const embed = new EmbedBuilder()
             .setTitle(prize)
             .setDescription(
                 `Use the button to enter!\n**Time**: ${require('ms')(time, {
@@ -214,7 +214,7 @@ module.exports = {
         embeds.push(embed)
         if (dMessage) {
             embeds.push(
-                new MessageEmbed()
+                new EmbedBuilder()
                     .setDescription(`**Sponsor's message:** ${dMessage}`)
                     .setColor('GREEN')
             )
@@ -253,7 +253,7 @@ module.exports = {
         const dbGaw = new giveawayModel(dbDat).save()
         client.channels.cache.get('950386296436695061').send({
             embeds: [
-                new MessageEmbed()
+                new EmbedBuilder()
                     .setTitle('New giveaway')
                     .addField(
                         'Guild',

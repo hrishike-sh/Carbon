@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require('@discordjs/builders')
-const { CommandInteraction, Client, MessageEmbed } = require('discord.js')
+const { CommandInteraction, Client, EmbedBuilder } = require('discord.js')
 
 module.exports = {
     category: 'Other',
@@ -34,7 +34,7 @@ module.exports = {
         const suggestChannel = client.channels.cache.get(
             client.config.logs.suggestChannel
         )
-        const suggestEmbed = new MessageEmbed()
+        const suggestEmbed = new EmbedBuilder()
             .setDescription(data.suggestion)
             .setTimestamp()
             .setColor('GREEN')

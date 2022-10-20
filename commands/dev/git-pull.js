@@ -1,4 +1,4 @@
-const { Message, Client, MessageEmbed } = require('discord.js')
+const { Message, Client, EmbedBuilder } = require('discord.js')
 const shell = require('shelljs')
 module.exports = {
     name: 'git-pull',
@@ -21,7 +21,7 @@ module.exports = {
 
         if (results.stderr) err = results.stderr
         res = results.stdout
-        const embed = new MessageEmbed()
+        const embed = new EmbedBuilder()
             .setTitle('Git Pull')
             .setColor(err ? 'RED' : 'GREEN')
             .setTimestamp()

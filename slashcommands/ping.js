@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require('@discordjs/builders')
-const { MessageEmbed } = require('discord.js')
+const { EmbedBuilder } = require('discord.js')
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -13,7 +13,7 @@ module.exports = {
         try {
             await interaction.reply({ content: 'Pinging...' })
 
-            const embed = new MessageEmbed()
+            const embed = new EmbedBuilder()
                 .addFields(
                     {
                         name: 'Discord WebSocket',

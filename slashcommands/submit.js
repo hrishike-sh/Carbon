@@ -1,7 +1,7 @@
 const { SlashCommandBuilder } = require('@discordjs/builders')
 const {
     CommandInteraction,
-    MessageEmbed,
+    EmbedBuilder,
     Message,
     MessageActionRow,
     MessageButton,
@@ -105,7 +105,7 @@ module.exports = {
                 components: [row],
             })
             if (id === 'yes-submit') {
-                const embed = new MessageEmbed()
+                const embed = new EmbedBuilder()
                     .setAuthor({
                         iconURL: interaction.user.displayAvatarURL(),
                         name: interaction.user.tag,

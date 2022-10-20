@@ -1,7 +1,7 @@
 const {
     MessageButton,
     Client,
-    MessageEmbed,
+    EmbedBuilder,
     Interaction,
     MessageActionRow,
     ButtonInteraction,
@@ -40,7 +40,7 @@ module.exports = {
                 button.message.edit({
                     content: `🎉 Giveaway Ended 🎉`,
                     embeds: [
-                        new MessageEmbed()
+                        new EmbedBuilder()
                             .setTitle(gaw.prize)
                             .setFooter({
                                 text: `Winners: ${gaw.winners} | Ended at`,
@@ -77,7 +77,7 @@ module.exports = {
             if (gaw.entries.includes(button.user.id)) {
                 button.reply({
                     embeds: [
-                        new MessageEmbed()
+                        new EmbedBuilder()
                             .setTitle('You have already joined this giveaway!')
                             .setDescription(
                                 'You can only join once... and you are already in!'
@@ -112,7 +112,7 @@ module.exports = {
             ) {
                 return button.reply({
                     embeds: [
-                        new MessageEmbed()
+                        new EmbedBuilder()
                             .setTitle('You have been blacklisted.')
                             .setDescription(
                                 `You have one of these roles which do not allow you to enter giveaways:\n${blRoles
@@ -148,7 +148,7 @@ module.exports = {
                 if (!canJoin) {
                     return button.reply({
                         embeds: [
-                            new MessageEmbed()
+                            new EmbedBuilder()
                                 .setTitle(
                                     `You cannot join this giveaway :frowning2:`
                                 )
@@ -177,7 +177,7 @@ module.exports = {
 
             button.reply({
                 embeds: [
-                    new MessageEmbed()
+                    new EmbedBuilder()
                         .setTitle(
                             bypass
                                 ? `You have bypassed this giveaway with your cool perks :sunglasses:`
@@ -230,7 +230,7 @@ module.exports = {
             }>`
             button.deferUpdate()
 
-            const embed = new MessageEmbed()
+            const embed = new EmbedBuilder()
                 .setTitle('🎊 You have won a giveaway! 🎊')
                 .setDescription(
                     `You have won the *reroll* for the giveaway **\`${gaww.prize}\`**!`
@@ -290,7 +290,7 @@ module.exports = {
             editCount(button.message, gaw)
             return button.reply({
                 embeds: [
-                    new MessageEmbed()
+                    new EmbedBuilder()
                         .setDescription('You have left the giveaway')
                         .setColor('RED'),
                 ],

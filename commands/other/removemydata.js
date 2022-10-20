@@ -2,7 +2,7 @@ const {
     Message,
     MessageButton,
     MessageActionRow,
-    MessageEmbed,
+    EmbedBuilder,
 } = require('discord.js')
 
 // Models
@@ -32,7 +32,7 @@ module.exports = {
 
         const confirmation = await message.reply({
             embeds: [
-                new MessageEmbed()
+                new EmbedBuilder()
                     .setTitle(':warning: Are you sure you want to do this?')
                     .setDescription(
                         'Doing this will __erase__ all your data from the database.\nThis includes:\n> __All__ your donations.\n> __All__ your reminders.\n\n**Are you sure you want to do this? __This change is irreversible!__**'
@@ -72,7 +72,7 @@ module.exports = {
                 })
                 await confirmation.edit({
                     embeds: [
-                        new MessageEmbed()
+                        new EmbedBuilder()
                             .setDescription('Deleting all your data...')
                             .setColor('YELLOW'),
                     ],
@@ -93,7 +93,7 @@ module.exports = {
                 collector.stop('okay')
                 confirmation.edit({
                     embeds: [
-                        new MessageEmbed()
+                        new EmbedBuilder()
                             .setDescription(
                                 ':ballot_box_with_check: All your data has been __erased__.'
                             )

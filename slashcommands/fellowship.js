@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require('@discordjs/builders')
-const { CommandInteraction, MessageEmbed } = require('discord.js')
+const { CommandInteraction, EmbedBuilder } = require('discord.js')
 const Database = require('../database/models/fellowship')
 module.exports = {
     data: new SlashCommandBuilder()
@@ -161,15 +161,13 @@ module.exports = {
                 !interaction.member.roles.cache.some(
                     (role) => role.id === '824348974449819658' // admin role id
                 ) &&
-                interaction.author.id !== '786150805773746197' // my id 
-
-              )  {
-                        return interaction.reply( {
-                            content: 'Contact a community manager+, you can\'t use this',
-                            ephemeral: true,
-                        }
-                        )
-                    }
+                interaction.author.id !== '786150805773746197' // my id
+            ) {
+                return interaction.reply({
+                    content: "Contact a community manager+, you can't use this",
+                    ephemeral: true,
+                })
+            }
 
             const data = {
                 channel: interaction.options.getChannel('channel'),
@@ -229,7 +227,7 @@ module.exports = {
                     )}\n\n${interaction.user.toString()} has created your fellowship! You are the owners and here is how you can add/remove members from your fellowship:\n\nTo add: /fellowship add\nTo remove: /fellowship remove`
             )
             return interaction.reply(`☑ Fellowship has been created.`)
-        } else if (command === 'update_invites')  {
+        } else if (command === 'update_invites') {
             if (
                 !interaction.member.roles.cache.some(
                     (role) => role.id === '1016728636365209631' // comm manager role id
@@ -237,15 +235,13 @@ module.exports = {
                 !interaction.member.roles.cache.some(
                     (role) => role.id === '824348974449819658' // admin role id
                 ) &&
-                interaction.author.id !== '786150805773746197' // my id 
-
-              )  {
-                        return interaction.reply( {
-                            content: 'Contact a community manager+, you can\'t use this',
-                            ephemeral: true,
-                        }
-                        )
-                    }
+                interaction.author.id !== '786150805773746197' // my id
+            ) {
+                return interaction.reply({
+                    content: "Contact a community manager+, you can't use this",
+                    ephemeral: true,
+                })
+            }
 
             const data = {
                 channel: interaction.options.getChannel('fellowship'),
@@ -402,7 +398,7 @@ module.exports = {
                     'There is no fellowship for that channel.'
                 )
 
-            const embed = new MessageEmbed()
+            const embed = new EmbedBuilder()
                 .setTitle('Fellowship')
                 .setDescription('Here are the details for this fellowship.')
                 .addField(

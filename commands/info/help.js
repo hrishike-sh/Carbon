@@ -2,7 +2,7 @@ const prefix = 'fh '
 const {
     Message,
     Client,
-    MessageEmbed,
+    EmbedBuilder,
     MessageSelectMenu,
     MessageActionRow,
     SelectMenuInteraction,
@@ -32,7 +32,7 @@ module.exports = {
                     `No command \`${args[0].toLocaleLowerCase()}\` found.`
                 )
             }
-            const embed = new MessageEmbed()
+            const embed = new EmbedBuilder()
                 .setTitle(command.name || command?.data.name)
                 .setColor('RANDOM')
             if (command.data) {
@@ -71,7 +71,7 @@ module.exports = {
                 embeds: [embed],
             })
         }
-        const embed = new MessageEmbed()
+        const embed = new EmbedBuilder()
             .setTitle('❓ Help Command')
             .setColor('GREEN')
             .setDescription(`Select a Category to see the commands!`)

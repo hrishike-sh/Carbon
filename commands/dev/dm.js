@@ -1,4 +1,4 @@
-const { Client, Message, MessageEmbed } = require('discord.js')
+const { Client, Message, EmbedBuilder } = require('discord.js')
 
 module.exports = {
     name: 'dm',
@@ -40,7 +40,7 @@ module.exports = {
             ;(await user.createDM()).send({
                 content: 'You have received a message!',
                 embeds: [
-                    new MessageEmbed()
+                    new EmbedBuilder()
                         .setAuthor({
                             name: anonymous ? 'Anonymous' : message.author.tag,
                             iconURL: anonymous

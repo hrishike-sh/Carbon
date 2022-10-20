@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require('@discordjs/builders')
-const { CommandInteraction, Client, MessageEmbed } = require('discord.js')
+const { CommandInteraction, Client, EmbedBuilder } = require('discord.js')
 const Database = require('../database/models/settingsSchema')
 module.exports = {
     global: true,
@@ -137,7 +137,7 @@ module.exports = {
         if (interaction.options?.getSubcommand() == 'view') {
             return interaction.reply({
                 embeds: [
-                    new MessageEmbed()
+                    new EmbedBuilder()
                         .setTitle(
                             `${interaction.guild.name}'s Giveaway Configurations`
                         )
@@ -175,7 +175,7 @@ module.exports = {
             if (command == 'list') {
                 return interaction.reply({
                     embeds: [
-                        new MessageEmbed()
+                        new EmbedBuilder()
                             .setTitle('Giveaway Manager Roles')
                             .setDescription(
                                 'You can change these roles by using /gconfig!'
@@ -195,7 +195,7 @@ module.exports = {
                 if (server.giveaway_config.manager_roles.includes(role.id)) {
                     return interaction.reply({
                         embeds: [
-                            new MessageEmbed()
+                            new EmbedBuilder()
                                 .setDescription(
                                     `${role.toString()} is already in the list.`
                                 )
@@ -208,7 +208,7 @@ module.exports = {
 
                 return interaction.reply({
                     embeds: [
-                        new MessageEmbed()
+                        new EmbedBuilder()
                             .setTitle('Giveaway Manager Role')
                             .setDescription(
                                 `Added ${role.toString()} to the list!`
@@ -225,7 +225,7 @@ module.exports = {
                 if (!server.giveaway_config.manager_roles.includes(role.id)) {
                     return interaction.reply({
                         embeds: [
-                            new MessageEmbed()
+                            new EmbedBuilder()
                                 .setDescription(
                                     `${role.toString()} is not a giveaway manager role.`
                                 )
@@ -241,7 +241,7 @@ module.exports = {
 
                 return interaction.reply({
                     embeds: [
-                        new MessageEmbed()
+                        new EmbedBuilder()
                             .setTitle('Giveaway Manager Role')
                             .setDescription(
                                 `Removed ${role.toString()} from the list!`
@@ -261,7 +261,7 @@ module.exports = {
             if (command == 'list') {
                 return interaction.reply({
                     embeds: [
-                        new MessageEmbed()
+                        new EmbedBuilder()
                             .setTitle('Giveaway Blacklisted Roles')
                             .setDescription(
                                 'You can change these roles by using /gconfig!'
@@ -283,7 +283,7 @@ module.exports = {
                 ) {
                     return interaction.reply({
                         embeds: [
-                            new MessageEmbed()
+                            new EmbedBuilder()
                                 .setDescription(
                                     `${role.toString()} is already in the list.`
                                 )
@@ -296,7 +296,7 @@ module.exports = {
 
                 return interaction.reply({
                     embeds: [
-                        new MessageEmbed()
+                        new EmbedBuilder()
                             .setTitle('Giveaway Blacklisted Role')
                             .setDescription(
                                 `Added ${role.toString()} to the list!`
@@ -315,7 +315,7 @@ module.exports = {
                 ) {
                     return interaction.reply({
                         embeds: [
-                            new MessageEmbed()
+                            new EmbedBuilder()
                                 .setDescription(
                                     `${role.toString()} is not a giveaway blacklisted role.`
                                 )
@@ -331,7 +331,7 @@ module.exports = {
 
                 return interaction.reply({
                     embeds: [
-                        new MessageEmbed()
+                        new EmbedBuilder()
                             .setTitle('Giveaway Blacklist Role')
                             .setDescription(
                                 `Removed ${role.toString()} from the list!`
@@ -351,7 +351,7 @@ module.exports = {
             if (command == 'list') {
                 return interaction.reply({
                     embeds: [
-                        new MessageEmbed()
+                        new EmbedBuilder()
                             .setTitle('Giveaway Bypass Roles')
                             .setDescription(
                                 'You can change these roles by using /gconfig!'
@@ -371,7 +371,7 @@ module.exports = {
                 if (server.giveaway_config.bypass_roles.includes(role.id)) {
                     return interaction.reply({
                         embeds: [
-                            new MessageEmbed()
+                            new EmbedBuilder()
                                 .setDescription(
                                     `${role.toString()} is already in the list.`
                                 )
@@ -384,7 +384,7 @@ module.exports = {
 
                 return interaction.reply({
                     embeds: [
-                        new MessageEmbed()
+                        new EmbedBuilder()
                             .setTitle('Giveaway Bypass Role')
                             .setDescription(
                                 `Added ${role.toString()} to the list!`
@@ -401,7 +401,7 @@ module.exports = {
                 if (!server.giveaway_config.bypass_roles.includes(role.id)) {
                     return interaction.reply({
                         embeds: [
-                            new MessageEmbed()
+                            new EmbedBuilder()
                                 .setDescription(
                                     `${role.toString()} is not a giveaway bypass role.`
                                 )
@@ -417,7 +417,7 @@ module.exports = {
 
                 return interaction.reply({
                     embeds: [
-                        new MessageEmbed()
+                        new EmbedBuilder()
                             .setTitle('Giveaway Bypass Role')
                             .setDescription(
                                 `Removed ${role.toString()} from the list!`

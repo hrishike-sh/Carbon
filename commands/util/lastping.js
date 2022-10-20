@@ -1,6 +1,6 @@
 const {
     Message,
-    MessageEmbed,
+    EmbedBuilder,
     MessageActionRow,
     MessageButton,
 } = require('discord.js')
@@ -37,7 +37,7 @@ module.exports = {
 
         const DBUser = await Pings.findOne({ userId: message.author.id })
 
-        const PingBed = new MessageEmbed()
+        const PingBed = new EmbedBuilder()
             .setTitle('Last Pings')
             .setColor('GREEN')
             .setTimestamp()

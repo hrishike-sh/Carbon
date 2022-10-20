@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require('@discordjs/builders')
-const { CommandInteraction, MessageEmbed } = require('discord.js')
+const { CommandInteraction, EmbedBuilder } = require('discord.js')
 const db = require('../database/models/settingsSchema')
 
 module.exports = {
@@ -87,7 +87,7 @@ module.exports = {
         }
 
         let embeds = [
-            new MessageEmbed()
+            new EmbedBuilder()
                 .setDescription(
                     `Make sure to thank them in <#870240187198885888>!`
                 )

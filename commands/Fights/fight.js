@@ -2,7 +2,7 @@ const {
     Message,
     MessageActionRow,
     MessageButton,
-    MessageEmbed,
+    EmbedBuilder,
 } = require('discord.js')
 let fighting = []
 module.exports = {
@@ -96,7 +96,9 @@ module.exports = {
         }
 
         if (message.channel.id === '834394537249996810') {
-            return message.channel.send('This command isn\'t meant for you bozos')
+            return message.channel.send(
+                "This command isn't meant for you bozos"
+            )
         }
 
         const target = message.mentions.users?.first()
@@ -159,7 +161,7 @@ module.exports = {
             ]
             let current = gamedata[Math.floor(Math.random() * 2)]
 
-            const fightEmbed = new MessageEmbed()
+            const fightEmbed = new EmbedBuilder()
                 .setTitle('Fight')
                 .addField(gamedata[0].user.tag, `Health: **100%**`, true)
                 .addField(gamedata[1].user.tag, `Health: **100%**`, true)

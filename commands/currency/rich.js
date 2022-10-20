@@ -1,4 +1,4 @@
-const { Message, MessageEmbed } = require('discord.js')
+const { Message, EmbedBuilder } = require('discord.js')
 const DB = require('../../database/models/token')
 module.exports = {
     name: 'rich',

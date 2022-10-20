@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require('@discordjs/builders')
-const { CommandInteraction, Client, MessageEmbed } = require('discord.js')
+const { CommandInteraction, Client, EmbedBuilder } = require('discord.js')
 const SETTINGS = require('../database/models/settingsSchema')
 module.exports = {
     global: true,
@@ -89,7 +89,7 @@ module.exports = {
             if (command == 'list') {
                 return interaction.reply({
                     embeds: [
-                        new MessageEmbed()
+                        new EmbedBuilder()
                             .setTitle('Snipe Whitelist Roles')
                             .setDescription(
                                 'You can change these roles by using /snipe-config!'
@@ -109,7 +109,7 @@ module.exports = {
                 if (server.snipe_config.allowed_roles.includes(role.id)) {
                     return interaction.reply({
                         embeds: [
-                            new MessageEmbed()
+                            new EmbedBuilder()
                                 .setDescription(
                                     `${role.toString()} is already in the list.`
                                 )
@@ -122,7 +122,7 @@ module.exports = {
 
                 return interaction.reply({
                     embeds: [
-                        new MessageEmbed()
+                        new EmbedBuilder()
                             .setTitle('Snipe Whitelist Role')
                             .setDescription(
                                 `Added ${role.toString()} to the list!`
@@ -139,7 +139,7 @@ module.exports = {
                 if (!server.snipe_config.allowed_roles.includes(role.id)) {
                     return interaction.reply({
                         embeds: [
-                            new MessageEmbed()
+                            new EmbedBuilder()
                                 .setDescription(
                                     `${role.toString()} is not a Snipe Whitelisted role.`
                                 )
@@ -155,7 +155,7 @@ module.exports = {
 
                 return interaction.reply({
                     embeds: [
-                        new MessageEmbed()
+                        new EmbedBuilder()
                             .setTitle('Snipe Whitelist Role')
                             .setDescription(
                                 `Removed ${role.toString()} from the list!`

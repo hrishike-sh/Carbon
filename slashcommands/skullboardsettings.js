@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require('@discordjs/builders')
-const { CommandInteraction, Client, MessageEmbed } = require('discord.js')
+const { CommandInteraction, Client, EmbedBuilder } = require('discord.js')
 const SETTINGS = require('../database/models/settingsSchema')
 
 module.exports = {
@@ -63,7 +63,7 @@ module.exports = {
             }
         }
         if (command == 'show') {
-            const embed = new MessageEmbed()
+            const embed = new EmbedBuilder()
                 .setTitle(`SkullBoard settings for ${interaction.guild.name}`)
                 .setDescription(
                     `These settings can be changed by using */skullboard*!`

@@ -1,4 +1,4 @@
-const { MessageActionRow, MessageButton, MessageEmbed } = require('discord.js')
+const { MessageActionRow, MessageButton, EmbedBuilder } = require('discord.js')
 const serverSettings = require('../database/models/settingsSchema')
 const skulls = require('../database/models/skullboard')
 module.exports = {
@@ -34,7 +34,7 @@ module.exports = {
             return
         }
 
-        const embed = new MessageEmbed()
+        const embed = new EmbedBuilder()
             .setAuthor({
                 name: message.author.tag,
                 iconURL: message.author.displayAvatarURL(),

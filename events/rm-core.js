@@ -1,6 +1,6 @@
 const {
     Client,
-    MessageEmbed,
+    EmbedBuilder,
     MessageActionRow,
     MessageButton,
 } = require('discord.js')
@@ -26,7 +26,7 @@ module.exports = {
                 try {
                     await user.send({
                         embeds: [
-                            new MessageEmbed()
+                            new EmbedBuilder()
                                 .setTimestamp()
                                 .setTitle(
                                     ':alarm_clock: Reminder :alarm_clock:'

@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require('@discordjs/builders')
-const { CommandInteraction, Client, MessageEmbed } = require('discord.js')
+const { CommandInteraction, Client, EmbedBuilder } = require('discord.js')
 const MainDonoModel = require('../node_modules/discord-messages/models/messages')
 const GrindDonoModel = require('../database/models/grindm')
 const EventDonoModel = require('../database/models/30k')
@@ -64,7 +64,7 @@ module.exports = {
             ],
         }
         let success = false
-        const embed = new MessageEmbed()
+        const embed = new EmbedBuilder()
         switch (data.type) {
             case 'main_dono':
                 if (!interaction.member.roles.cache.hasAny(...roles.maindono)) {

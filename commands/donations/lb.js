@@ -6,7 +6,7 @@ const {
     Client,
     MessageActionRow,
     MessageButton,
-    MessageEmbed,
+    EmbedBuilder,
 } = require('discord.js')
 module.exports = {
     name: 'lb',
@@ -57,7 +57,7 @@ module.exports = {
                     e.discriminator
                 }\n> Donated coins: **${e.amount.toLocaleString()}**`
         )
-        const embed = new MessageEmbed()
+        const embed = new EmbedBuilder()
             .setColor('YELLOW')
             .setTimestamp()
             .setTitle('Main Donations')

@@ -2,7 +2,7 @@ const {
     Message,
     MessageActionRow,
     MessageButton,
-    MessageEmbed,
+    EmbedBuilder,
 } = require('discord.js')
 module.exports = {
     name: 'calculator',
@@ -67,7 +67,7 @@ module.exports = {
             i++
         }
         let amogus = []
-        const embed = new MessageEmbed()
+        const embed = new EmbedBuilder()
             .setTitle('🔢 Calculator')
             .setDescription(`\`\`\`\n${amogus.join('')}\n\`\`\``)
             .setColor('GREEN')

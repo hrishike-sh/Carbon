@@ -1,7 +1,7 @@
 const {
     Message,
     Client,
-    MessageEmbed,
+    EmbedBuilder,
     MessageActionRow,
     MessageButton,
     MessageSelectMenu,
@@ -22,7 +22,7 @@ module.exports = {
 
         if (!client.config.idiots.includes(message.author.id)) return
         const allDbCommands = await DBCommands.find({})
-        const embed = new MessageEmbed()
+        const embed = new EmbedBuilder()
             .setTitle('SwitchBoard')
             .setColor('NAVY')
             .setTimestamp()

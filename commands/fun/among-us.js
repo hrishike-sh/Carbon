@@ -1,7 +1,7 @@
 const {
     Client,
     Message,
-    MessageEmbed,
+    EmbedBuilder,
     MessageButton,
     MessageActionRow,
 } = require('discord.js')
@@ -49,7 +49,7 @@ module.exports = {
             client.emojis.cache.get('917727491660083220'),
             client.emojis.cache.get('917727535704457237'),
         ]
-        const joinEmbed = new MessageEmbed()
+        const joinEmbed = new EmbedBuilder()
             .setTitle('Among Us ' + emojis[0].toString())
             .setDescription(
                 'Click the **Join** button to enter the game!\n\nMax players: **10**'

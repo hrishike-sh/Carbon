@@ -1,4 +1,4 @@
-const { Message, Client, MessageEmbed } = require('discord.js')
+const { Message, Client, EmbedBuilder } = require('discord.js')
 const UserDB = require('../../database/models/user')
 module.exports = {
     name: 'highlight',
@@ -29,8 +29,9 @@ module.exports = {
             '828048225096826890',
             '825283097830096908',
             '839803117646512128',
-            '997919482934734909', 
-            '999911967319924817', '824539655134773269'
+            '997919482934734909',
+            '999911967319924817',
+            '824539655134773269',
         ]
         if (!message.member.roles.cache.hasAny(...roles))
             return message.reply(
@@ -66,7 +67,7 @@ module.exports = {
                 i++
             }
 
-            const embed = new MessageEmbed({
+            const embed = new EmbedBuilder({
                 title: 'Highlight List',
                 description: data,
                 color: 'RANDOM',

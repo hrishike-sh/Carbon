@@ -2,7 +2,7 @@ const { SlashCommandBuilder } = require('@discordjs/builders')
 const {
     CommandInteraction,
     Client,
-    MessageEmbed,
+    EmbedBuilder,
     MessageSelectMenu,
     MessageActionRow,
     SelectMenuInteraction,
@@ -22,7 +22,7 @@ module.exports = {
         const userId = interaction.user.id
         const bal1 = await db.findOne({ userId })
 
-        const Shop = new MessageEmbed()
+        const Shop = new EmbedBuilder()
             .setTitle('Token Shop [BETA]')
             .setThumbnail(client.user.displayAvatarURL())
             .setDescription(`**Tokens:** ${bal1?.tokens || 0} ${token}`)

@@ -1,4 +1,4 @@
-const { Message, Formatters, MessageEmbed } = require('discord.js')
+const { Message, Formatters, EmbedBuilder } = require('discord.js')
 const Database = require('../../database/models/giveaway')
 module.exports = {
     name: 'giveaways',
@@ -36,7 +36,7 @@ module.exports = {
                     }/${g.channelId}/${g.messageId})`
             )
 
-        const embed = new MessageEmbed()
+        const embed = new EmbedBuilder()
             .setTitle('Freeloader Machine')
             .setDescription(map.join('\n\n') || 'No active giveaways...')
             .setColor('DARK_AQUA')

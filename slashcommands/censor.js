@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require('@discordjs/builders')
-const { CommandInteraction, Client, MessageEmbed } = require('discord.js')
+const { CommandInteraction, Client, EmbedBuilder } = require('discord.js')
 const DB = require('../database/models/settingsSchema')
 
 module.exports = {
@@ -129,7 +129,7 @@ module.exports = {
 
             return interaction.reply({
                 embeds: [
-                    new MessageEmbed()
+                    new EmbedBuilder()
                         .setTitle('Censors')
                         .setColor('AQUA')
                         .setDescription(

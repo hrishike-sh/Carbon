@@ -1,7 +1,7 @@
 const { inspect } = require('util')
 const axios = require('axios')
 const {
-    MessageEmbed: Embed,
+    EmbedBuilder: Embed,
     MessageActionRow,
     MessageButton,
 } = require('discord.js')

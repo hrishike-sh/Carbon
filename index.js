@@ -3,7 +3,7 @@
 const {
     Collection,
     Client,
-    MessageEmbed,
+    EmbedBuilder,
     GatewayIntentBits,
     Partials,
 } = require('discord.js')
@@ -128,7 +128,7 @@ client.on('ready', async () => {
     })
     client.db.fighthub = client.guilds.cache.get(config.guildId)
     // LOGS
-    const restartEmbed = new MessageEmbed({
+    const restartEmbed = new EmbedBuilder({
         description: `Bot restarted <t:${(new Date() / 1000).toFixed(0)}:R>`,
     })
     client.channels.cache.get(config.logs.restartLog)?.send({
@@ -227,7 +227,7 @@ client.on('interactionCreate', async (interaction) => {
     try {
         await command.execute(interaction, client)
 
-        const commandbed = new MessageEmbed()
+        const commandbed = new EmbedBuilder()
             .setAuthor({
                 name: interaction.user.tag,
                 iconURL: interaction.user.displayAvatarURL(),
@@ -314,7 +314,7 @@ client.on('messageCreate', async (message) => {
             const timeLeft = (expirationTime - now) / 1000
             return message.reply({
                 embeds: [
-                    new MessageEmbed()
+                    new EmbedBuilder()
                         .setDescription(
                             `:x: You have to wait for **${Math.ceil(
                                 timeLeft
@@ -341,7 +341,7 @@ client.on('messageCreate', async (message) => {
     try {
         command.execute(message, args, client)
         commandsRan++
-        const commandbed = new MessageEmbed()
+        const commandbed = new EmbedBuilder()
             .setAuthor({
                 name: message.author.tag,
                 iconURL: message.author.displayAvatarURL(),

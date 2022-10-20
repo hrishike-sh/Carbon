@@ -1,4 +1,4 @@
-const { Guild, Client, MessageEmbed } = require('discord.js')
+const { Guild, Client, EmbedBuilder } = require('discord.js')
 
 module.exports = {
     name: 'guildDelete',
@@ -14,7 +14,7 @@ module.exports = {
 
         channel.send({
             embeds: [
-                new MessageEmbed()
+                new EmbedBuilder()
                     .setAuthor({
                         name: guild.name,
                         iconURL: guild.iconURL(),

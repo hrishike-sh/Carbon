@@ -1,7 +1,7 @@
 const { SlashCommandBuilder } = require('@discordjs/builders')
 const {
     CommandInteraction,
-    MessageEmbed,
+    EmbedBuilder,
     MessageActionRow,
     MessageButton,
 } = require('discord.js')
@@ -39,7 +39,7 @@ module.exports = {
             prize: interaction.options.getString('prize'),
         }
 
-        let mainEmbed = new MessageEmbed()
+        let mainEmbed = new EmbedBuilder()
             .setTitle('Split or Steal')
             .setDescription(
                 'The game will start when both the parties are ready.\nHit **Ready** when you are ready!'
@@ -136,7 +136,7 @@ module.exports = {
                     components: [components],
                 })
                 const blnk = '<:blank:914473340129906708>'
-                let sosBed = new MessageEmbed()
+                let sosBed = new EmbedBuilder()
                     .setTitle('🤝 Split or Steal 💸')
                     .setDescription(
                         `**Rules**:\n${blnk}If both parties steal, its a tie!\n${blnk}If one steals and the other splits, the stealer keeps it all!\n${blnk}If both split, the reward gets split!\n\n**Reward**: ${data.prize}`
@@ -210,7 +210,7 @@ module.exports = {
                                 .setCustomId('steal-sos')
                                 .setDisabled(),
                         ])
-                        sosBed = new MessageEmbed()
+                        sosBed = new EmbedBuilder()
                             .setTitle('🤝 Split or Steal 💸')
                             .setDescription(
                                 `**The game is over and the choices have been made.**\n\n**${

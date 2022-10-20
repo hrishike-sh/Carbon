@@ -1,7 +1,7 @@
 const { SlashCommandBuilder } = require('@discordjs/builders')
 const {
     CommandInteraction,
-    MessageEmbed,
+    EmbedBuilder,
     MessageActionRow,
     MessageButton,
 } = require('discord.js')
@@ -100,7 +100,7 @@ module.exports = {
                 message: interaction.options.getString('message') || null,
             }
 
-            const embed = new MessageEmbed()
+            const embed = new EmbedBuilder()
                 .setTitle('💵 Donation')
                 .setDescription(
                     "Please wait patiently until a Giveaway Manager is here.\nYou will be DM'd when they are ready to take your donation."
@@ -217,7 +217,7 @@ module.exports = {
                 content: 'Wait for an Event Manager...',
                 ephemeral: true,
             })
-            const embed = new MessageEmbed()
+            const embed = new EmbedBuilder()
                 .setTitle('💵 Event Donation')
                 .setDescription(
                     "Please wait patiently until an Event Manager is here.\nYou will be DM'd when they are ready to take your donation."

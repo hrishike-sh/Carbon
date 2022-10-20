@@ -1,7 +1,7 @@
 const {
     Message,
     Client,
-    MessageEmbed,
+    EmbedBuilder,
     MessageActionRow,
     MessageButton,
 } = require('discord.js')
@@ -40,7 +40,7 @@ module.exports = {
                 total.channels += guild.channels.cache.size
                 total.roles += guild.roles.cache.size
             })
-            const embed = new MessageEmbed()
+            const embed = new EmbedBuilder()
                 .setTitle('Bot Stats')
                 .addField(
                     'Up since',

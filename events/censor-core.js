@@ -1,4 +1,4 @@
-const { Message, Client, MessageEmbed } = require('discord.js')
+const { Message, Client, EmbedBuilder } = require('discord.js')
 
 module.exports = {
     name: 'messageCreate',
@@ -29,7 +29,7 @@ module.exports = {
 
                     const msg = message.channel.send({
                         embeds: [
-                            new MessageEmbed()
+                            new EmbedBuilder()
                                 .setTitle(
                                     '<:fh_timeout:952067949538181130> Timeout'
                                 )
@@ -53,7 +53,7 @@ module.exports = {
 
                     const msg = message.channel.send({
                         embeds: [
-                            new MessageEmbed()
+                            new EmbedBuilder()
                                 .setTitle(
                                     '<:fh_timeout:952067949538181130> Timeout'
                                 )

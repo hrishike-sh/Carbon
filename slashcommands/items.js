@@ -1,7 +1,7 @@
 const { SlashCommandBuilder } = require('@discordjs/builders')
 const {
     CommandInteraction,
-    MessageEmbed,
+    EmbedBuilder,
     MessageActionRow,
     MessageButton,
 } = require('discord.js')
@@ -59,7 +59,7 @@ module.exports = {
             content: 'Use the buttons to navigate.',
             ephemeral: true,
         })
-        const embed = new MessageEmbed()
+        const embed = new EmbedBuilder()
             .setTitle('Dank Memer Items')
             .setColor('AQUA')
             .setDescription(Items[0].join(`\n\n`))

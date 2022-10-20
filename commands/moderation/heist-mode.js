@@ -1,4 +1,4 @@
-const { Client, Message, MessageEmbed } = require('discord.js')
+const { Client, Message, EmbedBuilder } = require('discord.js')
 const db = require('../../database/models/settingsSchema')
 module.exports = {
     name: 'heist-mode',
@@ -36,7 +36,7 @@ module.exports = {
         const { heistMode } = server
 
         if (!args[0]) {
-            const helpBed = new MessageEmbed()
+            const helpBed = new EmbedBuilder()
                 .setAuthor(
                     message.author.tag,
                     message.author.displayAvatarURL()
@@ -90,7 +90,7 @@ module.exports = {
             } else {
                 heistMode.enabled = false
 
-                const embed = new MessageEmbed()
+                const embed = new EmbedBuilder()
                     .setTitle('HeistMode Stats')
                     .setDescription(
                         `The stats for the heist (from <t:${(
@@ -123,7 +123,7 @@ module.exports = {
                 })
             }
         } else if (firstArg === 'stats' || firstArg === 'stat') {
-            const embed = new MessageEmbed()
+            const embed = new EmbedBuilder()
                 .setTitle('HeistMode Stats')
                 .setDescription(
                     `The stats for the heist (from <t:${(
