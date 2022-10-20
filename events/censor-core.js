@@ -11,7 +11,7 @@ module.exports = {
     async execute(message, client) {
         if (message.guild.id !== client.db.fighthub.id) return
         if (message.author.bot) return
-        if (message.member.permissions.has('MANAGE_MESSAGES')) return
+        if (message.member.permissions.has('ManageMessages')) return
 
         const censors = client.db.censors
 
