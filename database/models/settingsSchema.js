@@ -5,6 +5,11 @@ const SettingsSchema = new mongoose.Schema({
     donationRoles: { type: [String] },
     logChannel: { type: String },
     gtnRole: { type: [String] },
+    skullBoard: {
+        enabled: Boolean,
+        count: Number,
+        channelId: String,
+    },
     disabledDrop: { type: [String] },
     snipe_config: {
         enabled: Boolean,
