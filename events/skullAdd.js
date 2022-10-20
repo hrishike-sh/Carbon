@@ -42,7 +42,9 @@ module.exports = {
             })
             .setDescription(message.content || ' ')
             .setImage(message.attachments.first()?.url)
-            .setFooter('Use this in your own server by using `/skullboard`!')
+            .setFooter({
+                text: 'Use this in your own server by using `/skullboard`!',
+            })
             .setTitle(`**${exists.count.toLocaleString()} :skull:**`)
         const channel = client.channels.cache.get(channelId)
         if (!channel) return
