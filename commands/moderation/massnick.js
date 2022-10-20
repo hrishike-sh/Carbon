@@ -2,9 +2,9 @@
 //     name: 'massnick',
 //     aliases: ['dis'],
 //     async execute(message) {
-//         if (!message.member.permissions.has('ADMINISTATOR'))
+//         if (!message.member.permissions.has('Administrator'))
 //             return message.channel.send(
-//                 'You must have ADMINISTATOR perms to perform this action.'
+//                 'You must have Administrator perms to perform this action.'
 //             )
 
 //         const ask1 = await message.channel.send(

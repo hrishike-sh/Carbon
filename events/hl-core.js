@@ -59,7 +59,7 @@ module.exports = {
                 continue
             }
 
-            if (!member.permissionsIn(message.channel).has('VIEW_CHANNEL'))
+            if (!member.permissionsIn(message.channel).has('ViewChannel'))
                 continue
             if (talked.includes(member.id)) continue
 

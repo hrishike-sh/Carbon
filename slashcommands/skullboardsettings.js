@@ -44,7 +44,7 @@ module.exports = {
                 .setDescription("See your server's SkullBoard settings!")
         }),
     async execute(interaction, client) {
-        if (!interaction.member.permissions.has('ADMINISTATOR'))
+        if (!interaction.member.permissions.has('Administrator'))
             return interaction.reply('You need to be an Admin to use this!')
 
         const data = {

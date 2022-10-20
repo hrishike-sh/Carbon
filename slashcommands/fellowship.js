@@ -215,7 +215,7 @@ module.exports = {
                 data.owner3.id,
             ]) {
                 data.channel.permissionOverwrites.edit(sus, {
-                    VIEW_CHANNEL: true,
+                    ViewChannel: true,
                     SEND_MESSAGES: true,
                 })
             }
@@ -305,7 +305,7 @@ module.exports = {
             await interaction.guild.channels.cache
                 .get(fellowship.channelId)
                 .permissionOverwrites.edit(data.user.id, {
-                    VIEW_CHANNEL: true,
+                    ViewChannel: true,
                     SEND_MESSAGES: true,
                 })
             fellowship.save()
@@ -347,7 +347,7 @@ module.exports = {
             await interaction.guild.channels.cache
                 .get(fellowship.channelId)
                 .permissionOverwrites.edit(data.user.id, {
-                    VIEW_CHANNEL: false,
+                    ViewChannel: false,
                     SEND_MESSAGES: false,
                 })
             fellowship.save()

@@ -11,7 +11,7 @@ module.exports = {
         // fh lockset message [message]
         if (!message.member.permissions.has('ADMINISTRATOR'))
             return message.channel.send(
-                `You must have the ADMINISTATOR permission to run this command`
+                `You must have the Administrator permission to run this command`
             )
         let serversettings = await db.findOne({ guildID: message.guild.id })
 

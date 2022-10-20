@@ -60,7 +60,7 @@ module.exports = {
         try {
             if (data.user) {
                 channel.permissionOverwrites.edit(data.user.id, {
-                    VIEW_CHANNEL: false,
+                    ViewChannel: false,
                 })
 
                 return interaction.reply({
@@ -68,7 +68,7 @@ module.exports = {
                 })
             } else if (data.role) {
                 channel.permissionOverwrites.edit(data.role.id, {
-                    VIEW_CHANNEL: false,
+                    ViewChannel: false,
                 })
 
                 return interaction.reply({
@@ -80,7 +80,7 @@ module.exports = {
                 channel.permissionOverwrites.edit(
                     channel.guild.roles.everyone,
                     {
-                        VIEW_CHANNEL: false,
+                        ViewChannel: false,
                     }
                 )
 

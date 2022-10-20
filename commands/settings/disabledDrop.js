@@ -13,7 +13,7 @@ module.exports = {
     async execute(message, args, client) {
         if (!message.member.permissions.has('ADMINISTRATOR')) {
             message.channel.send(
-                'You need the `ADMINISTATOR` permission to run this command.'
+                'You need the `Administrator` permission to run this command.'
             )
             return
         }

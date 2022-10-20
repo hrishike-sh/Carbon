@@ -30,9 +30,7 @@ module.exports = {
                 )
             ) {
                 if (
-                    !member
-                        .permissionsIn(message.channel.id)
-                        .has('VIEW_CHANNEL')
+                    !member.permissionsIn(message.channel.id).has('ViewChannel')
                 ) {
                     return
                 }
