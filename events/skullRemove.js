@@ -2,7 +2,7 @@ const { MessageActionRow, MessageButton, EmbedBuilder } = require('discord.js')
 const serverSettings = require('../database/models/settingsSchema')
 const skulls = require('../database/models/skullboard')
 module.exports = {
-    name: 'messageReactionAdd',
+    name: 'messageReactionRemove',
     once: false,
     async execute(reaction, user, client) {
         console.log(`Reaction Removed; name: ${reaction.emoji.name}`)
