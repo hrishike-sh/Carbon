@@ -2,8 +2,8 @@ const { SlashCommandBuilder } = require('@discordjs/builders')
 const {
     CommandInteraction,
     EmbedBuilder,
-    MessageActionRow,
-    MessageButton,
+    ActionRowBuilder,
+    ButtonBuilder,
 } = require('discord.js')
 const db = require('../database/models/itemSchema')
 
@@ -70,20 +70,20 @@ module.exports = {
         const mainMessage = await interaction.channel.send({
             embeds: [embed],
             components: [
-                new MessageActionRow().addComponents([
-                    new MessageButton()
+                new ActionRowBuilder().addComponents([
+                    new ButtonBuilder()
                         .setEmoji('⏪')
                         .setCustomId('first-items')
                         .setStyle('SECONDARY'),
-                    new MessageButton()
+                    new ButtonBuilder()
                         .setEmoji('◀️')
                         .setCustomId('prev-items')
                         .setStyle('SECONDARY'),
-                    new MessageButton()
+                    new ButtonBuilder()
                         .setEmoji('▶️')
                         .setCustomId('next-items')
                         .setStyle('SECONDARY'),
-                    new MessageButton()
+                    new ButtonBuilder()
                         .setEmoji('⏩')
                         .setCustomId('last-items')
                         .setStyle('SECONDARY'),

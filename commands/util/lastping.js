@@ -1,8 +1,8 @@
 const {
     Message,
     EmbedBuilder,
-    MessageActionRow,
-    MessageButton,
+    ActionRowBuilder,
+    ButtonBuilder,
 } = require('discord.js')
 const Pings = require('../../database/models/ping')
 module.exports = {
@@ -66,8 +66,8 @@ module.exports = {
             content: 'Only 10 recent pings are shown...',
             embeds: [PingBed],
             components: [
-                new MessageActionRow().addComponents([
-                    new MessageButton()
+                new ActionRowBuilder().addComponents([
+                    new ButtonBuilder()
                         .setStyle('PRIMARY')
                         .setLabel('Clear inbox')
                         .setEmoji('📭')
@@ -93,8 +93,8 @@ module.exports = {
             inboxMessage.edit({
                 embeds: [PingBed],
                 components: [
-                    new MessageActionRow().addComponents([
-                        new MessageButton()
+                    new ActionRowBuilder().addComponents([
+                        new ButtonBuilder()
                             .setStyle('PRIMARY')
                             .setLabel('Clear inbox')
                             .setEmoji('📭')

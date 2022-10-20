@@ -4,8 +4,8 @@ const Grinds = require('../../functions/grind-dono')
 const Special = require('../../functions/another-dono-thing-whyy')
 const {
     EmbedBuilder,
-    MessageButton,
-    MessageActionRow,
+    ButtonBuilder,
+    ActionRowBuilder,
     Message,
 } = require('discord.js')
 
@@ -66,27 +66,27 @@ module.exports = {
             heistAmount.amount +
             specialAmount.amount
 
-        let buttonD = new MessageButton()
+        let buttonD = new ButtonBuilder()
             .setLabel('Donations')
             .setStyle('SECONDARY')
             .setCustomId('myd-d')
 
-        let buttonH = new MessageButton()
+        let buttonH = new ButtonBuilder()
             .setLabel('Heist Donations')
             .setCustomId('myd-h')
             .setStyle('SECONDARY')
 
-        let buttonG = new MessageButton()
+        let buttonG = new ButtonBuilder()
             .setLabel('Grinder Donations')
             .setCustomId('myd-g')
             .setStyle('SECONDARY')
 
-        let buttonS = new MessageButton()
+        let buttonS = new ButtonBuilder()
             .setLabel('FF Donations')
             .setCustomId('myd-s')
             .setStyle('SECONDARY')
 
-        let row = new MessageActionRow().addComponents([
+        let row = new ActionRowBuilder().addComponents([
             buttonD,
             buttonH,
             buttonG,
@@ -226,7 +226,7 @@ module.exports = {
                 buttonG = buttonG.setStyle('SECONDARY').setDisabled(false)
                 buttonS = buttonS.setStyle('SECONDARY').setDisabled(false)
 
-                row = new MessageActionRow().addComponents([
+                row = new ActionRowBuilder().addComponents([
                     buttonD,
                     buttonH,
                     buttonG,
@@ -245,7 +245,7 @@ module.exports = {
                 buttonG = buttonG.setStyle('SECONDARY').setDisabled(false)
                 buttonS = buttonS.setStyle('SECONDARY').setDisabled(false)
 
-                row = new MessageActionRow().addComponents([
+                row = new ActionRowBuilder().addComponents([
                     buttonD,
                     buttonH,
                     buttonG,
@@ -265,7 +265,7 @@ module.exports = {
                 buttonH = buttonH.setStyle('SECONDARY').setDisabled(false)
                 buttonS = buttonS.setStyle('SECONDARY').setDisabled(false)
 
-                row = new MessageActionRow().addComponents([
+                row = new ActionRowBuilder().addComponents([
                     buttonD,
                     buttonH,
                     buttonG,
@@ -285,7 +285,7 @@ module.exports = {
                 buttonG = buttonG.setStyle('SECONDARY').setDisabled(false)
                 buttonH = buttonH.setStyle('SECONDARY').setDisabled(false)
 
-                row = new MessageActionRow().addComponents([
+                row = new ActionRowBuilder().addComponents([
                     buttonD,
                     buttonH,
                     buttonG,
@@ -307,7 +307,7 @@ module.exports = {
             buttonG = buttonG.setStyle('SECONDARY').setDisabled()
             buttonH = buttonH.setStyle('SECONDARY').setDisabled()
 
-            row = new MessageActionRow().addComponents([
+            row = new ActionRowBuilder().addComponents([
                 buttonD,
                 buttonH,
                 buttonG,

@@ -2,8 +2,8 @@ const {
     Message,
     Client,
     EmbedBuilder,
-    MessageActionRow,
-    MessageButton,
+    ActionRowBuilder,
+    ButtonBuilder,
 } = require('discord.js')
 const axios = require('axios')
 const { inspect } = require('util')

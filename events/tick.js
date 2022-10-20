@@ -1,8 +1,8 @@
 const {
     Client,
     EmbedBuilder,
-    MessageActionRow,
-    MessageButton,
+    ActionRowBuilder,
+    ButtonBuilder,
     Message,
     TextChannel,
     Collection,
@@ -310,8 +310,8 @@ module.exports = {
                                             ),
                                     ],
                                     components: [
-                                        new MessageActionRow().addComponents([
-                                            new MessageButton()
+                                        new ActionRowBuilder().addComponents([
+                                            new ButtonBuilder()
                                                 .setLabel(
                                                     `🎉 ${giveaway.entries.length.toLocaleString()}`
                                                 )
@@ -330,14 +330,14 @@ module.exports = {
                                         100
                                     ).toFixed(3)}%**`,
                                     components: [
-                                        new MessageActionRow().addComponents([
-                                            new MessageButton()
+                                        new ActionRowBuilder().addComponents([
+                                            new ButtonBuilder()
                                                 .setLabel('Jump')
                                                 .setStyle('LINK')
                                                 .setURL(
                                                     `https://discord.com/channels/${giveaway.guildId}/${giveaway.channelId}/${giveaway.messageId}`
                                                 ),
-                                            new MessageButton()
+                                            new ButtonBuilder()
                                                 .setLabel('Reroll')
                                                 .setCustomId('giveaway-reroll')
                                                 .setStyle('SECONDARY'),

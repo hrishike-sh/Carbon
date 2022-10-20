@@ -2,8 +2,8 @@ const { SlashCommandBuilder } = require('@discordjs/builders')
 const {
     CommandInteraction,
     EmbedBuilder,
-    MessageActionRow,
-    MessageButton,
+    ActionRowBuilder,
+    ButtonBuilder,
 } = require('discord.js')
 
 module.exports = {
@@ -128,12 +128,12 @@ module.exports = {
                 content: `<@&${giveawayRole}>, ${interaction.user.toString()} wants to host a giveaway!`,
                 embeds: [embed],
                 components: [
-                    new MessageActionRow().addComponents([
-                        new MessageButton()
+                    new ActionRowBuilder().addComponents([
+                        new ButtonBuilder()
                             .setCustomId('accept-dono')
                             .setLabel('Accept')
                             .setStyle('SUCCESS'),
-                        new MessageButton()
+                        new ButtonBuilder()
                             .setCustomId('deny-dono')
                             .setLabel('Deny')
                             .setStyle('DANGER'),
@@ -233,12 +233,12 @@ module.exports = {
                 content: `<@&${eventManRole}>, ${interaction.user.toString()} wants to host an event!`,
                 embeds: [embed],
                 components: [
-                    new MessageActionRow().addComponents([
-                        new MessageButton()
+                    new ActionRowBuilder().addComponents([
+                        new ButtonBuilder()
                             .setCustomId('accept-dono')
                             .setLabel('Accept')
                             .setStyle('SUCCESS'),
-                        new MessageButton()
+                        new ButtonBuilder()
                             .setCustomId('deny-dono')
                             .setLabel('Deny')
                             .setStyle('DANGER'),

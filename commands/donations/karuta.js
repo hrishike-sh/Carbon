@@ -2,8 +2,8 @@ const {
     Message,
     Client,
     EmbedBuilder,
-    MessageActionRow,
-    MessageButton,
+    ActionRowBuilder,
+    ButtonBuilder,
 } = require('discord.js')
 const EventModel = require('../../database/models/30k')
 const emojis = [
@@ -82,13 +82,13 @@ module.exports = {
         const main = await message.reply({
             embeds: [donoEmbed],
             components: [
-                new MessageActionRow().addComponents([
-                    new MessageButton()
+                new ActionRowBuilder().addComponents([
+                    new ButtonBuilder()
                         .setStyle('PRIMARY')
                         .setLabel('Donation')
                         .setCustomId('30k-view_dono')
                         .setDisabled(),
-                    new MessageButton()
+                    new ButtonBuilder()
                         .setStyle('SECONDARY')
                         .setLabel('Leaderboard')
                         .setCustomId('30k-lb'),

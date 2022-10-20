@@ -1,7 +1,7 @@
 const {
     EmbedBuilder,
-    MessageButton,
-    MessageActionRow,
+    ButtonBuilder,
+    ActionRowBuilder,
     Message,
 } = require('discord.js')
 
@@ -41,12 +41,12 @@ module.exports = {
                     },
                 ],
                 components: [
-                    new MessageActionRow().addComponents([
-                        new MessageButton()
+                    new ActionRowBuilder().addComponents([
+                        new ButtonBuilder()
                             .setStyle('SUCCESS')
                             .setCustomId('hg-yes')
                             .setLabel('Accept'),
-                        new MessageButton()
+                        new ButtonBuilder()
                             .setStyle('DANGER')
                             .setCustomId('hg-no')
                             .setLabel('Deny'),

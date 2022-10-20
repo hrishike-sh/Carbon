@@ -2,8 +2,8 @@ const {
     Message,
     Client,
     EmbedBuilder,
-    MessageButton,
-    MessageActionRow,
+    ButtonBuilder,
+    ActionRowBuilder,
     Collection,
 } = require('discord.js')
 const userSchema = require('../database/models/user')
@@ -96,8 +96,8 @@ module.exports = {
                     'Your HL was triggered in ' + message.channel.toString(),
                 embeds: [embed],
                 components: [
-                    new MessageActionRow().addComponents([
-                        new MessageButton()
+                    new ActionRowBuilder().addComponents([
+                        new ButtonBuilder()
                             .setStyle('LINK')
                             .setURL(message.url)
                             .setLabel('Jump to Message'),

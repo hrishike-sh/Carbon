@@ -1,8 +1,8 @@
 const { SlashCommandBuilder } = require('@discordjs/builders')
 const {
     CommandInteraction,
-    MessageActionRow,
-    MessageButton,
+    ActionRowBuilder,
+    ButtonBuilder,
 } = require('discord.js')
 
 module.exports = {
@@ -52,8 +52,8 @@ module.exports = {
                 },
             ],
             components: [
-                new MessageActionRow().addComponents([
-                    new MessageButton()
+                new ActionRowBuilder().addComponents([
+                    new ButtonBuilder()
                         .setLabel('Accept')
                         .setStyle('PRIMARY')
                         .setCustomId('mm-accept'),

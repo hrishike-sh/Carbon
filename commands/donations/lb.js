@@ -4,8 +4,8 @@ const Special = require('../../functions/another-dono-thing-whyy')
 const {
     Message,
     Client,
-    MessageActionRow,
-    MessageButton,
+    ActionRowBuilder,
+    ButtonBuilder,
     EmbedBuilder,
 } = require('discord.js')
 module.exports = {
@@ -66,17 +66,17 @@ module.exports = {
             content: message.author.toString(),
             embeds: [embed],
             components: [
-                new MessageActionRow().addComponents([
-                    new MessageButton()
+                new ActionRowBuilder().addComponents([
+                    new ButtonBuilder()
                         .setLabel('Main')
                         .setCustomId('main-lb')
                         .setStyle('SUCCESS')
                         .setDisabled(),
-                    new MessageButton()
+                    new ButtonBuilder()
                         .setLabel('Heists')
                         .setCustomId('heist-lb')
                         .setStyle('SUCCESS'),
-                    new MessageButton()
+                    new ButtonBuilder()
                         .setLabel('Fighters Fiesta')
                         .setCustomId('ff-lb')
                         .setStyle('SUCCESS'),

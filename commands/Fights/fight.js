@@ -1,7 +1,7 @@
 const {
     Message,
-    MessageActionRow,
-    MessageButton,
+    ActionRowBuilder,
+    ButtonBuilder,
     EmbedBuilder,
 } = require('discord.js')
 let fighting = []
@@ -112,12 +112,12 @@ module.exports = {
         const confirMessage = await message.reply({
             content: `${target.toString()} do you accept their challenge?`,
             components: [
-                new MessageActionRow().addComponents([
-                    new MessageButton()
+                new ActionRowBuilder().addComponents([
+                    new ButtonBuilder()
                         .setCustomId('fight-yes')
                         .setStyle('SUCCESS')
                         .setLabel('Accept'),
-                    new MessageButton()
+                    new ButtonBuilder()
                         .setCustomId('fight-no')
                         .setStyle('DANGER')
                         .setLabel('Deny'),
@@ -172,13 +172,13 @@ module.exports = {
                 content: `${current.user.toString()} its your turn!`,
                 embeds: [fightEmbed],
                 components: [
-                    new MessageActionRow().addComponents([
-                        new MessageButton()
+                    new ActionRowBuilder().addComponents([
+                        new ButtonBuilder()
                             .setStyle('PRIMARY')
                             .setCustomId('attack')
                             .setLabel('Attack')
                             .setEmoji('🗡️'),
-                        new MessageButton()
+                        new ButtonBuilder()
                             .setStyle('PRIMARY')
                             .setCustomId('heal')
                             .setLabel('Heal')

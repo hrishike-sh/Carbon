@@ -1,4 +1,4 @@
-const { MessageActionRow, MessageButton, EmbedBuilder } = require('discord.js')
+const { ActionRowBuilder, ButtonBuilder, EmbedBuilder } = require('discord.js')
 const serverSettings = require('../database/models/settingsSchema')
 const skulls = require('../database/models/skullboard')
 module.exports = {
@@ -57,8 +57,8 @@ module.exports = {
         const temp = await channel.send({
             embeds: [embed],
             components: [
-                new MessageActionRow().addComponents([
-                    new MessageButton()
+                new ActionRowBuilder().addComponents([
+                    new ButtonBuilder()
                         .setEmoji('skull')
                         .setStyle('LINK')
                         .setURL(message.url)

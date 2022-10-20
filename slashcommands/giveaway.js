@@ -3,8 +3,8 @@ const { ChannelType } = require('discord-api-types/v9')
 const {
     CommandInteraction,
     EmbedBuilder,
-    MessageActionRow,
-    MessageButton,
+    ActionRowBuilder,
+    ButtonBuilder,
 } = require('discord.js')
 const ms = require('ms')
 const giveaway = require('../database/models/giveaway')
@@ -153,8 +153,8 @@ module.exports = {
                     .setColor('GREEN')
             )
         channel = interaction.guild.channels.cache.get(channel.id)
-        const row = new MessageActionRow().addComponents([
-            new MessageButton()
+        const row = new ActionRowBuilder().addComponents([
+            new ButtonBuilder()
                 .setEmoji('🎉')
                 .setCustomId('giveaway-join')
                 .setStyle('SUCCESS'),

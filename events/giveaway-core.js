@@ -1,9 +1,9 @@
 const {
-    MessageButton,
+    ButtonBuilder,
     Client,
     EmbedBuilder,
     Interaction,
-    MessageActionRow,
+    ActionRowBuilder,
     ButtonInteraction,
     Message,
     Collection,
@@ -57,8 +57,8 @@ module.exports = {
                             .setFields(button.message.embeds[0].fields),
                     ],
                     components: [
-                        new MessageActionRow().addComponents([
-                            new MessageButton()
+                        new ActionRowBuilder().addComponents([
+                            new ButtonBuilder()
                                 .setLabel(
                                     `🎉 ${gaw.entries.length.toLocaleString()}`
                                 )
@@ -85,12 +85,12 @@ module.exports = {
                             .setColor('YELLOW'),
                     ],
                     components: [
-                        new MessageActionRow().addComponents([
-                            new MessageButton()
+                        new ActionRowBuilder().addComponents([
+                            new ButtonBuilder()
                                 .setLabel('Leave giveaway')
                                 .setCustomId('giveaway-leave')
                                 .setStyle('DANGER'),
-                            new MessageButton()
+                            new ButtonBuilder()
                                 .setLabel('Thank the sponsor')
                                 .setEmoji('♥')
                                 .setCustomId('giveaway-thank')
@@ -195,12 +195,12 @@ module.exports = {
                         }),
                 ],
                 components: [
-                    new MessageActionRow().addComponents([
-                        new MessageButton()
+                    new ActionRowBuilder().addComponents([
+                        new ButtonBuilder()
                             .setLabel('Leave giveaway')
                             .setCustomId('giveaway-leave')
                             .setStyle('DANGER'),
-                        new MessageButton()
+                        new ButtonBuilder()
                             .setLabel('Thank the sponsor')
                             .setEmoji('♥')
                             .setCustomId('giveaway-thank')
@@ -256,14 +256,14 @@ module.exports = {
                     100
                 ).toFixed(3)}%**`,
                 components: [
-                    new MessageActionRow().addComponents([
-                        new MessageButton()
+                    new ActionRowBuilder().addComponents([
+                        new ButtonBuilder()
                             .setLabel('Jump')
                             .setStyle('LINK')
                             .setURL(
                                 `https://discord.com/channels/${gaww.guildId}/${gaww.channelId}/${gaww.messageId}`
                             ),
-                        new MessageButton()
+                        new ButtonBuilder()
                             .setLabel('Reroll')
                             .setCustomId('giveaway-reroll')
                             .setStyle('SECONDARY'),

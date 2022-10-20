@@ -1,4 +1,4 @@
-const { MessageButton, MessageActionRow } = require('discord.js')
+const { ButtonBuilder, ActionRowBuilder } = require('discord.js')
 
 module.exports = {
     name: 'nop',
@@ -30,20 +30,20 @@ module.exports = {
                 '<:fh_pandaheist:861300228803002368> • <@&824916332230737940>',
         }
 
-        const annBut = new MessageButton()
+        const annBut = new ButtonBuilder()
             .setCustomId('par_ping')
             .setEmoji('861299771612594196')
             .setStyle('SECONDARY')
-        const nitBut = new MessageButton()
+        const nitBut = new ButtonBuilder()
             .setCustomId('no_par_ping')
             .setEmoji('824904307337723905')
             .setStyle('SECONDARY')
-        const gawBut = new MessageButton()
+        const gawBut = new ButtonBuilder()
             .setCustomId('par_hes_ping')
             .setEmoji('861300228803002368')
             .setStyle('SECONDARY')
 
-        const row1 = new MessageActionRow().addComponents([
+        const row1 = new ActionRowBuilder().addComponents([
             annBut,
             nitBut,
             gawBut,

@@ -2,8 +2,8 @@ const {
     Client,
     Message,
     EmbedBuilder,
-    MessageButton,
-    MessageActionRow,
+    ButtonBuilder,
+    ActionRowBuilder,
 } = require('discord.js')
 const ms = require('better-ms')
 const db = require('../../database/models/timer')
@@ -49,11 +49,11 @@ module.exports = {
             ended: false,
         })
         message.delete()
-        const RemindBut = new MessageButton()
+        const RemindBut = new ButtonBuilder()
             .setEmoji('🔔')
             .setStyle('SUCCESS')
             .setCustomId('remind_me')
-        const row = new MessageActionRow().addComponents([RemindBut])
+        const row = new ActionRowBuilder().addComponents([RemindBut])
         const msg = await message.channel.send({
             embeds: [
                 new EmbedBuilder()

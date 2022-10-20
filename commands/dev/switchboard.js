@@ -2,8 +2,8 @@ const {
     Message,
     Client,
     EmbedBuilder,
-    MessageActionRow,
-    MessageButton,
+    ActionRowBuilder,
+    ButtonBuilder,
     MessageSelectMenu,
     SelectMenuInteraction,
 } = require('discord.js')
@@ -39,12 +39,12 @@ module.exports = {
                 "Slash Commands won't work if this is disabled. Example: `/wordle`",
                 true
             )
-        const components = new MessageActionRow().addComponents([
-            new MessageButton()
+        const components = new ActionRowBuilder().addComponents([
+            new ButtonBuilder()
                 .setLabel(`Commands`)
                 .setStyle(switches.commands ? 'SUCCESS' : 'DANGER')
                 .setCustomId('commands-switch'),
-            new MessageButton()
+            new ButtonBuilder()
                 .setLabel(`Slash Commands`)
                 .setStyle(switches.slashCommands ? 'SUCCESS' : 'DANGER')
                 .setCustomId('scommands-switch'),
@@ -144,9 +144,9 @@ module.exports = {
                 const newCollector = (
                     await mainMessage.edit({
                         components: [
-                            new MessageActionRow().addComponents([selection]),
-                            new MessageActionRow().addComponents([selection2]),
-                            new MessageActionRow().addComponents([selection3]),
+                            new ActionRowBuilder().addComponents([selection]),
+                            new ActionRowBuilder().addComponents([selection2]),
+                            new ActionRowBuilder().addComponents([selection3]),
                         ],
                     })
                 ).createMessageComponentCollector({

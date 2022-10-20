@@ -1,7 +1,7 @@
 const {
     Message,
-    MessageActionRow,
-    MessageButton,
+    ActionRowBuilder,
+    ButtonBuilder,
     EmbedBuilder,
 } = require('discord.js')
 module.exports = {
@@ -42,10 +42,10 @@ module.exports = {
             ],
         ]
         const components = [
-            new MessageActionRow(),
-            new MessageActionRow(),
-            new MessageActionRow(),
-            new MessageActionRow(),
+            new ActionRowBuilder(),
+            new ActionRowBuilder(),
+            new ActionRowBuilder(),
+            new ActionRowBuilder(),
         ]
         let i = 0
         for (const array of arrays) {
@@ -57,7 +57,7 @@ module.exports = {
                     `Label: ${arra[j][0]} - Custom ID: ${arra[j][1]} - Style: ${arra[j][2]}`
                 )
                 components[i].addComponents([
-                    new MessageButton()
+                    new ButtonBuilder()
                         .setLabel(arra[j])
                         .setCustomId(arra[++j])
                         .setStyle(arra[++j]),

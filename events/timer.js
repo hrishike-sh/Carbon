@@ -1,8 +1,8 @@
 const {
     Client,
     Message,
-    MessageActionRow,
-    MessageButton,
+    ActionRowBuilder,
+    ButtonBuilder,
     Collection,
 } = require('discord.js')
 const { splitMessage } = require('../node_modules/discord.js/src/util/Util')
@@ -71,8 +71,8 @@ module.exports = {
                         message.channel.send({
                             content: `The timer for **${message.embeds[0].title}** has ended!`,
                             components: [
-                                new MessageActionRow().addComponents([
-                                    new MessageButton()
+                                new ActionRowBuilder().addComponents([
+                                    new ButtonBuilder()
                                         .setLabel('Jump')
                                         .setStyle('LINK')
                                         .setURL(message.url),

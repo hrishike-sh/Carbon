@@ -2,8 +2,8 @@ const { inspect } = require('util')
 const axios = require('axios')
 const {
     EmbedBuilder: Embed,
-    MessageActionRow,
-    MessageButton,
+    ActionRowBuilder,
+    ButtonBuilder,
 } = require('discord.js')
 const { AmariBot } = require('amaribot.js')
 const Amari = new AmariBot(process.env.amariToken, {
@@ -82,9 +82,9 @@ module.exports = {
             components:
                 button === true
                     ? [
-                          new MessageActionRow({
+                          new ActionRowBuilder({
                               components: [
-                                  new MessageButton({
+                                  new ButtonBuilder({
                                       label: 'Eval Result',
                                       style: 'LINK',
                                       url: hasteURL,
@@ -100,9 +100,9 @@ module.exports = {
             components:
                 button === true
                     ? [
-                          new MessageActionRow({
+                          new ActionRowBuilder({
                               components: [
-                                  new MessageButton({
+                                  new ButtonBuilder({
                                       label: 'Eval Result',
                                       style: 'LINK',
                                       url: hasteURL,

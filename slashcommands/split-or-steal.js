@@ -2,8 +2,8 @@ const { SlashCommandBuilder } = require('@discordjs/builders')
 const {
     CommandInteraction,
     EmbedBuilder,
-    MessageActionRow,
-    MessageButton,
+    ActionRowBuilder,
+    ButtonBuilder,
 } = require('discord.js')
 
 module.exports = {
@@ -47,8 +47,8 @@ module.exports = {
             .setColor('YELLOW')
             .setTimestamp()
 
-        let components = new MessageActionRow().addComponents([
-            new MessageButton()
+        let components = new ActionRowBuilder().addComponents([
+            new ButtonBuilder()
                 .setLabel('READY')
                 .setStyle('SUCCESS')
                 .setCustomId('ready-sos'),
@@ -123,8 +123,8 @@ module.exports = {
             }
 
             if (gamedata.user1.ready && gamedata.user2.ready) {
-                components = new MessageActionRow().addComponents([
-                    new MessageButton()
+                components = new ActionRowBuilder().addComponents([
+                    new ButtonBuilder()
                         .setLabel('READY')
                         .setStyle('SUCCESS')
                         .setCustomId('ready-sos')
@@ -142,13 +142,13 @@ module.exports = {
                         `**Rules**:\n${blnk}If both parties steal, its a tie!\n${blnk}If one steals and the other splits, the stealer keeps it all!\n${blnk}If both split, the reward gets split!\n\n**Reward**: ${data.prize}`
                     )
                     .setFooter('Good luck!')
-                let newPonents = new MessageActionRow().addComponents([
-                    new MessageButton()
+                let newPonents = new ActionRowBuilder().addComponents([
+                    new ButtonBuilder()
                         .setEmoji('🤝')
                         .setLabel('Split')
                         .setStyle('PRIMARY')
                         .setCustomId('split-sos'),
-                    new MessageButton()
+                    new ButtonBuilder()
                         .setEmoji('💸')
                         .setLabel('Steal')
                         .setStyle('PRIMARY')
@@ -196,14 +196,14 @@ module.exports = {
                     user.choice = choice
                     but.deferUpdate()
                     if (gamedata.user1.choice && gamedata.user2.choice) {
-                        newPonents = new MessageActionRow().addComponents([
-                            new MessageButton()
+                        newPonents = new ActionRowBuilder().addComponents([
+                            new ButtonBuilder()
                                 .setEmoji('🤝')
                                 .setLabel('Split')
                                 .setStyle('PRIMARY')
                                 .setCustomId('split-sos')
                                 .setDisabled(),
-                            new MessageButton()
+                            new ButtonBuilder()
                                 .setEmoji('💸')
                                 .setLabel('Steal')
                                 .setStyle('PRIMARY')

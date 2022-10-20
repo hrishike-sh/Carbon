@@ -3,8 +3,8 @@ const {
     CommandInteraction,
     EmbedBuilder,
     Message,
-    MessageActionRow,
-    MessageButton,
+    ActionRowBuilder,
+    ButtonBuilder,
 } = require('discord.js')
 const db = require('../database/models/submissionSchema')
 module.exports = {
@@ -56,12 +56,12 @@ module.exports = {
                     'No valid link was provided.\nThe link should end in either .jpeg, .jpg, .gif or .png',
             })
         }
-        const row = new MessageActionRow().addComponents([
-            new MessageButton()
+        const row = new ActionRowBuilder().addComponents([
+            new ButtonBuilder()
                 .setLabel('Confirm')
                 .setStyle('SUCCESS')
                 .setCustomId('yes-submit'),
-            new MessageButton()
+            new ButtonBuilder()
                 .setLabel('No, go back.')
                 .setStyle('DANGER')
                 .setCustomId('no-submit'),
@@ -124,12 +124,12 @@ module.exports = {
                 interaction.client.channels.cache.get(submissionsChannel).send({
                     embeds: [embed],
                     components: [
-                        new MessageActionRow().addComponents([
-                            new MessageButton()
+                        new ActionRowBuilder().addComponents([
+                            new ButtonBuilder()
                                 .setLabel('Accept')
                                 .setCustomId('accept-submit')
                                 .setStyle('SUCCESS'),
-                            new MessageButton()
+                            new ButtonBuilder()
                                 .setStyle('DANGER')
                                 .setLabel('Deny')
                                 .setCustomId('deny-submit'),

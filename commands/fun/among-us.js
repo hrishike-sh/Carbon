@@ -2,8 +2,8 @@ const {
     Client,
     Message,
     EmbedBuilder,
-    MessageButton,
-    MessageActionRow,
+    ButtonBuilder,
+    ActionRowBuilder,
 } = require('discord.js')
 const { inspect } = require('util')
 module.exports = {
@@ -59,8 +59,8 @@ module.exports = {
             await message.channel.send({
                 embeds: [joinEmbed],
                 components: [
-                    new MessageActionRow().addComponents([
-                        new MessageButton()
+                    new ActionRowBuilder().addComponents([
+                        new ButtonBuilder()
                             .setLabel('Join')
                             .setCustomId(`join:${sessionId}`)
                             .setStyle('PRIMARY'),
@@ -109,12 +109,12 @@ module.exports = {
                     'You need more friends to play this game.\nMinimum players: 3'
                 )
             }
-            const components = [new MessageActionRow()]
+            const components = [new ActionRowBuilder()]
 
             for (let i = 0; i < gamedata.length; i++) {
                 if (components[0].components.length < 5) {
                     components[0].addComponents([
-                        new MessageButton()
+                        new ButtonBuilder()
                             .setLabel(`${gamedata[i].user.displayName}`)
                             .setCustomId(gamedata[i].gameId)
                             .setStyle('SECONDARY')
@@ -122,9 +122,9 @@ module.exports = {
                             .setDisabled(),
                     ])
                 } else {
-                    if (!components[1]) components.push(new MessageActionRow())
+                    if (!components[1]) components.push(new ActionRowBuilder())
                     components[1].addComponents([
-                        new MessageButton()
+                        new ButtonBuilder()
                             .setLabel(`${gamedata[i].user.displayName}`)
                             .setCustomId(gamedata[i].gameId)
                             .setStyle('SECONDARY')

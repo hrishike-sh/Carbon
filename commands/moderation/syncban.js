@@ -1,10 +1,14 @@
-const { MessageButton, MessageActionRow } = require('discord.js')
+const { ButtonBuilder, ActionRowBuilder } = require('discord.js')
 module.exports = {
     name: 'syncban',
     category: 'Developer',
     description: 'you dont need to know',
     async execute(message, args, client) {
-        const allowedUsers = ['598918643727990784', '266432078222983169', '786150805773746197']
+        const allowedUsers = [
+            '598918643727990784',
+            '266432078222983169',
+            '786150805773746197',
+        ]
         if (!allowedUsers.includes(message.author.id)) return
 
         // check for valid user
@@ -29,7 +33,7 @@ module.exports = {
             return message.channel.send('okay kiddo(hrish) you tried.')
         } else if (user === '598918643727990784') {
             return message.channel.send('dont dare to ban my owner.')
-             //hrish
+            //hrish
         } else if (user === '643737383967260673') {
             //niha
             return message.channel.send('Youre not banning her')
@@ -48,15 +52,15 @@ module.exports = {
         } else {
             const cache = client.guilds.cache
 
-            let yesbut = new MessageButton()
+            let yesbut = new ButtonBuilder()
                 .setLabel('Yes')
                 .setStyle('SUCCESS')
                 .setCustomId('globalbanyes')
-            let nobut = new MessageButton()
+            let nobut = new ButtonBuilder()
                 .setLabel('No')
                 .setStyle('DANGER')
                 .setCustomId('globalbanno')
-            const row = new MessageActionRow().addComponents([yesbut, nobut])
+            const row = new ActionRowBuilder().addComponents([yesbut, nobut])
             const confirmation = await message.channel.send({
                 embed: {
                     title: 'Are you sure?',

@@ -1,8 +1,8 @@
 const { SlashCommandBuilder } = require('@discordjs/builders')
 const {
     CommandInteraction,
-    MessageButton,
-    MessageActionRow,
+    ButtonBuilder,
+    ActionRowBuilder,
     ButtonInteraction,
 } = require('discord.js')
 
@@ -106,47 +106,47 @@ module.exports = {
             } else return { win: false }
         }
 
-        let a1But = new MessageButton()
+        let a1But = new ButtonBuilder()
             .setEmoji('914473340129906708')
             .setCustomId('a1')
             .setStyle('SECONDARY')
-        let a2But = new MessageButton()
+        let a2But = new ButtonBuilder()
             .setEmoji('914473340129906708')
             .setCustomId('a2')
             .setStyle('SECONDARY')
-        let a3But = new MessageButton()
+        let a3But = new ButtonBuilder()
             .setEmoji('914473340129906708')
             .setCustomId('a3')
             .setStyle('SECONDARY')
-        let arow = new MessageActionRow().addComponents([a1But, a2But, a3But])
+        let arow = new ActionRowBuilder().addComponents([a1But, a2But, a3But])
 
-        let b1But = new MessageButton()
+        let b1But = new ButtonBuilder()
             .setEmoji('914473340129906708')
             .setCustomId('b1')
             .setStyle('SECONDARY')
-        let b2But = new MessageButton()
+        let b2But = new ButtonBuilder()
             .setEmoji('914473340129906708')
             .setCustomId('b2')
             .setStyle('SECONDARY')
-        let b3But = new MessageButton()
+        let b3But = new ButtonBuilder()
             .setEmoji('914473340129906708')
             .setCustomId('b3')
             .setStyle('SECONDARY')
-        let brow = new MessageActionRow().addComponents([b1But, b2But, b3But])
+        let brow = new ActionRowBuilder().addComponents([b1But, b2But, b3But])
 
-        let c1But = new MessageButton()
+        let c1But = new ButtonBuilder()
             .setEmoji('914473340129906708')
             .setCustomId('c1')
             .setStyle('SECONDARY')
-        let c2But = new MessageButton()
+        let c2But = new ButtonBuilder()
             .setEmoji('914473340129906708')
             .setCustomId('c2')
             .setStyle('SECONDARY')
-        let c3But = new MessageButton()
+        let c3But = new ButtonBuilder()
             .setEmoji('914473340129906708')
             .setCustomId('c3')
             .setStyle('SECONDARY')
-        let crow = new MessageActionRow().addComponents([c1But, c2But, c3But])
+        let crow = new ActionRowBuilder().addComponents([c1But, c2But, c3But])
 
         const ids = [interaction.user.id, data.opponent.id]
         let current = ids[Math.floor(Math.random() * 2)]

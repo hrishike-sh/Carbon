@@ -2,8 +2,8 @@ const {
     EmbedBuilder,
     Client,
     Message,
-    MessageButton,
-    MessageActionRow,
+    ButtonBuilder,
+    ActionRowBuilder,
 } = require('discord.js')
 const settings = require('../../database/models/settingsSchema')
 
@@ -81,19 +81,19 @@ module.exports = {
             .setFooter(`${snipe + 1}/${sniped.length}`)
             .setImage(image)
             .setTimestamp(time)
-        let prevBut = new MessageButton()
+        let prevBut = new ButtonBuilder()
             .setEmoji('911971090954326017')
             .setCustomId('prev-snipe')
             .setStyle('SUCCESS')
-        let delBut = new MessageButton()
+        let delBut = new ButtonBuilder()
             .setEmoji('🗑')
             .setCustomId('del-snipe')
             .setStyle('PRIMARY')
-        let nextBut = new MessageButton()
+        let nextBut = new ButtonBuilder()
             .setEmoji('911971202048864267')
             .setCustomId('next-snipe')
             .setStyle('SUCCESS')
-        let row = new MessageActionRow().addComponents([
+        let row = new ActionRowBuilder().addComponents([
             prevBut,
             delBut,
             nextBut,
@@ -172,7 +172,7 @@ module.exports = {
         collector.on('end', () => {
             prevBut = prevBut.setDisabled()
             nextBut = nextBut.setDisabled()
-            row = new MessageActionRow().addComponents([prevBut, nextBut])
+            row = new ActionRowBuilder().addComponents([prevBut, nextBut])
             target = sniped[snipe]
             let { msg, time, image } = target
             snipeBed = new EmbedBuilder()

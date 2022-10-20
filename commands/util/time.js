@@ -2,8 +2,8 @@ const {
     Message,
     Client,
     EmbedBuilder,
-    MessageActionRow,
-    MessageButton,
+    ActionRowBuilder,
+    ButtonBuilder,
 } = require('discord.js')
 const { TimestampStyles } = require('@discordjs/builders')
 const { getMilliseconds } = require('better-ms')
@@ -35,7 +35,7 @@ module.exports = {
             .setDescription(
                 'Choose a format and click the button to get text that you can copy.'
             )
-        const components = [new MessageActionRow(), new MessageActionRow()]
+        const components = [new ActionRowBuilder(), new ActionRowBuilder()]
         const array = [
             ['Short time', 't'],
             ['Long time', 'T'],
@@ -56,7 +56,7 @@ module.exports = {
             )
             if (components[0].components.length < 5) {
                 components[0].addComponents([
-                    new MessageButton()
+                    new ButtonBuilder()
                         .setLabel(val[0])
                         .setStyle('SUCCESS')
                         .setCustomId(
@@ -67,7 +67,7 @@ module.exports = {
                 ])
             } else {
                 components[1].addComponents([
-                    new MessageButton()
+                    new ButtonBuilder()
                         .setLabel(val[0])
                         .setStyle('SUCCESS')
                         .setCustomId(

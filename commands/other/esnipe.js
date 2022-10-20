@@ -3,8 +3,8 @@ const {
     EmbedBuilder,
     Client,
     Message,
-    MessageButton,
-    MessageActionRow,
+    ButtonBuilder,
+    ActionRowBuilder,
 } = require('discord.js')
 const settings = require('../../database/models/settingsSchema')
 module.exports = {
@@ -71,15 +71,15 @@ module.exports = {
             .addField('New Message', newContent)
             .setColor('RANDOM')
             .setFooter(`${snipe + 1}/${sniped.length}`)
-        let prevBut = new MessageButton()
+        let prevBut = new ButtonBuilder()
             .setEmoji('911971090954326017')
             .setCustomId('prev-snipe')
             .setStyle('SUCCESS')
-        let nextBut = new MessageButton()
+        let nextBut = new ButtonBuilder()
             .setEmoji('911971202048864267')
             .setCustomId('next-snipe')
             .setStyle('SUCCESS')
-        let row = new MessageActionRow().addComponents([prevBut, nextBut])
+        let row = new ActionRowBuilder().addComponents([prevBut, nextBut])
 
         const mainMessage = await message.channel.send({
             content: 'Use the buttons to navigate.',
@@ -150,7 +150,7 @@ module.exports = {
         collector.on('end', () => {
             prevBut = prevBut.setDisabled()
             nextBut = nextBut.setDisabled()
-            row = new MessageActionRow().addComponents([prevBut, nextBut])
+            row = new ActionRowBuilder().addComponents([prevBut, nextBut])
             target = sniped[snipe]
             let { msg, editedIn, oldContent, newContent } = target
             snipeBed = new EmbedBuilder()

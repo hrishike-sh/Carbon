@@ -1,4 +1,4 @@
-const { MessageButton, MessageActionRow } = require('discord.js')
+const { ButtonBuilder, ActionRowBuilder } = require('discord.js')
 
 module.exports = {
     name: 'pingroles',
@@ -14,11 +14,9 @@ module.exports = {
             !message.member.roles.cache.some(
                 (role) => role.id === '824539655134773269'
             ) &&
-            message.author.id !== '598918643727990784' // hrish you are dumb istg 
+            message.author.id !== '598918643727990784' // hrish you are dumb istg
         ) {
-            message.channel.send(
-                'Only staff can perform this action.'
-            )
+            message.channel.send('Only staff can perform this action.')
             return
         }
 
@@ -34,42 +32,42 @@ module.exports = {
                 '<a:fh_bugcatfight:855684995779264542> • <@&858088201451995137>',
         }
 
-        const annBut = new MessageButton()
+        const annBut = new ButtonBuilder()
             .setCustomId('ann_ping')
             .setEmoji('824918261086945280')
             .setStyle('SECONDARY')
-        const nitBut = new MessageButton()
+        const nitBut = new ButtonBuilder()
             .setCustomId('nit_ping')
             .setEmoji('825302229853405184')
             .setStyle('SECONDARY')
-        const gawBut = new MessageButton()
+        const gawBut = new ButtonBuilder()
             .setCustomId('gaw_ping')
             .setEmoji('824918033889361941')
             .setStyle('SECONDARY')
-        const mgawBut = new MessageButton()
+        const mgawBut = new ButtonBuilder()
             .setCustomId('mgaw_ping')
             .setEmoji('861295940785799168')
             .setStyle('SECONDARY')
-        const hesBut = new MessageButton()
+        const hesBut = new ButtonBuilder()
             .setCustomId('hes_ping')
             .setEmoji('839495312779640844')
             .setStyle('SECONDARY')
-        const touBut = new MessageButton()
+        const touBut = new ButtonBuilder()
             .setCustomId('tou_ping')
             .setEmoji('861294809191677974')
             .setStyle('SECONDARY')
-        const eveBut = new MessageButton()
+        const eveBut = new ButtonBuilder()
             .setCustomId('eve_ping')
             .setEmoji('855684995779264542')
             .setStyle('SECONDARY')
 
-        const row1 = new MessageActionRow().addComponents([
+        const row1 = new ActionRowBuilder().addComponents([
             annBut,
             nitBut,
             gawBut,
             mgawBut,
         ])
-        const row2 = new MessageActionRow().addComponents([
+        const row2 = new ActionRowBuilder().addComponents([
             hesBut,
             touBut,
             eveBut,

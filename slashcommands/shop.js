@@ -4,7 +4,7 @@ const {
     Client,
     EmbedBuilder,
     MessageSelectMenu,
-    MessageActionRow,
+    ActionRowBuilder,
     SelectMenuInteraction,
 } = require('discord.js')
 const token = `<:token:1003272629286883450>`
@@ -78,7 +78,7 @@ module.exports = {
             ])
         await interaction.reply({
             embeds: [Shop],
-            components: [new MessageActionRow().addComponents([selectMenu])],
+            components: [new ActionRowBuilder().addComponents([selectMenu])],
         })
 
         const message = await interaction.fetchReply()

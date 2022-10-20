@@ -3,8 +3,8 @@ const {
     CommandInteraction,
     Client,
     EmbedBuilder,
-    MessageActionRow,
-    MessageButton,
+    ActionRowBuilder,
+    ButtonBuilder,
     Collection,
 } = require('discord.js')
 const gameSet = new Collection()
@@ -42,18 +42,18 @@ module.exports = {
             .setColor('ORANGE')
 
         const componentArray = [
-            new MessageActionRow(),
-            new MessageActionRow(),
-            new MessageActionRow(),
-            new MessageActionRow(),
-            new MessageActionRow(),
+            new ActionRowBuilder(),
+            new ActionRowBuilder(),
+            new ActionRowBuilder(),
+            new ActionRowBuilder(),
+            new ActionRowBuilder(),
         ]
         for (const row of componentArray) {
             if (row.components.length > 5) continue
             for (let i = 0; i < 5; i++) {
                 const id = (Math.random() + 1).toString(36).substring(7)
                 row.addComponents([
-                    new MessageButton()
+                    new ButtonBuilder()
                         .setEmoji('914473340129906708')
                         .setStyle('SECONDARY')
                         .setCustomId(id),
@@ -65,12 +65,12 @@ module.exports = {
             content: `${user.toString()}`,
             embeds: [embed],
             components: [
-                new MessageActionRow().addComponents([
-                    new MessageButton()
+                new ActionRowBuilder().addComponents([
+                    new ButtonBuilder()
                         .setLabel('Start')
                         .setStyle('SUCCESS')
                         .setCustomId('start-w'),
-                    new MessageButton()
+                    new ButtonBuilder()
                         .setLabel('Go back')
                         .setStyle('DANGER')
                         .setCustomId('no-w'),

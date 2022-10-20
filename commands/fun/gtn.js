@@ -1,4 +1,4 @@
-const { Message, MessageActionRow, MessageButton } = require('discord.js')
+const { Message, ActionRowBuilder, ButtonBuilder } = require('discord.js')
 
 module.exports = {
     name: 'guessthenumber',
@@ -32,12 +32,12 @@ module.exports = {
         const msg = await message.channel.send({
             content: `${message.author.toString()} do you want to host a GTN(0-${number}) now?`,
             components: [
-                new MessageActionRow().addComponents([
-                    new MessageButton()
+                new ActionRowBuilder().addComponents([
+                    new ButtonBuilder()
                         .setLabel('Start')
                         .setStyle('SUCCESS')
                         .setCustomId('start-gtn'),
-                    new MessageButton()
+                    new ButtonBuilder()
                         .setLabel('No')
                         .setStyle('DANGER')
                         .setCustomId('cancel-gtn'),

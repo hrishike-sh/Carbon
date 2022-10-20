@@ -4,7 +4,7 @@ const {
     Client,
     EmbedBuilder,
     MessageSelectMenu,
-    MessageActionRow,
+    ActionRowBuilder,
     SelectMenuInteraction,
 } = require('discord.js')
 module.exports = {
@@ -134,7 +134,7 @@ module.exports = {
 
         const mainMessage = await message.channel.send({
             embeds: [embed],
-            components: [new MessageActionRow().addComponents([selection])],
+            components: [new ActionRowBuilder().addComponents([selection])],
         })
 
         const mainCollector = mainMessage.createMessageComponentCollector({
@@ -176,7 +176,7 @@ module.exports = {
             ])
             select.message.edit({
                 embeds: [embed],
-                components: [new MessageActionRow().addComponents([selection])],
+                components: [new ActionRowBuilder().addComponents([selection])],
             })
         })
     },

@@ -1,8 +1,8 @@
 const {
     Client,
     EmbedBuilder,
-    MessageActionRow,
-    MessageButton,
+    ActionRowBuilder,
+    ButtonBuilder,
 } = require('discord.js')
 const db = require('../database/models/remind')
 let processing = false
@@ -48,8 +48,8 @@ module.exports = {
                                 .setColor('GREEN'),
                         ],
                         components: [
-                            new MessageActionRow().addComponents([
-                                new MessageButton()
+                            new ActionRowBuilder().addComponents([
+                                new ButtonBuilder()
                                     .setLabel('Message')
                                     .setStyle('LINK')
                                     .setURL(reminder.link),

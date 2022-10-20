@@ -1,4 +1,4 @@
-const { Message, MessageButton, MessageActionRow } = require('discord.js')
+const { Message, ButtonBuilder, ActionRowBuilder } = require('discord.js')
 const ms = require('pretty-ms')
 module.exports = {
     name: 'fastclick',
@@ -19,17 +19,19 @@ module.exports = {
                 `You must mention someone to play with them!\n\nExample: \`fh fastclick @Hrishikesh#0369\``
             )
         if (user1.id === user1.id)
-            return message.channel.send(`Please don't play yourself, it's kinda lonely`)
+            return message.channel.send(
+                `Please don't play yourself, it's kinda lonely`
+            )
 
-        let yesButton = new MessageButton()
+        let yesButton = new ButtonBuilder()
             .setStyle('SUCCESS')
             .setCustomId('yes_fc')
             .setLabel('Accept')
-        let noButton = new MessageButton()
+        let noButton = new ButtonBuilder()
             .setStyle('DANGER')
             .setCustomId('no_fc')
             .setLabel('Decline')
-        let row = new MessageActionRow().addComponents([noButton, yesButton])
+        let row = new ActionRowBuilder().addComponents([noButton, yesButton])
         const confirmation = await message.channel.send({
             embeds: [
                 {
@@ -61,7 +63,7 @@ module.exports = {
                     .setStyle('SECONDARY')
                     .setCustomId('no_fc')
                     .setDisabled()
-                row = new MessageActionRow().addComponents([
+                row = new ActionRowBuilder().addComponents([
                     yesButton,
                     noButton,
                 ])
@@ -80,23 +82,23 @@ module.exports = {
                 const mainMessage = await message.channel.send(
                     `Alright! The button will appear in a few seconds, good luck!`
                 )
-                let mainButton = new MessageButton()
+                let mainButton = new ButtonBuilder()
                     .setStyle('SUCCESS')
                     .setLabel('This one')
                     .setCustomId('correct-fc')
-                let baitButton1 = new MessageButton()
+                let baitButton1 = new ButtonBuilder()
                     .setStyle('SECONDARY')
                     .setLabel('No not this')
                     .setCustomId('wrong1-fc')
-                let baitButton2 = new MessageButton()
+                let baitButton2 = new ButtonBuilder()
                     .setStyle('SECONDARY')
                     .setLabel('No not this')
                     .setCustomId('wrong2-fc')
-                let baitButton3 = new MessageButton()
+                let baitButton3 = new ButtonBuilder()
                     .setStyle('SECONDARY')
                     .setLabel('No not this')
                     .setCustomId('wrong3-fc')
-                let baitButton4 = new MessageButton()
+                let baitButton4 = new ButtonBuilder()
                     .setStyle('SECONDARY')
                     .setLabel('No not this')
                     .setCustomId('wrong4-fc')
@@ -107,7 +109,7 @@ module.exports = {
                     baitButton3,
                     baitButton4,
                 ].sort(() => Math.random() - 0.5)
-                let mainRow = new MessageActionRow().addComponents(array)
+                let mainRow = new ActionRowBuilder().addComponents(array)
                 await sleep(2500)
                 mainMessage.edit({
                     components: [mainRow],
@@ -138,7 +140,7 @@ module.exports = {
                         baitButton3.setDisabled()
                         baitButton4.setDisabled()
                         array = array
-                        mainRow = new MessageActionRow().addComponents(array)
+                        mainRow = new ActionRowBuilder().addComponents(array)
                         button.deferUpdate()
                         mainMessage.edit({
                             components: [mainRow],
@@ -168,7 +170,7 @@ module.exports = {
                     baitButton3.setDisabled()
                     baitButton4.setDisabled()
                     array = array
-                    mainRow = new MessageActionRow().addComponents(array)
+                    mainRow = new ActionRowBuilder().addComponents(array)
                     button.deferUpdate()
                     mainMessage.edit({
                         components: [mainRow],
@@ -183,7 +185,7 @@ module.exports = {
                     .setCustomId('yes_fc')
                     .setDisabled()
                 noButton.setDisabled()
-                row = new MessageActionRow().addComponents([
+                row = new ActionRowBuilder().addComponents([
                     yesButton,
                     noButton,
                 ])

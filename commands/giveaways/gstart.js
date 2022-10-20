@@ -3,8 +3,8 @@ const giveawayModel = require('../../database/models/giveaway')
 const {
     Message,
     Client,
-    MessageButton,
-    MessageActionRow,
+    ButtonBuilder,
+    ActionRowBuilder,
     EmbedBuilder,
 } = require('discord.js')
 const server = require('../../database/models/settingsSchema')
@@ -220,8 +220,8 @@ module.exports = {
             )
         }
 
-        const row = new MessageActionRow().addComponents([
-            new MessageButton()
+        const row = new ActionRowBuilder().addComponents([
+            new ButtonBuilder()
                 .setEmoji('🎉')
                 .setCustomId('giveaway-join')
                 .setStyle('SUCCESS'),

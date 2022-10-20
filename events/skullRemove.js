@@ -1,4 +1,4 @@
-const { MessageActionRow, MessageButton, EmbedBuilder } = require('discord.js')
+const { ActionRowBuilder, ButtonBuilder, EmbedBuilder } = require('discord.js')
 const serverSettings = require('../database/models/settingsSchema')
 const skulls = require('../database/models/skullboard')
 module.exports = {

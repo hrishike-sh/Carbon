@@ -1,7 +1,7 @@
 const {
     Message,
-    MessageButton,
-    MessageActionRow,
+    ButtonBuilder,
+    ActionRowBuilder,
     EmbedBuilder,
 } = require('discord.js')
 
@@ -43,12 +43,12 @@ module.exports = {
                     }),
             ],
             components: [
-                new MessageActionRow().addComponents([
-                    new MessageButton()
+                new ActionRowBuilder().addComponents([
+                    new ButtonBuilder()
                         .setLabel('REMOVE MY DATA')
                         .setCustomId('rmd-remove')
                         .setStyle('DANGER'),
-                    new MessageButton()
+                    new ButtonBuilder()
                         .setLabel('GO BACK')
                         .setStyle('SUCCESS')
                         .setCustomId('rmd-no'),
