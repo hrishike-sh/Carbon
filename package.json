@@ -1,7 +1,4 @@
 {
-    "engines": {
-        "node": "16.6.0"
-    },
     "scripts": {
         "start": "node ."
     },
