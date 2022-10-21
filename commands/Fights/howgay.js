@@ -136,7 +136,9 @@ module.exports = {
             const msg = message.channel.messages.cache.get(
                 confirmation.messageId
             )
-            msg.components[0].components.forEach((c) => c.setDisabled())
+            msg.components[0].components.forEach((c) =>
+                ButtonBuilder.from(c).setDisabled()
+            )
             msg.edit({
                 components: msg.components,
             })
