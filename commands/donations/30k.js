@@ -163,7 +163,6 @@ module.exports = {
                         {
                             title: 'Leaderboard',
                             description: data,
-                            color: 'Green',
                         },
                     ],
                     components: button.message.components,
