@@ -128,7 +128,7 @@ module.exports = {
                 })
             } else {
                 msg.components[0].components.forEach((d) => {
-                    d.setDisabled()
+                    ButtonBuilder.from(d).setDisabled()
                 })
 
                 msg.edit({
