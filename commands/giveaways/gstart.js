@@ -280,21 +280,21 @@ module.exports = {
             embeds: [
                 new EmbedBuilder()
                     .setTitle('New giveaway')
-                    .addField([
+                    .addFields([
                         {
                             name: 'Guild',
                             value: message.guild.name + `(${message.guildId})`,
                             inline: true,
                         },
                     ])
-                    .addField([
+                    .addFields([
                         {
                             name: 'Channel',
                             value: message.channel.toString(),
                             inline: true,
                         },
                     ])
-                    .addField([
+                    .addFields([
                         {
                             name: 'Prize | time',
                             value: `${
@@ -305,7 +305,7 @@ module.exports = {
                             inline: true,
                         },
                     ])
-                    .addField([
+                    .addFields([
                         { name: 'Host', value: message.member.toString() },
                     ]),
                 {
