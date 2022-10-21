@@ -143,12 +143,18 @@ module.exports = {
                         target.user.tag
                     } => ⏣ ${dbUser.amount.toLocaleString()}`
                 }
-                button.message.components[0].components
-                    .find((a) => a.customId === '30k-lb')
+                ButtonBuilder.from(
+                    button.message.components[0].components.find(
+                        (a) => a.customId === '30k-lb'
+                    )
+                )
                     .setDisabled(true)
                     .setStyle(ButtonStyle.Primary)
-                button.message.components[0].components
-                    .find((a) => a.customId !== '30k-lb')
+                ButtonBuilder.from(
+                    button.message.components[0].components.find(
+                        (a) => a.customId !== '30k-lb'
+                    )
+                )
                     .setDisabled(false)
                     .setStyle(ButtonStyle.Secondary)
 
@@ -163,12 +169,18 @@ module.exports = {
                     components: button.message.components,
                 })
             } else if (id == 'view_dono') {
-                button.message.components[0].components
-                    .find((a) => a.customId === '30k-lb')
+                ButtonBuilder.from(
+                    button.message.components[0].components.find(
+                        (a) => a.customId === '30k-lb'
+                    )
+                )
                     .setDisabled(false)
                     .setStyle(ButtonStyle.Secondary)
-                button.message.components[0].components
-                    .find((a) => a.customId !== '30k-lb')
+                ButtonBuilder.from(
+                    button.message.components[0].components.find(
+                        (a) => a.customId !== '30k-lb'
+                    )
+                )
                     .setDisabled(true)
                     .setStyle(ButtonStyle.Primary)
 
