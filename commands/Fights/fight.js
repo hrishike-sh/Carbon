@@ -292,7 +292,7 @@ module.exports = {
                 })
             } else {
                 confirMessage.components[0].components.forEach((c) =>
-                    c.setDisabled()
+                    ButtonBuilder.from(c).setDisabled()
                 )
                 confirMessage.edit({
                     content: `The challenge was accepted.`,
