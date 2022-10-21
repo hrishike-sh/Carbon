@@ -178,7 +178,7 @@ module.exports = {
                         inline: true,
                     },
                 ])
-                .addField([
+                .addFields([
                     {
                         name: 'Last Action',
                         value: 'The game has started!',
