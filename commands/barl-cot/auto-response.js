@@ -109,7 +109,6 @@ module.exports = {
                 embeds: [
                     {
                         title: 'Auto-Responses list',
-                        color: 'Green',
                         description: data || 'None!',
                         timestamp: new Date(),
                     },
