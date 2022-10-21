@@ -90,7 +90,7 @@ module.exports = {
                 .setTitle(`Word: ${hlWord}`)
                 .setDescription(data.reverse().join('\n'))
                 .setTimestamp()
-                .setColor('RANDOM')
+                .setColor('Random')
             ;(await member.user.createDM()).send({
                 content:
                     'Your HL was triggered in ' + message.channel.toString(),
@@ -98,7 +98,7 @@ module.exports = {
                 components: [
                     new ActionRowBuilder().addComponents([
                         new ButtonBuilder()
-                            .setStyle('LINK')
+                            .setStyle(ButtonStyle.Link)
                             .setURL(message.url)
                             .setLabel('Jump to Message'),
                     ]),

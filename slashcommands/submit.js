@@ -14,7 +14,7 @@ module.exports = {
         .setDescription('Submit your submission for the Event!')
         .addStringOption((opt) => {
             return opt
-                .setName('link')
+                .setName(ButtonStyle.Link)
                 .setDescription(
                     'Upload your submission to an image host and provide the link here.'
                 )
@@ -25,7 +25,7 @@ module.exports = {
      */
     async execute(interaction) {
         const submissionsChannel = '924850616411504710'
-        const link = interaction.options.getString('link')
+        const link = interaction.options.getString(ButtonStyle.Link)
         const reg = /\.(jpeg|jpg|gif|png)$/
         let dbUser = await db.findOne({
             userId: interaction.user.id,
@@ -59,11 +59,11 @@ module.exports = {
         const row = new ActionRowBuilder().addComponents([
             new ButtonBuilder()
                 .setLabel('Confirm')
-                .setStyle('SUCCESS')
+                .setStyle(ButtonStyle.Success)
                 .setCustomId('yes-submit'),
             new ButtonBuilder()
                 .setLabel('No, go back.')
-                .setStyle('DANGER')
+                .setStyle(ButtonStyle.Danger)
                 .setCustomId('no-submit'),
         ])
         interaction.reply({
@@ -112,7 +112,7 @@ module.exports = {
                     })
                     .setFooter(`ID: ${interaction.user.id}`)
                     .setImage(link)
-                    .setColor('YELLOW')
+                    .setColor('Yellow')
 
                 dbUser.submittedAt = new Date().getTime()
                 dbUser.url = link
@@ -128,9 +128,9 @@ module.exports = {
                             new ButtonBuilder()
                                 .setLabel('Accept')
                                 .setCustomId('accept-submit')
-                                .setStyle('SUCCESS'),
+                                .setStyle(ButtonStyle.Success),
                             new ButtonBuilder()
-                                .setStyle('DANGER')
+                                .setStyle(ButtonStyle.Danger)
                                 .setLabel('Deny')
                                 .setCustomId('deny-submit'),
                         ]),

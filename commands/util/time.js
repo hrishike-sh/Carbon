@@ -4,6 +4,7 @@ const {
     EmbedBuilder,
     ActionRowBuilder,
     ButtonBuilder,
+    ButtonStyle,
 } = require('discord.js')
 const { TimestampStyles } = require('@discordjs/builders')
 const { getMilliseconds } = require('better-ms')
@@ -46,19 +47,21 @@ module.exports = {
             ['Relative time', 'R'],
         ]
         for (const val of array) {
-            embed.addField(
-                val[0],
-                client.functions.formatTime(
-                    new Date().getTime() + time,
-                    val[1]
-                ),
-                true
-            )
+            embed.addFields([
+                {
+                    name: val[0],
+                    value: client.functions.formatTime(
+                        new Date().getTime() + time,
+                        val[1]
+                    ),
+                    inline: true,
+                },
+            ])
             if (components[0].components.length < 5) {
                 components[0].addComponents([
                     new ButtonBuilder()
                         .setLabel(val[0])
-                        .setStyle('SUCCESS')
+                        .setStyle(ButtonStyle.Success)
                         .setCustomId(
                             `${(Math.random() + 1).toString(36).substring(2)}:${
                                 val[1]
@@ -69,7 +72,7 @@ module.exports = {
                 components[1].addComponents([
                     new ButtonBuilder()
                         .setLabel(val[0])
-                        .setStyle('SUCCESS')
+                        .setStyle(ButtonStyle.Success)
                         .setCustomId(
                             `${(Math.random() + 1).toString(36).substring(2)}:${
                                 val[1]

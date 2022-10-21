@@ -50,7 +50,7 @@ module.exports = {
                     footer: {
                         text: 'the richest user is hrish!!!',
                     },
-                    color: 'GREEN',
+                    color: 'Green',
                 },
             ],
         })

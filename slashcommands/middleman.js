@@ -44,7 +44,7 @@ module.exports = {
             embeds: [
                 {
                     title: 'Middleman Request! 🙋‍♂️',
-                    color: 'YELLOW',
+                    color: 'Yellow',
                     description: `${interaction.user.toString()} requests for a middleman in ${guildChannel.toString()}!`,
                     footer: {
                         text: 'This can be accepted within 5 minutes.',
@@ -55,7 +55,7 @@ module.exports = {
                 new ActionRowBuilder().addComponents([
                     new ButtonBuilder()
                         .setLabel('Accept')
-                        .setStyle('PRIMARY')
+                        .setStyle(ButtonStyle.Primary)
                         .setCustomId('mm-accept'),
                 ]),
             ],

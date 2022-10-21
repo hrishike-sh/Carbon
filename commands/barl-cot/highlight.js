@@ -70,7 +70,7 @@ module.exports = {
             const embed = new EmbedBuilder({
                 title: 'Highlight List',
                 description: data,
-                color: 'RANDOM',
+                color: 'Random',
             })
 
             return await message.reply({

@@ -44,13 +44,13 @@ module.exports = {
             .setDescription(
                 'The game will start when both the parties are ready.\nHit **Ready** when you are ready!'
             )
-            .setColor('YELLOW')
+            .setColor('Yellow')
             .setTimestamp()
 
         let components = new ActionRowBuilder().addComponents([
             new ButtonBuilder()
                 .setLabel('READY')
-                .setStyle('SUCCESS')
+                .setStyle(ButtonStyle.Success)
                 .setCustomId('ready-sos'),
         ])
         const gamedata = {
@@ -126,7 +126,7 @@ module.exports = {
                 components = new ActionRowBuilder().addComponents([
                     new ButtonBuilder()
                         .setLabel('READY')
-                        .setStyle('SUCCESS')
+                        .setStyle(ButtonStyle.Success)
                         .setCustomId('ready-sos')
                         .setDisabled(),
                 ])
@@ -146,12 +146,12 @@ module.exports = {
                     new ButtonBuilder()
                         .setEmoji('🤝')
                         .setLabel('Split')
-                        .setStyle('PRIMARY')
+                        .setStyle(ButtonStyle.Primary)
                         .setCustomId('split-sos'),
                     new ButtonBuilder()
                         .setEmoji('💸')
                         .setLabel('Steal')
-                        .setStyle('PRIMARY')
+                        .setStyle(ButtonStyle.Primary)
                         .setCustomId('steal-sos'),
                 ])
                 let current
@@ -200,13 +200,13 @@ module.exports = {
                             new ButtonBuilder()
                                 .setEmoji('🤝')
                                 .setLabel('Split')
-                                .setStyle('PRIMARY')
+                                .setStyle(ButtonStyle.Primary)
                                 .setCustomId('split-sos')
                                 .setDisabled(),
                             new ButtonBuilder()
                                 .setEmoji('💸')
                                 .setLabel('Steal')
-                                .setStyle('PRIMARY')
+                                .setStyle(ButtonStyle.Primary)
                                 .setCustomId('steal-sos')
                                 .setDisabled(),
                         ])

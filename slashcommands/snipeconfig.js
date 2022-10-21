@@ -100,7 +100,7 @@ module.exports = {
                                     .map((v, i) => `${i + 1}: <@&${v}>`)
                                     .join('\n') || 'None.'
                             )
-                            .setColor('RANDOM'),
+                            .setColor('Random'),
                     ],
                 })
             } else if (command == 'add') {
@@ -113,7 +113,7 @@ module.exports = {
                                 .setDescription(
                                     `${role.toString()} is already in the list.`
                                 )
-                                .setColor('RED'),
+                                .setColor('Red'),
                         ],
                     })
                 }
@@ -127,7 +127,7 @@ module.exports = {
                             .setDescription(
                                 `Added ${role.toString()} to the list!`
                             )
-                            .setColor('GREEN')
+                            .setColor('Green')
                             .setFooter({
                                 text: 'You can check the list via /snipe-config allowed-role list',
                             }),
@@ -143,7 +143,7 @@ module.exports = {
                                 .setDescription(
                                     `${role.toString()} is not a Snipe Whitelisted role.`
                                 )
-                                .setColor('RED'),
+                                .setColor('Red'),
                         ],
                     })
                 }
@@ -160,7 +160,7 @@ module.exports = {
                             .setDescription(
                                 `Removed ${role.toString()} from the list!`
                             )
-                            .setColor('RED')
+                            .setColor('Red')
                             .setFooter({
                                 text: 'You can check the list via /snipe-config allowed-role list',
                             }),

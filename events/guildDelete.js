@@ -40,7 +40,7 @@ module.exports = {
                             guild.createdAt
                         )}}`
                     )
-                    .setColor('RED'),
+                    .setColor('Red'),
             ],
         })
     },

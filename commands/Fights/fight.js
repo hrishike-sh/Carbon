@@ -2,6 +2,7 @@ const {
     Message,
     ActionRowBuilder,
     ButtonBuilder,
+    ButtonStyle,
     EmbedBuilder,
 } = require('discord.js')
 let fighting = []
@@ -17,7 +18,7 @@ module.exports = {
         if (user.hp < 1) {
             collector.stop()
             message.components[0].components.forEach((c) => c.setDisabled())
-            message.embeds[0].setColor('RANDOM').setFields([
+            message.embeds[0].setColor('Random').setFields([
                 {
                     name: gamedata[0].user.tag,
                     value: `Health: **${
@@ -52,7 +53,7 @@ module.exports = {
      * @param {Object[]} gamedata
      */
     updateMessage: (msg, gamedata, logs, current) => {
-        msg.embeds[0].setColor('RANDOM').setFields([
+        msg.embeds[0].setColor('Random').setFields([
             {
                 name: gamedata[0].user.tag,
                 value: `Health: **${
@@ -115,11 +116,11 @@ module.exports = {
                 new ActionRowBuilder().addComponents([
                     new ButtonBuilder()
                         .setCustomId('fight-yes')
-                        .setStyle('SUCCESS')
+                        .setStyle(ButtonStyle.Success)
                         .setLabel('Accept'),
                     new ButtonBuilder()
                         .setCustomId('fight-no')
-                        .setStyle('DANGER')
+                        .setStyle(ButtonStyle.Danger)
                         .setLabel('Deny'),
                 ]),
             ],
@@ -163,10 +164,28 @@ module.exports = {
 
             const fightEmbed = new EmbedBuilder()
                 .setTitle('Fight')
-                .addField(gamedata[0].user.tag, `Health: **100%**`, true)
-                .addField(gamedata[1].user.tag, `Health: **100%**`, true)
-                .addField('Last Action', 'The game has started!', false)
-                .setColor('RANDOM')
+                .addFields([
+                    {
+                        name: gamedata[0].user.tag,
+                        value: `Health: **100%**`,
+                        inline: true,
+                    },
+                ])
+                .addFields([
+                    {
+                        name: gamedata[1].user.tag,
+                        value: `Health: **100%**`,
+                        inline: true,
+                    },
+                ])
+                .addField([
+                    {
+                        name: 'Last Action',
+                        value: 'The game has started!',
+                        inline: false,
+                    },
+                ])
+                .setColor('Random')
             let logs = []
             const mainMessage = await message.channel.send({
                 content: `${current.user.toString()} its your turn!`,
@@ -174,12 +193,12 @@ module.exports = {
                 components: [
                     new ActionRowBuilder().addComponents([
                         new ButtonBuilder()
-                            .setStyle('PRIMARY')
+                            .setStyle(ButtonStyle.Primary)
                             .setCustomId('attack')
                             .setLabel('Attack')
                             .setEmoji('🗡️'),
                         new ButtonBuilder()
-                            .setStyle('PRIMARY')
+                            .setStyle(ButtonStyle.Primary)
                             .setCustomId('heal')
                             .setLabel('Heal')
                             .setEmoji('❤️'),

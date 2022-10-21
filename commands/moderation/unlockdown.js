@@ -1,5 +1,5 @@
 const db = require('../../database/models/settingsSchema')
-const { ButtonBuilder, ActionRowBuilder } = require('discord.js')
+const { ButtonBuilder, ActionRowBuilder, ButtonStyle } = require('discord.js')
 
 module.exports = {
     name: 'unlockdown',
@@ -19,11 +19,11 @@ module.exports = {
 
         const yesbut = new ButtonBuilder()
             .setLabel('Yes')
-            .setStyle('SUCCESS')
+            .setStyle(ButtonStyle.Success)
             .setCustomId('lock-yes')
         const nobut = new ButtonBuilder()
             .setLabel('No')
-            .setStyle('DANGER')
+            .setStyle(ButtonStyle.Danger)
             .setCustomId('lock-no')
         const row1 = new ActionRowBuilder().addComponents([yesbut, nobut])
 
@@ -70,7 +70,7 @@ module.exports = {
                             {
                                 title: ':unlock: **SERVER UNLOCKED**',
                                 description: `The server is now unlocked.`,
-                                color: 'GREEN',
+                                color: 'Green',
                                 timestamp: new Date(),
                             },
                         ],

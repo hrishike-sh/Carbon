@@ -57,7 +57,7 @@ module.exports = {
                         'D'
                     )})\n\n**__Mutual Servers__**\n${Mutuals.join('\n')}`
                 )
-                .setColor('RANDOM')
+                .setColor('Random')
 
             return mess.edit({
                 embeds: [embed],

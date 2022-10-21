@@ -59,10 +59,10 @@ module.exports = {
                 embeds: [
                     {
                         title: 'Your ban has been lifted!',
-                        color: 'GREEN',
+                        color: 'Green',
                         description: `You have been unbanned from [FightHub](https://discord.gg/fight)! You can join back now.\nResponsible moderator: **${message.author.tag}**`,
                         timestamp: Date.now(),
-                        color: 'GREEN',
+                        color: 'Green',
                     },
                 ],
             })
@@ -85,7 +85,7 @@ module.exports = {
             embeds: [
                 new EmbedBuilder()
                     .setTitle('Member unban')
-                    .setColor('GREEN')
+                    .setColor('Green')
                     .setDescription(
                         `Info about the ban:\n<:blank:914473340129906708>Member Unbanned: ${
                             data.banned ? '☑️' : ':x:'

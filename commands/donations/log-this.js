@@ -102,7 +102,7 @@ module.exports = {
         const embed = new EmbedBuilder()
             .setTitle('Donation Added')
             .setDescription(`Logged items:\n> ${doneTems.join('\n> ')}`)
-            .setColor('GREEN')
+            .setColor('Green')
         let dbUser
         try {
             dbUser = await db.findOne({

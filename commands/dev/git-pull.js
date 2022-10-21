@@ -23,11 +23,12 @@ module.exports = {
         res = results.stdout
         const embed = new EmbedBuilder()
             .setTitle('Git Pull')
-            .setColor(err ? 'RED' : 'GREEN')
+            .setColor(err ? 'Red' : 'Green')
             .setTimestamp()
-            .addField('Returned:', res, false)
+            .addField([{ name: 'Returned:', value: res, inline: false }])
 
-        if (err) embed.addField('Error:', err, false)
+        if (err)
+            embed.addFields([{ name: 'Error:', value: err, inline: false }])
 
         return message.reply({ embeds: [embed] })
     },

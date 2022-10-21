@@ -1,5 +1,10 @@
 const db = require('../../database/models/settingsSchema')
-const { ButtonBuilder, ActionRowBuilder, Message } = require('discord.js')
+const {
+    ButtonBuilder,
+    ActionRowBuilder,
+    Message,
+    ButtonStyle,
+} = require('discord.js')
 
 module.exports = {
     name: 'lockdown',
@@ -9,7 +14,7 @@ module.exports = {
      * @returns
      */
     async execute(message) {
-        if (!message.member.permissions.has('BAN_MEMBERS'))
+        if (!message.member.permissions.has('BanMembers'))
             return message.channel.send(
                 `You must have the BAN_MEMBERS permission to run this command`
             )
@@ -23,11 +28,11 @@ module.exports = {
 
         const yesbut = new ButtonBuilder()
             .setLabel('Yes')
-            .setStyle('SUCCESS')
+            .setStyle(ButtonStyle.Success)
             .setCustomId('lock-yes')
         const nobut = new ButtonBuilder()
             .setLabel('No')
-            .setStyle('DANGER')
+            .setStyle(ButtonStyle.Danger)
             .setCustomId('lock-no')
         const row1 = new ActionRowBuilder().addComponents([yesbut, nobut])
 
@@ -90,7 +95,7 @@ module.exports = {
                             description:
                                 server.lockdownSet.message ||
                                 'The server is currently locked.',
-                            color: 'RED',
+                            color: 'Red',
                             timestamp: new Date(),
                         },
                     ],

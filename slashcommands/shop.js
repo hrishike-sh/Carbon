@@ -3,7 +3,7 @@ const {
     CommandInteraction,
     Client,
     EmbedBuilder,
-    MessageSelectMenu,
+    SelectMenuBuilder,
     ActionRowBuilder,
     SelectMenuInteraction,
 } = require('discord.js')
@@ -42,7 +42,7 @@ module.exports = {
                 text: 'Your perks may be revoked by an admin if the system is abused in any way.',
             })
 
-        const selectMenu = new MessageSelectMenu()
+        const selectMenu = new SelectMenuBuilder()
             .setMaxValues(1)
             .setMinValues(1)
             .setPlaceholder('Purchase an item')

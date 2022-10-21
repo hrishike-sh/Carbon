@@ -17,7 +17,7 @@ module.exports = {
         return message.channel.send({
             embeds: [
                 {
-                    color: 'RANDOM',
+                    color: 'Random',
                     title: `Strafe r8 machine`,
                     description: `${what} ${rate}% Strafe <:fh_strafe:864780923944828938>`,
                 },

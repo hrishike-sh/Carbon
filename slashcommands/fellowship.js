@@ -440,7 +440,7 @@ module.exports = {
                         .join('\n')}`,
                     false
                 )
-                .setColor('GREEN')
+                .setColor('Green')
                 .setTimestamp()
 
             await interaction.reply({

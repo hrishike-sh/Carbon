@@ -6,6 +6,7 @@ const {
     Client,
     ActionRowBuilder,
     ButtonBuilder,
+    ButtonStyle,
     EmbedBuilder,
 } = require('discord.js')
 module.exports = {
@@ -58,7 +59,7 @@ module.exports = {
                 }\n> Donated coins: **${e.amount.toLocaleString()}**`
         )
         const embed = new EmbedBuilder()
-            .setColor('YELLOW')
+            .setColor('Yellow')
             .setTimestamp()
             .setTitle('Main Donations')
         embed.setDescription(dLb.join('\n\n'))
@@ -70,16 +71,16 @@ module.exports = {
                     new ButtonBuilder()
                         .setLabel('Main')
                         .setCustomId('main-lb')
-                        .setStyle('SUCCESS')
+                        .setStyle(ButtonStyle.Success)
                         .setDisabled(),
                     new ButtonBuilder()
                         .setLabel('Heists')
                         .setCustomId('heist-lb')
-                        .setStyle('SUCCESS'),
+                        .setStyle(ButtonStyle.Success),
                     new ButtonBuilder()
                         .setLabel('Fighters Fiesta')
                         .setCustomId('ff-lb')
-                        .setStyle('SUCCESS'),
+                        .setStyle(ButtonStyle.Success),
                 ]),
             ],
         })

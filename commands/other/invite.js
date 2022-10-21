@@ -1,4 +1,9 @@
-const { ActionRowBuilder, ButtonBuilder, Message } = require('discord.js')
+const {
+    ActionRowBuilder,
+    ButtonBuilder,
+    Message,
+    ButtonStyle,
+} = require('discord.js')
 
 module.exports = {
     name: 'invite',
@@ -13,7 +18,7 @@ module.exports = {
     execute(message, args) {
         const but = new ButtonBuilder()
             .setLabel('Invite')
-            .setStyle('LINK')
+            .setStyle(ButtonStyle.Link)
             .setURL(
                 'https://discord.com/api/oauth2/authorize?client_id=855652438919872552&permissions=140257912897&scope=bot'
             )

@@ -63,7 +63,7 @@ module.exports = {
                             0
                         )}:R> to vote again! You can toggle vote reminders by running \`fh voterm\`.`
                     )
-                    .setColor('GREEN')
+                    .setColor('Green')
                     .setTimestamp()
                     .setThumbnail(client.db.fighthub.iconURL()),
             ],

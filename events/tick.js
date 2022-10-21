@@ -107,15 +107,15 @@ module.exports = {
             const random = [
                 'WHITE',
                 'AQUA',
-                'GREEN',
+                'Green',
                 'BLUE',
-                'YELLOW',
+                'Yellow',
                 'PURPLE',
                 'LUMINOUS_VIVID_PINK',
                 'FUCHSIA',
                 'GOLD',
                 'ORANGE',
-                'RED',
+                'Red',
                 'GREY',
                 'DARKER_GREY',
                 'NAVY',
@@ -165,7 +165,7 @@ module.exports = {
                                 embeds: [
                                     new EmbedBuilder()
                                         .setTitle('Vote Reminder')
-                                        .setColor('GREEN')
+                                        .setColor('Green')
                                         .setTimestamp()
                                         .setDescription(
                                             `You can vote for **[FightHub](https://discord.gg/fight)** now!\nClick **[here](https://top.gg/servers/824294231447044197/vote)** to vote! Last vote was <t:${(
@@ -274,7 +274,7 @@ module.exports = {
                                             true
                                         )
                                         .setTimestamp()
-                                        .setColor('GREEN')
+                                        .setColor('Green')
 
                                     const content = `<@${winners[win]}>`
 
@@ -316,7 +316,7 @@ module.exports = {
                                                     `🎉 ${giveaway.entries.length.toLocaleString()}`
                                                 )
                                                 .setCustomId('giveaway-join')
-                                                .setStyle('PRIMARY')
+                                                .setStyle(ButtonStyle.Primary)
                                                 .setDisabled(),
                                         ]),
                                     ],
@@ -333,14 +333,16 @@ module.exports = {
                                         new ActionRowBuilder().addComponents([
                                             new ButtonBuilder()
                                                 .setLabel('Jump')
-                                                .setStyle('LINK')
+                                                .setStyle(ButtonStyle.Link)
                                                 .setURL(
                                                     `https://discord.com/channels/${giveaway.guildId}/${giveaway.channelId}/${giveaway.messageId}`
                                                 ),
                                             new ButtonBuilder()
                                                 .setLabel('Reroll')
                                                 .setCustomId('giveaway-reroll')
-                                                .setStyle('SECONDARY'),
+                                                .setStyle(
+                                                    ButtonStyle.Secondary
+                                                ),
                                         ]),
                                     ],
                                 })
@@ -370,7 +372,7 @@ module.exports = {
                                                     true
                                                 )
                                                 .setTimestamp()
-                                                .setColor('GREEN'),
+                                                .setColor('Green'),
                                         ],
                                     })
                                 } catch (e) {

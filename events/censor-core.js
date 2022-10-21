@@ -33,7 +33,7 @@ module.exports = {
                                 .setTitle(
                                     '<:fh_timeout:952067949538181130> Timeout'
                                 )
-                                .setColor('RED')
+                                .setColor('Red')
                                 .setDescription(
                                     `${message.member.toString()} has been timed out for **10 minutes** for saying a censored word!`
                                 )
@@ -57,7 +57,7 @@ module.exports = {
                                 .setTitle(
                                     '<:fh_timeout:952067949538181130> Timeout'
                                 )
-                                .setColor('RED')
+                                .setColor('Red')
                                 .setDescription(
                                     `${message.member.toString()} has been timed out for **10 minutes** for saying a censored word!`
                                 )

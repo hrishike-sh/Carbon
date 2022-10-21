@@ -234,11 +234,17 @@ client.on('interactionCreate', async (interaction) => {
             })
             .setTitle(command.data.name)
             .setDescription(`**This was a slash command**`)
-            .addField('Total commands ran', commandsRan.toString(), true)
-            .addField(
-                'Server | Channel',
-                `${interaction.guild.name} | ${interaction.channel} (${interaction.channel.name})`
-            )
+            .addFields([
+                {
+                    name: 'Total commands ran',
+                    value: commandsRan.toString(),
+                    inline: true,
+                },
+                {
+                    name: 'Server | Channel',
+                    value: `${interaction.guild.name} | ${interaction.channel} (${interaction.channel.name})`,
+                },
+            ])
             .setTimestamp()
 
         await client.channels.cache.get(config.logs.cmdLogging)?.send({
@@ -320,7 +326,7 @@ client.on('messageCreate', async (message) => {
                                 timeLeft
                             )} seconds** before running this command again!`
                         )
-                        .setColor('RED'),
+                        .setColor('Red'),
                 ],
             })
         }
@@ -348,11 +354,17 @@ client.on('messageCreate', async (message) => {
             })
             .setTitle(command.name)
             .setDescription(`**Message:** \`${message.content}\``)
-            .addField('Total commands ran', commandsRan.toString(), true)
-            .addField(
-                'Server | Channel',
-                `${message.guild.name} | ${message.channel} (${message.channel.name})`
-            )
+            .addFields([
+                {
+                    name: 'Total commands ran',
+                    value: commandsRan.toString(),
+                    inline: true,
+                },
+                {
+                    name: 'Server | Channel',
+                    value: `${message.guild.name} | ${message.channel} (${message.channel.name})`,
+                },
+            ])
             .setTimestamp()
 
         await client.channels.cache.get(config.logs.cmdLogging)?.send({

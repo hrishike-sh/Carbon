@@ -130,7 +130,7 @@ module.exports = {
             .setFooter({
                 text: `Winners: ${winners} | Ends at `,
             })
-            .setColor('GREEN')
+            .setColor('Green')
             .setTimestamp(new Date().getTime() + time)
         if (req || req.length)
             embed.addField(
@@ -150,14 +150,14 @@ module.exports = {
             bemBeds.push(
                 new EmbedBuilder()
                     .setDescription(`**Sponsor's message:** ${data.message}`)
-                    .setColor('GREEN')
+                    .setColor('Green')
             )
         channel = interaction.guild.channels.cache.get(channel.id)
         const row = new ActionRowBuilder().addComponents([
             new ButtonBuilder()
                 .setEmoji('🎉')
                 .setCustomId('giveaway-join')
-                .setStyle('SUCCESS'),
+                .setStyle(ButtonStyle.Success),
         ])
         const msg = await channel.send({
             embeds: [...bemBeds],

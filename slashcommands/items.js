@@ -74,19 +74,19 @@ module.exports = {
                     new ButtonBuilder()
                         .setEmoji('⏪')
                         .setCustomId('first-items')
-                        .setStyle('SECONDARY'),
+                        .setStyle(ButtonStyle.Secondary),
                     new ButtonBuilder()
                         .setEmoji('◀️')
                         .setCustomId('prev-items')
-                        .setStyle('SECONDARY'),
+                        .setStyle(ButtonStyle.Secondary),
                     new ButtonBuilder()
                         .setEmoji('▶️')
                         .setCustomId('next-items')
-                        .setStyle('SECONDARY'),
+                        .setStyle(ButtonStyle.Secondary),
                     new ButtonBuilder()
                         .setEmoji('⏩')
                         .setCustomId('last-items')
-                        .setStyle('SECONDARY'),
+                        .setStyle(ButtonStyle.Secondary),
                 ]),
             ],
         })

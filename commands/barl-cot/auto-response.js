@@ -12,7 +12,7 @@ module.exports = {
      * @param {Client} client
      */
     async execute(message, args, client) {
-        if (!message.member.permissions.has('BAN_MEMBERS')) return
+        if (!message.member.permissions.has('BanMembers')) return
 
         if (!args[0] || !this.subcommands.includes(args[0]))
             return message.reply('Not a valid sub-command')
@@ -54,7 +54,7 @@ module.exports = {
                     embeds: [
                         {
                             description: `A trigger already exists with that name! Delete it first to create a new one with same name.`,
-                            color: 'RED',
+                            color: 'Red',
                         },
                     ],
                 })
@@ -109,7 +109,7 @@ module.exports = {
                 embeds: [
                     {
                         title: 'Auto-Responses list',
-                        color: 'GREEN',
+                        color: 'Green',
                         description: data || 'None!',
                         timestamp: new Date(),
                     },

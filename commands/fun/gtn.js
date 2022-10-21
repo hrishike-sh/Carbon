@@ -1,4 +1,9 @@
-const { Message, ActionRowBuilder, ButtonBuilder } = require('discord.js')
+const {
+    Message,
+    ActionRowBuilder,
+    ButtonBuilder,
+    ButtonStyle,
+} = require('discord.js')
 
 module.exports = {
     name: 'guessthenumber',
@@ -35,11 +40,11 @@ module.exports = {
                 new ActionRowBuilder().addComponents([
                     new ButtonBuilder()
                         .setLabel('Start')
-                        .setStyle('SUCCESS')
+                        .setStyle(ButtonStyle.Success)
                         .setCustomId('start-gtn'),
                     new ButtonBuilder()
                         .setLabel('No')
-                        .setStyle('DANGER')
+                        .setStyle(ButtonStyle.Danger)
                         .setCustomId('cancel-gtn'),
                 ]),
             ],
@@ -90,7 +95,7 @@ module.exports = {
                             {
                                 title: '🎉 We have our winner',
                                 description: `The number to be guessed was **${randomNumber}** and ${m.author.toString()} guessed it!`,
-                                color: 'GREEN',
+                                color: 'Green',
                                 timestamp: new Date(),
                             },
                         ],
@@ -103,7 +108,7 @@ module.exports = {
             if (reason == 'cancel') {
                 msg.components[0].components
                     .find((b) => b.customId !== 'cancel-gtn')
-                    .setStyle('SECONDARY')
+                    .setStyle(ButtonStyle.Secondary)
                 msg.components[0].components.forEach((d) => {
                     d.setDisabled()
                 })
@@ -114,7 +119,7 @@ module.exports = {
             } else if (reason === 'start') {
                 msg.components[0].components
                     .find((b) => b.customId === 'cancel-gtn')
-                    .setStyle('SECONDARY')
+                    .setStyle(ButtonStyle.Secondary)
                 msg.components[0].components.forEach((d) => {
                     d.setDisabled()
                 })

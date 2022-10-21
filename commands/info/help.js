@@ -3,7 +3,7 @@ const {
     Message,
     Client,
     EmbedBuilder,
-    MessageSelectMenu,
+    SelectMenuBuilder,
     ActionRowBuilder,
     SelectMenuInteraction,
 } = require('discord.js')
@@ -34,7 +34,7 @@ module.exports = {
             }
             const embed = new EmbedBuilder()
                 .setTitle(command.name || command?.data.name)
-                .setColor('RANDOM')
+                .setColor('Random')
             if (command.data) {
                 embed.setTitle(
                     `<:slash_command:1003221544203468820> ${embed.title}`
@@ -49,16 +49,22 @@ module.exports = {
                     )
                 }
                 if (command.aliases) {
-                    embed.addField(
-                        'Aliases',
-                        command.aliases.map((c) => `**\`${c}\`**`).join(', ')
-                    )
+                    embed.addFields([
+                        {
+                            name: 'Aliases',
+                            value: command.aliases
+                                .map((c) => `**\`${c}\`**`)
+                                .join(', '),
+                        },
+                    ])
                 }
                 if (command.usage) {
-                    embed.addField(
-                        'Usage',
-                        `\`\`\`yaml\nfh ${command.name} ${command.usage}\`\`\``
-                    )
+                    embed.addFields([
+                        {
+                            name: 'Usage',
+                            value: `\`\`\`yaml\nfh ${command.name} ${command.usage}\`\`\``,
+                        },
+                    ])
                 }
                 if (command.fhOnly) {
                     embed.setFooter({
@@ -73,14 +79,14 @@ module.exports = {
         }
         const embed = new EmbedBuilder()
             .setTitle('❓ Help Command')
-            .setColor('GREEN')
+            .setColor('Green')
             .setDescription(`Select a Category to see the commands!`)
             .setThumbnail(client.user.displayAvatarURL())
             .setFooter({
                 text: 'Use fh help [command/alias] for more info!',
             })
 
-        const selection = new MessageSelectMenu()
+        const selection = new SelectMenuBuilder()
             .setPlaceholder('Choose a Category...')
             .setCustomId('help-menu')
             .setOptions([

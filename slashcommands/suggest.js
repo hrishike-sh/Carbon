@@ -37,7 +37,7 @@ module.exports = {
         const suggestEmbed = new EmbedBuilder()
             .setDescription(data.suggestion)
             .setTimestamp()
-            .setColor('GREEN')
+            .setColor('Green')
 
         if (data.a) {
             suggestEmbed.setAuthor({

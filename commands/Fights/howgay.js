@@ -33,7 +33,7 @@ module.exports = {
                 embeds: [
                     {
                         title: 'Confirmation',
-                        color: 'GREEN',
+                        color: 'Green',
                         description: `${message.author.toString()} has challenged you for a game of howgay!\nDo you accept their challenge?`,
                         footer: {
                             text: 'Use the buttons.',
@@ -43,11 +43,11 @@ module.exports = {
                 components: [
                     new ActionRowBuilder().addComponents([
                         new ButtonBuilder()
-                            .setStyle('SUCCESS')
+                            .setStyle(ButtonStyle.Success)
                             .setCustomId('hg-yes')
                             .setLabel('Accept'),
                         new ButtonBuilder()
-                            .setStyle('DANGER')
+                            .setStyle(ButtonStyle.Danger)
                             .setCustomId('hg-no')
                             .setLabel('Deny'),
                     ]),
@@ -88,25 +88,29 @@ module.exports = {
                 .setFooter({
                     text: "isn't that gay",
                 })
-                .setColor('AQUA')
+                .setColor('Aqua')
             const fancy = await message.channel.send({
                 embeds: [embed],
             })
             await client.functions.sleep(500)
-            embed.addField(
-                `${gamedata[0].user.tag}`,
-                `Rate: ${gamedata[0].rate}%`,
-                true
-            )
+            embed.addFields([
+                {
+                    name: `${gamedata[0].user.tag}`,
+                    value: `Rate: ${gamedata[0].rate}%`,
+                    inline: true,
+                },
+            ])
             await fancy.edit({
                 embeds: [embed],
             })
             await client.functions.sleep(2500)
-            embed.addField(
-                `${gamedata[1].user.tag}`,
-                `Rate: ${gamedata[1].rate}%`,
-                true
-            )
+            embed.addFields([
+                {
+                    name: `${gamedata[1].user.tag}`,
+                    value: `Rate: ${gamedata[1].rate}%`,
+                    inline: true,
+                },
+            ])
             await fancy.edit({
                 embeds: [embed],
             })

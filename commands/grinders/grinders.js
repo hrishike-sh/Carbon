@@ -173,7 +173,7 @@ module.exports = {
                 const embed = new EmbedBuilder()
                     .setTitle('Grinder Pendings')
                     .setDescription('All grinders are upto date.')
-                    .setColor('GREEN')
+                    .setColor('Green')
                     .setTimestamp()
 
                 return message.channel.send({ embeds: [embed] })
@@ -201,7 +201,7 @@ module.exports = {
             const embed2 = new EmbedBuilder()
                 .setTitle('Grinder Pendings')
                 .setDescription(`${mapp}`)
-                .setColor('RED')
+                .setColor('Red')
                 .setTimestamp()
 
             message.channel.send({ embeds: [embed2] })

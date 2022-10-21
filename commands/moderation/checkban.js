@@ -40,7 +40,7 @@ module.exports = {
             embeds: [
                 {
                     title: 'Ban Info',
-                    color: 'RED',
+                    color: 'Red',
                     description: `User: \`${
                         ban.user ? ban.user.tag : 'Unknown'
                     }\`(\`${ban.user.id}\`)`,

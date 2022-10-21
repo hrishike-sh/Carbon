@@ -55,7 +55,7 @@ module.exports = {
                 row.addComponents([
                     new ButtonBuilder()
                         .setEmoji('914473340129906708')
-                        .setStyle('SECONDARY')
+                        .setStyle(ButtonStyle.Secondary)
                         .setCustomId(id),
                 ])
             }
@@ -68,11 +68,11 @@ module.exports = {
                 new ActionRowBuilder().addComponents([
                     new ButtonBuilder()
                         .setLabel('Start')
-                        .setStyle('SUCCESS')
+                        .setStyle(ButtonStyle.Success)
                         .setCustomId('start-w'),
                     new ButtonBuilder()
                         .setLabel('Go back')
-                        .setStyle('DANGER')
+                        .setStyle(ButtonStyle.Danger)
                         .setCustomId('no-w'),
                 ]),
             ],
@@ -93,7 +93,7 @@ module.exports = {
             } else if (b.customId === 'no-w') {
                 Game.components[0].components
                     .filter((a) => a.customId === 'start-w')[0]
-                    .setStyle('SECONDARY')
+                    .setStyle(ButtonStyle.Secondary)
                 Game.components[0].components.forEach((a) => {
                     a.setDisabled()
                 })
@@ -149,15 +149,15 @@ module.exports = {
                 Game.components[currentLine].components[i].emoji = null
                 if (wOrD[i] === msg.content[i].toLowerCase()) {
                     Game.components[currentLine].components[i].setStyle(
-                        'SUCCESS'
+                        ButtonStyle.Success
                     )
                 } else if (wOrD.includes(msg.content[i].toLowerCase())) {
                     Game.components[currentLine].components[i].setStyle(
-                        'PRIMARY'
+                        ButtonStyle.Primary
                     )
                 } else
                     Game.components[currentLine].components[i].setStyle(
-                        'SECONDARY'
+                        ButtonStyle.Secondary
                     )
             }
             if (win) {

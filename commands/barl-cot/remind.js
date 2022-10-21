@@ -18,22 +18,24 @@ module.exports = {
         if (args[0] == 'list') {
             const eembed = new EmbedBuilder()
                 .setTitle('Reminders')
-                .setColor('GREEN')
+                .setColor('Green')
                 .setDescription('Your reminders are as follows:')
                 .setTimestamp()
             client.db.reminders
                 .filter((u) => u.userId === message.author.id)
                 .forEach((reminder) => {
-                    eembed.addField(
-                        `Reminder about ${reminder.reason}`,
-                        `ID: ${
-                            reminder.id
-                        }\nReminds ${client.functions.formatTime(
-                            reminder.time,
-                            'R'
-                        )}`,
-                        true
-                    )
+                    eembed.addFields([
+                        {
+                            name: `Reminder about ${reminder.reason}`,
+                            value: `ID: ${
+                                reminder.id
+                            }\nReminds ${client.functions.formatTime(
+                                reminder.time,
+                                'R'
+                            )}`,
+                            inline: true,
+                        },
+                    ])
                 })
 
             return message.reply({

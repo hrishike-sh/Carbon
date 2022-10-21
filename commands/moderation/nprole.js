@@ -1,4 +1,4 @@
-const { ButtonBuilder, ActionRowBuilder } = require('discord.js')
+const { ButtonBuilder, ActionRowBuilder, ButtonStyle } = require('discord.js')
 
 module.exports = {
     name: 'nop',
@@ -33,15 +33,15 @@ module.exports = {
         const annBut = new ButtonBuilder()
             .setCustomId('par_ping')
             .setEmoji('861299771612594196')
-            .setStyle('SECONDARY')
+            .setStyle(ButtonStyle.Secondary)
         const nitBut = new ButtonBuilder()
             .setCustomId('no_par_ping')
             .setEmoji('824904307337723905')
-            .setStyle('SECONDARY')
+            .setStyle(ButtonStyle.Secondary)
         const gawBut = new ButtonBuilder()
             .setCustomId('par_hes_ping')
             .setEmoji('861300228803002368')
-            .setStyle('SECONDARY')
+            .setStyle(ButtonStyle.Secondary)
 
         const row1 = new ActionRowBuilder().addComponents([
             annBut,

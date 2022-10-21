@@ -4,6 +4,7 @@ const {
     Message,
     ButtonBuilder,
     ActionRowBuilder,
+    ButtonStyle,
 } = require('discord.js')
 const settings = require('../../database/models/settingsSchema')
 
@@ -54,7 +55,7 @@ module.exports = {
                                     (a) => `<:bdash:919555889239822477><@&${a}>`
                                 )
                                 .join('\n')}`,
-                        color: 'RED',
+                        color: 'Red',
                     },
                 ],
             })
@@ -77,22 +78,22 @@ module.exports = {
                 iconURL: msg.author.displayAvatarURL() || null,
             })
             .setDescription(msg.content)
-            .setColor('RANDOM')
-            .setFooter(`${snipe + 1}/${sniped.length}`)
+            .setColor('Random')
+            .setFooter({ text: `${snipe + 1}/${sniped.length}` })
             .setImage(image)
             .setTimestamp(time)
         let prevBut = new ButtonBuilder()
             .setEmoji('911971090954326017')
             .setCustomId('prev-snipe')
-            .setStyle('SUCCESS')
+            .setStyle(ButtonStyle.Success)
         let delBut = new ButtonBuilder()
             .setEmoji('🗑')
             .setCustomId('del-snipe')
-            .setStyle('PRIMARY')
+            .setStyle(ButtonStyle.Primary)
         let nextBut = new ButtonBuilder()
             .setEmoji('911971202048864267')
             .setCustomId('next-snipe')
-            .setStyle('SUCCESS')
+            .setStyle(ButtonStyle.Success)
         let row = new ActionRowBuilder().addComponents([
             prevBut,
             delBut,
@@ -131,8 +132,8 @@ module.exports = {
                         iconURL: msg.author.displayAvatarURL() || null,
                     })
                     .setDescription(msg.content)
-                    .setColor('RANDOM')
-                    .setFooter(`${snipe + 1}/${sniped.length}`)
+                    .setColor('Random')
+                    .setFooter({ text: `${snipe + 1}/${sniped.length}` })
                     .setImage(image)
                     .setTimestamp(time)
 
@@ -154,8 +155,8 @@ module.exports = {
                         iconURL: msg.author.displayAvatarURL() || null,
                     })
                     .setDescription(msg.content)
-                    .setColor('RANDOM')
-                    .setFooter(`${snipe + 1}/${sniped.length}`)
+                    .setColor('Random')
+                    .setFooter({ text: `${snipe + 1}/${sniped.length}` })
                     .setImage(image)
                     .setTimestamp(time)
 
@@ -181,8 +182,8 @@ module.exports = {
                     iconURL: msg.author.displayAvatarURL() || null,
                 })
                 .setDescription(msg.content)
-                .setColor('RANDOM')
-                .setFooter(`${snipe + 1}/${sniped.length}`)
+                .setColor('Random')
+                .setFooter({ text: `${snipe + 1}/${sniped.length}` })
                 .setImage(image)
                 .setTimestamp(time)
             try {

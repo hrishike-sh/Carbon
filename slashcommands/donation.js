@@ -110,7 +110,7 @@ module.exports = {
                                     "Added to user's Main Donation!",
                                     `**Total amount donated by this user:** ${dbUser.messages.toLocaleString()}`
                                 )
-                                .setColor('GREEN'),
+                                .setColor('Green'),
                         ],
                     })
                     success = true
@@ -138,7 +138,7 @@ module.exports = {
                                     "Removed from user's Main Donation!",
                                     `**Total amount donated by this user:** ${dbUser.messages.toLocaleString()}`
                                 )
-                                .setColor('RED'),
+                                .setColor('Red'),
                         ],
                     })
                     success = true
@@ -192,7 +192,7 @@ module.exports = {
                                             : 'The amount was added, but had an error fetching it.'
                                     }`
                                 )
-                                .setColor('GREEN'),
+                                .setColor('Green'),
                         ],
                     })
                     success = true
@@ -224,7 +224,7 @@ module.exports = {
                                             : 'The amount was added, but had an error fetching it.'
                                     }`
                                 )
-                                .setColor('RED'),
+                                .setColor('Red'),
                         ],
                     })
                     success = true
@@ -265,7 +265,7 @@ module.exports = {
                         embeds: [
                             {
                                 title: 'Donation added!',
-                                color: 'GREEN',
+                                color: 'Green',
                                 timestamp: new Date(),
                                 footer: {
                                     text: 'Thank you for donating!',
@@ -293,7 +293,7 @@ module.exports = {
                         embeds: [
                             {
                                 title: 'Donation removed.',
-                                color: 'RED',
+                                color: 'Red',
                                 timestamp: new Date(),
                                 fields: [
                                     {
@@ -341,7 +341,7 @@ module.exports = {
                         embeds: [
                             {
                                 title: 'Donation added!',
-                                color: 'GREEN',
+                                color: 'Green',
                                 timestamp: new Date(),
                                 footer: {
                                     text: 'Thank you for donating!',
@@ -369,7 +369,7 @@ module.exports = {
                         embeds: [
                             {
                                 title: 'Donation removed.',
-                                color: 'RED',
+                                color: 'Red',
                                 timestamp: new Date(),
                                 fields: [
                                     {

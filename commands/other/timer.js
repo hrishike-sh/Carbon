@@ -4,6 +4,7 @@ const {
     EmbedBuilder,
     ButtonBuilder,
     ActionRowBuilder,
+    ButtonStyle,
 } = require('discord.js')
 const ms = require('better-ms')
 const db = require('../../database/models/timer')
@@ -17,7 +18,7 @@ module.exports = {
      * @param {String[]} args
      */
     async execute(message, args, client) {
-        if (!message.member.permissions.has('MANAGE_MESSAGES')) {
+        if (!message.member.permissions.has('ManageMessages')) {
             return message.channel.send(
                 `You must have the \`MANAGE_MESSAGES\` permission to run this command.`
             )
@@ -51,7 +52,7 @@ module.exports = {
         message.delete()
         const RemindBut = new ButtonBuilder()
             .setEmoji('🔔')
-            .setStyle('SUCCESS')
+            .setStyle(ButtonStyle.Success)
             .setCustomId('remind_me')
         const row = new ActionRowBuilder().addComponents([RemindBut])
         const msg = await message.channel.send({

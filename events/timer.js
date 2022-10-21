@@ -74,7 +74,7 @@ module.exports = {
                                 new ActionRowBuilder().addComponents([
                                     new ButtonBuilder()
                                         .setLabel('Jump')
-                                        .setStyle('LINK')
+                                        .setStyle(ButtonStyle.Link)
                                         .setURL(message.url),
                                 ]),
                             ],

@@ -252,7 +252,7 @@ module.exports = {
                     })
                 }
                 break
-            case 'red':
+            case 'Red':
                 if (button.member.roles.cache.get('826052226514288700')) {
                     await button.member.roles.remove('826052226514288700')
                     button.reply({
@@ -284,7 +284,7 @@ module.exports = {
                     })
                 }
                 break
-            case 'yellow':
+            case 'Yellow':
                 if (button.member.roles.cache.get('826044013685112888')) {
                     await button.member.roles.remove('826044013685112888')
                     button.reply({
@@ -300,7 +300,7 @@ module.exports = {
                     })
                 }
                 break
-            case 'green':
+            case 'Green':
                 if (button.member.roles.cache.get('826043999659360267')) {
                     await button.member.roles.remove('826043999659360267')
                     button.reply({
@@ -396,7 +396,7 @@ module.exports = {
                     })
                 }
                 break
-            case 'random':
+            case 'Random':
                 if (button.member.roles.cache.get('866675725381140480')) {
                     await button.member.roles.remove('866675725381140480')
                     button.reply({

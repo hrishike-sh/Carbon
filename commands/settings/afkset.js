@@ -54,7 +54,7 @@ module.exports = {
                         new EmbedBuilder()
                             .setTitle('Ignored Channels')
                             .setDescription(map.join('\n'))
-                            .setColor('YELLOW'),
+                            .setColor('Yellow'),
                     ],
                 })
 

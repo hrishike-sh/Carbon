@@ -108,7 +108,7 @@ module.exports = {
                 .addField('Prize', data.prize, false)
                 .addField('Time', data.time, true)
                 .addField('Winners', data.winners, true)
-                .setColor('YELLOW')
+                .setColor('Yellow')
 
             if (data.requirement)
                 embed.addField('Requirements', data.requirement, true)
@@ -132,11 +132,11 @@ module.exports = {
                         new ButtonBuilder()
                             .setCustomId('accept-dono')
                             .setLabel('Accept')
-                            .setStyle('SUCCESS'),
+                            .setStyle(ButtonStyle.Success),
                         new ButtonBuilder()
                             .setCustomId('deny-dono')
                             .setLabel('Deny')
-                            .setStyle('DANGER'),
+                            .setStyle(ButtonStyle.Danger),
                     ]),
                 ],
                 allowedMentions: { roles: [giveawayRole], parse: ['users'] },
@@ -165,11 +165,11 @@ module.exports = {
                     )
                     mainMessage.components[0].components
                         .find((b) => b.customId.includes('deny'))
-                        .setStyle('SECONDARY')
+                        .setStyle(ButtonStyle.Secondary)
                     mainMessage.components[0].components.forEach((c) => {
                         c.setDisabled()
                     })
-                    embed.setColor('GREEN')
+                    embed.setColor('Green')
                     return mainMessage.edit({
                         content: `This request was accepted by ${button.user.toString()}!`,
                         embeds: [embed],
@@ -182,11 +182,11 @@ module.exports = {
                     )
                     mainMessage.components[0].components
                         .find((b) => !b.customId.includes('deny'))
-                        .setStyle('SECONDARY')
+                        .setStyle(ButtonStyle.Secondary)
                     mainMessage.components[0].components.forEach((c) => {
                         c.setDisabled()
                     })
-                    embed.setColor('RED')
+                    embed.setColor('Red')
                     return mainMessage.edit({
                         content: `This request was cancelled by ${button.user.toString()}!`,
                         embeds: [embed],
@@ -224,7 +224,7 @@ module.exports = {
                 )
                 .addField('Type', data.type, true)
                 .addField('Prize', data.prize, true)
-                .setColor('YELLOW')
+                .setColor('Yellow')
             if (data.req) embed.addField('Requirement: ', data.req, true)
             if (data.msg) embed.addField('Message', data.msg, true)
             if (data.explain)
@@ -237,11 +237,11 @@ module.exports = {
                         new ButtonBuilder()
                             .setCustomId('accept-dono')
                             .setLabel('Accept')
-                            .setStyle('SUCCESS'),
+                            .setStyle(ButtonStyle.Success),
                         new ButtonBuilder()
                             .setCustomId('deny-dono')
                             .setLabel('Deny')
-                            .setStyle('DANGER'),
+                            .setStyle(ButtonStyle.Danger),
                     ]),
                 ],
                 allowedMentions: { roles: [eventManRole], parse: ['users'] },
@@ -271,11 +271,11 @@ module.exports = {
                     )
                     mainMessage.components[0].components
                         .find((b) => b.customId.includes('deny'))
-                        .setStyle('SECONDARY')
+                        .setStyle(ButtonStyle.Secondary)
                     mainMessage.components[0].components.forEach((c) => {
                         c.setDisabled()
                     })
-                    embed.setColor('GREEN')
+                    embed.setColor('Green')
                     return mainMessage.edit({
                         content: `This request was accepted by ${button.user.toString()}!`,
                         embeds: [embed],
@@ -288,11 +288,11 @@ module.exports = {
                     )
                     mainMessage.components[0].components
                         .find((b) => !b.customId.includes('deny'))
-                        .setStyle('SECONDARY')
+                        .setStyle(ButtonStyle.Secondary)
                     mainMessage.components[0].components.forEach((c) => {
                         c.setDisabled()
                     })
-                    embed.setColor('RED')
+                    embed.setColor('Red')
                     return mainMessage.edit({
                         content: `This request was cancelled by ${button.user.toString()}!`,
                         embeds: [embed],

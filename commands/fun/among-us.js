@@ -4,6 +4,7 @@ const {
     EmbedBuilder,
     ButtonBuilder,
     ActionRowBuilder,
+    ButtonStyle,
 } = require('discord.js')
 const { inspect } = require('util')
 module.exports = {
@@ -54,7 +55,7 @@ module.exports = {
             .setDescription(
                 'Click the **Join** button to enter the game!\n\nMax players: **10**'
             )
-            .setColor('GREEN')
+            .setColor('Green')
         const getPlayers = (
             await message.channel.send({
                 embeds: [joinEmbed],
@@ -63,7 +64,7 @@ module.exports = {
                         new ButtonBuilder()
                             .setLabel('Join')
                             .setCustomId(`join:${sessionId}`)
-                            .setStyle('PRIMARY'),
+                            .setStyle(ButtonStyle.Primary),
                     ]),
                 ],
             })
@@ -117,7 +118,7 @@ module.exports = {
                         new ButtonBuilder()
                             .setLabel(`${gamedata[i].user.displayName}`)
                             .setCustomId(gamedata[i].gameId)
-                            .setStyle('SECONDARY')
+                            .setStyle(ButtonStyle.Secondary)
                             .setEmoji(gamedata[i].gameId.split(':')[1])
                             .setDisabled(),
                     ])
@@ -127,7 +128,7 @@ module.exports = {
                         new ButtonBuilder()
                             .setLabel(`${gamedata[i].user.displayName}`)
                             .setCustomId(gamedata[i].gameId)
-                            .setStyle('SECONDARY')
+                            .setStyle(ButtonStyle.Secondary)
                             .setEmoji(gamedata[i].gameId.split(':')[1])
                             .setDisabled(),
                     ])
@@ -137,7 +138,7 @@ module.exports = {
                 embeds: [
                     {
                         title: `Among Us`,
-                        color: 'GREEN',
+                        color: 'Green',
                         description: `**HOW TO WIN**:\n\n__Impostor__:\n> Send atleast 15 messages in order to win!\n__Crewmate__:\n> Start an Emergency Meeting by typing __emergency__ in chat and vote out whoever is sus!`,
                         footer: {
                             text: "Check your DMs! You have been DM'd your role!",

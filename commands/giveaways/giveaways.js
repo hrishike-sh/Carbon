@@ -39,7 +39,7 @@ module.exports = {
         const embed = new EmbedBuilder()
             .setTitle('Freeloader Machine')
             .setDescription(map.join('\n\n') || 'No active giveaways...')
-            .setColor('DARK_AQUA')
+            .setColor('DarkAqua')
             .setTimestamp()
             .setFooter({
                 text: '10 latest giveaways are shown.',

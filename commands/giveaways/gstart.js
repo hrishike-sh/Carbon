@@ -6,6 +6,7 @@ const {
     ButtonBuilder,
     ActionRowBuilder,
     EmbedBuilder,
+    ButtonStyle,
 } = require('discord.js')
 const server = require('../../database/models/settingsSchema')
 const { inspect } = require('util')
@@ -44,52 +45,66 @@ module.exports = {
                             `You need any one of the following roles to run this command: ${allowedRoles
                                 .map((r) => `<@&${r}>`)
                                 .join(' ')}`,
-                        color: 'RED',
+                        color: 'Red',
                     },
                 ],
             })
         }
         const helpBed = new EmbedBuilder()
             .setTitle('Giveaway Help')
-            .setColor('RANDOM')
+            .setColor('Random')
             .setDescription(
                 'To start giveaways you first need to have valid permissions and to add these ask an admin to add certain roles that can create giveaways by /gconfig.\n'
             )
-            .addField(
-                `Format`,
-                `\`fh g <time> <winners> <requirements> <prize> --donor <user_id> --msg <message>\``,
-                false
-            )
-            .addField(
-                'Requirements',
-                `Requirements should be role ids and multiple role requirements can be seperated by ".".\n\nExample: \`\`fh gstart 24h 1 123456.123457 DN\`\``,
-                true
-            )
-            .addField(
-                `Message`,
-                `You can provide a message from the sponsor via the --msg tag.\n\nExample: \`\`fh gstart 2h 1 none Trophy --msg i scammed a kid\`\``,
-                true
-            )
-            .addField(
-                `Thank feature`,
-                `The bot provides a "Thank the Sponsor" button on joined giveaway message. When users click this +1 thank is added. When the giveaway ends, the Sponsor or host(if sponsor is not provided) gets a dm from the bot showing how many thanks they got!`,
-                true
-            )
-            .addField(
-                'Bypasses',
-                `Users can bypass giveaways if they have certain roles. Admins can define these roles via /gconfig!`,
-                true
-            )
-            .addField(
-                'Blacklists',
-                'You can deny users that have certain roles from entering giveaways by adding blacklisted roles via /gconfig!',
-                true
-            )
-            .addField(
-                'Examples',
-                `\`\`fh gstart 1h20m 5 12391238123123.12391239123 Nitro Classic --donor 8971238123912312\`\`\n\`\`fh gstart 90m92s 2 none Absolutely Nothing! --donor 128931237123 --msg im so generous\`\`\n\`\`fh gstart 30s 1 none test\`\``,
-                false
-            )
+            .addField([
+                {
+                    name: `Format`,
+                    value: `\`fh g <time> <winners> <requirements> <prize> --donor <user_id> --msg <message>\``,
+                    inline: false,
+                },
+            ])
+            .addField([
+                {
+                    name: 'Requirements',
+                    value: `Requirements should be role ids and multiple role requirements can be seperated by ".".\n\nExample: \`\`fh gstart 24h 1 123456.123457 DN\`\``,
+                    inline: true,
+                },
+            ])
+            .addField([
+                {
+                    name: `Message`,
+                    value: `You can provide a message from the sponsor via the --msg tag.\n\nExample: \`\`fh gstart 2h 1 none Trophy --msg i scammed a kid\`\``,
+                    inline: true,
+                },
+            ])
+            .addField([
+                {
+                    name: `Thank feature`,
+                    value: `The bot provides a "Thank the Sponsor" button on joined giveaway message. When users click this +1 thank is added. When the giveaway ends, the Sponsor or host(if sponsor is not provided) gets a dm from the bot showing how many thanks they got!`,
+                    inline: true,
+                },
+            ])
+            .addField([
+                {
+                    name: 'Bypasses',
+                    value: `Users can bypass giveaways if they have certain roles. Admins can define these roles via /gconfig!`,
+                    inline: true,
+                },
+            ])
+            .addField([
+                {
+                    name: 'Blacklists',
+                    value: 'You can deny users that have certain roles from entering giveaways by adding blacklisted roles via /gconfig!',
+                    inline: true,
+                },
+            ])
+            .addField([
+                {
+                    name: 'Examples',
+                    value: `\`\`fh gstart 1h20m 5 12391238123123.12391239123 Nitro Classic --donor 8971238123912312\`\`\n\`\`fh gstart 90m92s 2 none Absolutely Nothing! --donor 128931237123 --msg im so generous\`\`\n\`\`fh gstart 30s 1 none test\`\``,
+                    inline: false,
+                },
+            ])
         if (!args[0])
             return message.reply({
                 embeds: [helpBed],
@@ -198,17 +213,28 @@ module.exports = {
             .setFooter({
                 text: `Winners: ${winners} | Ends at `,
             })
-            .setColor('GREEN')
+            .setColor('Green')
             .setTimestamp(new Date().getTime() + time)
         if (requirements && requirements.length) {
-            embed.addField(
-                'Requirements:',
-                `Roles: ${requirements.map((val) => `<@&${val}>`).join(', ')}`,
-                false
-            )
+            embed.addFields([
+                {
+                    name: 'Requirements:',
+                    value: `Roles: ${requirements
+                        .map((val) => `<@&${val}>`)
+                        .join(', ')}`,
+                    inline: false,
+                },
+            ])
         }
         if (!donor) donor = message.member
-        if (donor) embed.addField('Sponsor:', `${donor.toString()}`, false)
+        if (donor)
+            embed.addFields([
+                {
+                    name: 'Sponsor:',
+                    value: `${donor.toString()}`,
+                    inline: false,
+                },
+            ])
 
         let embeds = []
         embeds.push(embed)
@@ -216,7 +242,7 @@ module.exports = {
             embeds.push(
                 new EmbedBuilder()
                     .setDescription(`**Sponsor's message:** ${dMessage}`)
-                    .setColor('GREEN')
+                    .setColor('Green')
             )
         }
 
@@ -224,7 +250,7 @@ module.exports = {
             new ButtonBuilder()
                 .setEmoji('🎉')
                 .setCustomId('giveaway-join')
-                .setStyle('SUCCESS'),
+                .setStyle(ButtonStyle.Success),
         ])
 
         await message.delete()
@@ -255,20 +281,34 @@ module.exports = {
             embeds: [
                 new EmbedBuilder()
                     .setTitle('New giveaway')
-                    .addField(
-                        'Guild',
-                        message.guild.name + `(${message.guildId})`,
-                        true
-                    )
-                    .addField('Channel', message.channel.toString(), true)
-                    .addField(
-                        'Prize | time',
-                        `${dbDat.prize} | ends ${client.functions.formatTime(
-                            dbDat.endsAt
-                        )}`,
-                        true
-                    )
-                    .addField('Host', message.member.toString()),
+                    .addField([
+                        {
+                            name: 'Guild',
+                            value: message.guild.name + `(${message.guildId})`,
+                            inline: true,
+                        },
+                    ])
+                    .addField([
+                        {
+                            name: 'Channel',
+                            value: message.channel.toString(),
+                            inline: true,
+                        },
+                    ])
+                    .addField([
+                        {
+                            name: 'Prize | time',
+                            value: `${
+                                dbDat.prize
+                            } | ends ${client.functions.formatTime(
+                                dbDat.endsAt
+                            )}`,
+                            inline: true,
+                        },
+                    ])
+                    .addField([
+                        { name: 'Host', value: message.member.toString() },
+                    ]),
                 {
                     title: 'Raw',
                     description: `New Giveaway:\n\`\`\`js\n${inspect(

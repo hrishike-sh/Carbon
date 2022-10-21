@@ -41,7 +41,7 @@ module.exports = {
                             new Date().getTime()
                         )}`
                     )
-                    .setColor('GREEN'),
+                    .setColor('Green'),
             ],
         })
     },

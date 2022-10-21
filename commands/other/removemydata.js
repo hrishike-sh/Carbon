@@ -37,7 +37,7 @@ module.exports = {
                     .setDescription(
                         'Doing this will __erase__ all your data from the database.\nThis includes:\n> __All__ your donations.\n> __All__ your reminders.\n\n**Are you sure you want to do this? __This change is irreversible!__**'
                     )
-                    .setColor('RED')
+                    .setColor('Red')
                     .setFooter({
                         text: 'Use the buttons',
                     }),
@@ -47,10 +47,10 @@ module.exports = {
                     new ButtonBuilder()
                         .setLabel('REMOVE MY DATA')
                         .setCustomId('rmd-remove')
-                        .setStyle('DANGER'),
+                        .setStyle(ButtonStyle.Danger),
                     new ButtonBuilder()
                         .setLabel('GO BACK')
-                        .setStyle('SUCCESS')
+                        .setStyle(ButtonStyle.Success)
                         .setCustomId('rmd-no'),
                 ]),
             ],
@@ -74,7 +74,7 @@ module.exports = {
                     embeds: [
                         new EmbedBuilder()
                             .setDescription('Deleting all your data...')
-                            .setColor('YELLOW'),
+                            .setColor('Yellow'),
                     ],
                     components: confirmation.components,
                 })
@@ -97,7 +97,7 @@ module.exports = {
                             .setDescription(
                                 ':ballot_box_with_check: All your data has been __erased__.'
                             )
-                            .setColor('GREEN'),
+                            .setColor('Green'),
                     ],
                 })
             } else {

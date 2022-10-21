@@ -45,13 +45,13 @@ module.exports = {
                                         reminder.reason
                                     }**!`
                                 )
-                                .setColor('GREEN'),
+                                .setColor('Green'),
                         ],
                         components: [
                             new ActionRowBuilder().addComponents([
                                 new ButtonBuilder()
                                     .setLabel('Message')
-                                    .setStyle('LINK')
+                                    .setStyle(ButtonStyle.Link)
                                     .setURL(reminder.link),
                             ]),
                         ],

@@ -2,6 +2,7 @@ const {
     Message,
     Client,
     EmbedBuilder,
+    ButtonStyle,
     ActionRowBuilder,
     ButtonBuilder,
 } = require('discord.js')
@@ -56,26 +57,30 @@ module.exports = {
                 .setDescription(
                     `Showing donations for user: ${target.toString()}`
                 )
-                .setColor('RANDOM')
-                .addField(
-                    'Amount donated:',
-                    dbUser.amount.toLocaleString(),
-                    true
-                )
-                .addField(
-                    'Position on leaderboard:',
-                    `#${
-                        all
-                            .sort((a, b) => b.amount - a.amount)
-                            .indexOf(dbUser) + 1
-                    }`
-                )
+                .setColor('Random')
+                .addFields([
+                    {
+                        name: 'Amount donated:',
+                        value: dbUser.amount.toLocaleString(),
+                        inline: true,
+                    },
+                ])
+                .addFields([
+                    {
+                        name: 'Position on leaderboard:',
+                        value: `#${
+                            all
+                                .sort((a, b) => b.amount - a.amount)
+                                .indexOf(dbUser) + 1
+                        }`,
+                    },
+                ])
         } else {
             donoEmbed
                 .setDescription(
                     `${target.toString()} has not donated towards the 30k event!`
                 )
-                .setColor('RED')
+                .setColor('Red')
         }
 
         const main = await message.reply({
@@ -83,12 +88,12 @@ module.exports = {
             components: [
                 new ActionRowBuilder().addComponents([
                     new ButtonBuilder()
-                        .setStyle('PRIMARY')
+                        .setStyle(ButtonStyle.Primary)
                         .setLabel('Donation')
                         .setCustomId('30k-view_dono')
                         .setDisabled(),
                     new ButtonBuilder()
-                        .setStyle('SECONDARY')
+                        .setStyle(ButtonStyle.Secondary)
                         .setLabel('Leaderboard')
                         .setCustomId('30k-lb'),
                 ]),
@@ -141,18 +146,18 @@ module.exports = {
                 button.message.components[0].components
                     .find((a) => a.customId === '30k-lb')
                     .setDisabled(true)
-                    .setStyle('PRIMARY')
+                    .setStyle(ButtonStyle.Primary)
                 button.message.components[0].components
                     .find((a) => a.customId !== '30k-lb')
                     .setDisabled(false)
-                    .setStyle('SECONDARY')
+                    .setStyle(ButtonStyle.Secondary)
 
                 await main.edit({
                     embeds: [
                         {
                             title: 'Leaderboard',
                             description: data,
-                            color: 'GREEN',
+                            color: 'Green',
                         },
                     ],
                     components: button.message.components,
@@ -161,11 +166,11 @@ module.exports = {
                 button.message.components[0].components
                     .find((a) => a.customId === '30k-lb')
                     .setDisabled(false)
-                    .setStyle('SECONDARY')
+                    .setStyle(ButtonStyle.Secondary)
                 button.message.components[0].components
                     .find((a) => a.customId !== '30k-lb')
                     .setDisabled(true)
-                    .setStyle('PRIMARY')
+                    .setStyle(ButtonStyle.Primary)
 
                 button.message.edit({
                     embeds: [donoEmbed],

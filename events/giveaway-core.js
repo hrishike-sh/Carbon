@@ -63,7 +63,7 @@ module.exports = {
                                     `🎉 ${gaw.entries.length.toLocaleString()}`
                                 )
                                 .setCustomId('giveaway-join')
-                                .setStyle('PRIMARY')
+                                .setStyle(ButtonStyle.Primary)
                                 .setDisabled(),
                         ]),
                     ],
@@ -82,19 +82,19 @@ module.exports = {
                             .setDescription(
                                 'You can only join once... and you are already in!'
                             )
-                            .setColor('YELLOW'),
+                            .setColor('Yellow'),
                     ],
                     components: [
                         new ActionRowBuilder().addComponents([
                             new ButtonBuilder()
                                 .setLabel('Leave giveaway')
                                 .setCustomId('giveaway-leave')
-                                .setStyle('DANGER'),
+                                .setStyle(ButtonStyle.Danger),
                             new ButtonBuilder()
                                 .setLabel('Thank the sponsor')
                                 .setEmoji('♥')
                                 .setCustomId('giveaway-thank')
-                                .setStyle('PRIMARY'),
+                                .setStyle(ButtonStyle.Primary),
                         ]),
                     ],
                     ephemeral: true,
@@ -157,7 +157,7 @@ module.exports = {
                                         .map((a) => `<@&${a}>`)
                                         .join(`\n`)}`
                                 )
-                                .setColor('RED'),
+                                .setColor('Red'),
                         ],
                         ephemeral: true,
                     })
@@ -189,7 +189,7 @@ module.exports = {
                                 100
                             ).toFixed(2)}%***!`
                         )
-                        .setColor('GREEN')
+                        .setColor('Green')
                         .setFooter({
                             text: '*Winning chance may change overtime!',
                         }),
@@ -199,12 +199,12 @@ module.exports = {
                         new ButtonBuilder()
                             .setLabel('Leave giveaway')
                             .setCustomId('giveaway-leave')
-                            .setStyle('DANGER'),
+                            .setStyle(ButtonStyle.Danger),
                         new ButtonBuilder()
                             .setLabel('Thank the sponsor')
                             .setEmoji('♥')
                             .setCustomId('giveaway-thank')
-                            .setStyle('PRIMARY'),
+                            .setStyle(ButtonStyle.Primary),
                     ]),
                 ],
                 ephemeral: true,
@@ -241,7 +241,7 @@ module.exports = {
                     `[Jump](https://discord.com/channels/${gaww.guildId}/${gaww.channelId}/${gaww.messageId})`,
                     true
                 )
-                .setColor('GREEN')
+                .setColor('Green')
                 .setTimestamp()
             const id = winner.replace('<@', '').replace('>', '')
             client.functions.dmUser(client, id, {
@@ -259,14 +259,14 @@ module.exports = {
                     new ActionRowBuilder().addComponents([
                         new ButtonBuilder()
                             .setLabel('Jump')
-                            .setStyle('LINK')
+                            .setStyle(ButtonStyle.Link)
                             .setURL(
                                 `https://discord.com/channels/${gaww.guildId}/${gaww.channelId}/${gaww.messageId}`
                             ),
                         new ButtonBuilder()
                             .setLabel('Reroll')
                             .setCustomId('giveaway-reroll')
-                            .setStyle('SECONDARY'),
+                            .setStyle(ButtonStyle.Secondary),
                     ]),
                 ],
             })
@@ -292,7 +292,7 @@ module.exports = {
                 embeds: [
                     new EmbedBuilder()
                         .setDescription('You have left the giveaway')
-                        .setColor('RED'),
+                        .setColor('Red'),
                 ],
                 ephemeral: true,
             })

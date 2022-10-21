@@ -80,7 +80,7 @@ module.exports = {
                                     1000
                                 ).toFixed(0)}:R>`
                             )
-                            .setColor('RED')
+                            .setColor('Red')
                             .setTimestamp(),
                     ],
                 })

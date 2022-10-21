@@ -4,6 +4,7 @@ const {
     Client,
     Message,
     ButtonBuilder,
+    ButtonStyle,
     ActionRowBuilder,
 } = require('discord.js')
 const settings = require('../../database/models/settingsSchema')
@@ -45,7 +46,7 @@ module.exports = {
                             `\n${server.snipe_config.allowed_roles.map(
                                 (a) => `<:bdash:919555889239822477><@&${a}>`
                             )}`,
-                        color: 'RED',
+                        color: 'Red',
                     },
                 ],
             })
@@ -67,18 +68,20 @@ module.exports = {
                 name: msg.author.tag,
                 iconURL: msg.author.displayAvatarURL() || null,
             })
-            .addField('Old Message', oldContent, true)
-            .addField('New Message', newContent)
-            .setColor('RANDOM')
-            .setFooter(`${snipe + 1}/${sniped.length}`)
+            .addField([
+                { name: 'Old Message', value: oldContent, inline: true },
+            ])
+            .addField([{ name: 'New Message', value: newContent }])
+            .setColor('Random')
+            .setFooter({ text: `${snipe + 1}/${sniped.length}` })
         let prevBut = new ButtonBuilder()
             .setEmoji('911971090954326017')
             .setCustomId('prev-snipe')
-            .setStyle('SUCCESS')
+            .setStyle(ButtonStyle.Success)
         let nextBut = new ButtonBuilder()
             .setEmoji('911971202048864267')
             .setCustomId('next-snipe')
-            .setStyle('SUCCESS')
+            .setStyle(ButtonStyle.Success)
         let row = new ActionRowBuilder().addComponents([prevBut, nextBut])
 
         const mainMessage = await message.channel.send({
@@ -112,10 +115,16 @@ module.exports = {
                         name: msg.author.tag,
                         iconURL: msg.author.displayAvatarURL() || null,
                     })
-                    .addField('Old Message', oldContent, true)
-                    .addField('New Message', newContent)
-                    .setColor('RANDOM')
-                    .setFooter(`${snipe + 1}/${sniped.length}`)
+                    .addField([
+                        {
+                            name: 'Old Message',
+                            value: oldContent,
+                            inline: true,
+                        },
+                    ])
+                    .addField([{ name: 'New Message', value: newContent }])
+                    .setColor('Random')
+                    .setFooter({ text: `${snipe + 1}/${sniped.length}` })
 
                 return mainMessage.edit({
                     content: 'Use the buttons to navigate.',
@@ -134,10 +143,16 @@ module.exports = {
                         name: msg.author.tag,
                         iconURL: msg.author.displayAvatarURL() || null,
                     })
-                    .addField('Old Message', oldContent)
-                    .addField('New Message', newContent)
-                    .setColor('RANDOM')
-                    .setFooter(`${snipe + 1}/${sniped.length}`)
+                    .addField([
+                        {
+                            name: 'Old Message',
+                            value: oldContent,
+                            inline: true,
+                        },
+                    ])
+                    .addField([{ name: 'New Message', value: newContent }])
+                    .setColor('Random')
+                    .setFooter({ text: `${snipe + 1}/${sniped.length}` })
 
                 return mainMessage.edit({
                     content: 'Use the buttons to navigate.',
@@ -158,10 +173,12 @@ module.exports = {
                     name: msg.author.tag,
                     iconURL: msg.author.displayAvatarURL() || null,
                 })
-                .addField('Old Message', oldContent, true)
-                .addField('New Message', newContent)
-                .setColor('RANDOM')
-                .setFooter(`${snipe + 1}/${sniped.length}`)
+                .addField([
+                    { name: 'Old Message', value: oldContent, inline: true },
+                ])
+                .addField([{ name: 'New Message', value: newContent }])
+                .setColor('Random')
+                .setFooter({ text: `${snipe + 1}/${sniped.length}` })
             try {
                 mainMessage.edit({
                     content: 'Use the buttons to navigate.',
