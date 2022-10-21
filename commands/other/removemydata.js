@@ -69,7 +69,7 @@ module.exports = {
             const d = button.customId.includes('remove')
             if (d) {
                 confirmation.components[0].components.forEach((c) => {
-                    c.setDisabled()
+                    ButtonBuilder.from(c).setDisabled()
                 })
                 await confirmation.edit({
                     embeds: [
@@ -103,7 +103,7 @@ module.exports = {
                 })
             } else {
                 confirmation.components[0].components.forEach((a) => {
-                    a.setDisabled()
+                    ButtonBuilder.from(a).setDisabled()
                 })
                 confirmation.edit({
                     components: confirmation.components,
@@ -117,7 +117,7 @@ module.exports = {
         collector.on('end', (res) => {
             if (!edited) {
                 confirmation.components[0].components.forEach((a) => {
-                    a.setDisabled()
+                    ButtonBuilder.from(a).setDisabled()
                 })
                 confirmation.edit({
                     components: confirmation.components,
