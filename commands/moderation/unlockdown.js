@@ -70,7 +70,6 @@ module.exports = {
                             {
                                 title: ':unlock: **SERVER UNLOCKED**',
                                 description: `The server is now unlocked.`,
-                                color: 'Green',
                                 timestamp: new Date(),
                             },
                         ],

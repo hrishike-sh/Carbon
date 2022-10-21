@@ -95,7 +95,6 @@ module.exports = {
                             description:
                                 server.lockdownSet.message ||
                                 'The server is currently locked.',
-                            color: 'Red',
                             timestamp: new Date(),
                         },
                     ],

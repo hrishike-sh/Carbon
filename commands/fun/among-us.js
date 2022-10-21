@@ -138,7 +138,6 @@ module.exports = {
                 embeds: [
                     {
                         title: `Among Us`,
-                        color: 'Green',
                         description: `**HOW TO WIN**:\n\n__Impostor__:\n> Send atleast 15 messages in order to win!\n__Crewmate__:\n> Start an Emergency Meeting by typing __emergency__ in chat and vote out whoever is sus!`,
                         footer: {
                             text: "Check your DMs! You have been DM'd your role!",

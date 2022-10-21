@@ -45,7 +45,6 @@ module.exports = {
                             `You need any one of the following roles to run this command: ${allowedRoles
                                 .map((r) => `<@&${r}>`)
                                 .join(' ')}`,
-                        color: 'Red',
                     },
                 ],
             })

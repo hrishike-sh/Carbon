@@ -265,7 +265,6 @@ module.exports = {
                         embeds: [
                             {
                                 title: 'Donation added!',
-                                color: 'Green',
                                 timestamp: new Date(),
                                 footer: {
                                     text: 'Thank you for donating!',
@@ -293,7 +292,6 @@ module.exports = {
                         embeds: [
                             {
                                 title: 'Donation removed.',
-                                color: 'Red',
                                 timestamp: new Date(),
                                 fields: [
                                     {
@@ -341,7 +339,6 @@ module.exports = {
                         embeds: [
                             {
                                 title: 'Donation added!',
-                                color: 'Green',
                                 timestamp: new Date(),
                                 footer: {
                                     text: 'Thank you for donating!',
@@ -369,7 +366,6 @@ module.exports = {
                         embeds: [
                             {
                                 title: 'Donation removed.',
-                                color: 'Red',
                                 timestamp: new Date(),
                                 fields: [
                                     {

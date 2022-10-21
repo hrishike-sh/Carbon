@@ -59,10 +59,8 @@ module.exports = {
                 embeds: [
                     {
                         title: 'Your ban has been lifted!',
-                        color: 'Green',
                         description: `You have been unbanned from [FightHub](https://discord.gg/fight)! You can join back now.\nResponsible moderator: **${message.author.tag}**`,
                         timestamp: Date.now(),
-                        color: 'Green',
                     },
                 ],
             })

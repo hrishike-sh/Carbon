@@ -36,7 +36,6 @@ module.exports = {
             embeds: [
                 {
                     title: 'Confirmation',
-                    color: 'Yellow',
                     description: `${user2}, ${user1} has challenged you for a game of fast click.\nWhat do you say?`,
                     timestamp: new Date(),
                 },
@@ -71,7 +70,6 @@ module.exports = {
                     embeds: [
                         {
                             title: 'Challenge Accepted',
-                            color: 'Green',
                             description: `${user2}, ${user1} has challenged you for a game of fast click.\nWhat do you say?`,
                             timestamp: new Date(),
                         },
@@ -193,7 +191,6 @@ module.exports = {
                     embeds: [
                         {
                             title: 'Challenge Declined',
-                            color: 'Red',
                             description: `${user2}, ${user1} has challenged you for a game of fast click.\nWhat do you say?`,
                             timestamp: new Date(),
                         },

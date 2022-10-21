@@ -95,7 +95,6 @@ module.exports = {
                             {
                                 title: '🎉 We have our winner',
                                 description: `The number to be guessed was **${randomNumber}** and ${m.author.toString()} guessed it!`,
-                                color: 'Green',
                                 timestamp: new Date(),
                             },
                         ],

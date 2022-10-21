@@ -54,7 +54,6 @@ module.exports = {
                     embeds: [
                         {
                             description: `A trigger already exists with that name! Delete it first to create a new one with same name.`,
-                            color: 'Red',
                         },
                     ],
                 })

@@ -59,7 +59,6 @@ module.exports = {
                 embed: {
                     title: 'ERROR',
                     description: `You do not have permission to run this command!\nYou must have one of these roles to run it:\n${a}`,
-                    color: 'Red',
                 },
             })
 
@@ -161,7 +160,6 @@ module.exports = {
                 return message.channel.send({
                     embed: {
                         title: 'ERROR',
-                        color: 'Red',
                         description:
                             'Invalid item id was provided, clicl [here](https://discord.com/channels/824294231447044197/863025523772751872/866926449502847016) to see the list of items!',
                     },
@@ -211,7 +209,6 @@ module.exports = {
                     .send({
                         embed: {
                             title: 'Donation Logs',
-                            color: ButtonStyle.Primary,
                             description: `[Jump](https://discord.com/channels/${message.guild.id}/${message.channel.id}/${message.id}) to message.`,
                             fields: [
                                 {

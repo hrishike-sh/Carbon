@@ -45,7 +45,6 @@ module.exports = {
             embeds: [
                 {
                     title: 'Middleman Request! 🙋‍♂️',
-                    color: 'Yellow',
                     description: `${interaction.user.toString()} requests for a middleman in ${guildChannel.toString()}!`,
                     footer: {
                         text: 'This can be accepted within 5 minutes.',

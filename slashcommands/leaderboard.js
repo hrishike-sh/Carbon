@@ -40,7 +40,6 @@ module.exports = {
             embeds: [
                 {
                     title: 'Leaderboard',
-                    color: 'DARK_BUT_NOT_BLACK',
                     description: maap.join('\n\n'),
                     timestamp: new Date(),
                 },

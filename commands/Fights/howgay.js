@@ -33,7 +33,6 @@ module.exports = {
                 embeds: [
                     {
                         title: 'Confirmation',
-                        color: 'Green',
                         description: `${message.author.toString()} has challenged you for a game of howgay!\nDo you accept their challenge?`,
                         footer: {
                             text: 'Use the buttons.',

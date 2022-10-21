@@ -113,7 +113,6 @@ module.exports = {
         message.guild.channels.cache.get('845043301937315870').send({
             embed: {
                 title: 'Grinder Logs',
-                color: 'Green',
                 description: `[Jump](https://discord.com/channels/${message.guild.id}/${message.channel.id}/${message.id}) to message.`,
                 fields: [
                     {

@@ -46,7 +46,6 @@ module.exports = {
                             `\n${server.snipe_config.allowed_roles.map(
                                 (a) => `<:bdash:919555889239822477><@&${a}>`
                             )}`,
-                        color: 'Red',
                     },
                 ],
             })

@@ -55,7 +55,6 @@ module.exports = {
                                     (a) => `<:bdash:919555889239822477><@&${a}>`
                                 )
                                 .join('\n')}`,
-                        color: 'Red',
                     },
                 ],
             })

@@ -47,7 +47,6 @@ module.exports = {
                     value: 'Set the message that will be showed when the server is locked, if no arguments are provided, it will show the current message if any.',
                 },
             ],
-            color: 'BLUE',
             footer: {
                 text: 'L',
             },
@@ -73,7 +72,6 @@ module.exports = {
                         embeds: [
                             {
                                 title: 'Current Message: ',
-                                color: 'Black',
                                 description: serversettings.lockdownSet.message,
                             },
                         ],
@@ -92,7 +90,6 @@ module.exports = {
                     embeds: [
                         {
                             title: ':lock: **Server Lockdown**',
-                            color: 'Red',
                             description: serversettings.lockdownSet.message,
                             footer: {
                                 text: 'Please check back later!',
@@ -154,7 +151,6 @@ module.exports = {
                             {
                                 title: 'The channels that will be locked: ',
                                 description: `${arr.join(', ')}`,
-                                color: 'Random',
                             },
                         ],
                         content: `Done! Updates have been made.`,
@@ -241,7 +237,6 @@ module.exports = {
                             {
                                 title: 'The channels that will be locked: ',
                                 description: `${arr.join(', ')}`,
-                                color: 'Random',
                             },
                         ],
                         content: `Done! Updates have been made.`,
@@ -259,7 +254,6 @@ module.exports = {
                         description: `${serversettings.lockdownSet.channels
                             .map((chan) => `<#${chan}>`)
                             .join(', ')}`,
-                        color: 'Green',
                         timestamp: new Date(),
                     },
                 ],
