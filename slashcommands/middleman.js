@@ -3,6 +3,7 @@ const {
     CommandInteraction,
     ActionRowBuilder,
     ButtonBuilder,
+    ButtonStyle,
 } = require('discord.js')
 
 module.exports = {
