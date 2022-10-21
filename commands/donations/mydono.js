@@ -7,6 +7,7 @@ const {
     ButtonBuilder,
     ActionRowBuilder,
     Message,
+    ButtonStyle,
 } = require('discord.js')
 
 module.exports = {
@@ -68,23 +69,23 @@ module.exports = {
 
         let buttonD = new ButtonBuilder()
             .setLabel('Donations')
-            .setStyle('SECONDARY')
+            .setStyle(ButtonStyle.Secondary)
             .setCustomId('myd-d')
 
         let buttonH = new ButtonBuilder()
             .setLabel('Heist Donations')
             .setCustomId('myd-h')
-            .setStyle('SECONDARY')
+            .setStyle(ButtonStyle.Secondary)
 
         let buttonG = new ButtonBuilder()
             .setLabel('Grinder Donations')
             .setCustomId('myd-g')
-            .setStyle('SECONDARY')
+            .setStyle(ButtonStyle.Secondary)
 
         let buttonS = new ButtonBuilder()
             .setLabel('FF Donations')
             .setCustomId('myd-s')
-            .setStyle('SECONDARY')
+            .setStyle(ButtonStyle.Secondary)
 
         let row = new ActionRowBuilder().addComponents([
             buttonD,
@@ -220,11 +221,17 @@ module.exports = {
             }
 
             if (button.customId === 'myd-d') {
-                buttonD = buttonD.setStyle('SUCCESS').setDisabled()
+                buttonD = buttonD.setStyle(ButtonStyle.Success).setDisabled()
 
-                buttonH = buttonH.setStyle('SECONDARY').setDisabled(false)
-                buttonG = buttonG.setStyle('SECONDARY').setDisabled(false)
-                buttonS = buttonS.setStyle('SECONDARY').setDisabled(false)
+                buttonH = buttonH
+                    .setStyle(ButtonStyle.Secondary)
+                    .setDisabled(false)
+                buttonG = buttonG
+                    .setStyle(ButtonStyle.Secondary)
+                    .setDisabled(false)
+                buttonS = buttonS
+                    .setStyle(ButtonStyle.Secondary)
+                    .setDisabled(false)
 
                 row = new ActionRowBuilder().addComponents([
                     buttonD,
@@ -239,11 +246,17 @@ module.exports = {
                 })
                 button.deferUpdate()
             } else if (button.customId === 'myd-h') {
-                buttonH = buttonH.setStyle('SUCCESS').setDisabled()
+                buttonH = buttonH.setStyle(ButtonStyle.Success).setDisabled()
 
-                buttonD = buttonD.setStyle('SECONDARY').setDisabled(false)
-                buttonG = buttonG.setStyle('SECONDARY').setDisabled(false)
-                buttonS = buttonS.setStyle('SECONDARY').setDisabled(false)
+                buttonD = buttonD
+                    .setStyle(ButtonStyle.Secondary)
+                    .setDisabled(false)
+                buttonG = buttonG
+                    .setStyle(ButtonStyle.Secondary)
+                    .setDisabled(false)
+                buttonS = buttonS
+                    .setStyle(ButtonStyle.Secondary)
+                    .setDisabled(false)
 
                 row = new ActionRowBuilder().addComponents([
                     buttonD,
@@ -259,11 +272,17 @@ module.exports = {
                 })
                 button.deferUpdate()
             } else if (button.customId === 'myd-g') {
-                buttonG = buttonG.setStyle('SUCCESS').setDisabled()
+                buttonG = buttonG.setStyle(ButtonStyle.Success).setDisabled()
 
-                buttonD = buttonD.setStyle('SECONDARY').setDisabled(false)
-                buttonH = buttonH.setStyle('SECONDARY').setDisabled(false)
-                buttonS = buttonS.setStyle('SECONDARY').setDisabled(false)
+                buttonD = buttonD
+                    .setStyle(ButtonStyle.Secondary)
+                    .setDisabled(false)
+                buttonH = buttonH
+                    .setStyle(ButtonStyle.Secondary)
+                    .setDisabled(false)
+                buttonS = buttonS
+                    .setStyle(ButtonStyle.Secondary)
+                    .setDisabled(false)
 
                 row = new ActionRowBuilder().addComponents([
                     buttonD,
@@ -279,11 +298,17 @@ module.exports = {
                 })
                 button.deferUpdate()
             } else if (button.customId === 'myd-s') {
-                buttonS = buttonS.setStyle('SUCCESS').setDisabled()
+                buttonS = buttonS.setStyle(ButtonStyle.Success).setDisabled()
 
-                buttonD = buttonD.setStyle('SECONDARY').setDisabled(false)
-                buttonG = buttonG.setStyle('SECONDARY').setDisabled(false)
-                buttonH = buttonH.setStyle('SECONDARY').setDisabled(false)
+                buttonD = buttonD
+                    .setStyle(ButtonStyle.Secondary)
+                    .setDisabled(false)
+                buttonG = buttonG
+                    .setStyle(ButtonStyle.Secondary)
+                    .setDisabled(false)
+                buttonH = buttonH
+                    .setStyle(ButtonStyle.Secondary)
+                    .setDisabled(false)
 
                 row = new ActionRowBuilder().addComponents([
                     buttonD,
@@ -302,10 +327,10 @@ module.exports = {
         })
 
         collector.on('end', () => {
-            buttonS = buttonS.setStyle('SECONDARY').setDisabled()
-            buttonD = buttonD.setStyle('SECONDARY').setDisabled()
-            buttonG = buttonG.setStyle('SECONDARY').setDisabled()
-            buttonH = buttonH.setStyle('SECONDARY').setDisabled()
+            buttonS = buttonS.setStyle(ButtonStyle.Secondary).setDisabled()
+            buttonD = buttonD.setStyle(ButtonStyle.Secondary).setDisabled()
+            buttonG = buttonG.setStyle(ButtonStyle.Secondary).setDisabled()
+            buttonH = buttonH.setStyle(ButtonStyle.Secondary).setDisabled()
 
             row = new ActionRowBuilder().addComponents([
                 buttonD,

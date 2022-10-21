@@ -3,6 +3,7 @@ const {
     ActionRowBuilder,
     ButtonBuilder,
     EmbedBuilder,
+    ButtonStyle,
 } = require('discord.js')
 module.exports = {
     name: 'calculator',
@@ -17,28 +18,28 @@ module.exports = {
         const sessionId = client.functions.randomHash()
         const arrays = [
             [
-                ['7', `${sessionId}:7`, 'SECONDARY'],
-                ['8', `${sessionId}:8`, 'SECONDARY'],
-                ['9', `${sessionId}:9`, 'SECONDARY'],
-                ['✖', `${sessionId}:*`, 'PRIMARY'],
+                ['7', `${sessionId}:7`, ButtonStyle.Secondary],
+                ['8', `${sessionId}:8`, ButtonStyle.Secondary],
+                ['9', `${sessionId}:9`, ButtonStyle.Secondary],
+                ['✖', `${sessionId}:*`, ButtonStyle.Primary],
             ],
             [
-                ['4', `${sessionId}:4`, 'SECONDARY'],
-                ['5', `${sessionId}:5`, 'SECONDARY'],
-                ['6', `${sessionId}:6`, 'SECONDARY'],
-                ['➖', `${sessionId}:-`, 'PRIMARY'],
+                ['4', `${sessionId}:4`, ButtonStyle.Secondary],
+                ['5', `${sessionId}:5`, ButtonStyle.Secondary],
+                ['6', `${sessionId}:6`, ButtonStyle.Secondary],
+                ['➖', `${sessionId}:-`, ButtonStyle.Primary],
             ],
             [
-                ['1', `${sessionId}:1`, 'SECONDARY'],
-                ['2', `${sessionId}:2`, 'SECONDARY'],
-                ['3', `${sessionId}:3`, 'SECONDARY'],
-                ['➕', `${sessionId}:+`, 'PRIMARY'],
+                ['1', `${sessionId}:1`, ButtonStyle.Secondary],
+                ['2', `${sessionId}:2`, ButtonStyle.Secondary],
+                ['3', `${sessionId}:3`, ButtonStyle.Secondary],
+                ['➕', `${sessionId}:+`, ButtonStyle.Primary],
             ],
             [
-                ['․', `${sessionId}:.`, 'PRIMARY'],
-                ['0', `${sessionId}:0`, 'SECONDARY'],
-                ['➗', `${sessionId}:/`, 'PRIMARY'],
-                ['=', `${sessionId}:=`, 'SUCCESS'],
+                ['․', `${sessionId}:.`, ButtonStyle.Primary],
+                ['0', `${sessionId}:0`, ButtonStyle.Secondary],
+                ['➗', `${sessionId}:/`, ButtonStyle.Primary],
+                ['=', `${sessionId}:=`, ButtonStyle.Success],
             ],
         ]
         const components = [
@@ -70,7 +71,7 @@ module.exports = {
         const embed = new EmbedBuilder()
             .setTitle('🔢 Calculator')
             .setDescription(`\`\`\`\n${amogus.join('')}\n\`\`\``)
-            .setColor('GREEN')
+            .setColor('Green')
             .setFooter({
                 text: 'This calculator can be used for the next five minutes.',
             })

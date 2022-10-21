@@ -3,6 +3,7 @@ const {
     EmbedBuilder,
     ActionRowBuilder,
     ButtonBuilder,
+    ButtonStyle,
 } = require('discord.js')
 const Pings = require('../../database/models/ping')
 module.exports = {
@@ -39,7 +40,7 @@ module.exports = {
 
         const PingBed = new EmbedBuilder()
             .setTitle('Last Pings')
-            .setColor('GREEN')
+            .setColor('Green')
             .setTimestamp()
 
         if (!DBUser || !DBUser?.pings.length) {
@@ -68,7 +69,7 @@ module.exports = {
             components: [
                 new ActionRowBuilder().addComponents([
                     new ButtonBuilder()
-                        .setStyle('PRIMARY')
+                        .setStyle(ButtonStyle.Primary)
                         .setLabel('Clear inbox')
                         .setEmoji('📭')
                         .setCustomId('clear-inbox_lp'),
@@ -95,7 +96,7 @@ module.exports = {
                 components: [
                     new ActionRowBuilder().addComponents([
                         new ButtonBuilder()
-                            .setStyle('PRIMARY')
+                            .setStyle(ButtonStyle.Primary)
                             .setLabel('Clear inbox')
                             .setEmoji('📭')
                             .setCustomId('clear-inbox_lp')

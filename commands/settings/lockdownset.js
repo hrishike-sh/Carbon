@@ -73,7 +73,7 @@ module.exports = {
                         embeds: [
                             {
                                 title: 'Current Message: ',
-                                color: 'BLACK',
+                                color: 'Black',
                                 description: serversettings.lockdownSet.message,
                             },
                         ],
@@ -92,7 +92,7 @@ module.exports = {
                     embeds: [
                         {
                             title: ':lock: **Server Lockdown**',
-                            color: 'RED',
+                            color: 'Red',
                             description: serversettings.lockdownSet.message,
                             footer: {
                                 text: 'Please check back later!',
@@ -154,7 +154,7 @@ module.exports = {
                             {
                                 title: 'The channels that will be locked: ',
                                 description: `${arr.join(', ')}`,
-                                color: 'RANDOM',
+                                color: 'Random',
                             },
                         ],
                         content: `Done! Updates have been made.`,
@@ -241,7 +241,7 @@ module.exports = {
                             {
                                 title: 'The channels that will be locked: ',
                                 description: `${arr.join(', ')}`,
-                                color: 'RANDOM',
+                                color: 'Random',
                             },
                         ],
                         content: `Done! Updates have been made.`,
@@ -259,7 +259,7 @@ module.exports = {
                         description: `${serversettings.lockdownSet.channels
                             .map((chan) => `<#${chan}>`)
                             .join(', ')}`,
-                        color: 'GREEN',
+                        color: 'Green',
                         timestamp: new Date(),
                     },
                 ],

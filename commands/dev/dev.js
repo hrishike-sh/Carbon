@@ -4,6 +4,7 @@ const {
     EmbedBuilder,
     ActionRowBuilder,
     ButtonBuilder,
+    ButtonStyle,
 } = require('discord.js')
 const axios = require('axios')
 const { inspect } = require('util')
@@ -57,7 +58,7 @@ module.exports = {
                     `\`\`\`nim\nUSERS: ${total.users.toLocaleString()}\nCHANNELS: ${total.channels.toLocaleString()}\nROLES: ${total.roles.toLocaleString()}\`\`\``,
                     true
                 )
-                .setColor('RANDOM')
+                .setColor('Random')
 
             await message.reply({
                 embeds: [embed],

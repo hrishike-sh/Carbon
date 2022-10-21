@@ -4,6 +4,7 @@ const {
     EmbedBuilder: Embed,
     ActionRowBuilder,
     ButtonBuilder,
+    ButtonStyle,
 } = require('discord.js')
 const { AmariBot } = require('amaribot.js')
 const Amari = new AmariBot(process.env.amariToken, {
@@ -72,10 +73,10 @@ module.exports = {
 
         result = '```js' + '\n' + result + '```'
 
-        const embed = new Embed()
-            .setTitle('EVALED')
-            .addField('📥 Input', `\`\`\`js\n${input}\n\`\`\``)
-            .addField('📤 Output', result)
+        const embed = new Embed().setTitle('EVALED').addFields([
+            { name: '📥 Input', value: `\`\`\`js\n${input}\n\`\`\`` },
+            { name: '📤 Output', value: result },
+        ])
 
         await message.channel.send({
             embeds: [embed],
@@ -86,7 +87,7 @@ module.exports = {
                               components: [
                                   new ButtonBuilder({
                                       label: 'Eval Result',
-                                      style: 'LINK',
+                                      style: ButtonStyle.Link,
                                       url: hasteURL,
                                   }),
                               ],
@@ -104,7 +105,7 @@ module.exports = {
                               components: [
                                   new ButtonBuilder({
                                       label: 'Eval Result',
-                                      style: 'LINK',
+                                      style: ButtonStyle.Link,
                                       url: hasteURL,
                                   }),
                               ],

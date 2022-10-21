@@ -1,4 +1,9 @@
-const { Message, ButtonBuilder, ActionRowBuilder } = require('discord.js')
+const {
+    Message,
+    ButtonBuilder,
+    ActionRowBuilder,
+    ButtonStyle,
+} = require('discord.js')
 const ms = require('pretty-ms')
 module.exports = {
     name: 'fastclick',
@@ -24,11 +29,11 @@ module.exports = {
             )
 
         let yesButton = new ButtonBuilder()
-            .setStyle('SUCCESS')
+            .setStyle(ButtonStyle.Success)
             .setCustomId('yes_fc')
             .setLabel('Accept')
         let noButton = new ButtonBuilder()
-            .setStyle('DANGER')
+            .setStyle(ButtonStyle.Danger)
             .setCustomId('no_fc')
             .setLabel('Decline')
         let row = new ActionRowBuilder().addComponents([noButton, yesButton])
@@ -36,7 +41,7 @@ module.exports = {
             embeds: [
                 {
                     title: 'Confirmation',
-                    color: 'YELLOW',
+                    color: 'Yellow',
                     description: `${user2}, ${user1} has challenged you for a game of fast click.\nWhat do you say?`,
                     timestamp: new Date(),
                 },
@@ -60,7 +65,7 @@ module.exports = {
                 button.deferUpdate()
                 yesButton.setDisabled()
                 noButton = noButton
-                    .setStyle('SECONDARY')
+                    .setStyle(ButtonStyle.Secondary)
                     .setCustomId('no_fc')
                     .setDisabled()
                 row = new ActionRowBuilder().addComponents([
@@ -71,7 +76,7 @@ module.exports = {
                     embeds: [
                         {
                             title: 'Challenge Accepted',
-                            color: 'GREEN',
+                            color: 'Green',
                             description: `${user2}, ${user1} has challenged you for a game of fast click.\nWhat do you say?`,
                             timestamp: new Date(),
                         },
@@ -83,23 +88,23 @@ module.exports = {
                     `Alright! The button will appear in a few seconds, good luck!`
                 )
                 let mainButton = new ButtonBuilder()
-                    .setStyle('SUCCESS')
+                    .setStyle(ButtonStyle.Success)
                     .setLabel('This one')
                     .setCustomId('correct-fc')
                 let baitButton1 = new ButtonBuilder()
-                    .setStyle('SECONDARY')
+                    .setStyle(ButtonStyle.Secondary)
                     .setLabel('No not this')
                     .setCustomId('wrong1-fc')
                 let baitButton2 = new ButtonBuilder()
-                    .setStyle('SECONDARY')
+                    .setStyle(ButtonStyle.Secondary)
                     .setLabel('No not this')
                     .setCustomId('wrong2-fc')
                 let baitButton3 = new ButtonBuilder()
-                    .setStyle('SECONDARY')
+                    .setStyle(ButtonStyle.Secondary)
                     .setLabel('No not this')
                     .setCustomId('wrong3-fc')
                 let baitButton4 = new ButtonBuilder()
-                    .setStyle('SECONDARY')
+                    .setStyle(ButtonStyle.Secondary)
                     .setLabel('No not this')
                     .setCustomId('wrong4-fc')
                 let array = [
@@ -181,7 +186,7 @@ module.exports = {
             } else {
                 button.deferUpdate()
                 yesButton = yesButton
-                    .setStyle('SUCCESS')
+                    .setStyle(ButtonStyle.Success)
                     .setCustomId('yes_fc')
                     .setDisabled()
                 noButton.setDisabled()
@@ -193,7 +198,7 @@ module.exports = {
                     embeds: [
                         {
                             title: 'Challenge Declined',
-                            color: 'RED',
+                            color: 'Red',
                             description: `${user2}, ${user1} has challenged you for a game of fast click.\nWhat do you say?`,
                             timestamp: new Date(),
                         },
