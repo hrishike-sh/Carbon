@@ -25,7 +25,7 @@ module.exports = {
             .setTitle('Git Pull')
             .setColor(err ? 'Red' : 'Green')
             .setTimestamp()
-            .addField([{ name: 'Returned:', value: res, inline: false }])
+            .addFields([{ name: 'Returned:', value: res, inline: false }])
 
         if (err)
             embed.addFields([{ name: 'Error:', value: err, inline: false }])
