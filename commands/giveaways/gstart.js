@@ -55,49 +55,49 @@ module.exports = {
             .setDescription(
                 'To start giveaways you first need to have valid permissions and to add these ask an admin to add certain roles that can create giveaways by /gconfig.\n'
             )
-            .addField([
+            .addFields([
                 {
                     name: `Format`,
                     value: `\`fh g <time> <winners> <requirements> <prize> --donor <user_id> --msg <message>\``,
                     inline: false,
                 },
             ])
-            .addField([
+            .addFields([
                 {
                     name: 'Requirements',
                     value: `Requirements should be role ids and multiple role requirements can be seperated by ".".\n\nExample: \`\`fh gstart 24h 1 123456.123457 DN\`\``,
                     inline: true,
                 },
             ])
-            .addField([
+            .addFields([
                 {
                     name: `Message`,
                     value: `You can provide a message from the sponsor via the --msg tag.\n\nExample: \`\`fh gstart 2h 1 none Trophy --msg i scammed a kid\`\``,
                     inline: true,
                 },
             ])
-            .addField([
+            .addFields([
                 {
                     name: `Thank feature`,
                     value: `The bot provides a "Thank the Sponsor" button on joined giveaway message. When users click this +1 thank is added. When the giveaway ends, the Sponsor or host(if sponsor is not provided) gets a dm from the bot showing how many thanks they got!`,
                     inline: true,
                 },
             ])
-            .addField([
+            .addFields([
                 {
                     name: 'Bypasses',
                     value: `Users can bypass giveaways if they have certain roles. Admins can define these roles via /gconfig!`,
                     inline: true,
                 },
             ])
-            .addField([
+            .addFields([
                 {
                     name: 'Blacklists',
                     value: 'You can deny users that have certain roles from entering giveaways by adding blacklisted roles via /gconfig!',
                     inline: true,
                 },
             ])
-            .addField([
+            .addFields([
                 {
                     name: 'Examples',
                     value: `\`\`fh gstart 1h20m 5 12391238123123.12391239123 Nitro Classic --donor 8971238123912312\`\`\n\`\`fh gstart 90m92s 2 none Absolutely Nothing! --donor 128931237123 --msg im so generous\`\`\n\`\`fh gstart 30s 1 none test\`\``,
