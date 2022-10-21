@@ -67,10 +67,10 @@ module.exports = {
                 name: msg.author.tag,
                 iconURL: msg.author.displayAvatarURL() || null,
             })
-            .addField([
+            .addFields([
                 { name: 'Old Message', value: oldContent, inline: true },
             ])
-            .addField([{ name: 'New Message', value: newContent }])
+            .addFields([{ name: 'New Message', value: newContent }])
             .setColor('Random')
             .setFooter({ text: `${snipe + 1}/${sniped.length}` })
         let prevBut = new ButtonBuilder()
@@ -114,14 +114,14 @@ module.exports = {
                         name: msg.author.tag,
                         iconURL: msg.author.displayAvatarURL() || null,
                     })
-                    .addField([
+                    .addFields([
                         {
                             name: 'Old Message',
                             value: oldContent,
                             inline: true,
                         },
                     ])
-                    .addField([{ name: 'New Message', value: newContent }])
+                    .addFields([{ name: 'New Message', value: newContent }])
                     .setColor('Random')
                     .setFooter({ text: `${snipe + 1}/${sniped.length}` })
 
@@ -142,14 +142,14 @@ module.exports = {
                         name: msg.author.tag,
                         iconURL: msg.author.displayAvatarURL() || null,
                     })
-                    .addField([
+                    .addFields([
                         {
                             name: 'Old Message',
                             value: oldContent,
                             inline: true,
                         },
                     ])
-                    .addField([{ name: 'New Message', value: newContent }])
+                    .addFields([{ name: 'New Message', value: newContent }])
                     .setColor('Random')
                     .setFooter({ text: `${snipe + 1}/${sniped.length}` })
 
@@ -172,10 +172,10 @@ module.exports = {
                     name: msg.author.tag,
                     iconURL: msg.author.displayAvatarURL() || null,
                 })
-                .addField([
+                .addFields([
                     { name: 'Old Message', value: oldContent, inline: true },
                 ])
-                .addField([{ name: 'New Message', value: newContent }])
+                .addFields([{ name: 'New Message', value: newContent }])
                 .setColor('Random')
                 .setFooter({ text: `${snipe + 1}/${sniped.length}` })
             try {
