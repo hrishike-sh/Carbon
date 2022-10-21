@@ -4,8 +4,6 @@ module.exports = {
     name: 'messageUpdate',
     once: false,
     async execute(oldMessage, newMessage, client) {
-        if (newMessage.author.bot) return
-
         const userSettings = await userSchema.findOne({
             userId: newMessage.author.id,
         })

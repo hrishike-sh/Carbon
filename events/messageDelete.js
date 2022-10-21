@@ -10,8 +10,6 @@ module.exports = {
      * @param {Client} client
      */
     async execute(message, client) {
-        if (message.author.bot) return
-
         const userSettings = await userSchema.findOne({
             userId: message.author.id,
         })
