@@ -306,7 +306,7 @@ module.exports = {
                                                 text: `Winners: ${giveaway.winners} | Ended at`,
                                             })
                                             .setTimestamp()
-                                            .setColor('NOT_QUITE_BLACK')
+                                            .setColor('NotQuiteBlack')
                                             .setDescription(
                                                 `Winner(s): ${winners}\nHost: <@${giveaway.hosterId}>`
                                             )
