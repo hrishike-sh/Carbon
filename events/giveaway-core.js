@@ -346,11 +346,13 @@ const editCount = async (msg, model) => {
     if (beingEdited.get(msg.id)) return
     beingEdited.set(msg.id, true)
     await msg.client.functions.sleep(5000)
-    ButtonBuilder.from(msg.components[0].components[0]).setLabel(
-        (model.entries.length + 1).toLocaleString()
-    )
+    const but = new ButtonBuilder()
+        .setLabel((model.entries.length + 1).toLocaleString())
+        .setEmoji('🎉')
+        .setCustomId('giveaway-join')
+        .setStyle(ButtonStyle.Success)
     await msg.edit({
-        components: msg.components,
+        components: [new ActionRowBuilder().addComponents([but])],
     })
     beingEdited.delete(msg.id)
 }
