@@ -101,14 +101,18 @@ module.exports = {
 
             if (what == 'main') {
                 button.deferUpdate()
-                mainMessage.components[0].components
-                    .find((c) => c.customId.includes('main'))
-                    .setDisabled()
-                mainMessage.components[0].components
-                    .filter((c) => !c.customId.includes(what))
-                    .forEach((b) => {
-                        b.setDisabled(false)
-                    })
+                ButtonBuilder.from(
+                    mainMessage.components[0].components.find((c) =>
+                        c.customId.includes('main')
+                    )
+                ).setDisabled()
+                ButtonBuilder.from(
+                    mainMessage.components[0].components.filter(
+                        (c) => !c.customId.includes(what)
+                    )
+                ).forEach((b) => {
+                    b.setDisabled(false)
+                })
                 embed
                     .setDescription(dLb.join('\n\n'))
                     .setTitle('Main Donations')
@@ -118,14 +122,18 @@ module.exports = {
                 })
             } else if (what == 'heist') {
                 button.deferUpdate()
-                mainMessage.components[0].components
-                    .find((c) => c.customId.includes('heist'))
-                    .setDisabled()
-                mainMessage.components[0].components
-                    .filter((c) => !c.customId.includes(what))
-                    .forEach((b) => {
-                        b.setDisabled(false)
-                    })
+                ButtonBuilder.from(
+                    mainMessage.components[0].components.find((c) =>
+                        c.customId.includes('heist')
+                    )
+                ).setDisabled()
+                ButtonBuilder.from(
+                    mainMessage.components[0].components.filter(
+                        (c) => !c.customId.includes(what)
+                    )
+                ).forEach((b) => {
+                    b.setDisabled(false)
+                })
                 embed
                     .setDescription(hLb.join('\n\n'))
                     .setTitle('Heist Donations')
