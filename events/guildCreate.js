@@ -22,18 +22,18 @@ module.exports = {
                             null,
                     })
                     .setTitle('Server Joined')
-                    .addField(
+                    .addFields(
                         'Members',
                         guild.memberCount.toLocaleString(),
                         true
                     )
-                    .addField(
+                    .addFields(
                         'Owner',
                         (await client.users.fetch(guild.ownerId)).tag +
                             ` (${guild.ownerId})`,
                         true
                     )
-                    .addField(
+                    .addFields(
                         'Useless info',
                         `Guild was created ${client.functions.formatTime(
                             guild.createdAt

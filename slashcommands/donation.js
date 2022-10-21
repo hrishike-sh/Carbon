@@ -95,21 +95,27 @@ module.exports = {
                                 .setDescription(
                                     `The donation was successfully added to ${data.user.toString()}'s profile!`
                                 )
-                                .addField(
-                                    'Amount added',
-                                    data.amount.toLocaleString(),
-                                    true
-                                )
-                                .addField(
-                                    'Responsible moderator',
-                                    interaction.user.toString(),
-                                    true
-                                )
+                                .addFields([
+                                    {
+                                        name: 'Amount added',
+                                        value: data.amount.toLocaleString(),
+                                        inline: true,
+                                    },
+                                ])
+                                .addFields([
+                                    {
+                                        name: 'Responsible moderator',
+                                        value: interaction.user.toString(),
+                                        inline: true,
+                                    },
+                                ])
                                 .setTimestamp()
-                                .addField(
-                                    "Added to user's Main Donation!",
-                                    `**Total amount donated by this user:** ${dbUser.messages.toLocaleString()}`
-                                )
+                                .addFields([
+                                    {
+                                        name: "Added to user's Main Donation!",
+                                        value: `**Total amount donated by this user:** ${dbUser.messages.toLocaleString()}`,
+                                    },
+                                ])
                                 .setColor('Green'),
                         ],
                     })
@@ -123,21 +129,27 @@ module.exports = {
                                 .setDescription(
                                     `The donation was successfully removed from ${data.user.toString()}'s profile!`
                                 )
-                                .addField(
-                                    'Amount removed',
-                                    data.amount.toLocaleString(),
-                                    true
-                                )
-                                .addField(
-                                    'Responsible moderator',
-                                    interaction.user.toString(),
-                                    true
-                                )
+                                .addFields([
+                                    {
+                                        name: 'Amount Removed',
+                                        value: data.amount.toLocaleString(),
+                                        inline: true,
+                                    },
+                                ])
+                                .addFields([
+                                    {
+                                        name: 'Responsible moderator',
+                                        value: interaction.user.toString(),
+                                        inline: true,
+                                    },
+                                ])
                                 .setTimestamp()
-                                .addField(
-                                    "Removed from user's Main Donation!",
-                                    `**Total amount donated by this user:** ${dbUser.messages.toLocaleString()}`
-                                )
+                                .addFields([
+                                    {
+                                        name: "Removed from user's Main Donation!",
+                                        value: `**Total amount donated by this user:** ${dbUser.messages.toLocaleString()}`,
+                                    },
+                                ])
                                 .setColor('Red'),
                         ],
                     })
@@ -147,7 +159,7 @@ module.exports = {
                 dbUser.save()
                 break
             case 'grind_dono':
-                if (!interaction.memberPermissions.has('BAN_MEMBERS')) {
+                if (!interaction.memberPermissions.has('BanMembers')) {
                     return interaction.reply({
                         content: `You need to have \`BAN_MEMBERS\` to run this command`,
                         ephemeral: true,
@@ -173,25 +185,31 @@ module.exports = {
                                 .setDescription(
                                     `The donation was successfully added to ${data.user.toString()}'s profile!`
                                 )
-                                .addField(
-                                    'Amount added',
-                                    data.amount.toLocaleString(),
-                                    true
-                                )
-                                .addField(
-                                    'Responsible moderator',
-                                    interaction.user.toString(),
-                                    true
-                                )
+                                .addFields([
+                                    {
+                                        name: 'Amount added',
+                                        value: data.amount.toLocaleString(),
+                                        inline: true,
+                                    },
+                                ])
+                                .addFields([
+                                    {
+                                        name: 'Responsible moderator',
+                                        value: interaction.user.toString(),
+                                        inline: true,
+                                    },
+                                ])
                                 .setTimestamp()
-                                .addField(
-                                    "Added to user's Grinder Donation!",
-                                    `**Total amount donated by this user:** ${
-                                        DBUser.messages
-                                            ? DBUser.messages.toLocaleString()
-                                            : 'The amount was added, but had an error fetching it.'
-                                    }`
-                                )
+                                .addFields([
+                                    {
+                                        name: "Added to user's Grinder Donation!",
+                                        value: `**Total amount donated by this user:** ${
+                                            DBUser.messages
+                                                ? DBUser.messages.toLocaleString()
+                                                : 'The amount was added, but had an error fetching it.'
+                                        }`,
+                                    },
+                                ])
                                 .setColor('Green'),
                         ],
                     })
@@ -205,25 +223,33 @@ module.exports = {
                                 .setDescription(
                                     `The donation was successfully removed from ${data.user.toString()}'s profile!`
                                 )
-                                .addField(
-                                    'Amount removed',
-                                    data.amount.toLocaleString() || 'Error',
-                                    true
-                                )
-                                .addField(
-                                    'Responsible moderator',
-                                    interaction.user.toString(),
-                                    true
-                                )
+                                .addFields([
+                                    {
+                                        name: 'Amount removed',
+                                        value:
+                                            data.amount.toLocaleString() ||
+                                            'Error',
+                                        inline: true,
+                                    },
+                                ])
+                                .addFields([
+                                    {
+                                        name: 'Responsible moderator',
+                                        value: interaction.user.toString(),
+                                        inline: true,
+                                    },
+                                ])
                                 .setTimestamp()
-                                .addField(
-                                    "Removed from user's Main Donation!",
-                                    `**Total amount donated by this user:** ${
-                                        DBUser.messages
-                                            ? DBUser.messages.toLocaleString()
-                                            : 'The amount was added, but had an error fetching it.'
-                                    }`
-                                )
+                                .addFields([
+                                    {
+                                        name: "Removed from user's Main Donation!",
+                                        value: `**Total amount donated by this user:** ${
+                                            DBUser.messages
+                                                ? DBUser.messages.toLocaleString()
+                                                : 'The amount was added, but had an error fetching it.'
+                                        }`,
+                                    },
+                                ])
                                 .setColor('Red'),
                         ],
                     })

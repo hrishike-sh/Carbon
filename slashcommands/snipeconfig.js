@@ -94,7 +94,7 @@ module.exports = {
                             .setDescription(
                                 'You can change these roles by using /snipe-config!'
                             )
-                            .addField(
+                            .addFields(
                                 'Roles',
                                 server.snipe_config.allowed_roles
                                     .map((v, i) => `${i + 1}: <@&${v}>`)

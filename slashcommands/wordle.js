@@ -35,7 +35,7 @@ module.exports = {
             .setDescription(
                 'World is a word guessing game. You have to guess the correct word in 5 tries or less.'
             )
-            .addField(
+            .addFields(
                 'How it works:',
                 'You have to type a __5 letter__ word in the chat once you are ready. The bot then edits the message with your word.\nIf the button is disabled, the letter is not in the word.\nIf the button is blurple, the letter is in the word, but not at the right place.\nIf the button is green, the letter is in the word and at correct place.'
             )

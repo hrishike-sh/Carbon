@@ -106,14 +106,27 @@ module.exports = {
                 .setDescription(
                     "Please wait patiently until a Giveaway Manager is here.\nYou will be DM'd when they are ready to take your donation."
                 )
-                .addField('Prize', data.prize, false)
-                .addField('Time', data.time, true)
-                .addField('Winners', data.winners, true)
+                .addFields({ name: 'Prize', value: data.prize, inline: false })
+                .addFields({ name: 'Time', value: data.time, inline: true })
+                .addFields({
+                    name: 'Winners',
+                    value: data.winners,
+                    inline: true,
+                })
                 .setColor('Yellow')
 
             if (data.requirement)
-                embed.addField('Requirements', data.requirement, true)
-            if (data.message) embed.addField('Message', data.message, true)
+                embed.addFields({
+                    name: 'Requirements',
+                    value: data.requirement,
+                    inline: true,
+                })
+            if (data.message)
+                embed.addFields({
+                    name: 'Message',
+                    value: data.message,
+                    inline: true,
+                })
 
             if (interaction.channel.id !== giveawayChannel) {
                 return interaction.reply(
@@ -164,11 +177,13 @@ module.exports = {
                     interaction.user.send(
                         `A Giveaway Manager has accepted your donation, please check <#${giveawayChannel}>.`
                     )
-                    mainMessage.components[0].components
-                        .find((b) => b.customId.includes('deny'))
-                        .setStyle(ButtonStyle.Secondary)
+                    ButtonBuilder.from(
+                        mainMessage.components[0].components.find((b) =>
+                            b.customId.includes('deny')
+                        )
+                    ).setStyle(ButtonStyle.Secondary)
                     mainMessage.components[0].components.forEach((c) => {
-                        c.setDisabled()
+                        ButtonBuilder.from(c).setDisabled()
                     })
                     embed.setColor('Green')
                     return mainMessage.edit({
@@ -181,11 +196,13 @@ module.exports = {
                     interaction.user.send(
                         `Your giveaway request has been cancelled by ${button.user.toString()} in <#${giveawayChannel}>`
                     )
-                    mainMessage.components[0].components
-                        .find((b) => !b.customId.includes('deny'))
-                        .setStyle(ButtonStyle.Secondary)
+                    ButtonBuilder.from(
+                        mainMessage.components[0].components.find(
+                            (b) => !b.customId.includes('deny')
+                        )
+                    ).setStyle(ButtonStyle.Secondary)
                     mainMessage.components[0].components.forEach((c) => {
-                        c.setDisabled()
+                        ButtonBuilder.from(c).setDisabled()
                     })
                     embed.setColor('Red')
                     return mainMessage.edit({
@@ -223,13 +240,25 @@ module.exports = {
                 .setDescription(
                     "Please wait patiently until an Event Manager is here.\nYou will be DM'd when they are ready to take your donation."
                 )
-                .addField('Type', data.type, true)
-                .addField('Prize', data.prize, true)
+                .addFields([{ name: 'Type', value: data.type, inline: true }])
+                .addFields([{ name: 'Prize', value: data.prize, inline: true }])
                 .setColor('Yellow')
-            if (data.req) embed.addField('Requirement: ', data.req, true)
-            if (data.msg) embed.addField('Message', data.msg, true)
+            if (data.req)
+                embed.addFields([
+                    { name: 'Requirement: ', value: data.req, inline: true },
+                ])
+            if (data.msg)
+                embed.addFields([
+                    { name: 'Message', value: data.msg, inline: true },
+                ])
             if (data.explain)
-                embed.addField('Explaination: ', data.explain, true)
+                embed.addFields([
+                    {
+                        name: 'Explaination: ',
+                        value: data.explain,
+                        inline: true,
+                    },
+                ])
             const mainMessage = await interaction.channel.send({
                 content: `<@&${eventManRole}>, ${interaction.user.toString()} wants to host an event!`,
                 embeds: [embed],
@@ -270,11 +299,13 @@ module.exports = {
                     interaction.user.send(
                         `An Event Manager has accepted your donation, please check <#${eventChannel}>.`
                     )
-                    mainMessage.components[0].components
-                        .find((b) => b.customId.includes('deny'))
-                        .setStyle(ButtonStyle.Secondary)
+                    ButtonBuilder.from(
+                        mainMessage.components[0].components.find((b) =>
+                            b.customId.includes('deny')
+                        )
+                    ).setStyle(ButtonStyle.Secondary)
                     mainMessage.components[0].components.forEach((c) => {
-                        c.setDisabled()
+                        ButtonBuilder.from(c).setDisabled()
                     })
                     embed.setColor('Green')
                     return mainMessage.edit({
@@ -287,11 +318,13 @@ module.exports = {
                     interaction.user.send(
                         `Your event request has been cancelled by ${button.user.toString()} in <#${eventChannel}>`
                     )
-                    mainMessage.components[0].components
-                        .find((b) => !b.customId.includes('deny'))
-                        .setStyle(ButtonStyle.Secondary)
+                    ButtonBuilder.from(
+                        mainMessage.components[0].components.find(
+                            (b) => !b.customId.includes('deny')
+                        )
+                    ).setStyle(ButtonStyle.Secondary)
                     mainMessage.components[0].components.forEach((c) => {
-                        c.setDisabled()
+                        ButtonBuilder.from(c).setDisabled()
                     })
                     embed.setColor('Red')
                     return mainMessage.edit({

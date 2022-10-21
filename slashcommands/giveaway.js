@@ -134,12 +134,12 @@ module.exports = {
             .setColor('Green')
             .setTimestamp(new Date().getTime() + time)
         if (req || req.length)
-            embed.addField(
+            embed.addFields(
                 'Requirements:',
                 `Roles: ${req.map((val) => `<@&${val}>`).join(', ')}`,
                 false
             )
-        if (donor) embed.addField('Sponsor:', `${donor.toString()}`, false)
+        if (donor) embed.addFields('Sponsor:', `${donor.toString()}`, false)
 
         interaction.reply({
             content: `Giveaway started in ${channel}`,

@@ -43,17 +43,17 @@ module.exports = {
             })
             const embed = new EmbedBuilder()
                 .setTitle('Bot Stats')
-                .addField(
+                .addFields(
                     'Up since',
                     `${client.functions.formatTime(client.readyAt)}`,
                     false
                 )
-                .addField(
+                .addFields(
                     'Cache',
                     `\`\`\`nim\nUSERS: ${client.users.cache.size.toLocaleString()}\nGUILDS: ${client.guilds.cache.size.toLocaleString()}\nCHANNELS: ${client.channels.cache.size.toLocaleString()}\`\`\``,
                     true
                 )
-                .addField(
+                .addFields(
                     'Total',
                     `\`\`\`nim\nUSERS: ${total.users.toLocaleString()}\nCHANNELS: ${total.channels.toLocaleString()}\nROLES: ${total.roles.toLocaleString()}\`\`\``,
                     true

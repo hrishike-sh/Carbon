@@ -61,7 +61,7 @@ module.exports = {
                     toLockChannel.permissionOverwrites.edit(
                         message.channel.guild.roles.everyone,
                         {
-                            SEND_MESSAGES: null,
+                            SendMessages: null,
                         }
                     )
 

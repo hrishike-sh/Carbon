@@ -120,7 +120,7 @@ module.exports = {
      * @param {Client} client
      */
     async execute(interaction, client) {
-        if (!interaction.member.permissions.has('ADMINISTRATOR')) {
+        if (!interaction.member.permissions.has('Administrator')) {
             return interaction.reply(
                 'You need `ADMINISTRATOR` permission to mess with this.'
             )
@@ -144,24 +144,33 @@ module.exports = {
                         .setDescription(
                             'These roles can be edited using /gconfig!'
                         )
-                        .addField(
-                            'Giveaway Manager Roles',
-                            `__Users with any of these roles can host giveaways__:\n${server?.giveaway_config.manager_roles
-                                .map((v, i) => `${i + 1}: <@&${v}>`)
-                                .join('\n')}` || 'Nothing here.'
-                        )
-                        .addField(
-                            'Blacklisted Roles',
-                            `__Users with any of these roles cannot join giveaways__:\n${server?.giveaway_config.blacklisted_roles
-                                .map((v, i) => `${i + 1}: <@&${v}>`)
-                                .join('\n')}` || 'Nothing here.'
-                        )
-                        .addField(
-                            'Bypass Roles',
-                            `__Users with any of these roles can bypass any giveaways hosted in the server__:\n${server?.giveaway_config.bypass_roles
-                                .map((v, i) => `${i + 1}: <@&${v}>`)
-                                .join('\n')}` || 'Nothing here.'
-                        ),
+                        .addFields([
+                            {
+                                name: 'Giveaway Manager Roles',
+                                value:
+                                    `__Users with any of these roles can host giveaways__:\n${server?.giveaway_config.manager_roles
+                                        .map((v, i) => `${i + 1}: <@&${v}>`)
+                                        .join('\n')}` || 'Nothing here.',
+                            },
+                        ])
+                        .addFields([
+                            {
+                                name: 'Blacklisted Roles',
+                                value:
+                                    `__Users with any of these roles cannot join giveaways__:\n${server?.giveaway_config.blacklisted_roles
+                                        .map((v, i) => `${i + 1}: <@&${v}>`)
+                                        .join('\n')}` || 'Nothing here.',
+                            },
+                        ])
+                        .addFields([
+                            {
+                                name: 'Bypass Roles',
+                                value:
+                                    `__Users with any of these roles can bypass any giveaways hosted in the server__:\n${server?.giveaway_config.bypass_roles
+                                        .map((v, i) => `${i + 1}: <@&${v}>`)
+                                        .join('\n')}` || 'Nothing here.',
+                            },
+                        ]),
                 ],
             })
         }
@@ -180,12 +189,15 @@ module.exports = {
                             .setDescription(
                                 'You can change these roles by using /gconfig!'
                             )
-                            .addField(
-                                'Roles',
-                                server.giveaway_config.manager_roles
-                                    .map((v, i) => `${i + 1}: <@&${v}>`)
-                                    .join('\n') || 'None.'
-                            )
+                            .addFields([
+                                {
+                                    name: 'Roles',
+                                    value:
+                                        server.giveaway_config.manager_roles
+                                            .map((v, i) => `${i + 1}: <@&${v}>`)
+                                            .join('\n') || 'None.',
+                                },
+                            ])
                             .setColor('Random'),
                     ],
                 })
@@ -266,12 +278,15 @@ module.exports = {
                             .setDescription(
                                 'You can change these roles by using /gconfig!'
                             )
-                            .addField(
-                                'Roles',
-                                server.giveaway_config.blacklisted_roles
-                                    .map((v, i) => `${i + 1}: <@&${v}>`)
-                                    .join('\n') || 'None.'
-                            )
+                            .addFields([
+                                {
+                                    name: 'Roles',
+                                    value:
+                                        server.giveaway_config.blacklisted_roles
+                                            .map((v, i) => `${i + 1}: <@&${v}>`)
+                                            .join('\n') || 'None.',
+                                },
+                            ])
                             .setColor('Random'),
                     ],
                 })
@@ -356,12 +371,15 @@ module.exports = {
                             .setDescription(
                                 'You can change these roles by using /gconfig!'
                             )
-                            .addField(
-                                'Roles',
-                                server.giveaway_config.bypass_roles
-                                    .map((v, i) => `${i + 1}: <@&${v}>`)
-                                    .join('\n') || 'None.'
-                            )
+                            .addFields([
+                                {
+                                    name: 'Roles',
+                                    value:
+                                        server.giveaway_config.bypass_roles
+                                            .map((v, i) => `${i + 1}: <@&${v}>`)
+                                            .join('\n') || 'None.',
+                                },
+                            ])
                             .setColor('Random'),
                     ],
                 })

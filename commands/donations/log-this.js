@@ -125,8 +125,8 @@ module.exports = {
                 `An error occured while saving amount to database.\nError: ${e.message}`
             )
         }
-        embed.addField('Amount added:', `⏣ ${toAdd.toLocaleString()}`, true)
-        embed.addField(
+        embed.addFields('Amount added:', `⏣ ${toAdd.toLocaleString()}`, true)
+        embed.addFields(
             `Total amount donated by ${
                 message.mentions.users.filter((u) => !u.bot).first().tag
             }:`,
@@ -134,7 +134,7 @@ module.exports = {
             true
         )
         if (erray.length) {
-            embed.addField('ERRORS:', erray.join('\n'))
+            embed.addFields('ERRORS:', erray.join('\n'))
         }
         return message.reply({
             embeds: [embed],

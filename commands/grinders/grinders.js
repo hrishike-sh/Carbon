@@ -25,19 +25,19 @@ module.exports = {
                 .setDescription(
                     'Help command for grirnders.\n\nAvailable commands:'
                 )
-                .addField(
+                .addFields(
                     'fh grinders add <id>/<@mention>',
                     'Adds a new grinder to the grinders team.'
                 )
-                .addField(
+                .addFields(
                     'fh grinders remove <id><@mention>',
                     'Removes the user from the grinders team.'
                 )
-                .addField(
+                .addFields(
                     'fh grinders days <days>',
                     "Adds __x__ amount of days to the grinder's profile."
                 )
-                .addField(
+                .addFields(
                     'fh grinders pending',
                     'Lists all the users who are yet to pay the grinder cash.'
                 )

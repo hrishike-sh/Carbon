@@ -216,7 +216,7 @@ module.exports = {
             ]) {
                 data.channel.permissionOverwrites.edit(sus, {
                     ViewChannel: true,
-                    SEND_MESSAGES: true,
+                    SendMessages: true,
                 })
             }
             data.channel.send(
@@ -306,7 +306,7 @@ module.exports = {
                 .get(fellowship.channelId)
                 .permissionOverwrites.edit(data.user.id, {
                     ViewChannel: true,
-                    SEND_MESSAGES: true,
+                    SendMessages: true,
                 })
             fellowship.save()
 
@@ -348,7 +348,7 @@ module.exports = {
                 .get(fellowship.channelId)
                 .permissionOverwrites.edit(data.user.id, {
                     ViewChannel: false,
-                    SEND_MESSAGES: false,
+                    SendMessages: false,
                 })
             fellowship.save()
 
@@ -401,45 +401,51 @@ module.exports = {
             const embed = new EmbedBuilder()
                 .setTitle('Fellowship')
                 .setDescription('Here are the details for this fellowship.')
-                .addField(
-                    `Owner 1: ${await (
-                        await interaction.client.users.fetch(
-                            dbChannel.owners.one.userId
-                        )
-                    ).tag}`,
-                    `**__Invites:__**(${
-                        dbChannel.owners.one.invited.length
-                    }/${dbChannel.owners.one.invites.toString()})\n${dbChannel.owners.one.invited
-                        .map((a, b) => `${b + 1}: <@${a}>`)
-                        .join('\n')}`,
-                    false
-                )
-                .addField(
-                    `Owner 2: ${await (
-                        await interaction.client.users.fetch(
-                            dbChannel.owners.two.userId
-                        )
-                    ).tag}`,
-                    `**__Invites:__**(${
-                        dbChannel.owners.two.invited.length
-                    }/${dbChannel.owners.two.invites.toString()})\n${dbChannel.owners.two.invited
-                        .map((a, b) => `${b + 1}: <@${a}>`)
-                        .join('\n')}`,
-                    false
-                )
-                .addField(
-                    `Owner 3: ${await (
-                        await interaction.client.users.fetch(
-                            dbChannel.owners.three.userId
-                        )
-                    ).tag}`,
-                    `**__Invites:__**(${
-                        dbChannel.owners.three.invited.length
-                    }/${dbChannel.owners.three.invites.toString()})\n${dbChannel.owners.three.invited
-                        .map((a, b) => `${b + 1}: <@${a}>`)
-                        .join('\n')}`,
-                    false
-                )
+                .addFields([
+                    {
+                        name: `Owner 1: ${await (
+                            await interaction.client.users.fetch(
+                                dbChannel.owners.one.userId
+                            )
+                        ).tag}`,
+                        value: `**__Invites:__**(${
+                            dbChannel.owners.one.invited.length
+                        }/${dbChannel.owners.one.invites.toString()})\n${dbChannel.owners.one.invited
+                            .map((a, b) => `${b + 1}: <@${a}>`)
+                            .join('\n')}`,
+                        inline: false,
+                    },
+                ])
+                .addFields([
+                    {
+                        name: `Owner 2: ${await (
+                            await interaction.client.users.fetch(
+                                dbChannel.owners.two.userId
+                            )
+                        ).tag}`,
+                        value: `**__Invites:__**(${
+                            dbChannel.owners.two.invited.length
+                        }/${dbChannel.owners.two.invites.toString()})\n${dbChannel.owners.two.invited
+                            .map((a, b) => `${b + 1}: <@${a}>`)
+                            .join('\n')}`,
+                        inline: false,
+                    },
+                ])
+                .addFields([
+                    {
+                        name: `Owner 3: ${await (
+                            await interaction.client.users.fetch(
+                                dbChannel.owners.three.userId
+                            )
+                        ).tag}`,
+                        value: `**__Invites:__**(${
+                            dbChannel.owners.three.invited.length
+                        }/${dbChannel.owners.three.invites.toString()})\n${dbChannel.owners.three.invited
+                            .map((a, b) => `${b + 1}: <@${a}>`)
+                            .join('\n')}`,
+                        inline: false,
+                    },
+                ])
                 .setColor('Green')
                 .setTimestamp()
 
