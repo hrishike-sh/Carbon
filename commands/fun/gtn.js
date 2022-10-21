@@ -73,7 +73,7 @@ module.exports = {
                 message.channel.permissionOverwrites.edit(
                     message.guild.roles.everyone,
                     {
-                        SEND_MESSAGES: true,
+                        SendMessages: true,
                     }
                 )
                 console.log(randomNumber)
@@ -86,7 +86,7 @@ module.exports = {
                     message.channel.permissionOverwrites.edit(
                         message.guild.roles.everyone,
                         {
-                            SEND_MESSAGES: false,
+                            SendMessages: false,
                         }
                     )
                     col.stop()
