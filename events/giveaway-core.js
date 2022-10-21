@@ -47,7 +47,7 @@ module.exports = {
                                 text: `Winners: ${gaw.winners} | Ended at`,
                             })
                             .setTimestamp()
-                            .setColor('NOT_QUITE_BLACK')
+                            .setColor('NotQuiteBlack')
                             .setDescription(
                                 `Winner(s): ${
                                     gaw.WWinners.map((w) => `<@${w}>`).join(
@@ -236,12 +236,20 @@ module.exports = {
                 .setDescription(
                     `You have won the *reroll* for the giveaway **\`${gaww.prize}\`**!`
                 )
-                .addField('Host', `<@${gaww.hosterId}>`, true)
-                .addField(
-                    'Giveaway Link',
-                    `[Jump](https://discord.com/channels/${gaww.guildId}/${gaww.channelId}/${gaww.messageId})`,
-                    true
-                )
+                .addFields([
+                    {
+                        name: 'Host',
+                        value: `<@${gaww.hosterId}>`,
+                        inline: true,
+                    },
+                ])
+                .addFields([
+                    {
+                        name: 'Giveaway Link',
+                        value: `[Jump](https://discord.com/channels/${gaww.guildId}/${gaww.channelId}/${gaww.messageId})`,
+                        inline: true,
+                    },
+                ])
                 .setColor('Green')
                 .setTimestamp()
             const id = winner.replace('<@', '').replace('>', '')

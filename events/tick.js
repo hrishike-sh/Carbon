@@ -106,20 +106,20 @@ module.exports = {
 
             const fh = client.guilds.cache.get(client.db.fighthub.id)
             const random = [
-                'WHITE',
-                'AQUA',
+                'White',
+                'Aqua',
                 'Green',
-                'BLUE',
+                'Blue',
                 'Yellow',
-                'PURPLE',
-                'LUMINOUS_VIVID_PINK',
-                'FUCHSIA',
-                'GOLD',
-                'ORANGE',
+                'Purple',
+
+                'Fuchsia',
+                'Gold',
+                'Orange',
                 'Red',
-                'GREY',
-                'DARKER_GREY',
-                'NAVY',
+                'Grey',
+                'DarkerGray',
+                'Navy',
                 'FF355E',
                 'FD5B78',
                 'FF6037',
@@ -264,16 +264,20 @@ module.exports = {
                                         .setDescription(
                                             `You have won the giveaway for **\`${giveaway.prize}\`**!`
                                         )
-                                        .addField(
-                                            'Host',
-                                            `<@${giveaway.hosterId}>`,
-                                            true
-                                        )
-                                        .addField(
-                                            'Giveaway link',
-                                            `[Jump](https://discord.com/channels/${giveaway.guildId}/${giveaway.channelId}/${giveaway.messageId})`,
-                                            true
-                                        )
+                                        .addFields([
+                                            {
+                                                name: 'Host',
+                                                value: `<@${giveaway.hosterId}>`,
+                                                inline: true,
+                                            },
+                                        ])
+                                        .addFields([
+                                            {
+                                                name: 'Giveaway link',
+                                                value: `[Jump](https://discord.com/channels/${giveaway.guildId}/${giveaway.channelId}/${giveaway.messageId})`,
+                                                inline: true,
+                                            },
+                                        ])
                                         .setTimestamp()
                                         .setColor('Green')
 
@@ -362,16 +366,20 @@ module.exports = {
                                                 .setDescription(
                                                     `Your giveaway for \`${giveaway.prize}\` has ended!`
                                                 )
-                                                .addField(
-                                                    'Giveaway Link',
-                                                    `[Jump](https://discord.com/channels/${giveaway.guildId}/${giveaway.channelId}/${giveaway.messageId})`,
-                                                    true
-                                                )
-                                                .addField(
-                                                    'Winners',
-                                                    `${winners}`,
-                                                    true
-                                                )
+                                                .addFields([
+                                                    {
+                                                        name: 'Giveaway Link',
+                                                        value: `[Jump](https://discord.com/channels/${giveaway.guildId}/${giveaway.channelId}/${giveaway.messageId})`,
+                                                        inline: true,
+                                                    },
+                                                ])
+                                                .addFields([
+                                                    {
+                                                        name: 'Winners',
+                                                        value: `${winners}`,
+                                                        inline: true,
+                                                    },
+                                                ])
                                                 .setTimestamp()
                                                 .setColor('Green'),
                                         ],
@@ -395,7 +403,7 @@ module.exports = {
                                                                 giveaway.prize
                                                             }** has ended and you were thanked **${giveaway.sponsor.thanks.toLocaleString()}** times!`
                                                         )
-                                                        .setColor('AQUA'),
+                                                        .setColor('Aqua'),
                                                 ],
                                             })
                                         } catch (_) {}
