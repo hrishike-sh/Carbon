@@ -21,7 +21,8 @@ module.exports = {
         if (!valid) return
         if (!valid?.skullBoard.enabled) return
         const { count, channelId } = valid.skullBoard
-        if (reaction.count < count) return
+        const rec = await reaction.fetch()
+        if (rec.count < count) return
         let exists = await skulls.findOne({
             messageId: message.id,
         })
