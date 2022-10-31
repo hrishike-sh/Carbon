@@ -23,7 +23,7 @@ module.exports = {
 
         const { count, channelId } = valid.skullBoard
         if (reaction.count < count) return
-
+        console.log('Enough reactions...')
         let exists = await skulls.findOne({
             messageId: message.id,
         })
