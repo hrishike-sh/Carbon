@@ -140,7 +140,7 @@ module.exports = {
                     count.toString() +
                     ' :skull: reaction will be posted in ' +
                     '<#' +
-                    server.channelId +
+                    server.skullBoard.channelId +
                     '>' +
                     '!'
             ) // this is the shittiest line of code i've written
