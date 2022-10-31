@@ -20,8 +20,9 @@ module.exports = {
         })
         if (!valid) return
         if (!valid?.skullBoard.enabled) return
-
+        console.log('Valid server')
         const { count, channelId } = valid.skullBoard
+        console.log(`Reaction count is ${reaction.count} and count is ${count}`)
         if (reaction.count < count) return
         console.log('Enough reactions...')
         let exists = await skulls.findOne({
