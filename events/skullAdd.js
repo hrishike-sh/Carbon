@@ -28,6 +28,7 @@ module.exports = {
             messageId: message.id,
         })
         if (exists) {
+            console.log('it exists')
             exists.count++
             const c = client.channels.cache?.get(channelId)
             let msg = await c.messages.fetch(exists.skullBoardMessageId)
