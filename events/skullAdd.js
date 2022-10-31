@@ -4,6 +4,7 @@ const {
     EmbedBuilder,
     ButtonStyle,
 } = require('discord.js')
+const noSpam = []
 const serverSettings = require('../database/models/settingsSchema')
 const skulls = require('../database/models/skullboard')
 module.exports = {
@@ -30,6 +31,7 @@ module.exports = {
             exists.count++
             const c = client.channels.cache?.get(channelId)
             let msg = await c.messages.fetch(exists.skullBoardMessageId)
+            console.log(msg)
             msg.embeds[0].setTitle(`**${exists.count} :skull:**`)
             msg.edit({
                 embeds: msg.embeds,
@@ -37,6 +39,11 @@ module.exports = {
             exists.save()
             return
         } else {
+            if (noSpam.includes(message.id)) {
+                return
+            } else {
+                noSpam.push(message.id)
+            }
             exists = {
                 messageId: message.id,
                 count: reaction.count,
