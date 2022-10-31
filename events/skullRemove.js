@@ -41,12 +41,11 @@ module.exports = {
             }
         } else {
             exists.count--
-            console.log(exists)
             const c = client.channels.cache?.get(channelId)
             let msg = await c.messages.fetch(exists.skullBoardMessageId)
             console.log(msg)
             const ee = EmbedBuilder.from(msg.embeds[0])
-            ee.setTitle(`**${exists.count} :skull:**`)
+            ee.setTitle(`**${reaction.count} :skull:**`)
             //msg.embeds[0].setTitle(`**${exists.count} :skull:**`)
             msg.edit({
                 embeds: [ee],
