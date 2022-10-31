@@ -22,10 +22,10 @@ module.exports = {
 
         const { count, channelId } = valid.skullBoard
         const rec = await reaction.fetch()
+        const exists = await skulls.findOne({
+            messageId: message.id,
+        })
         if (rec.count < count) {
-            const exists = await skulls.findOne({
-                messageId: message.id,
-            })
             if (!exists) return
             const mesId = exists.skullBoardMessageId
             if (exists) {
