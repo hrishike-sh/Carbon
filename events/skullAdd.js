@@ -12,7 +12,6 @@ module.exports = {
     name: 'messageReactionAdd',
     once: false,
     async execute(reaction, user, client) {
-        console.log(`Reaction Added; name: ${reaction.emoji.name}`)
         if (reaction.emoji.name !== '💀') return
 
         const message = reaction.message
@@ -21,11 +20,8 @@ module.exports = {
         })
         if (!valid) return
         if (!valid?.skullBoard.enabled) return
-        console.log('Valid server')
         const { count, channelId } = valid.skullBoard
-        console.log(`Reaction count is ${reaction.count} and count is ${count}`)
         if (reaction.count < count) return
-        console.log('Enough reactions...')
         let exists = await skulls.findOne({
             messageId: message.id,
         })
@@ -93,5 +89,6 @@ module.exports = {
             skullBoardMessageId: temp.id,
         })
         z.save()
+        noSpam = noSpam.filter((a) => a !== message.id)
     },
 }
