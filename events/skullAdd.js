@@ -33,6 +33,7 @@ module.exports = {
         if (exists) {
             console.log('it exists')
             exists.count++
+            console.log(exists)
             const c = client.channels.cache?.get(channelId)
             let msg = await c.messages.fetch(exists.skullBoardMessageId)
             console.log(msg)
