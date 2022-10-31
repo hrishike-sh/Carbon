@@ -28,7 +28,7 @@ module.exports = {
             if (!exists) return
             const mesId = exists.skullBoardMessageId
             if (exists) {
-                skulls.deleteOne({
+                await skulls.deleteMany({
                     messageId: message.id,
                 })
                 const c = client.channels.cache.get(valid.skullBoard.channelId)
