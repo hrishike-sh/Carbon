@@ -32,9 +32,11 @@ module.exports = {
             const c = client.channels.cache?.get(channelId)
             let msg = await c.messages.fetch(exists.skullBoardMessageId)
             console.log(msg)
-            msg.embeds[0].setTitle(`**${exists.count} :skull:**`)
+            const ee = EmbedBuilder.from(msg.embeds[0])
+            ee.setTitle(`**${exists.count} :skull:**`)
+            //msg.embeds[0].setTitle(`**${exists.count} :skull:**`)
             msg.edit({
-                embeds: msg.embeds,
+                embeds: [ee],
             })
             exists.save()
             return
