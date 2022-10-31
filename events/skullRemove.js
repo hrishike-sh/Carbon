@@ -38,6 +38,19 @@ module.exports = {
                 m.delete()
                 return
             }
+        } else {
+            exists.count--
+            console.log(exists)
+            const c = client.channels.cache?.get(channelId)
+            let msg = await c.messages.fetch(exists.skullBoardMessageId)
+            console.log(msg)
+            const ee = EmbedBuilder.from(msg.embeds[0])
+            ee.setTitle(`**${exists.count} :skull:**`)
+            //msg.embeds[0].setTitle(`**${exists.count} :skull:**`)
+            msg.edit({
+                embeds: [ee],
+            })
+            exists.save()
         }
     },
 }

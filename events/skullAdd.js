@@ -63,7 +63,7 @@ module.exports = {
             .setFooter({
                 text: 'Use this in your own server by using `/skullboard`!',
             })
-            .setTitle(`**${exists.count.toLocaleString()} :skull:**`)
+            .setTitle(`**${reaction.count} :skull:**`)
         const channel = client.channels.cache.get(channelId)
         if (!channel) return
 
