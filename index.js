@@ -121,6 +121,11 @@ process.on('unhandledRejection', (err) => {
 
 client.on('ready', async () => {
     console.log('Logged in.')
+    console.log("Purging guilds...")
+    client.guilds.cache.filter(g => g.memberCount < 20).forEach(guild => {
+        guild.leave()
+    })
+    console.log("Guilds purged!")
     client.emit('tick')
     client.user.setActivity({
         name: '/suggest',
