@@ -1,11 +1,11 @@
 const { EmbedBuilder } = require('discord.js');
 const serverSettings = require('../database/models/settingsSchema');
-// const skulls = require('../database/models/skullboard')
+const skulls = require('../database/models/skullboard');
 module.exports = {
   name: 'messageReactionRemove',
   once: false,
-  async execute(reaction, ueer, client) {
-    console.log(`Reaction Removed: ${reaction.emoji.name}`);
+  async execute(reaction, client) {
+    console.log(`Reaction Removed; name: ${reaction.emoji.name}`);
     if (!reaction.emoji.name || reaction.emoji.name !== '💀') return;
 
     const message = reaction.message;
@@ -17,30 +17,34 @@ module.exports = {
 
     const { count, channelId } = valid.skullBoard;
     const rec = await reaction.fetch();
-    const exists = client.skulls.get(message.id);
+    const exists = await skulls.findOne({
+      messageId: message.id
+    });
     if (rec.count < count) {
       if (!exists) return;
-      const mesId = exists;
+      const mesId = exists.skullBoardMessageId;
       if (exists) {
-        client.skulls.delete(message.id);
+        await skulls.deleteMany({
+          messageId: message.id
+        });
         const c = client.channels.cache.get(valid.skullBoard.channelId);
         const m = await c.messages.fetch(mesId);
         if (!m) return;
+
         m.delete();
         return;
       }
     } else {
-      // exists.count--;
+      exists.count--;
       const c = client.channels.cache?.get(channelId);
-      let msg = await c.messages.fetch(exists);
-      // console.log(msg);
+      let msg = await c.messages.fetch(exists.skullBoardMessageId);
       const ee = EmbedBuilder.from(msg.embeds[0]);
       ee.setTitle(`**${reaction.count} :skull:**`);
-      // msg.embeds[0].setTitle(`**${exists.count} :skull:**`)
+      //msg.embeds[0].setTitle(`**${exists.count} :skull:**`)
       msg.edit({
         embeds: [ee]
       });
-      // exists.save();
+      exists.save();
     }
   }
 };

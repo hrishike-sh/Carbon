@@ -1,7 +1,13 @@
-const { ActionRowBuilder, ButtonBuilder, EmbedBuilder } = require('discord.js');
+const {
+  ActionRowBuilder,
+  ButtonBuilder,
+  EmbedBuilder,
+  ButtonStyle,
+  TextChannel
+} = require('discord.js');
+const noSpam = [];
 const serverSettings = require('../database/models/settingsSchema');
 const skulls = require('../database/models/skullboard');
-const noSpam = [];
 module.exports = {
   name: 'messageReactionAdd',
   once: false,
@@ -17,12 +23,14 @@ module.exports = {
     const { count, channelId } = valid.skullBoard;
     const rec = await reaction.fetch();
     if (rec.count < count) return;
-    let exists = client.skulls.get(message.id);
+    let exists = await skulls.findOne({
+      messageId: message.id
+    });
     if (exists) {
       console.log('it exists');
-      // exists.count++;
+      exists.count++;
       const c = client.channels.cache?.get(channelId);
-      let msg = await c.messages.fetch(exists);
+      let msg = await c.messages.fetch(exists.skullBoardMessageId);
       console.log(msg);
       const ee = EmbedBuilder.from(msg.embeds[0]);
       ee.setTitle(`**${reaction.count} :skull:**`);
@@ -30,7 +38,7 @@ module.exports = {
       msg.edit({
         embeds: [ee]
       });
-      // exists.save();
+      exists.save();
       return;
     } else {
       if (noSpam.includes(message.id)) {
@@ -38,7 +46,10 @@ module.exports = {
       } else {
         noSpam.push(message.id);
       }
-      client.skulls.set(message.id, null);
+      exists = {
+        messageId: message.id,
+        count: reaction.count
+      };
     }
 
     const embed = new EmbedBuilder()
