@@ -210,8 +210,8 @@ client.on('messageCreate', async (message) => {
    return null
    }
 
-   await message.react('962407474059694200');
-   await message.react('962407492300705834');
+   await message.react('931078295435505736');
+   await message.react('931078357637038080');
    return null;
    })
 
