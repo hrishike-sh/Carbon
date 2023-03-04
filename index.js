@@ -205,16 +205,6 @@ client.on('ready', async () => {
   // Disabled Commands
 });
 
-client.on('messageCreate', async (message) => {
-   if (message.channel.id !== '1075443502936227900') {
-   return null
-   }
-
-   await message.react('931078295435505736');
-   await message.react('931078357637038080');
-   return null;
-   })
-
 client.on('interactionCreate', async (interaction) => {
   if (!interaction.isCommand()) return;
 
