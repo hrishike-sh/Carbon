@@ -112,20 +112,7 @@ const {
                 }
             )
             .setColor('65280')
-            .setFooter({
-                text: "React with ✅ to choose this user as winner!"
-            })
-
-            const sentMessage = await message.channel.send({
-            embeds: [embed],
-            });
-            await sentMessage.react('✅');
-
-            const winnerCollector = sentMessage.createReactionCollector({
-            filter: (reaction, user) => reaction.emoji.name === '✅' && gamedata.players.one.user.id !== user.id,
-            time: 30000,
-            });
-
+        
             let winners = [];
 
             winnerCollector.on('collect', (reaction, user) => {
