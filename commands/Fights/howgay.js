@@ -112,6 +112,18 @@ const {
                 }
             )
             .setColor('65280')
+            .setFooter({
+                text: "Congratulations to the winner!"
+            })
+
+            const sentMessage = await message.channel.send({
+            embeds: [embed],
+            });
+
+            const winnerCollector = sentMessage.createReactionCollector({
+            filter: (reaction, user) => reaction.emoji.name === '✅' && gamedata.players.one.user.id !== user.id,
+            time: 30000,
+            });
         
             let winners = [];
 
