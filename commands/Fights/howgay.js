@@ -119,6 +119,7 @@ const {
             const sentMessage = await message.channel.send({
             embeds: [embed],
             });
+            await sentMessage.react('✅');
 
             const winnerCollector = sentMessage.createReactionCollector({
                 filter: (reaction, user) => reaction.emoji.name === '✅' && gamedata.players.one.user.id !== user.id,
