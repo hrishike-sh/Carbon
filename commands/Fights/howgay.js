@@ -112,7 +112,9 @@ const {
                 }
             )
             .setColor('65280')
-            .setFooter("React with ✅ to choose this user as winner!");
+            .setFooter({
+                text: "React with ✅ to choose this user as winner!"
+            })
 
             const sentMessage = await message.channel.send({
             embeds: [embed],
@@ -139,15 +141,18 @@ const {
                 embeds: [
                     embed.setDescription('It was a tie!')
                     .setColor('65280')
-                    .setFooter('Better luck next time!'),
-                ],
+                    .setFooter({
+                        text: 'Better luck next time!'
+                })],
                 });
             } else if (userWins > targetWins) {
                 await sentMessage.edit({
                 embeds: [
                     embed.setDescription(`${gamedata.players.one.user.tag} won with ${gamedata.players.oneR} points!`)
                     .setColor('65280')
-                    .setFooter(`Congratulations ${gamedata.players.one.user.tag}!`),
+                    .setFooter({
+                        text: "Congratulations ${gamedata.players.one.user.tag}!"
+                    })
                 ],
                 });
             } else {
@@ -155,7 +160,9 @@ const {
                 embeds: [
                     embed.setDescription(`${gamedata.players.two.user.tag} won with ${gamedata.players.twoR} points!`)
                     .setColor('65280')
-                    .setFooter(`Congratulations ${gamedata.players.two.user.tag}!`),
+                    .setFooter({
+                        text: 'Congratulations ${gamedata.players.two.user.tag}!'
+                })
                 ],
                 });
             }
