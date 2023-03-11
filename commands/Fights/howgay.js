@@ -96,7 +96,7 @@ const {
 
             await new Promise(resolve => setTimeout(resolve, 5000));
 
-            const embed = new MessageEmbed()
+            const embed = new EmbedBuilder()
             .setTitle(`Howgay | ${target.tag} VS ${message.author.tag}`)
             .setDescription(`The one with the ${gamedata.type == 'high' ? '**highest**' : '**lowest**'} rate wins!`)
             .addFields(
