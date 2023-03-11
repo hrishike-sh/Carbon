@@ -3,7 +3,6 @@ const {
     ActionRowBuilder,
     ButtonBuilder,
     ButtonStyle,
-    SlashCommandBuilder
   } = require('discord.js');
 
     module.exports = {
@@ -13,9 +12,9 @@ const {
     usage: '<user> <high / low>',
     description: 'Dank Memer\'s howgay fighthub method, but its automatic!',
     /**
-     * @param {import('discord.js').Message} message
+     * @param {Message} message
      * @param {String[]} args
-     * @param {import('discord.js').Client} client
+     * @param {Client} client
      */
     async execute(message, args, client) {
         const target = message.mentions?.users?.first() || null;
@@ -54,12 +53,12 @@ const {
             },
         ],
         components: [
-            new MessageActionRow().addComponents([
+            new ActionRowBuilder().addComponents([
                 new MessageButton()
                   .setLabel('Accept')
                   .setStyle('SUCCESS')
                   .setCustomId('accept-hg'),
-                new MessageButton()
+                new ButtonBuilder()
                   .setLabel('Deny')
                   .setStyle('DANGER')
                   .setCustomId('deny-hg'),
