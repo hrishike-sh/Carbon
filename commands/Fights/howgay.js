@@ -112,7 +112,7 @@ const {
                 }
             )
             .setColor('65280')
-            .setFooter('React with ✅ to choose this user as winner!');
+            .setFooter("React with ✅ to choose this user as winner!");
 
             const sentMessage = await message.channel.send({
             embeds: [embed],
