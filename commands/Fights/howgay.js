@@ -1,4 +1,4 @@
-const { MessageEmbed, MessageButton, MessageActionRow } = require('discord.js');
+const { MessageEmbed, MessageButton} = require('discord.js');
 
 module.exports = {
   name: 'howgay',
@@ -48,17 +48,20 @@ module.exports = {
         },
       ],
       components: [
-        new MessageActionRow().addComponents([
-          new MessageButton()
-            .setLabel('Accept')
-            .setStyle('SUCCESS')
-            .setCustomId('accept-hg'),
-          new MessageButton()
-            .setLabel('Deny')
-            .setStyle('DANGER')
-            .setCustomId('deny-hg'),
-        ]),
-      ],
+        {
+          type: 'ACTION_ROW',
+          components: [
+            new MessageButton()
+              .setLabel('Accept')
+              .setStyle('SUCCESS')
+              .setCustomId('accept-hg'),
+            new MessageButton()
+              .setLabel('Deny')
+              .setStyle('DANGER')
+              .setCustomId('deny-hg'),
+          ],
+        },
+      ],      
     });
 
     const collector = confirmationMessage.createMessageComponentCollector({
