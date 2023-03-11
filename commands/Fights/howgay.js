@@ -56,11 +56,11 @@ const {
             new ActionRowBuilder().addComponents([
                 new ButtonBuilder()
                   .setLabel('Accept')
-                  .setStyle(ButtonStyles.SUCCESS)
+                  .setStyle(ButtonStyle.Success)
                   .setCustomId('accept-hg'),
                 new ButtonBuilder()
                   .setLabel('Deny')
-                  .setStyle(ButtonStyles.DANGER)
+                  .setStyle(ButtonStyle.Danger)
                   .setCustomId('deny-hg'),
               ]),
             ],   
