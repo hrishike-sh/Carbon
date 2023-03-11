@@ -49,7 +49,7 @@ const {
             {
             title: `Confirmation | ${target.username}`,
             description: 'Use the button to make your choice.\nYou have 30 seconds...',
-            color: `YELLOW`,
+            color: `16776960`,
             },
         ],
         components: [
@@ -89,7 +89,7 @@ const {
             embeds: [
                 {
                 title: 'Starting game....',
-                color: 'GREEN',
+                color: '65280',
                 },
             ],
             });
@@ -111,7 +111,7 @@ const {
                 inline: true,
                 }
             )
-            .setColor('GREEN')
+            .setColor('65280')
             .setFooter('React with ✅ to choose this user as winner!');
 
             const sentMessage = await message.channel.send({
@@ -138,7 +138,7 @@ const {
                 await sentMessage.edit({
                 embeds: [
                     embed.setDescription('It was a tie!')
-                    .setColor('YELLOW')
+                    .setColor('65280')
                     .setFooter('Better luck next time!'),
                 ],
                 });
@@ -146,7 +146,7 @@ const {
                 await sentMessage.edit({
                 embeds: [
                     embed.setDescription(`${gamedata.players.one.user.tag} won with ${gamedata.players.oneR} points!`)
-                    .setColor('GREEN')
+                    .setColor('65280')
                     .setFooter(`Congratulations ${gamedata.players.one.user.tag}!`),
                 ],
                 });
@@ -154,7 +154,7 @@ const {
                 await sentMessage.edit({
                 embeds: [
                     embed.setDescription(`${gamedata.players.two.user.tag} won with ${gamedata.players.twoR} points!`)
-                    .setColor('GREEN')
+                    .setColor('65280')
                     .setFooter(`Congratulations ${gamedata.players.two.user.tag}!`),
                 ],
                 });
