@@ -1,163 +1,176 @@
-// const {
-//   EmbedBuilder,
-//   ButtonBuilder,
-//   ActionRowBuilder,
-//   Message,
-//   ButtonStyle,
-// } = require("discord.js");
+const { MessageEmbed, MessageButton, MessageActionRow } = require('discord.js');
 
-// module.exports = {
-//   name: "howgay",
-//   category: "Fights",
-//   args: true,
-//   usage: "<user> <high / low>",
-//   description: "Dank Memer's howgay fighthub method, but its automatic!",
-//   /**
-//    *
-//    * @param {Message} message
-//    * @param {String[]} args
-//    * @param {Client} client
-//    */
-//   async execute(message, args, client) {
-//     const target = message.mentions?.users?.first() || null;
+module.exports = {
+  name: 'howgay',
+  category: 'Fights',
+  args: true,
+  usage: '<user> <high / low>',
+  description: 'Dank Memer\'s howgay fighthub method, but its automatic!',
+  /**
+   * @param {import('discord.js').Message} message
+   * @param {String[]} args
+   * @param {import('discord.js').Client} client
+   */
+  async execute(message, args, client) {
+    const target = message.mentions?.users?.first() || null;
 
-//     if (!target)
-//       return message.channel.send("You must ping someone to play with them!");
+    if (!target) {
+      return message.channel.send('You must ping someone to play with them!');
+    }
 
-//     let gamedata = {
-//       players: {
-//         one: message.member,
-//         two: message.mentions.members.first(),
-//         oneR: getRate(),
-//         twoR: getRate(),
-//       },
-//     };
-//     args.shift();
+    const getRate = () => Math.floor(Math.random() * 101);
 
-//     const type = args[0]?.toLocaleLowerCase() || null;
+    let gamedata = {
+      players: {
+        one: message.member,
+        two: message.mentions.members.first(),
+        oneR: getRate(),
+        twoR: getRate(),
+      },
+    };
+    args.shift();
 
-//     if (!type || !["low", "high", "l", "h"].includes(type)) {
-//       return message.reply(
-//         `You must specify the type of fight! Either HIGH or LOW (high/low/h/l).`
-//       );
-//     }
+    const type = args[0]?.toLocaleLowerCase() || null;
 
-//     gamedata.type = type.includes("h") ? "high" : "low";
+    if (!type || !['low', 'high', 'l', 'h'].includes(type)) {
+      return message.reply(`You must specify the type of fight! Either HIGH or LOW (high/low/h/l).`);
+    }
 
-//     const confirmationMessage = await message.channel.send({
-//       content: `${target.toString()} do you want to play a game of HowGay with ${message.author.toString()}?`,
-//       embeds: [
-//         {
-//           title: `Confirmation | ${target.username}`,
-//           description:
-//             "Use the button to make your choice.\nYou have 30 seconds...",
-//           color: `Yellow`,
-//         },
-//       ],
-//       components: [
-//         new MessageActionRow().addComponents([
-//           new MessageButton()
-//             .setLabel("Accept")
-//             .setSyle(ButtonStyle.Success)
-//             .setCustomId("accept-hg"),
-//           new MessageButton()
-//             .setLabel("Deny")
-//             .setSyle(ButtonStyle.Danger)
-//             .setCustomId("deny-hg"),
-//         ]),
-//       ],
-//     });
+    gamedata.type = type.includes('h') ? 'high' : 'low';
 
-//     const collector = confirmationMessage.createMessageComponentCollector({
-//       time: 30 * 1000,
-//     });
+    const confirmationMessage = await message.channel.send({
+      content: `${target.toString()} do you want to play a game of HowGay with ${message.author.toString()}?`,
+      embeds: [
+        {
+          title: `Confirmation | ${target.username}`,
+          description: 'Use the button to make your choice.\nYou have 30 seconds...',
+          color: `YELLOW`,
+        },
+      ],
+      components: [
+        new MessageActionRow().addComponents([
+          new MessageButton()
+            .setLabel('Accept')
+            .setStyle('SUCCESS')
+            .setCustomId('accept-hg'),
+          new MessageButton()
+            .setLabel('Deny')
+            .setStyle('DANGER')
+            .setCustomId('deny-hg'),
+        ]),
+      ],
+    });
 
-//     collector.on("collect", async (button) => {
-//       if (button.user.id !== target.user.id) {
-//         return button.reply({
-//           content: ":warning: This is not for you idiot.",
-//           ephemeral: true,
-//         });
-//       }
+    const collector = confirmationMessage.createMessageComponentCollector({
+      time: 30 * 1000,
+    });
 
-//       if (button.customId.includes("accept")) {
-//         confirmationMessage.edit({
-//           embeds: [null],
-//           content: "This request was ACCEPTED.",
-//           components: [null],
-//         });
+    collector.on('collect', async (button) => {
+      if (button.user.id !== target.id) {
+        return button.reply({
+          content: ':warning: This is not for you idiot.',
+          ephemeral: true,
+        });
+      }
 
-//         const mainMessage = await message.channel.send({
-//           embeds: [
-//             {
-//               title: "Starting game....",
-//               color: "Green",
-//             },
-//           ],
-//         });
+      if (button.customId.includes('accept')) {
+        confirmationMessage.edit({
+          embeds: [],
+          content: 'This request was ACCEPTED.',
+          components: [],
+        });
 
-//         await sleep(5000)
+        const mainMessage = await message.channel.send({
+          embeds: [
+            {
+              title: 'Starting game....',
+              color: 'GREEN',
+            },
+          ],
+        });
 
-//         const embed = new EmbedBuilder()
-//           .setTitle(`Howgay | ${target.user.tag} VS ${message.author.tag}`)
-//           .setDescription(
-//             `The one with the ${
-//               gamedata.type == "high" ? "**highest**" : "**lowest**"
-//             } rate wins!`
-//           )
-//           .addFields({
-//             name: `${gamedata.players.one.tag}`, value: `Rate: ${gamedata.players.oneR}`, inline: true
-//           }, {
-//             name: `${gamedata.players.two.tag}`, value: `Rate: ${gamedata.players.twoR}`, inline: true
-//           }).setTimestamp();
+        await new Promise(resolve => setTimeout(resolve, 5000));
 
-//           mainMessage.edit({
-//             embeds: [embed],
-//             content: '_ _'
-//           })
+        const embed = new MessageEmbed()
+          .setTitle(`Howgay | ${target.tag} VS ${message.author.tag}`)
+          .setDescription(`The one with the ${gamedata.type == 'high' ? '**highest**' : '**lowest**'} rate wins!`)
+          .addFields(
+            {
+              name: `${gamedata.players.one.user.tag}`,
+              value: `Rate: ${gamedata.players.oneR}`,
+              inline: true,
+            },
+            {
+              name: `${gamedata.players.two.user.tag}`,
+              value: `Rate: ${gamedata.players.twoR}`,
+              inline: true,
+            }
+          )
+          .setColor('GREEN')
+          .setFooter('React with ✅ to choose this user as winner!');
 
-//           let winner = null;
+        const sentMessage = await message.channel.send({
+          embeds: [embed],
+        });
+        await sentMessage.react('✅');
 
-//           if(gamedata.type == 'high') {
-//             if(gamedata.players.oneR > gamedata.players.twoR){
-//                 winner = gamedata.players.one
-//             } else if (gamedata.players.oneR < gamedata.players.twoR) {
-//                 winner = gamedata.players.two
-//             } else {
-//                 winner = null
-//             }
-//           } else {
-//             if(gamedata.players.oneR < gamedata.players.twoR){
-//                 winner = gamedata.players.one
-//             } else if (gamedata.players.oneR > gamedata.players.twoR) {
-//                 winner = gamedata.players.two
-//             } else {
-//                 winner = null
-//             }
-//           }
+        const winnerCollector = sentMessage.createReactionCollector({
+          filter: (reaction, user) => reaction.emoji.name === '✅' && gamedata.players.one.user.id !== user.id,
+          time: 30000,
+        });
 
-//           return message.channel.send(`:trophy: | ${winner ? winner.toString() : "Noone"} won the game!`)
+        let winners = [];
 
-//       } else {
-//         confirmationMessage.edit({
-//           embeds: [null],
-//           content: "This request was DENIED.",
-//           components: [null],
-//         });
-//         return;
-//       }
-//     });
-//   },
-// };
+        winnerCollector.on('collect', (reaction, user) => {
+          winners.push(user.id);
+        });
 
-// function sleep(ms) {
-//   return new Promise((resolve) => setTimeout(resolve, ms));
-// }
+        winnerCollector.on('end', async (collected) => {
+          const userWins = winners.filter((id) => gamedata.players.one.user.id === id).length;
+          const targetWins = winners.filter((id) => gamedata.players.two.user.id === id).length;
 
-// function getRate() {
-//   return Math.floor(Math.random() * 100);
-// }
+          if (userWins === targetWins) {
+            await sentMessage.edit({
+              embeds: [
+                embed.setDescription('It was a tie!')
+                  .setColor('YELLOW')
+                  .setFooter('Better luck next time!'),
+              ],
+            });
+          } else if (userWins > targetWins) {
+            await sentMessage.edit({
+              embeds: [
+                embed.setDescription(`${gamedata.players.one.user.tag} won with ${gamedata.players.oneR} points!`)
+                  .setColor('GREEN')
+                  .setFooter(`Congratulations ${gamedata.players.one.user.tag}!`),
+              ],
+            });
+          } else {
+            await sentMessage.edit({
+              embeds: [
+                embed.setDescription(`${gamedata.players.two.user.tag} won with ${gamedata.players.twoR} points!`)
+                  .setColor('GREEN')
+                  .setFooter(`Congratulations ${gamedata.players.two.user.tag}!`),
+              ],
+            });
+          }
+        });
+      } else {
+        confirmationMessage.edit({
+          embeds: [],
+          content: 'This request was DENIED.',
+          components: [],
+        });
+      }
+    });
 
-// /**
-//  */
-// //stfu
+    collector.on('end', async (collected) => {
+      confirmationMessage.edit({
+        embeds: [],
+        content: 'Time\'s up!',
+        components: [],
+      });
+    });
+  },
+};
+
