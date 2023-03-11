@@ -1,4 +1,10 @@
-    const { MessageEmbed, MessageButton, MessageActionRow} = require('discord.js');
+const {
+    EmbedBuilder,
+    ActionRowBuilder,
+    ButtonBuilder,
+    ButtonStyle,
+    SlashCommandBuilder
+  } = require('discord.js');
 
     module.exports = {
     name: 'howgay',
