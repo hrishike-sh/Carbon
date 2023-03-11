@@ -54,7 +54,7 @@ const {
         ],
         components: [
             new ActionRowBuilder().addComponents([
-                new MessageButton()
+                new ButtonBuilder()
                   .setLabel('Accept')
                   .setStyle('SUCCESS')
                   .setCustomId('accept-hg'),
