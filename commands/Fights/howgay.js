@@ -123,7 +123,7 @@ const {
 
             const winnerCollector = sentMessage.createReactionCollector({
                 filter: (reaction, user) => reaction.emoji.name === '✅' && gamedata.players.one.user.id !== user.id,
-                time: 2000,
+                time: 6000,
               });
         
             let winners = [];
