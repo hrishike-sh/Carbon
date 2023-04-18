@@ -18,8 +18,6 @@ module.exports = {
             return option
                 .setName('type')
                 .setDescription('Where do you want to add their donations to?')
-                .addChoice('30k Dank Donation', '30k')
-                .addChoice('30k Karuta Donation', 'karuta')
                 .addChoice('Main Donation', 'main_dono')
                 .addChoice('Grinder Donation', 'grind_dono')
                 .setRequired(true)
