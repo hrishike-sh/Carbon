@@ -20,6 +20,6 @@ A multipurpose bot having many cool features.
 
 `-` Fellintron
 
- ⤷ [Discord](https://discordapp.com/users/786150805773746197)
+⤷ [Discord](https://discordapp.com/users/786150805773746197)
 
- ⤷ [GitHub](https://github.com/Fellintron)
+⤷ [GitHub](https://github.com/Fellintron)
