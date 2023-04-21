@@ -1,9 +1,9 @@
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
 
 const CommandSchema = new mongoose.Schema({
-    name: String,
-    usage: { type: Number, default: 0 },
-    disabled: false,
-})
+  name: String,
+  usage: { type: Number, default: 0 },
+  disabled: false
+});
 
-module.exports = mongoose.model('command', CommandSchema)
+module.exports = mongoose.model('command', CommandSchema);
