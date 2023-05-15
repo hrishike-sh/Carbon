@@ -21,11 +21,28 @@ module.exports = {
     .addStringOption((sus) => {
       return sus
         .setRequired(true)
-        .addChoice('Collectable', 'col')
-        .addChoice('Sellable', 'sell')
-        .addChoice('Work Items', 'work')
-        .addChoice('Pepe Item', 'pepe')
-        .addChoice('Other', 'other')
+        .addChoices([
+          {
+            name: 'Collectable',
+            value: 'col'
+          },
+          {
+            name: 'Sellable',
+            value: 'sell'
+          },
+          {
+            name: 'Work Items',
+            value: 'work'
+          },
+          {
+            name: 'Pepe Item',
+            value: 'pepe'
+          },
+          {
+            name: 'Other',
+            value: 'other'
+          }
+        ])
         .setName('type')
         .setDescription('Type of the item.');
     })

@@ -10,9 +10,20 @@ module.exports = {
       return opt
         .setName('role')
         .setDescription('Choose the ping.')
-        .addChoice('Giveaway Ping', '824916330574118942')
-        .addChoice('Event Ping', '858088201451995137')
-        .addChoice('Mini Gaw and Event Ping', '837121985787592704')
+        .addChoices([
+          {
+            name: 'Giveaway Ping',
+            value: '824916330574118942'
+          },
+          {
+            name: 'Event Ping',
+            value: '858088201451995137'
+          },
+          {
+            name: 'Mini Gaw and Event Ping',
+            value: '837121985787592704'
+          }
+        ])
         .setRequired(true);
     })
     .addUserOption((opt) => {

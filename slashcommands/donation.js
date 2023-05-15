@@ -17,8 +17,16 @@ module.exports = {
       return option
         .setName('type')
         .setDescription('Where do you want to add their donations to?')
-        .addChoice('Main Donation', 'main_dono')
-        .addChoice('Grinder Donation', 'grind_dono')
+        .addChoices([
+          {
+            name: 'Main Donation',
+            value: 'main_dono'
+          },
+          {
+            name: 'Grinder Donation',
+            value: 'grind_dono'
+          }
+        ])
         .setRequired(true);
     })
     .addStringOption((option) => {
@@ -26,8 +34,16 @@ module.exports = {
         .setName('action')
         .setDescription('Select what you want to do.')
         .setRequired(true)
-        .addChoice('Add', 'dono_add')
-        .addChoice('Remove', 'dono_remove')
+        .addChoices([
+          {
+            name: 'Add',
+            value: 'dono_add'
+          },
+          {
+            name: 'Remove',
+            value: 'dono_remove'
+          }
+        ])
         .setRequired(true);
     })
     .addStringOption((option) => {
