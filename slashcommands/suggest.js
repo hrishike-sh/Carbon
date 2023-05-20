@@ -1,5 +1,9 @@
-const { SlashCommandBuilder } = require('@discordjs/builders');
-const { CommandInteraction, Client, EmbedBuilder } = require('discord.js');
+const {
+  CommandInteraction,
+  Client,
+  EmbedBuilder,
+  SlashCommandBuilder
+} = require('discord.js');
 
 module.exports = {
   category: 'Other',

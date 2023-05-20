@@ -1,9 +1,9 @@
-const { SlashCommandBuilder } = require('@discordjs/builders');
 const {
   CommandInteraction,
   EmbedBuilder,
   Client,
-  TextChannel
+  TextChannel,
+  SlashCommandBuilder
 } = require('discord.js');
 
 module.exports = {

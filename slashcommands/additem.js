@@ -1,25 +1,24 @@
-const { SlashCommandBuilder } = require('@discordjs/builders');
-const { CommandInteraction } = require('discord.js');
+const { CommandInteraction, SlashCommandBuilder } = require('discord.js');
 const db = require('../database/models/itemSchema');
 module.exports = {
   category: 'Donation',
   data: new SlashCommandBuilder()
     .setName('additem')
     .setDescription('Add an item to the items list')
-    .addStringOption((sus) => {
-      return sus
+    .addStringOption((sus) =>
+      sus
         .setName('item_id')
         .setDescription('The id of the item.')
-        .setRequired(true);
-    })
-    .addNumberOption((sus) => {
-      return sus
+        .setRequired(true)
+    )
+    .addNumberOption((sus) =>
+      sus
         .setName('item_value')
         .setDescription('Default value of the item.')
-        .setRequired(true);
-    })
-    .addStringOption((sus) => {
-      return sus
+        .setRequired(true)
+    )
+    .addStringOption((sus) =>
+      sus
         .setRequired(true)
         .addChoices([
           {
@@ -44,20 +43,20 @@ module.exports = {
           }
         ])
         .setName('type')
-        .setDescription('Type of the item.');
-    })
-    .addStringOption((sus) => {
-      return sus
+        .setDescription('Type of the item.')
+    )
+    .addStringOption((sus) =>
+      sus
         .setName('thumbnail_url')
         .setDescription('Image of the item')
-        .setRequired(true);
-    })
-    .addStringOption((sus) => {
-      return sus
+        .setRequired(true)
+    )
+    .addStringOption((sus) =>
+      sus
         .setName('display_name')
         .setDescription('Display name of the item')
-        .setRequired(true);
-    }),
+        .setRequired(true)
+    ),
   /**
    *
    * @param {CommandInteraction} interaction

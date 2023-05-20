@@ -1,5 +1,9 @@
-const { SlashCommandBuilder } = require('@discordjs/builders');
-const { CommandInteraction, Client, EmbedBuilder } = require('discord.js');
+const {
+  CommandInteraction,
+  Client,
+  EmbedBuilder,
+  SlashCommandBuilder
+} = require('discord.js');
 const DB = require('../database/models/settingsSchema');
 
 module.exports = {
@@ -7,25 +11,25 @@ module.exports = {
   data: new SlashCommandBuilder()
     .setName('censor')
     .setDescription('Configure the censors for your server.')
-    .addSubcommand((cmd) => {
-      return cmd
+    .addSubcommand((cmd) =>
+      cmd
         .setName('add')
         .setDescription('Adds a new censor to the censor list')
-        .addStringOption((opt) => {
-          return opt
+        .addStringOption((opt) =>
+          opt
             .setName('censor')
             .setDescription('The trigger for the censor.')
-            .setRequired(true);
-        })
-        .addStringOption((opt) => {
-          return opt
+            .setRequired(true)
+        )
+        .addStringOption((opt) =>
+          opt
             .setName('censor-regex')
             .setDescription(
               'Uses regex system to add a new censor to the censor list.'
             )
-            .setRequired(false);
-        });
-    })
+            .setRequired(false)
+        )
+    )
     .addSubcommand((cmd) => {
       return cmd
         .setName('remove')

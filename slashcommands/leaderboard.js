@@ -1,5 +1,4 @@
-const { SlashCommandBuilder } = require('@discordjs/builders');
-const { CommandInteraction } = require('discord.js');
+const { CommandInteraction, SlashCommandBuilder } = require('discord.js');
 const database = require('../database/models/submissionSchema');
 module.exports = {
   category: 'Donation',

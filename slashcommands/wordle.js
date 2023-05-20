@@ -1,4 +1,3 @@
-const { SlashCommandBuilder } = require('@discordjs/builders');
 const {
   CommandInteraction,
   Client,
@@ -6,7 +5,8 @@ const {
   ActionRowBuilder,
   ButtonBuilder,
   Collection,
-  ButtonStyle
+  ButtonStyle,
+  SlashCommandBuilder
 } = require('discord.js');
 const gameSet = new Collection();
 module.exports = {

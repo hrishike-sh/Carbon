@@ -1,11 +1,11 @@
-const { SlashCommandBuilder } = require('@discordjs/builders');
 const { ChannelType } = require('discord-api-types/v9');
 const {
   CommandInteraction,
   EmbedBuilder,
   ActionRowBuilder,
   ButtonBuilder,
-  ButtonStyle
+  ButtonStyle,
+  SlashCommandBuilder
 } = require('discord.js');
 const ms = require('ms');
 const giveaway = require('../database/models/giveaway');

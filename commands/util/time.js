@@ -6,7 +6,6 @@ const {
   ButtonBuilder,
   ButtonStyle
 } = require('discord.js');
-const { TimestampStyles } = require('@discordjs/builders');
 const { getMilliseconds } = require('better-ms');
 
 module.exports = {

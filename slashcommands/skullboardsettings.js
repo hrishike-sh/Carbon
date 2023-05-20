@@ -1,5 +1,9 @@
-const { SlashCommandBuilder } = require('@discordjs/builders');
-const { CommandInteraction, Client, EmbedBuilder } = require('discord.js');
+const {
+  CommandInteraction,
+  Client,
+  EmbedBuilder,
+  SlashCommandBuilder
+} = require('discord.js');
 const SETTINGS = require('../database/models/settingsSchema');
 
 module.exports = {
@@ -41,6 +45,11 @@ module.exports = {
         .setName('show')
         .setDescription("See your server's SkullBoard settings!");
     }),
+  /**
+   *
+   * @param {CommandInteraction} interaction
+   * @param {Client} client
+   */
   async execute(interaction, client) {
     if (!interaction.member.permissions.has('Administrator'))
       return interaction.reply('You need to be an Admin to use this!');

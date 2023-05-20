@@ -1,5 +1,9 @@
-const { SlashCommandBuilder } = require('@discordjs/builders');
-const { CommandInteraction, Client, EmbedBuilder } = require('discord.js');
+const {
+  CommandInteraction,
+  Client,
+  EmbedBuilder,
+  SlashCommandBuilder
+} = require('discord.js');
 const MainDonoModel = require('../node_modules/discord-messages/models/messages');
 const GrindDonoModel = require('../database/models/grindm');
 module.exports = {

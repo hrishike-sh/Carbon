@@ -1,5 +1,8 @@
-const { SlashCommandBuilder } = require('@discordjs/builders');
-const { CommandInteraction, Client } = require('discord.js');
+const {
+  CommandInteraction,
+  Client,
+  SlashCommandBuilder
+} = require('discord.js');
 const DB = require('../database/models/itemSchema');
 module.exports = {
   data: new SlashCommandBuilder()

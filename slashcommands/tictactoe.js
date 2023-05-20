@@ -1,10 +1,10 @@
-const { SlashCommandBuilder } = require('@discordjs/builders');
 const {
   CommandInteraction,
   ButtonBuilder,
   ActionRowBuilder,
   ButtonInteraction,
-  ButtonStyle
+  ButtonStyle,
+  SlashCommandBuilder
 } = require('discord.js');
 
 module.exports = {
