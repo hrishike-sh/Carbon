@@ -103,15 +103,22 @@ module.exports = {
         )}\``
       });
     });
-    collector.on('end', () => {
-      m.components.forEach((com) => {
-        com.components.forEach((c) => {
-          c.setDisabled();
-        });
-      });
-      m.edit({
-        components: m.components
-      });
+    collector.on('end', async () => {
+      try {
+        const rows = m.components.map(({ components }) => ({
+          components: components.map((component) =>
+            component.type === 2
+              ? ButtonBuilder.from(component)
+                  .setDisabled(true)
+                  .setCustomId(`disabled_${component.customId}`)
+              : component
+          )
+        }));
+
+        await m.edit({ components: rows });
+      } catch (error) {
+        console.error(error);
+      }
     });
   }
 };
