@@ -1,0 +1,126 @@
+// define everything
+const {
+  Client,
+  Events,
+  Collection,
+  GatewayIntentBits,
+  Message
+} = require('discord.js');
+const fs = require('fs');
+const path = require('node:path');
+const { prefix } = require('./config.json');
+const client = new Client({
+  intents: [
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.MessageContent,
+    GatewayIntentBits.GuildMembers,
+    GatewayIntentBits.GuildMessageReactions
+  ],
+  partials: [Partials.Reaction, Partials.Message]
+});
+// define everything
+
+/**
+ * Client Ready
+ */
+
+client.on(Events.ClientReady, async () => {
+  console.log(
+    `[BOT]: Client is online!\n  Server Count: ${client.guilds.cache.size}`
+  );
+  client.counts = {
+    commandsRan: 0,
+    messagesRead: 0
+  };
+});
+
+/**
+ * Client Ready
+ */
+
+/**
+ * COMMAND HANDLING
+ */
+
+client.cmd = {
+  commands: new Collection(),
+  cooldowns: new Collection()
+};
+const { cooldowns } = client.cmd;
+const commandFolders = fs.readdirSync('./commands');
+for (const folder of commandFolders) {
+  const commandFiles = fs
+    .readdirSync(`./commands/${folder}`)
+    .filter((s) => s.endsWith('.js'));
+
+  for (const file of commandFiles) {
+    const command = require(`./commands/${folder}/${file}`);
+    client.cmd.commands.set(command.name, command);
+  }
+}
+
+client.on(Events.MessageCreate, async (message) => {
+  client.counts.messagesRead++;
+  if (message.author.bot) return;
+  if (!message.guild) return;
+  if (!message.content.toLowerCase().startsWith(prefix)) return;
+
+  const args = message.content.slice(config.prefix.length).trim().split(/ +/g);
+  const commandName = args.shift().toLowerCase();
+
+  const command =
+    client.cmd.commands.get(commandName) ||
+    client.cmd.commands.find(
+      (cmd) => cmd.aliases && cmd.aliases.includes(commandName.toLowerCase())
+    ) ||
+    null;
+
+  if (!command) return;
+  if (!cooldowns.has(command.name)) {
+    cooldowns.set(command.name, new Collection());
+  }
+
+  const now = new Date();
+  const timestamps = cooldowns.get(command.name);
+  const cooldownAmt = (command.cooldown || 0) * 1000;
+
+  if (timestamps.has(message.author.id)) {
+    const expTime = timestamps.get(message.author.id) + cooldownAmt;
+
+    if (now < expTime) {
+      const timeLeft = (expTime - now) / 1000;
+
+      return message.reply({
+        embeds: [
+          {
+            description: `**:x: You must wait ${Math.ceil(
+              timeLeft
+            )}s before running that command again.**`,
+            color: 'Red'
+          }
+        ]
+      });
+    }
+  }
+
+  timestamps.set(message.author.id, now);
+  setTimeout(() => timestamps.delete(message.author.id), cooldownAmt);
+
+  try {
+    command.execute({ message: Message, args: [String], client: Client });
+    client.counts.commandsRan++;
+  } catch (e) {
+    console.log(e);
+    return message.reply({
+      content: 'There was an error running this command.'
+    });
+  }
+});
+
+/**
+ * COMMAND HANDLING
+ */
+
+client.on(Events.Error, console.log);
+client.login(process.env.token);
