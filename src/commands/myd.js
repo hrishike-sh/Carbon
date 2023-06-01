@@ -28,7 +28,7 @@ module.exports = {
             name: target.tag,
             proxy_icon_url: target.displayAvatarURL()
           },
-          description: `**Coins:** ⏣ ${USER.messages.toLocaleString()}`,
+          description: `**Donated:** ⏣ ${USER.messages.toLocaleString()}`,
           footer: {
             text: 'This is a temporary command!'
           }

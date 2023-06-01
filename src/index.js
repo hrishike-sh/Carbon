@@ -46,7 +46,7 @@ client.on(Events.ClientReady, async () => {
  * Database Handling
  */
 
-mongoose.connect(process.env.mongopath);
+// mongoose.connect(process.env.mongopath);
 
 /**
  * Database Handling
@@ -119,6 +119,16 @@ client.on(Events.MessageCreate, async (message) => {
 
   timestamps.set(message.author.id, now);
   setTimeout(() => timestamps.delete(message.author.id), cooldownAmt);
+
+  // requirements
+  if (command?.roles && !message.member.roles.cache.hasAny(...command.roles)) {
+    return message.reply({
+      content: `You need one of these roles to run this command:\n${command.roles
+        .map((role) => `<@&${role}>`)
+        .join(' ')}`,
+      allowedMentions: []
+    });
+  }
 
   try {
     command.execute(message, args, client);
