@@ -9,6 +9,9 @@ const {
 const fs = require('fs');
 const path = require('node:path');
 const { prefix } = require('./config.json');
+const mongoose = require('mongoose');
+require('dotenv').config();
+
 const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
@@ -37,6 +40,16 @@ client.on(Events.ClientReady, async () => {
 
 /**
  * Client Ready
+ */
+
+/**
+ * Database Handling
+ */
+
+mongoose.connect(process.env.mongopath);
+
+/**
+ * Database Handling
  */
 
 /**
@@ -108,7 +121,7 @@ client.on(Events.MessageCreate, async (message) => {
   setTimeout(() => timestamps.delete(message.author.id), cooldownAmt);
 
   try {
-    command.execute({ message: Message, args: [String], client: Client });
+    command.execute(message, args, client);
     client.counts.commandsRan++;
   } catch (e) {
     console.log(e);
