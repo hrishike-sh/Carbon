@@ -140,7 +140,6 @@ client.on(Events.MessageCreate, async (message) => {
     });
   }
 });
-
 /**
  * COMMAND HANDLING
  */
