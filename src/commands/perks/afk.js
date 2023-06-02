@@ -13,5 +13,25 @@ module.exports = {
     '824348974449819658',
     '999911429421408346'
   ],
-  async execute(message, args, client) {}
+  async execute(message, args, client) {
+    let dbUser = await DATABASE.findOne({
+      userId: message.author.id
+    });
+    if (dbUser) {
+      return message.reply("You're already AFK!");
+    }
+
+    const reason = args.join(' ') || 'AFK';
+
+    new DATABASE({
+      userId: message.author.id,
+      reason,
+      time: new Date().getTime()
+    });
+
+    message.reply(`You are now AFK!\nReason: ${reason}`);
+    setTimeout(() => {
+      client.db.afks.push(message.author.id);
+    }, 5000);
+  }
 };

@@ -6,12 +6,7 @@ const {
   ButtonBuilder,
   ButtonStyle
 } = require('discord.js');
-client.config.idiots = [
-  '598918643727990784',
-  '786150805773746197',
-  '434613993253109760',
-  '721368467789578332'
-];
+
 async function uploadResult(content) {
   const parseQueryString = (obj) => {
     let res = '';
@@ -34,6 +29,14 @@ module.exports = {
   category: 'Developer',
   descriprtion: 'Not for you to see.',
   async execute(message, args, client) {
+    client.config = {
+      idiots: [
+        '598918643727990784',
+        '786150805773746197',
+        '434613993253109760',
+        '721368467789578332'
+      ]
+    };
     if (!client.config.idiots.includes(message.author.id)) return;
     const hrish = client.channels.cache.get('897100501148127272');
     require('dotenv').config();
@@ -57,7 +60,10 @@ module.exports = {
     }
 
     const tokenRegex = new RegExp(process.env.token, 'gi');
-    const tokenRegex2 = new RegExp(process.env.amariToken, 'gi');
+    const tokenRegex2 = new RegExp(
+      'ASBDIKJGSDASJGKBASDGLJKASDGASGBAKSHBASDHGBADSGHBASDGHBASDG',
+      'gi'
+    );
     let button = false;
     let hasteURL = '';
     result = result.replace(tokenRegex, 'ok kiddo.');
