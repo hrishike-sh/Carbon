@@ -46,7 +46,7 @@ client.on(Events.ClientReady, async () => {
  * Database Handling
  */
 
-// mongoose.connect(process.env.mongopath);
+mongoose.connect(process.env.mongopath);
 
 /**
  * Database Handling
