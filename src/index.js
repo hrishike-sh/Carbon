@@ -79,7 +79,7 @@ client.on(Events.MessageCreate, async (message) => {
   if (!message.guild) return;
   if (!message.content.toLowerCase().startsWith(prefix)) return;
 
-  const args = message.content.slice(config.prefix.length).trim().split(/ +/g);
+  const args = message.content.slice(prefix.length).trim().split(/ +/g);
   const commandName = args.shift().toLowerCase();
 
   const command =

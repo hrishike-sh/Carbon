@@ -1,5 +1,5 @@
 const { Message, Client } = require('discord.js');
-const MAIN = require('../database/main_dono');
+const MAIN = require('../../database/main_dono');
 module.exports = {
   name: 'myd',
   aliases: ['mydono', 'mydonation', 'mydonations'],
