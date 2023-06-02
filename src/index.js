@@ -4,7 +4,8 @@ const {
   Events,
   Collection,
   GatewayIntentBits,
-  Message
+  Message,
+  Partials
 } = require('discord.js');
 const fs = require('fs');
 const path = require('node:path');
@@ -126,7 +127,10 @@ client.on(Events.MessageCreate, async (message) => {
       content: `You need one of these roles to run this command:\n${command.roles
         .map((role) => `<@&${role}>`)
         .join(' ')}`,
-      allowedMentions: []
+      allowedMentions: {
+        roles: [],
+        users: []
+      }
     });
   }
 
