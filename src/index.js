@@ -37,6 +37,13 @@ client.on(Events.ClientReady, async () => {
     commandsRan: 0,
     messagesRead: 0
   };
+  client.db = {
+    afks: []
+  };
+
+  for (const afkUser of await require('./database/afk').find()) {
+    client.db.afks.push(afkUser.userId);
+  }
 });
 
 /**
