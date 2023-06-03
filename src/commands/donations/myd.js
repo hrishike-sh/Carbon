@@ -8,6 +8,7 @@ const {
 } = require('discord.js');
 const PRIMARY = require('../../database/main_dono');
 const GRINDER = require('../../database/grinder_dono');
+const TICKETS = require('../../database/30k-stuff');
 module.exports = {
   name: 'myd',
   aliases: ['mydono', 'mydonation', 'mydonations'],
@@ -27,7 +28,7 @@ module.exports = {
     };
     const PrimaryDonations = await PRIMARY.findOne(filter);
     const GrinderDonations = await GRINDER.findOne(filter);
-
+    const TicketDonations = await TICKETS.findOne({ userId: target.id });
     if (!PrimaryDonations?.messages && !GrinderDonations?.amount) {
       return message.reply(`${target.toString()} has no donations!`);
     }
@@ -56,6 +57,18 @@ module.exports = {
       )
       .setColor('Random')
       .setTimestamp();
+    const TicketEmbed = new EmbedBuilder()
+      .setAuthor({ name: target.tag, iconURL: target.displayAvatarURL() })
+      .setTitle('Karuta Donations')
+      .setDescription(
+        `**Tickets:** ⏣=:tickets: ${
+          TicketDonations?.tickets > 0
+            ? TicketDonations.tickets.toLocaleString()
+            : 0
+        }`
+      )
+      .setColor('Random')
+      .setTimestamp();
 
     const PrimaryButton = new ButtonBuilder()
       .setStyle(ButtonStyle.Primary)
@@ -66,9 +79,14 @@ module.exports = {
       .setStyle(ButtonStyle.Primary)
       .setCustomId('grinder_dono;myd')
       .setLabel('Grinder');
+    const TicketButton = new ButtonBuilder()
+      .setStyle(ButtonStyle.Primary)
+      .setCustomId('ticket_dono;myd')
+      .setLabel('Karuta');
     const row = new ActionRowBuilder().addComponents(
       PrimaryButton,
-      GrinderButton
+      GrinderButton,
+      TicketButton
     );
 
     const mainMsg = await message.reply({
@@ -89,13 +107,22 @@ module.exports = {
       if (button.customId == 'primary_dono;myd') {
         PrimaryButton.setDisabled(true);
         GrinderButton.setDisabled(false);
-
+        TicketButton.setDisabled(false);
+        button.update({
+          embeds: [PrimaryEmbed],
+          components: [row]
+        });
+      } else if (button.customId == 'ticket_dono;myd') {
+        PrimaryButton.setDisabled(false);
+        GrinderButton.setDisabled(false);
+        TicketButton.setDisabled(true);
         button.update({
           embeds: [PrimaryEmbed],
           components: [row]
         });
       } else {
         PrimaryButton.setDisabled(false);
+        TicketButton.setDisabled(false);
         GrinderButton.setDisabled(true);
 
         button.update({
