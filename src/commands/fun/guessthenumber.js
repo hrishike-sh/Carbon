@@ -89,8 +89,8 @@ module.exports = {
             SendMessages: false
           }
         );
-
-        msg.reply({
+        mainCollector.stop();
+        return msg.reply({
           embeds: [
             {
               title: 'The number has been guessed! :tada:',
