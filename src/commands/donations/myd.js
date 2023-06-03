@@ -61,7 +61,7 @@ module.exports = {
       .setAuthor({ name: target.tag, iconURL: target.displayAvatarURL() })
       .setTitle('Karuta Donations')
       .setDescription(
-        `**Tickets:** ⏣=:tickets: ${
+        `**Tickets:** :tickets: ${
           TicketDonations?.tickets > 0
             ? TicketDonations.tickets.toLocaleString()
             : 0
