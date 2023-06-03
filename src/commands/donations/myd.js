@@ -117,7 +117,7 @@ module.exports = {
         GrinderButton.setDisabled(false);
         TicketButton.setDisabled(true);
         button.update({
-          embeds: [PrimaryEmbed],
+          embeds: [TicketEmbed],
           components: [row]
         });
       } else {
