@@ -103,11 +103,8 @@ module.exports = {
     });
 
     collector.on('end', () => {
-      startEmbed.components[0].components.forEach((c) => {
-        c.setDisabled();
-      });
       startEmbed.edit({
-        components: startEmbed.components
+        components: []
       });
 
       message.channel.permissionOverwrites.edit(message.guild.roles.everyone, {
