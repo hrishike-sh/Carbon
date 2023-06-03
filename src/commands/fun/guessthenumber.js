@@ -1,4 +1,12 @@
-const { Message, MessageEmbed, Client } = require('discord.js');
+const {
+  Message,
+  MessageEmbed,
+  Client,
+  Colors,
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle
+} = require('discord.js');
 
 module.exports = {
   name: 'guessthenumber',
@@ -23,8 +31,88 @@ module.exports = {
         ]
       });
     }
-    const randomNumber = Math.floor(Math.random());
 
-    message.channel.send(randomNumber.toString());
+    if (isNaN(Number(args[0]))) {
+      return message.reply({
+        content: 'Provide a valid number you moron.'
+      });
+    }
+
+    const randomNumber = Math.floor(Math.random() * Number(args[0]));
+    const startEmbed = await message.channel.send({
+      embeds: [
+        {
+          title: 'Guess the Number!',
+          description: `I have chosen a random number between 0-${args[0].toLocaleString()}!\n\nThe channel will unlock when ${message.author.toString()} clicks the button. Goodluck!`,
+          color: Colors.Red
+        }
+      ],
+      components: [
+        new ActionRowBuilder().addComponents([
+          new ButtonBuilder()
+            .setLabel('Start')
+            .setCustomId('start;gtn')
+            .setStyle(ButtonStyle.Danger)
+        ])
+      ]
+    });
+    message.channel.permissionOverwrites.edit(message.guild.roles.everyone, {
+      SendMessages: false
+    });
+    const collector = startEmbed.createMessageComponentCollector({
+      time: 15_000
+    });
+
+    collector.on('collect', async (button) => {
+      if (button.user.id !== message.author.id) {
+        return button.reply({
+          ephemeral: true,
+          content: 'go away'
+        });
+      }
+      button.reply({
+        ephemeral: true,
+        content: `Channel will be unlocked! The number is: ${randomNumber}`
+      });
+      collector.stop();
+
+      message.channel.permissionOverwrites.edit(message.guild.roles.everyone, {
+        SendMessages: true
+      });
+      const mainCollector = await message.channel.createMessageCollector();
+      mainCollector.on('collect', async (msg) => {
+        if (msg.content !== randomNumber) return;
+
+        message.channel.permissionOverwrites.edit(
+          message.guild.roles.everyone,
+          {
+            SendMessages: false
+          }
+        );
+
+        msg.reply({
+          embeds: [
+            {
+              title: 'The number has been guessed! :tada:',
+              description: `The number was ${randomNumber}, and it was guessed by ${msg.author.toString()}`,
+              timestamp: new Date()
+            }
+          ]
+        });
+      });
+    });
+
+    collector.on('end', () => {
+      startEmbed.components[0].components.forEach((c) => {
+        c.setDisabled();
+      });
+      startEmbed.edit({
+        components: startEmbed.components
+      });
+
+      message.channel.permissionOverwrites.edit(message.guild.roles.everyone, {
+        SendMessages: null
+      });
+    });
   }
 };

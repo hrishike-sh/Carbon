@@ -177,6 +177,7 @@ for (const file of eventFiles) {
 /**
  * EVENT HANDLING
  */
-
+process.on('uncaughtException', console.log);
+process.on('unhandledRejection', console.log);
 client.on(Events.Error, console.log);
 client.login(process.env.token);
