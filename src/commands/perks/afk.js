@@ -23,11 +23,13 @@ module.exports = {
 
     const reason = args.join(' ') || 'AFK';
 
-    new DATABASE({
+    const entry = new DATABASE({
       userId: message.author.id,
       reason,
-      time: new Date().getTime()
+      time: new Date().getTime(),
+      dms: []
     });
+    entry.save();
 
     message.reply(`You are now AFK!\nReason: ${reason}`);
     setTimeout(() => {
