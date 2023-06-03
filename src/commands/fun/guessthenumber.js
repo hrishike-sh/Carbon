@@ -81,7 +81,7 @@ module.exports = {
       });
       const mainCollector = await message.channel.createMessageCollector();
       mainCollector.on('collect', async (msg) => {
-        if (msg.content !== randomNumber) return;
+        if (msg.content != randomNumber) return;
 
         message.channel.permissionOverwrites.edit(
           message.guild.roles.everyone,
