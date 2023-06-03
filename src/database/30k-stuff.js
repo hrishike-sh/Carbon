@@ -1,4 +1,4 @@
-const { Schema, model } = require('discord.js');
+const { Schema, model } = require('mongoose');
 
 const ThirtySchema = new Schema({
   userId: { type: String },
