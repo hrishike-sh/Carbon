@@ -24,5 +24,7 @@ module.exports = {
       });
     }
     const randomNumber = Math.floor(Math.random());
+
+    message.channel.send(randomNumber.toString());
   }
 };
