@@ -69,6 +69,19 @@ module.exports = {
       )
       .setColor('Random')
       .setTimestamp();
+    const TotalEmbed = new EmbedBuilder()
+      .setAuthor({
+        name: target.tag,
+        iconURL: target.displayAvatarURL()
+      })
+      .setTitle('Total Donations (Karuta + Dank)')
+      .setDescription(
+        `**Dank Memer**: ⏣ ${
+          (PrimaryDonation.messages || 0) +
+          (GrinderDonations.amount || 0).toLocaleString()
+        }\n**Karuta**: :tickets: ${TicketDonations.tickets || 0}`
+      )
+      .setColor('Random');
 
     const PrimaryButton = new ButtonBuilder()
       .setStyle(ButtonStyle.Primary)
@@ -83,15 +96,20 @@ module.exports = {
       .setStyle(ButtonStyle.Primary)
       .setCustomId('ticket_dono;myd')
       .setLabel('Karuta');
+    const TotalButton = new ButtonBuilder()
+      .setSTyle(ButtonStyle.Primary)
+      .setCustomId('total;myd')
+      .setLabel('Total');
     const row = new ActionRowBuilder().addComponents(
       PrimaryButton,
       GrinderButton,
       TicketButton
     );
+    const row2 = new ActionRowBuilder().addComponents(TotalButton);
 
     const mainMsg = await message.reply({
       embeds: [PrimaryEmbed],
-      components: [row]
+      components: [row, row2]
     });
 
     const Collector = mainMsg.createMessageComponentCollector({ idle: 30_000 });
@@ -105,29 +123,41 @@ module.exports = {
       }
 
       if (button.customId == 'primary_dono;myd') {
+        TotalButton.setDisabled(false);
         PrimaryButton.setDisabled(true);
         GrinderButton.setDisabled(false);
         TicketButton.setDisabled(false);
         button.update({
           embeds: [PrimaryEmbed],
-          components: [row]
+          components: [row, row2]
         });
       } else if (button.customId == 'ticket_dono;myd') {
         PrimaryButton.setDisabled(false);
         GrinderButton.setDisabled(false);
+        TotalButton.setDisabled(false);
         TicketButton.setDisabled(true);
         button.update({
           embeds: [TicketEmbed],
-          components: [row]
+          components: [row, row2]
+        });
+      } else if (button.customId == 'total;myd') {
+        PrimaryButton.setDisabled(false);
+        GrinderButton.setDisabled(false);
+        TicketButton.setDisabled(false);
+        TotalButton.setDisabled(true);
+        button.update({
+          embeds: [TotalEmbed],
+          components: [row, row2]
         });
       } else {
         PrimaryButton.setDisabled(false);
         TicketButton.setDisabled(false);
+        TotalButton.setDisabled(false);
         GrinderButton.setDisabled(true);
 
         button.update({
           embeds: [GrinderEmbed],
-          components: [row]
+          components: [row, row2]
         });
       }
     });
