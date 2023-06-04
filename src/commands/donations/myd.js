@@ -76,12 +76,14 @@ module.exports = {
       })
       .setTitle('Total Donations (Karuta + Dank)')
       .setDescription(
-        `**Dank Memer**: ⏣ ${
-          (PrimaryDonations?.messages || 0) +
-          (GrinderDonations?.amount || 0).toLocaleString()
-        }\n**Karuta**: :tickets: ${TicketDonations?.tickets || 0}`
+        `**Dank Memer**: ⏣ ${(
+          (PrimaryDonations?.messages || 0) + (GrinderDonations?.amount || 0)
+        ).toLocaleString()}\n**Karuta**: :tickets: ${
+          TicketDonations?.tickets || 0
+        }`
       )
-      .setColor('Random');
+      .setColor('Random')
+      .setTimestamp();
 
     const PrimaryButton = new ButtonBuilder()
       .setStyle(ButtonStyle.Primary)
