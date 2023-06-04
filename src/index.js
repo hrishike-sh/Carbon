@@ -177,7 +177,9 @@ for (const file of eventFiles) {
 /**
  * EVENT HANDLING
  */
-process.on('uncaughtException', console.log);
-process.on('unhandledRejection', console.log);
+process.on('uncaughtException', (e) => {
+  console.error(e);
+  console.log('Bot didnt die.');
+});
 client.on(Events.Error, console.log);
 client.login(process.env.token);
