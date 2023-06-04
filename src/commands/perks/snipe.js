@@ -42,7 +42,7 @@ module.exports = {
       .setFooter({
         text: `${index + 1}/${snipes.length}`
       })
-      .setTimestamp();
+      .setTimestamp(time);
 
     let prevBut = new ButtonBuilder()
       .setEmoji('911971090954326017')
