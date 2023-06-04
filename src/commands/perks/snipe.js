@@ -3,7 +3,8 @@ const {
   Client,
   EmbedBuilder,
   ButtonBuilder,
-  ActionRowBuilder
+  ActionRowBuilder,
+  ButtonStyle
 } = require('discord.js');
 
 module.exports = {
