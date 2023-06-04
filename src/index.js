@@ -181,9 +181,11 @@ for (const file of eventFiles) {
  */
 process.on('uncaughtException', (e) => {
   console.error(e);
-  client.users.cache
-    .get('721368467789578332')
-    .send('Error:\n' + e.message || 'a');
+  if (!e.message.includes('Unknown Message')) {
+    client.users.cache
+      .get('721368467789578332')
+      .send('Error:\n' + e.message || 'a');
+  }
   console.log('Bot didnt die.');
 });
 client.on(Events.Error, console.log);
