@@ -33,7 +33,7 @@ module.exports = {
 
     let snipeEmbed = new EmbedBuilder()
       .setAuthor({
-        name: msg.author.tag,
+        name: msg.author.tag || 'Unknown',
         iconURL: msg.author.displayAvatarURL()
       })
       .setDescription(msg.content)

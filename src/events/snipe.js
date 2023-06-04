@@ -7,6 +7,8 @@ module.exports = {
    * @param {Message} message
    */
   async execute(message) {
+    if (!message.author) return;
+    if (message?.author.bot) return;
     const client = message.client;
 
     let snipes = client.snipes.snipes.get(message.channel.id) || [];
