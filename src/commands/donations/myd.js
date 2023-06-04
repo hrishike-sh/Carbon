@@ -97,7 +97,7 @@ module.exports = {
       .setCustomId('ticket_dono;myd')
       .setLabel('Karuta');
     const TotalButton = new ButtonBuilder()
-      .setSTyle(ButtonStyle.Primary)
+      .setStyle(ButtonStyle.Primary)
       .setCustomId('total;myd')
       .setLabel('Total');
     const row = new ActionRowBuilder().addComponents(
