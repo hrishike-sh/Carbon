@@ -1,4 +1,10 @@
-const { Message, Client, EmbedBuilder } = require('discord.js');
+const {
+  Message,
+  Client,
+  EmbedBuilder,
+  ButtonBuilder,
+  ActionRowBuilder
+} = require('discord.js');
 
 module.exports = {
   name: 'snipe',
