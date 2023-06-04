@@ -77,7 +77,7 @@ module.exports = {
       .setTitle('Total Donations (Karuta + Dank)')
       .setDescription(
         `**Dank Memer**: ⏣ ${
-          (PrimaryDonation.messages || 0) +
+          (PrimaryDonations.messages || 0) +
           (GrinderDonations.amount || 0).toLocaleString()
         }\n**Karuta**: :tickets: ${TicketDonations.tickets || 0}`
       )
