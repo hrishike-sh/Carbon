@@ -96,7 +96,7 @@ module.exports = {
           })
           .setDescription(msg.content)
           .setColor('Random')
-          .setFooter({ text: `${snipe + 1}/${sniped.length}` })
+          .setFooter({ text: `${index + 1}/${snipes.length}` })
           .setImage(image)
           .setTimestamp(time);
 
