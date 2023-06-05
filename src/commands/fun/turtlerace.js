@@ -120,10 +120,12 @@ module.exports = {
         });
       }
 
-      const description = gamedata.tracks.map(
-        (track) =>
-          `**${track.user.tag}**:\n:carrot:${track.track.join(' ')} :turtle:`
-      );
+      const description = gamedata.tracks
+        .map(
+          (track) =>
+            `**${track.user.tag}**:\n:carrot:${track.track.join(' ')} :turtle:`
+        )
+        .join('\n');
 
       message.channel.send({
         embeds: [
