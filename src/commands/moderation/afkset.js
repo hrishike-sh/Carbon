@@ -18,7 +18,14 @@ module.exports = {
       if (!userId) return message.reply(eg);
 
       userId = userId.replace(/[^0-9]/g, '');
-      message.reply('USER ID: ' + userId);
+      const dbEntry = await DATABASE.findOne({
+        userId
+      });
+      if (!dbEntry) return message.reply(`User ID: ${userId} is not AFK!`);
+
+      await DATABASE.deleteOne({ userId });
+      client.db.afks = client.db.afks.filter((a) => a !== userId);
+      return message.reply(`<@${userId}> should no longer be AFK.`);
     } else return message.reply(eg);
   }
 };
