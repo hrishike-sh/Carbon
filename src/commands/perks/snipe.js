@@ -28,7 +28,9 @@ module.exports = {
    * @param {Client} client
    */
   async execute(message, args, client) {
-    const snipes = client.snipes.snipes.get(message.channel.id);
+    const channelId =
+      message.mentions.channels?.first()?.id || message.channel.id;
+    const snipes = client.snipes.snipes.get(channelId);
 
     if (!snipes) {
       return message.reply('There is nothing to be sniped!');
