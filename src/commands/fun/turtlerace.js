@@ -14,7 +14,7 @@ module.exports = {
    *
    * @param {Message} message
    */
-  async execute(message) {
+  async execute(message, args, client) {
     const joinEmbed = new EmbedBuilder()
       .setTitle('Turtle Race :turtle:')
       .setDescription(
