@@ -14,7 +14,10 @@ module.exports = {
     }
 
     if (action.toLowerCase() == 'clear') {
-      const userId = args.shift();
+      let userId = args.shift();
+      if (!userId) return message.reply(eg);
+
+      userId = userId.replace(/[^0-9]/g, '');
       message.reply('USER ID: ' + userId);
     } else return message.reply(eg);
   }
