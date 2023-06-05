@@ -32,7 +32,7 @@ module.exports = {
       components: [joinRow]
     });
     const joinCollector = joinMessage.createMessageComponentCollector({
-      time: 10_000
+      time: 30_000
     });
 
     const gamedata = {
