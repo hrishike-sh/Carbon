@@ -100,7 +100,8 @@ module.exports = {
           .setImage(image)
           .setTimestamp(time);
 
-        return button.update({
+        button.deferUpdate();
+        return mainMessage.edit({
           embeds: [snipeEmbed],
           components: [row]
         });
@@ -122,7 +123,8 @@ module.exports = {
           .setImage(image)
           .setTimestamp(time);
 
-        return button.update({
+        button.deferUpdate();
+        return mainMessage.edit({
           embeds: [snipeEmbed],
           components: [row]
         });
