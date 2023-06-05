@@ -145,6 +145,8 @@ module.exports = {
             blocks = track.length;
             end = true;
             track.splice(0, blocks);
+          } else {
+            track.splice(0, blocks);
           }
         }
         await sleep(2500);
