@@ -25,7 +25,7 @@ module.exports = {
       .setLabel('Join')
       .setCustomId('join;tr')
       .setStyle(ButtonStyle.Success);
-    const joinRow = new ActionRowBuilder().addComponents([joinbutton]);
+    const joinRow = new ActionRowBuilder().addComponents([joinButton]);
     const joinMessage = await message.channel.send({
       embeds: [joinEmbed],
       components: [joinRow]
