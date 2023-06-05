@@ -139,8 +139,8 @@ module.exports = {
           const rand = Math.ceil(Math.random() * 10);
           let blocks = 0;
           if (rand < 6) blocks = 2;
-          if (rand > 5 && rand < 9) blocks = 3;
-          if (rand > 8) blocks = 5;
+          if (rand > 5 && rand < 10) blocks = 3;
+          if (rand > 9) blocks = 10;
 
           if (track.length < blocks) {
             blocks = track.length;
