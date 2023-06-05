@@ -154,9 +154,9 @@ module.exports = {
         description = gamedata.tracks
           .map(
             (track) =>
-              `**${track.user.tag}**:\n:leafy_green:${track.track.join(
-                ' '
-              )} :turtle:`
+              `**${track.user.tag}**:\n${
+                track.track.length < 1 ? ':crown:' : ':leafy_green:'
+              }${track.track.join(' ')} :turtle:`
           )
           .join('\n');
         mainMessage.edit({
@@ -169,6 +169,10 @@ module.exports = {
             }
           ]
         });
+        if (description.includes(':crown:')) {
+          break;
+          return;
+        }
       }
     });
   }
