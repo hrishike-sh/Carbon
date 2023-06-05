@@ -135,6 +135,7 @@ module.exports = {
       for (let i = 0; i < 50; i++) {
         if (end == true) continue;
         for (const track of gamedata.tracks) {
+          console.log(track);
           const rand = Math.ceil(Math.random() * 10);
           let blocks = 0;
           if (rand < 6) blocks = 2;
