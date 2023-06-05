@@ -9,7 +9,7 @@ const {
 
 module.exports = {
   name: 'turtlerace',
-  roles: ['858088054942203945', '824687526396297226'],
+  roles: ['858088054942203945'],
   cooldown: 120,
   /**
    *
@@ -170,8 +170,10 @@ module.exports = {
           ]
         });
         if (description.includes(':crown:')) {
+          const winner = gamedata.tracks.find((t) => t.track.length == 0);
+
+          mainMessage.reply(`${winner.user.toString()} has won! :tada:`);
           break;
-          return;
         }
       }
     });
