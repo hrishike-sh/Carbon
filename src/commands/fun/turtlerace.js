@@ -3,7 +3,8 @@ const {
   EmbedBuilder,
   ButtonBuilder,
   ButtonStyle,
-  ActionRowBuilder
+  ActionRowBuilder,
+  Colors
 } = require('discord.js');
 
 module.exports = {
@@ -50,6 +51,11 @@ module.exports = {
       if (gamedata.joined.length == 10) {
         joinCollector.stop();
       }
+
+      button.reply({
+        content: 'You have joined the game!',
+        ephemeral: true
+      });
     });
     joinCollector.on('end', async () => {
       joinButton.setDisabled();
@@ -106,20 +112,65 @@ module.exports = {
         });
       }
 
-      const description = gamedata.tracks
+      let description = gamedata.tracks
         .map(
           (track) =>
-            `**${track.user.tag}**:\n:carrot:${track.track.join(' ')} :turtle:`
+            `**${track.user.tag}**:\n:leafy_green:${track.track.join(
+              ' '
+            )} :turtle:`
         )
         .join('\n');
 
-      message.channel.send({
+      const mainMessage = await message.channel.send({
         embeds: [
           {
-            description
+            description,
+            title: 'Turtle Race',
+            color: Colors.Green,
+            timestamp: new Date()
           }
         ]
       });
+      let end = false;
+      for (let i = 0; i < 50; i++) {
+        if (end == true) continue;
+        for (const track of gamedata.tracks) {
+          const rand = Math.ceil(Math.random() * 10);
+          let blocks = 0;
+          if (rand < 6) blocks = 2;
+          if (rand > 5 && rand < 9) blocks = 3;
+          if (rand > 8) blocks = 5;
+
+          if (track.length < blocks) {
+            blocks = track.length;
+            end = true;
+            track.splice(0, blocks);
+          }
+        }
+        await sleep(2500);
+        description = gamedata.tracks
+          .map(
+            (track) =>
+              `**${track.user.tag}**:\n:leafy_green:${track.track.join(
+                ' '
+              )} :turtle:`
+          )
+          .join('\n');
+        mainMessage.edit({
+          embeds: [
+            {
+              description,
+              title: 'Turtle Race',
+              color: Colors.Green,
+              timestamp: new Date()
+            }
+          ]
+        });
+      }
     });
   }
+};
+
+const sleep = (milliseconds) => {
+  return new Promise((resolve) => setTimeout(resolve, milliseconds));
 };
