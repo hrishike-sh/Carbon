@@ -32,7 +32,7 @@ module.exports = {
       components: [joinRow]
     });
     const joinCollector = joinMessage.createMessageComponentCollector({
-      time: 30_000
+      time: 10_000
     });
 
     const gamedata = {
@@ -145,9 +145,9 @@ module.exports = {
           if (track.length < blocks) {
             blocks = track.length;
             end = true;
-            track.splice(0, blocks);
+            track.track.splice(0, blocks);
           } else {
-            track.splice(0, blocks);
+            track.track.splice(0, blocks);
           }
         }
         await sleep(2500);
