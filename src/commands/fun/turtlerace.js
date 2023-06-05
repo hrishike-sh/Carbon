@@ -63,22 +63,8 @@ module.exports = {
 
       for (const userId of gamedata.joined) {
         gamedata.tracks.push({
-          user: message.guild.members.cache.get(userId) || {},
+          user: client.users.cache.get(userId),
           track: [
-            '●',
-            '●',
-            '●',
-            '●',
-            '●',
-            '●',
-            '●',
-            '●',
-            '●',
-            '●',
-            '●',
-            '●',
-            '●',
-            '●',
             '●',
             '●',
             '●',
