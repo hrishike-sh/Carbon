@@ -34,5 +34,8 @@ module.exports = {
 
 const addUser = (userId) => {
   talkedRecently.push(userId);
-  setTimeout(() => talkedRecently.filter((u) => u !== userId), 60 * 1000);
+  setTimeout(() => {
+    const index = talkedRecently.indexOf(userId);
+    talkedRecently.splice(index, 1);
+  }, 60 * 1000);
 };
