@@ -25,7 +25,9 @@ module.exports = {
       const MAP = dUser?.dms
         .map(
           (msg) =>
-            `[${parseTime(msg.time, 't')}] **${msg.tag}**: ${msg.content}`
+            `[${parseTime(msg.time, 't')}] **${msg.tag}**: ${msg.content} ${
+              msg.url ? '' : `[Jump](${msg.url})`
+            })`
         )
         .join('\n');
       (await message.author.createDM()).send({
@@ -49,7 +51,8 @@ module.exports = {
           db.dms.push({
             time: message.createdTimestamp,
             content: message.content,
-            tag: message.author.tag
+            tag: message.author.tag,
+            link: message.url
           });
           db.save();
           message
