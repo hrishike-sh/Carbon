@@ -20,6 +20,8 @@ module.exports = {
    * @param {Client} client
    */
   async execute(message, args, client) {
+    return message.reply("It don't work.");
+
     if (!message.member.permissions.has('ManageGuild'))
       return message.reply('no');
 
