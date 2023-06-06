@@ -2,7 +2,8 @@ const {
   Message,
   EmbedBuilder,
   Events,
-  ButtonInteraction
+  ButtonInteraction,
+  Colors
 } = require('discord.js');
 const HEISTS = require('../database/heist');
 const MAIN = require('../database/main_dono');
