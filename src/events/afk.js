@@ -26,7 +26,7 @@ module.exports = {
         .map(
           (msg) =>
             `[${parseTime(msg.time, 't')}] **${msg.tag}**: ${msg.content} ${
-              msg.url ? '' : `[Jump](${msg.url})`
+              msg.link ? '' : `[Jump](${msg.link})`
             })`
         )
         .join('\n');
