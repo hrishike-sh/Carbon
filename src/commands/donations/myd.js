@@ -8,7 +8,7 @@ const {
 } = require('discord.js');
 const PRIMARY = require('../../database/main_dono');
 const GRINDER = require('../../database/grinder_dono');
-const TICKETS = require('../../database/30k-stuff');
+const TICKETS = require('../../database/tickets');
 module.exports = {
   name: 'myd',
   aliases: ['mydono', 'mydonation', 'mydonations'],
@@ -62,8 +62,8 @@ module.exports = {
       .setTitle('Karuta Donations')
       .setDescription(
         `**Tickets:** :tickets: ${
-          TicketDonations?.tickets > 0
-            ? TicketDonations.tickets.toLocaleString()
+          TicketDonations?.amount > 0
+            ? TicketDonations.amount.toLocaleString()
             : 0
         }`
       )
@@ -79,7 +79,7 @@ module.exports = {
         `**Dank Memer**: ⏣ ${(
           (PrimaryDonations?.messages || 0) + (GrinderDonations?.amount || 0)
         ).toLocaleString()}\n**Karuta**: :tickets: ${
-          TicketDonations?.tickets || 0
+          TicketDonations?.amount || 0
         }`
       )
       .setColor('Random')
