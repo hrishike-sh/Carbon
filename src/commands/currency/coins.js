@@ -79,7 +79,7 @@ module.exports = {
       }
       const rawlb = await DB.find()
         .sort({
-          amount: -1
+          coins: -1
         })
         .limit(10);
       let description = '';
@@ -94,7 +94,7 @@ module.exports = {
       if (button.customId == 'balance;coins') {
         leaderboardButton.setDisabled(false).setStyle(ButtonStyle.Primary);
         balanceButton.setDisabled(true).setStyle(ButtonStyle.Success);
-
+        button.deferUpdate();
         mainMessage.edit({
           embeds: [embed],
           components: [row]
@@ -102,6 +102,7 @@ module.exports = {
       } else {
         leaderboardButton.setDisabled(true).setStyle(ButtonStyle.Success);
         balanceButton.setDisabled(false).setStyle(ButtonStyle.Primary);
+        button.deferUpdate();
 
         mainMessage.edit({
           embeds: [
