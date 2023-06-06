@@ -20,7 +20,7 @@ module.exports = {
     addUser(userId);
 
     let DBUser = await DATABASE.findOne({ userId });
-    if (DBUser) {
+    if (!DBUser) {
       DBUser = new DATABASE({
         userId,
         coins: 0
