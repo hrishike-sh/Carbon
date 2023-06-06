@@ -38,7 +38,7 @@ module.exports = {
       .setTitle("You get random coins while you're chatting!")
       .setDescription(`**Coins:** ${emoji} ${DBUser.coins.toLocaleString()}`)
       .setTimestamp()
-      .color(Colors.Blurple);
+      .setColor(Colors.Blurple);
     const balanceButton = new ButtonBuilder()
       .setLabel('Coins')
       .setCustomId('balance;coins')
