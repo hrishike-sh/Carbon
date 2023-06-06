@@ -32,7 +32,7 @@ module.exports = {
     if (!user) return message.reply('No such user found.');
     const embed = new EmbedBuilder()
       .setAuthor({
-        text: user.user.tag,
+        name: user.user.tag,
         iconURL: user.user.displayAvatarURL()
       })
       .setTitle("You get random coins while you're chatting!")
