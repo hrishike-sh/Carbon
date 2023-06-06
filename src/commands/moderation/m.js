@@ -72,9 +72,9 @@ module.exports = {
           })
           .setThumbnail(user.displayAvatarURL({ dynamic: true }))
           .setDescription(
-            `Account was created ${client.functions.formatTime(
+            `Account was created ${formatTime(
               user.createdAt
-            )}(which is ${client.functions.formatTime(
+            )}(which is ${formatTime(
               user.createdAt,
               'D'
             )})\n\n**__Mutual Servers__**\n${Mutuals.join('\n')}`
@@ -89,4 +89,7 @@ module.exports = {
       }
     }
   }
+};
+const formatTime = (time, format) => {
+  return `<t:${(time / 1000).toFixed(0)}:${format || 'R'}>`;
 };
