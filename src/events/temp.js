@@ -17,9 +17,10 @@ module.exports = {
 
     const userID = button.user.id;
     const HeistDB = await HEISTS.findOne({
-      userID
+      userID,
+      guildID: button.guildId
     });
-    if (!HeistDB) {
+    if (!HeistDB || !HeistDB?.amount) {
       button.reply({
         content:
           'You either have no heist donations or have already transferred them...',
@@ -29,7 +30,7 @@ module.exports = {
     }
     let MainDB = await MAIN.findOne({
       userID,
-      guildID: button.guild.id
+      guildID: button.guildId
     });
     if (!MainDB?.messages) {
       MainDB = new MAIN({
