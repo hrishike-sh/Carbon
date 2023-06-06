@@ -17,7 +17,7 @@ module.exports = {
    * @param {String[]} args
    * @returns
    */
-  async execute(message, args) {
+  async execute(message, args, client) {
     const target = args[0]?.replace(/[^0-9]/g, '') || message.author.id;
     const DBUser = await DB.findOne({
       userId: target
