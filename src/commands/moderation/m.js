@@ -5,7 +5,6 @@ const {
   EmbedBuilder,
   ActionRowBuilder,
   ButtonBuilder,
-  ButtonStyle,
   Colors
 } = require('discord.js');
 
