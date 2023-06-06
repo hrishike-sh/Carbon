@@ -4,7 +4,6 @@ let talkedRecently = [];
 module.exports = {
   name: 'messageCreate',
   /**
-   *
    * @param {Message} message
    * @returns
    */
