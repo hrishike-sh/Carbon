@@ -13,7 +13,7 @@ module.exports = {
     if (!message.author) return;
     if (message.author.bot) return;
     if (!message.guild) return;
-    if (message.guild.id !== '') return;
+    if (message.guild.id !== '824294231447044197') return;
     const userId = message.author.id;
     if (talkedRecently.includes(userId)) return;
 
