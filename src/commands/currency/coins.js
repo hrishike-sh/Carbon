@@ -58,7 +58,7 @@ module.exports = {
       components: [row]
     });
     const collector = mainMessage.createMessageComponentCollector({
-      idle: 10_000
+      idle: 30_000
     });
 
     collector.on('end', () => {
