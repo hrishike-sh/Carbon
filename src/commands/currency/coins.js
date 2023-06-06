@@ -89,7 +89,7 @@ module.exports = {
           'Unknown#00000';
         description += `${i + 1}. **${tag}**: ${emoji} ${rawlb[
           i
-        ].coins.toLocaleString()}`;
+        ].coins.toLocaleString()}\n`;
       }
       if (button.customId == 'balance;coins') {
         leaderboardButton.setDisabled(false).setStyle(ButtonStyle.Primary);
