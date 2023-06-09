@@ -1,5 +1,5 @@
 const { Message, Client, Colors } = require('discord.js');
-const DATABASE = require('../../database/main_dono');
+const DATABASE = require('../../database/grinder_dono');
 module.exports = {
   name: 'grinder',
   aliases: ['g'],
