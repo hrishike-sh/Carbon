@@ -45,7 +45,8 @@ module.exports = {
     if (!dbUser) {
       dbUser = new DATABASE({
         userID: userId,
-        guildID: message.guild.id
+        guildID: message.guild.id,
+        amount: 0
       });
     }
     if (['add', '+'].includes(action)) {
