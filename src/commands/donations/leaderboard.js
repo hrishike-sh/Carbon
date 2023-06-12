@@ -158,7 +158,7 @@ module.exports = {
           ephemeral: true
         });
       }
-
+      button.deferUpdate();
       if (button.customId == 'main;lb') {
         mainButton.setDisabled(true).setStyle(ButtonStyle.Success);
         grinderButton.setDisabled(false).setStyle(ButtonStyle.Primary);
@@ -190,9 +190,9 @@ module.exports = {
     });
 
     collector.on('end', () => {
-      mainMessage.components[0].components.forEach((c) => {
-        c.setDisabled(true);
-      });
+      mainButton.setDisabled(true);
+      grinderButton.setDisabled(true);
+      karutaButton.setDisabled(true);
 
       return mainMessage.edit({
         components: mainMessage.components
