@@ -88,6 +88,7 @@ module.exports = {
             ephemeral: true
           });
         }
+        collector.stop();
 
         if (button.customId == 'accept;e_dono') {
           (await message.author.createDM()).send({
@@ -95,7 +96,6 @@ module.exports = {
               consts.eventChannelId
             }>`
           });
-          collector.stop();
 
           return button.reply(
             'The donator has been notified! Please wait for them.'
@@ -104,7 +104,6 @@ module.exports = {
           (await message.author.createDM()).send({
             content: `Your event donation has been denied! Please check <#${consts.eventChannelId}>`
           });
-          collector.stop();
 
           return button.reply(
             'The donator has been notified! Please wait for them.'
