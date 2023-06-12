@@ -91,7 +91,9 @@ module.exports = {
 
         if (button.customId == 'accept;e_dono') {
           (await message.author.createDM()).send({
-            content: `Your event donation has been accepted! Please check <#${consts.eventChannelId}>`
+            content: `${button.user.toString()} has accepted your Event Donation! Please check <#${
+              consts.eventChannelId
+            }>`
           });
           collector.stop();
 
