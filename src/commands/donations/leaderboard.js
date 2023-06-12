@@ -208,7 +208,7 @@ module.exports = {
       karutaButton.setDisabled(true);
 
       return mainMessage.edit({
-        components: mainMessage.components
+        components: [row]
       });
     });
   }
