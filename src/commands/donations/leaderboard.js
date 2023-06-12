@@ -22,21 +22,13 @@ module.exports = {
    */
   async execute(message, args, client) {
     const waitMessage = await message.reply('Fetching databases...');
-    const MainRawLB = await Main.find({})
-      .sort({
-        messages: -1
-      })
-      .limit(1000);
-    const GrinderRawLB = await Grinder.find({})
-      .sort({
-        amount: -1
-      })
-      .limit(1000);
-    const KarutaRawLB = await Karuta.find({})
-      .sort({
-        amount: -1
-      })
-      .limit(1000);
+    let MainRawLB = await Main.find({});
+    MainRawLB = MainRawLB.sort((a, b) => b.messages - a.messages);
+    let GrinderRawLB = await Grinder.find({});
+    GrinderRawLB = GrinderRawLB.sort((a, b) => b.amount - a.amount);
+    let KarutaRawLB = await Karuta.find({});
+    KarutaRawLB = KarutaRawLB.sort((a, b) => b.amount - a.amount);
+
     await waitMessage.edit('Making fancy leaderboards...');
     const LBs = {
       main: [],
