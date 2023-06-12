@@ -152,7 +152,7 @@ module.exports = {
     });
 
     collector.on('collect', async (button) => {
-      if (!button.user.id != message.author.id) {
+      if (button.user.id != message.author.id) {
         return button.reply({
           content: 'Not your command.',
           ephemeral: true
