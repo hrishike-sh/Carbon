@@ -81,12 +81,12 @@ module.exports = {
       .setTitle('Main Donations Leaderboard')
       .setTimestamp()
       .setDescription(
-        LBs.main.join('\n\n') +
+        LBs.main.join('\n') +
           `\n\n${
             him.main
               ? `**${MainRawLB.indexOf(him.main) + 1}. ${
                   message.author.tag
-                }: ⏣ ${him.messages}**`
+                }: ⏣ ${him?.messages.toLocaleString() || 'None'}**`
               : ''
           }`
       );
@@ -95,12 +95,12 @@ module.exports = {
       .setTitle('Grinder Donations Leaderboard')
       .setTimestamp()
       .setDescription(
-        LBs.grinder.join('\n\n') +
+        LBs.grinder.join('\n') +
           `\n\n${
             him.grinder
-              ? `**${MainRawLB.indexOf(him.grinder) + 1}. ${
+              ? `**${GrinderRawLB.indexOf(him.grinder) + 1}. ${
                   message.author.tag
-                }: ⏣ ${him.amount}**`
+                }: ⏣ ${him?.amount.toLocaleString() || 'None'}**`
               : ''
           }`
       );
@@ -109,12 +109,12 @@ module.exports = {
       .setTitle('Karuta Donations Leaderboard')
       .setTimestamp()
       .setDescription(
-        LBs.karuta.join('\n\n') +
+        LBs.karuta.join('\n') +
           `\n\n${
             him.karuta
-              ? `**${MainRawLB.indexOf(him.karuta) + 1}. ${
+              ? `**${KarutaRawLB.indexOf(him.karuta) + 1}. ${
                   message.author.tag
-                }: ⏣ ${him.amount}**`
+                }: ⏣ ${him?.amount.toLocaleString() || 'None'}**`
               : ''
           }`
       );
