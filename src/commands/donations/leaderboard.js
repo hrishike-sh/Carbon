@@ -69,7 +69,7 @@ module.exports = {
         'Unknown#00000';
 
       LBs.karuta.push(
-        `${MainRawLB.indexOf(Profile) + 1}. **${user.tag}**: ⏣ ${
+        `${MainRawLB.indexOf(Profile) + 1}. **${user.tag}**: :tickets: ${
           Profile.amount.toLocaleString() || '0'
         }`
       );
@@ -119,7 +119,7 @@ module.exports = {
         LBs.karuta.join('\n') +
           `\n\n${
             him.karuta
-              ? `**[??]. ${message.author.tag}: ⏣ ${
+              ? `**[??]. ${message.author.tag}: :tickets: ${
                   him?.karuta?.amount?.toLocaleString() || 'None'
                 }**`
               : ''
