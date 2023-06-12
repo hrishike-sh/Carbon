@@ -86,7 +86,7 @@ module.exports = {
             him.main
               ? `**${MainRawLB.indexOf(him.main) + 1}. ${
                   message.author.tag
-                }: ⏣ ${him?.messages.toLocaleString() || 'None'}**`
+                }: ⏣ ${him?.messages?.toLocaleString() || 'None'}**`
               : ''
           }`
       );
@@ -100,7 +100,7 @@ module.exports = {
             him.grinder
               ? `**${GrinderRawLB.indexOf(him.grinder) + 1}. ${
                   message.author.tag
-                }: ⏣ ${him?.amount.toLocaleString() || 'None'}**`
+                }: ⏣ ${him?.amount?.toLocaleString() || 'None'}**`
               : ''
           }`
       );
@@ -114,7 +114,7 @@ module.exports = {
             him.karuta
               ? `**${KarutaRawLB.indexOf(him.karuta) + 1}. ${
                   message.author.tag
-                }: ⏣ ${him?.amount.toLocaleString() || 'None'}**`
+                }: ⏣ ${him?.amount?.toLocaleString() || 'None'}**`
               : ''
           }`
       );
