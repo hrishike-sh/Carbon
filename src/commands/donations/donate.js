@@ -18,11 +18,18 @@ module.exports = {
    */
   async execute(message, args, client) {
     const consts = {
-      eventChannelId: '',
-      giveawayChannelId: '',
-      eventManagerRoleId: '',
-      giveawayManagerRoleId: ''
+      eventChannelId: '857223712193511434',
+      giveawayChannelId: '824319140763795457',
+      eventManagerRoleId: '858088054942203945',
+      giveawayManagerRoleId: '825783847622934549'
     };
+    if (
+      ![consts.eventChannelId, consts.giveawayChannelId].includes(
+        message.channel.id
+      )
+    ) {
+      return message.reply("You can't run this command here.");
+    }
     const commandArgs = args.join(' ').split(',');
 
     if (message.channel.id == consts.eventChannelId) {
