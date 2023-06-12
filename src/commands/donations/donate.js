@@ -36,7 +36,7 @@ module.exports = {
       // fh donate <prize>, <requirement>, <event type>, <message>
       const EExample = `**How to use this command. [Events]**\n\n> fh donate <prize>, <requirement>, <event type>, <message>\n  <prize>: Prize for the event winner\n  <requirement>: Pre-requisite for a member to join the event, mention "none" if no requirement.\n  <event type>: Type of event. (example: guessthenumber, tea. rumble etc.)\n  <message>: Optional message you'd like to have.\n\n**Note:** Seperate the arguments using commas.\nExample: fh donate 2 pepetrophies, level 50 & voter, tea, enjoy!`;
 
-      const prize = commandArgs[0];
+      const prize = commandArgs.shift();
       if (!prize) return message.reply(EExample);
       const requirement = commandArgs.shift();
       if (!requirement) return message.reply(EExample);
