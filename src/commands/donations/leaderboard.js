@@ -22,12 +22,15 @@ module.exports = {
    */
   async execute(message, args, client) {
     const waitMessage = await message.reply('Fetching databases...');
-    let MainRawLB = await Main.find({});
-    MainRawLB = MainRawLB.sort((a, b) => b.messages - a.messages);
-    let GrinderRawLB = await Grinder.find({});
-    GrinderRawLB = GrinderRawLB.sort((a, b) => b.amount - a.amount);
-    let KarutaRawLB = await Karuta.find({});
-    KarutaRawLB = KarutaRawLB.sort((a, b) => b.amount - a.amount);
+    const MainRawLB = await Main.find({}).sort({
+      messages: -1
+    });
+    const GrinderRawLB = await Grinder.find({}).sort({
+      amount: -1
+    });
+    const KarutaRawLB = await Karuta.find({}).sort({
+      amount: -1
+    });
 
     await waitMessage.edit('Making fancy leaderboards...');
     const LBs = {
@@ -89,9 +92,13 @@ module.exports = {
         LBs.main.join('\n') +
           `\n\n${
             him.main
-              ? `**${MainRawLB.indexOf(him.main) + 1}. ${
-                  message.author.tag
-                }: ⏣ ${him?.main?.messages?.toLocaleString() || 'None'}**`
+              ? `**${
+                  MainRawLB.indexOf(him.main) + 1 > 49
+                    ? '50+'
+                    : MainRawLB.indexOf(him.main) + 1
+                }. ${message.author.tag}: ⏣ ${
+                  him?.main?.messages?.toLocaleString() || 'None'
+                }**`
               : ''
           }`
       );
@@ -103,9 +110,13 @@ module.exports = {
         LBs.grinder.join('\n') +
           `\n\n${
             him.grinder
-              ? `**${GrinderRawLB.indexOf(him.grinder) + 1}. ${
-                  message.author.tag
-                }: ⏣ ${him?.grinder?.amount?.toLocaleString() || 'None'}**`
+              ? `**${
+                  GrinderRawLB.indexOf(him.grinder) + 1 > 49
+                    ? '50+'
+                    : GrinderRawLB.indexOf(him.grinder) + 1
+                }. ${message.author.tag}: ⏣ ${
+                  him?.grinder?.amount?.toLocaleString() || 'None'
+                }**`
               : ''
           }`
       );
@@ -117,9 +128,11 @@ module.exports = {
         LBs.karuta.join('\n') +
           `\n\n${
             him.karuta
-              ? `**${KarutaRawLB.indexOf(him.karuta) + 1}. ${
-                  message.author.tag
-                }: :tickets: ${
+              ? `**${
+                  KarutaRawLB.indexOf(him.karuta) + 1 > 49
+                    ? '50+'
+                    : KarutaRawLB.indexOf(him.karuta) + 1
+                }. ${message.author.tag}: :tickets: ${
                   him?.karuta?.amount?.toLocaleString() || 'None'
                 }**`
               : ''
