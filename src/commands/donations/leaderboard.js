@@ -158,7 +158,7 @@ module.exports = {
           ephemeral: true
         });
       }
-      button.deferUpdate();
+      await button.deferUpdate();
       if (button.customId == 'main;lb') {
         mainButton.setDisabled(true).setStyle(ButtonStyle.Success);
         grinderButton.setDisabled(false).setStyle(ButtonStyle.Primary);
