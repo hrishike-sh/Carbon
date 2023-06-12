@@ -3,7 +3,6 @@ const {
   Client,
   EmbedBuilder,
   ButtonBuilder,
-  ButtonBuilder,
   ButtonStyle,
   ActionRowBuilder
 } = require('discord.js');
@@ -139,8 +138,14 @@ module.exports = {
       .setLabel('Karuta')
       .setStyle(ButtonStyle.Primary)
       .setCustomId('karuta;lb');
+    const row = new ActionRowBuilder().addComponents([
+      mainButton,
+      grinderButton,
+      karutaButton
+    ]);
     const mainMessage = await message.channel.send({
-      embeds: [MainEmbed]
+      embeds: [MainEmbed],
+      components: [row]
     });
     const collector = mainMessage.createMessageComponentCollector({
       idle: 30_000
