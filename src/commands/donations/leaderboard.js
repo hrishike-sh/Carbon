@@ -39,7 +39,7 @@ module.exports = {
 
       LBs.main.push(
         `${MainRawLB.indexOf(Profile) + 1}. **${user.tag}**: ⏣ ${
-          Profile.messages.toLocaleString() || '0'
+          Profile?.messages?.toLocaleString() || '0'
         }`
       );
     }
@@ -51,7 +51,7 @@ module.exports = {
 
       LBs.grinder.push(
         `${MainRawLB.indexOf(Profile) + 1}. **${user.tag}**: ⏣ ${
-          Profile.messages.toLocaleString() || '0'
+          Profile?.amount?.toLocaleString() || '0'
         }`
       );
     }
@@ -63,7 +63,7 @@ module.exports = {
 
       LBs.karuta.push(
         `${MainRawLB.indexOf(Profile) + 1}. **${user.tag}**: ⏣ ${
-          Profile.messages.toLocaleString() || '0'
+          Profile.amount.toLocaleString() || '0'
         }`
       );
     }
