@@ -91,7 +91,7 @@ module.exports = {
         LBs.main.join('\n') +
           `\n\n${
             him.main
-              ? `[??]. ${message.author.tag}: ⏣ ${
+              ? `**[??]. ${message.author.tag}: ⏣ ${
                   him?.main?.messages?.toLocaleString() || 'None'
                 }**`
               : ''
@@ -105,7 +105,7 @@ module.exports = {
         LBs.grinder.join('\n') +
           `\n\n${
             him.grinder
-              ? `[??]. ${message.author.tag}: ⏣ ${
+              ? `**[??]. ${message.author.tag}: ⏣ ${
                   him?.grinder?.amount?.toLocaleString() || 'None'
                 }**`
               : ''
@@ -119,7 +119,7 @@ module.exports = {
         LBs.karuta.join('\n') +
           `\n\n${
             him.karuta
-              ? `[??]. ${message.author.tag}: ⏣ ${
+              ? `**[??]. ${message.author.tag}: ⏣ ${
                   him?.karuta?.amount?.toLocaleString() || 'None'
                 }**`
               : ''
