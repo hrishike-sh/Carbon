@@ -37,7 +37,7 @@ module.exports = {
         (await client.users.fetch(Profile.userID).catch(() => null)) ||
         'Unknown#00000';
 
-      LBs.push(
+      LBs.main.push(
         `${MainRawLB.indexOf(Profile) + 1}. **${user.tag}**: ⏣ ${
           Profile.messages.toLocaleString() || '0'
         }`
@@ -49,7 +49,7 @@ module.exports = {
         (await client.users.fetch(Profile.userID).catch(() => null)) ||
         'Unknown#00000';
 
-      LBs.push(
+      LBs.grinder.push(
         `${MainRawLB.indexOf(Profile) + 1}. **${user.tag}**: ⏣ ${
           Profile.messages.toLocaleString() || '0'
         }`
@@ -61,7 +61,7 @@ module.exports = {
         (await client.users.fetch(Profile.userId).catch(() => null)) ||
         'Unknown#00000';
 
-      LBs.push(
+      LBs.karuta.push(
         `${MainRawLB.indexOf(Profile) + 1}. **${user.tag}**: ⏣ ${
           Profile.messages.toLocaleString() || '0'
         }`
