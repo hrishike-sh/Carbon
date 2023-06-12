@@ -120,6 +120,94 @@ module.exports = {
       });
     } else {
       // fh donate <time>, <winners>, <requirement>, <prize>, <message>
+      const GExample = `**How to use this command. [Giveaways]**\n\n> fh donate <time>, <winners>, <requirement>, <prize>, <message>\n  <time>: How long this giveaway should be hosted for.\n  <winners>: Number of winners.\n  <requirement>: Pre-requisite to join the giveaway.\n  <prize>: Prize for the giveaway.\n  <message>: Any message you want, goes below the giveaway.\n\n**Note:** Seperate the arguments using commas.\nExample: fh donate 1 hour, 2 winners, no requirement, 10 Pepe Medals, It's no longer june, yay!`;
+
+      const time = commandArgs.shift();
+      if (!time) return message.reply(GExample);
+      const winners = commandArgs.shift();
+      if (!winners) return message.reply(GExample);
+      const requirement = commandArgs.shift();
+      if (!requirement) return message.reply(GExample);
+      const prize = commandArgs.shift();
+      if (!prize) return message.reply(GExample);
+      const msgg = commandArgs.shift() || 'None';
+
+      const GiveawayDonateEmbed = new EmbedBuilder()
+        .setTitle('Giveaway Donation')
+        .setAuthor({
+          name: message.author.tag,
+          iconURL: message.author.displayAvatarURL()
+        })
+        .setColor('Blurple')
+        .setTimestamp()
+        .setFooter({
+          text: 'You will receive a DM when a manager accepts your donation. Please be patient!'
+        })
+        .addFields([
+          { name: 'Time', value: time, inline: true },
+          { name: 'Winners', value: winners, inline: true },
+          { name: 'Requirement', value: requirement, inline: true },
+          { name: 'Prize', value: prize, inline: true },
+          { name: 'Message', value: msgg, inline: true }
+        ]);
+      const acceptButton = new ButtonBuilder()
+        .setLabel('Accept')
+        .setStyle(ButtonStyle.Success)
+        .setCustomId('accept;g_dono');
+      const denyButton = new ButtonBuilder()
+        .setLabel('Deny')
+        .setStyle(ButtonStyle.Danger)
+        .setCustomId('deny;g_dono');
+      const row = new ActionRowBuilder().addComponents([
+        acceptButton,
+        denyButton
+      ]);
+
+      const mainMessage = await message.channel.send({
+        content: `<@&${
+          consts.giveawayManagerRoleId
+        }>, ${message.author.toString()} would like to make a donation!`,
+        embeds: [GiveawayDonateEmbed],
+        components: [row]
+      });
+      const collector = mainMessage.createMessageComponentCollector({});
+      collector.on('collect', async (button) => {
+        if (!button.member.roles.cache.has(consts.giveawayManagerRoleId)) {
+          return button.reply({
+            content: `You need to have the <@&${consts.giveawayManagerRoleId}> role to accept/deny donations!`,
+            ephemeral: true
+          });
+        }
+        collector.stop();
+
+        if (button.customId == 'accept;g_dono') {
+          (await message.author.createDM()).send({
+            content: `${button.user.toString()} has accepted your Giveaway Donation! Please check <#${
+              consts.giveawayChannelId
+            }>`
+          });
+
+          return button.reply(
+            'The donator has been notified! Please wait for them.'
+          );
+        } else {
+          (await message.author.createDM()).send({
+            content: `Your event donation has been denied! Please check <#${consts.giveawayChannelId}>`
+          });
+
+          return button.reply(
+            'The donator has been notified! Please wait for them.'
+          );
+        }
+      });
+      collector.on('end', () => {
+        acceptButton.setDisabled();
+        denyButton.setDisabled();
+
+        return mainMessage.edit({
+          components: [row]
+        });
+      });
     }
   }
 };
