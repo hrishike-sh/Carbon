@@ -91,9 +91,9 @@ module.exports = {
         LBs.main.join('\n') +
           `\n\n${
             him.main
-              ? `**${MainRawLB.indexOf(him.main) + 1}. ${
-                  message.author.tag
-                }: ⏣ ${him?.main?.messages?.toLocaleString() || 'None'}**`
+              ? `[??]. ${message.author.tag}: ⏣ ${
+                  him?.main?.messages?.toLocaleString() || 'None'
+                }**`
               : ''
           }`
       );
@@ -105,9 +105,9 @@ module.exports = {
         LBs.grinder.join('\n') +
           `\n\n${
             him.grinder
-              ? `**${GrinderRawLB.indexOf(him.grinder) + 1}. ${
-                  message.author.tag
-                }: ⏣ ${him?.grinder?.amount?.toLocaleString() || 'None'}**`
+              ? `[??]. ${message.author.tag}: ⏣ ${
+                  him?.grinder?.amount?.toLocaleString() || 'None'
+                }**`
               : ''
           }`
       );
@@ -119,9 +119,9 @@ module.exports = {
         LBs.karuta.join('\n') +
           `\n\n${
             him.karuta
-              ? `**${KarutaRawLB.indexOf(him.karuta) + 1}. ${
-                  message.author.tag
-                }: ⏣ ${him?.karuta?.amount?.toLocaleString() || 'None'}**`
+              ? `[??]. ${message.author.tag}: ⏣ ${
+                  him?.karuta?.amount?.toLocaleString() || 'None'
+                }**`
               : ''
           }`
       );
