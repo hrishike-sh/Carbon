@@ -1,4 +1,12 @@
-const { Message, Client, EmbedBuilder } = require('discord.js');
+const {
+  Message,
+  Client,
+  EmbedBuilder,
+  ButtonBuilder,
+  ButtonBuilder,
+  ButtonStyle,
+  ActionRowBuilder
+} = require('discord.js');
 const Main = require('../../database/main_dono');
 const Grinder = require('../../database/grinder_dono');
 const Karuta = require('../../database/tickets');
@@ -118,9 +126,72 @@ module.exports = {
               : ''
           }`
       );
+    const mainButton = new ButtonBuilder()
+      .setLabel('Main')
+      .setStyle(ButtonStyle.Success)
+      .setDisabled()
+      .setCustomId('main;lb');
+    const grinderButton = new ButtonBuilder()
+      .setLabel('Grinder')
+      .setStyle(ButtonStyle.Primary)
+      .setCustomId('grinder;lb');
+    const karutaButton = new ButtonBuilder()
+      .setLabel('Karuta')
+      .setStyle(ButtonStyle.Primary)
+      .setCustomId('karuta;lb');
+    const mainMessage = await message.channel.send({
+      embeds: [MainEmbed]
+    });
+    const collector = mainMessage.createMessageComponentCollector({
+      idle: 30_000
+    });
 
-    const testMessage = message.channel.send({
-      embeds: [MainEmbed, GrinderEmbed, KarutaEmbed]
+    collector.on('collect', async (button) => {
+      if (!button.user.id != message.author.id) {
+        return button.reply({
+          content: 'Not your command.',
+          ephemeral: true
+        });
+      }
+
+      if (button.customId == 'main;lb') {
+        mainButton.setDisabled(true).setStyle(ButtonStyle.Success);
+        grinderButton.setDisabled(false).setStyle(ButtonStyle.Primary);
+        karutaButton.setDisabled(false).setStyle(ButtonStyle.Primary);
+
+        return mainMessage.edit({
+          embeds: [MainEmbed],
+          components: [row]
+        });
+      } else if (button.customId == 'grinder;lb') {
+        mainButton.setDisabled(false).setStyle(ButtonStyle.Primary);
+        grinderButton.setDisabled(true).setStyle(ButtonStyle.Success);
+        karutaButton.setDisabled(false).setStyle(ButtonStyle.Primary);
+
+        return mainMessage.edit({
+          embeds: [GrinderEmbed],
+          components: [row]
+        });
+      } else {
+        mainButton.setDisabled(false).setStyle(ButtonStyle.Primary);
+        grinderButton.setDisabled(false).setStyle(ButtonStyle.Primary);
+        karutaButton.setDisabled(true).setStyle(ButtonStyle.Success);
+
+        return mainMessage.edit({
+          embeds: [KarutaEmbed],
+          components: [row]
+        });
+      }
+    });
+
+    collector.on('end', () => {
+      mainMessage.components[0].components.forEach((c) => {
+        c.setDisabled(true);
+      });
+
+      return mainMessage.edit({
+        components: mainMessage.components
+      });
     });
   }
 };
