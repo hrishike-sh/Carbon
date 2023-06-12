@@ -22,15 +22,21 @@ module.exports = {
    */
   async execute(message, args, client) {
     const waitMessage = await message.reply('Fetching databases...');
-    const MainRawLB = await Main.find({}).sort({
-      messages: -1
-    });
-    const GrinderRawLB = await Grinder.find({}).sort({
-      amount: -1
-    });
-    const KarutaRawLB = await Karuta.find({}).sort({
-      amount: -1
-    });
+    const MainRawLB = await Main.find({})
+      .sort({
+        messages: -1
+      })
+      .limit(1000);
+    const GrinderRawLB = await Grinder.find({})
+      .sort({
+        amount: -1
+      })
+      .limit(1000);
+    const KarutaRawLB = await Karuta.find({})
+      .sort({
+        amount: -1
+      })
+      .limit(1000);
     await waitMessage.edit('Making fancy leaderboards...');
     const LBs = {
       main: [],
@@ -57,7 +63,7 @@ module.exports = {
         'Unknown#00000';
 
       LBs.grinder.push(
-        `${MainRawLB.indexOf(Profile) + 1}. **${user.tag}**: ⏣ ${
+        `${GrinderRawLB.indexOf(Profile) + 1}. **${user.tag}**: ⏣ ${
           Profile?.amount?.toLocaleString() || '0'
         }`
       );
@@ -69,7 +75,7 @@ module.exports = {
         'Unknown#00000';
 
       LBs.karuta.push(
-        `${MainRawLB.indexOf(Profile) + 1}. **${user.tag}**: :tickets: ${
+        `${KarutaRawLB.indexOf(Profile) + 1}. **${user.tag}**: :tickets: ${
           Profile.amount.toLocaleString() || '0'
         }`
       );
@@ -91,9 +97,9 @@ module.exports = {
         LBs.main.join('\n') +
           `\n\n${
             him.main
-              ? `**[??]. ${message.author.tag}: ⏣ ${
-                  him?.main?.messages?.toLocaleString() || 'None'
-                }**`
+              ? `**${MainRawLB.indexOf(him.main) + 1}. ${
+                  message.author.tag
+                }: ⏣ ${him?.main?.messages?.toLocaleString() || 'None'}**`
               : ''
           }`
       );
@@ -105,9 +111,9 @@ module.exports = {
         LBs.grinder.join('\n') +
           `\n\n${
             him.grinder
-              ? `**[??]. ${message.author.tag}: ⏣ ${
-                  him?.grinder?.amount?.toLocaleString() || 'None'
-                }**`
+              ? `**${GrinderRawLB.indexOf(him.grinder) + 1}. ${
+                  message.author.tag
+                }: ⏣ ${him?.grinder?.amount?.toLocaleString() || 'None'}**`
               : ''
           }`
       );
@@ -119,7 +125,9 @@ module.exports = {
         LBs.karuta.join('\n') +
           `\n\n${
             him.karuta
-              ? `**[??]. ${message.author.tag}: :tickets: ${
+              ? `**${KarutaRawLB.indexOf(him.karuta) + 1}. ${
+                  message.author.tag
+                }: :tickets: ${
                   him?.karuta?.amount?.toLocaleString() || 'None'
                 }**`
               : ''
