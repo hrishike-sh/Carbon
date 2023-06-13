@@ -38,7 +38,8 @@ client.on(Events.ClientReady, async () => {
     messagesRead: 0
   };
   client.db = {
-    afks: []
+    afks: [],
+    afkIgnore: []
   };
   client.snipes = {
     snipes: new Collection()
