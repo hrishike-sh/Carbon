@@ -7,7 +7,7 @@ const {
   ActionRowBuilder,
   ButtonStyle
 } = require('discord.js');
-import * as querystring from 'query-string';
+const querystring = require('node:querystring');
 const r2 = require('r2');
 
 module.exports = {
