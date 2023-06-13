@@ -11,6 +11,7 @@ module.exports = {
 
     if (message.author.bot) return;
     if (!message.guild) return;
+    if (client.db.afkIgnore.includes(message.channel.id)) return;
     if (client.db.afks.includes(message.author.id)) {
       const dUser = await DATABASE.findOne({
         userId: message.author.id

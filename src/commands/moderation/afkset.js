@@ -5,6 +5,13 @@ module.exports = {
   name: 'afkset',
   cooldown: 3,
   roles: ['824539655134773269', '824348974449819658'],
+  /**
+   *
+   * @param {Message} message
+   * @param {String[]} args
+   * @param {Client} client
+   * @returns
+   */
   async execute(message, args, client) {
     // fh afkset clear @user/user_id
     const eg = `**How to use this command:**\n\n> fh afkset clear user_id/@user\nRemoves AFK from user_id\n\n> fh afkset ignore\nIgnores the current channel from AFK removal.`;
@@ -27,6 +34,11 @@ module.exports = {
       client.db.afks = client.db.afks.filter((a) => a !== userId);
       return message.reply(`<@${userId}> should no longer be AFK.`);
     } else if (action.toLowerCase() == 'ignore') {
+      if (!message.member.permissions.has('Administrator')) {
+        return message.reply(
+          'You need to be an Admin to use this sub-command.'
+        );
+      }
       let server = await SERVER.findOne({
         guildID: message.guild.id
       });
