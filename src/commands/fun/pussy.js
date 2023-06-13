@@ -28,7 +28,9 @@ module.exports = {
       embeds: [
         {
           title: 'SFW Pussy',
-          image: images[0].url,
+          image: {
+            url: images[0].url
+          },
           color: Colors.Blurple,
           footer: {
             text: "Some say there's a chance you can get NSFW Pussy."
@@ -54,7 +56,7 @@ module.exports = {
         embeds: [
           {
             title: 'SFW Pussy',
-            image: newImage[0].url,
+            image: { url: newImage[0].url },
             color: Colors.Blurple,
             footer: {
               text: "Some say there's a chance you can get NSFW Pussy."
