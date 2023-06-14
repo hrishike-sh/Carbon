@@ -39,7 +39,11 @@ client.on(Events.ClientReady, async () => {
   };
   client.db = {
     afks: [],
-    afkIgnore: []
+    afkIgnore: (
+      await require('./database/settingsSchema').findOne({
+        guildID: '824294231447044197'
+      })
+    ).afkIgnore
   };
   client.snipes = {
     snipes: new Collection()
