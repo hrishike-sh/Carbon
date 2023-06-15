@@ -42,12 +42,20 @@ module.exports = {
     let prevBut = new ButtonBuilder()
       .setEmoji('911971090954326017')
       .setCustomId('prev-snipe')
+      .setStyle(ButtonStyle.Success)
       .setStyle(ButtonStyle.Success);
+    let deleteBut = new ButtonBuilder()
+      .setEmoji('🗑️')
+      .setCustomId('delete-snipe');
     let nextBut = new ButtonBuilder()
       .setEmoji('911971202048864267')
       .setCustomId('next-snipe')
       .setStyle(ButtonStyle.Success);
-    let row = new ActionRowBuilder().addComponents([prevBut, nextBut]);
+    let row = new ActionRowBuilder().addComponents([
+      prevBut,
+      deleteBut,
+      nextBut
+    ]);
 
     const mainMessage = await message.channel.send({
       content: 'Use the buttons to navigate.',
@@ -96,7 +104,7 @@ module.exports = {
           embeds: [snipeBed],
           components: [row]
         });
-      } else {
+      } else if (id == 'next-snipe') {
         snipe++;
         if (snipe > sniped.length || snipe == sniped.length) {
           snipe = 0;
@@ -124,13 +132,16 @@ module.exports = {
           embeds: [snipeBed],
           components: [row]
         });
+      } else {
+        mainMessage.delete();
       }
     });
 
     collector.on('end', () => {
       prevBut = prevBut.setDisabled();
       nextBut = nextBut.setDisabled();
-      row = new ActionRowBuilder().addComponents([prevBut, nextBut]);
+      deleteBut = deleteBut.setDisabled();
+      row = new ActionRowBuilder().addComponents([prevBut, deleteBut, nextBut]);
       target = sniped[snipe];
       let { msg, editedIn, oldContent, newContent } = target;
       snipeBed = new EmbedBuilder()
