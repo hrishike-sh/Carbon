@@ -46,7 +46,8 @@ client.on(Events.ClientReady, async () => {
     ).afkIgnore
   };
   client.snipes = {
-    snipes: new Collection()
+    snipes: new Collection(),
+    esnipes: new Collection()
   };
   for (const afkUser of await require('./database/afk').find()) {
     client.db.afks.push(afkUser.userId);
