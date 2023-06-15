@@ -10,6 +10,17 @@ const {
 module.exports = {
   name: 'esnipe',
   cooldown: 5,
+  roles: [
+    '826196972167757875',
+    '969870378811916408',
+    '825283097830096908',
+    '839803117646512128',
+    '824687393868742696',
+    '999911429421408346',
+    '828048225096826890',
+    '826002228828700718',
+    '999911166673428521'
+  ],
   /**
    *
    * @param {Message} message
@@ -46,7 +57,8 @@ module.exports = {
       .setStyle(ButtonStyle.Success);
     let deleteBut = new ButtonBuilder()
       .setEmoji('🗑️')
-      .setCustomId('delete-snipe');
+      .setCustomId('delete-snipe')
+      .setStyle(ButtonStyle.Success);
     let nextBut = new ButtonBuilder()
       .setEmoji('911971202048864267')
       .setCustomId('next-snipe')
