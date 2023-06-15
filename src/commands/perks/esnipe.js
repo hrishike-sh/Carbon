@@ -36,7 +36,7 @@ module.exports = {
         iconURL: msg.author.displayAvatarURL() || null
       })
       .addFields([{ name: 'Old Message', value: oldContent, inline: true }])
-      .addFields([{ name: 'New Message', value: newContent }])
+      .addFields([{ name: 'New Message', value: newContent, inline: true }])
       .setColor('Random')
       .setFooter({ text: `${snipe + 1}/${sniped.length}` });
     let prevBut = new ButtonBuilder()
