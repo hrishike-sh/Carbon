@@ -41,7 +41,7 @@ module.exports = {
 
     entry.save();
 
-    message.reply(\`You are now AFK!\\nReason: ${reason}\`);
+    message.reply(`You are now AFK!\nReason: ${reason}`);
 
     setTimeout(() => {
       client.db.afks.push(message.author.id);
