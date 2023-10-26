@@ -56,6 +56,17 @@ module.exports = {
       console.error(err);
       await message.reply("unable to dm");
     }
+    const emoji = message.guild.emojis.cache.get('1167089368775802940');
+
+    if (emoji) {
+
+   await message.react(emoji);
+
+  } else {
+
+  console.log('error reacting');
+
+}
 
   }
 
