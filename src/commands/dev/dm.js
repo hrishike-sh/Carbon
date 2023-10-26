@@ -1,35 +1,42 @@
 const { MessageEmbed } = require('discord.js');
 
-module.exports = {
-  name: 'dm',
-  description: 'DM a user',
-  async execute(interaction) {
+const fh = '824294231447044197'; 
 
-    if(!interaction.member.roles.cache.has('1016728636365209631')) {
-      return interaction.reply({content: "You do not have permission to use this command!", ephemeral: true});
+module.exports = {
+  name: 'dm', 
+  description: 'DM a user',
+  async execute(message) {
+
+    if(message.guild.id !== fh) {
+      return message.reply("you can't run this command");
     }
 
-    const user = interaction.options.getUser('user');
-    if(!user) return interaction.reply({content: "Please specify a user to DM!", ephemeral: true});
+    if(!message.member.roles.cache.has('1016728636365209631')) {
+      return message.reply("Only cms+ L bozo");
+    }
 
-    const content = interaction.options.getString('content');
-    if(!content) return interaction.reply({content: "Please specify a DM message!", ephemeral: true});
+    const user = message.mentions.users.first();
+    if(!user) return message.reply("specify a user");
 
-    const anonymous = interaction.options.getBoolean('anonymous');
+    const args = message.content.slice(prefix.length).trim().split(/ +/);
+    const content = args.slice(1).join(" ");
+    if(!content) return message.reply("what's the message?");
+
+    const anonymous = args.includes('-a');
 
     const embed = new MessageEmbed()
       .setDescription(`Message: ${content}`)
       .setTimestamp();
 
     if(!anonymous) {
-      embed.setAuthor(interaction.user.tag, interaction.user.displayAvatarURL());
+      embed.setAuthor(message.author.tag, message.author.displayAvatarURL());
     }
 
     try {
       await user.send({ embeds: [embed] });
-      await interaction.reply({content: "DM sent!", ephemeral: true});
+      await message.reply("sent em"); 
     } catch(err) {
-      interaction.reply({content: "Could not DM that user!", ephemeral: true});
+      message.reply("unable to dm");
     }
 
   }
