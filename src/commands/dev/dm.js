@@ -1,4 +1,4 @@
-  const { MessageEmbed } = require('discord.js');
+  const { EmbedBuilder } = require('discord.js');
 
   const fh = '824294231447044197';
   const prefix = 'fh';
@@ -36,7 +36,7 @@
 
       try {
 
-        const embed = new MessageEmbed()
+        const embed = new EmbedBuilder()
           .setDescription(`Message: ${content}`)
           .setTimestamp();
 
