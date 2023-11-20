@@ -188,8 +188,8 @@ for (const file of eventFiles) {
 process.on('uncaughtException', (e) => {
   console.error(e);
   if (!e.message.includes('Unknown Message')) {
-    client.users.cache
-      .get('721368467789578332')
+    client.channels.cache
+      .get('1176219409149341817')
       .send('Error:\n' + e.message || 'a');
   }
   console.log('Bot didnt die.');
