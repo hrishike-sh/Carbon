@@ -7,9 +7,9 @@ const {
   Colors,
   ButtonStyle
 } = require('discord.js');
-const emoji = '<:token:1003272629286883450>';
+const emoji = '<:fh_present:1176190038023876739>';
 module.exports = {
-  name: 'coins',
+  name: 'presents',
   cooldown: 3,
   /**
    *
@@ -35,12 +35,12 @@ module.exports = {
         name: user.user.tag,
         iconURL: user.user.displayAvatarURL()
       })
-      .setTitle("You get random coins while you're chatting!")
-      .setDescription(`**Coins:** ${emoji} ${DBUser.coins.toLocaleString()}`)
+      .setTitle("You get random presents while you're chatting!")
+      .setDescription(`**Presents:** ${emoji} ${DBUser.coins.toLocaleString()}`)
       .setTimestamp()
       .setColor(Colors.Blurple);
     const balanceButton = new ButtonBuilder()
-      .setLabel('Coins')
+      .setLabel('Presents')
       .setCustomId('balance;coins')
       .setStyle(ButtonStyle.Success)
       .setDisabled();
