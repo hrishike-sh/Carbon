@@ -16,7 +16,7 @@ module.exports = {
       return message.reply("You can't run this command you peasant");
     }
     const userId = args[0]?.replace(/[^0-9]/g, '') || null;
-    if (!target) {
+    if (!userId) {
       return message.reply(example);
     }
     args.shift();
