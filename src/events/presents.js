@@ -8,7 +8,6 @@ module.exports = {
    * @returns
    */
   async execute(message) {
-    return;
     const client = message.client;
     if (!message.author) return;
     if (message.author.bot) return;
