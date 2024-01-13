@@ -36,9 +36,7 @@ module.exports = {
         iconURL: user.user.displayAvatarURL()
       })
       .setTitle("You get random presents while you're chatting!")
-      .setDescription(
-        `**Presents:** 🔒\`${emoji} ${DBUser.coins.toLocaleString()}\``
-      )
+      .setDescription(`**Presents:** 🔒\`🎁 ${DBUser.coins.toLocaleString()}\``)
       .setTimestamp()
       .setColor(Colors.Blurple)
       .setFooter({
@@ -92,7 +90,7 @@ module.exports = {
         const tag =
           (await client.users.fetch(rawlb[i].userId).catch((e) => null)).tag ||
           'Unknown#00000';
-        description += `${i + 1}. **${tag}**: 🔒\`${emoji} ${rawlb[
+        description += `${i + 1}. **${tag}**: 🔒\`🎁 ${rawlb[
           i
         ].coins.toLocaleString()}\`\n`;
       }
