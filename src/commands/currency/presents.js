@@ -36,9 +36,14 @@ module.exports = {
         iconURL: user.user.displayAvatarURL()
       })
       .setTitle("You get random presents while you're chatting!")
-      .setDescription(`**Presents:** ${emoji} ${DBUser.coins.toLocaleString()}`)
+      .setDescription(
+        `**Presents:** 🔒\`${emoji} ${DBUser.coins.toLocaleString()}\``
+      )
       .setTimestamp()
-      .setColor(Colors.Blurple);
+      .setColor(Colors.Blurple)
+      .setFooter({
+        text: '*The event is over and you no longer get presents.*'
+      });
     const balanceButton = new ButtonBuilder()
       .setLabel('Presents')
       .setCustomId('balance;coins')
@@ -87,9 +92,9 @@ module.exports = {
         const tag =
           (await client.users.fetch(rawlb[i].userId).catch((e) => null)).tag ||
           'Unknown#00000';
-        description += `${i + 1}. **${tag}**: ${emoji} ${rawlb[
+        description += `${i + 1}. **${tag}**: 🔒\`${emoji} ${rawlb[
           i
-        ].coins.toLocaleString()}\n`;
+        ].coins.toLocaleString()}\`\n`;
       }
       if (button.customId == 'balance;coins') {
         leaderboardButton.setDisabled(false).setStyle(ButtonStyle.Primary);
