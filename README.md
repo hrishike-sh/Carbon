@@ -10,7 +10,7 @@ A multipurpose bot having many cool features.
 
 ⤷ [Discord](https://discordapp.com/users/598918643727990784)
 
-⤷ [GitHub](https://github.com/HrishikeshS123)
+⤷ [GitHub](https://github.com/hrishike-sh)
 
 `-` Dauntless
 
