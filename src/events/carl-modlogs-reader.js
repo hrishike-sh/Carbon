@@ -56,8 +56,8 @@ const getData = async (t) => {
 };
 
 const fetchUser = async (message, id) => {
-  return await message.client.users.fetch(id, {
-    cache: true
+  message.client.users.fetch(id).then((a) => {
+    return a?.tag || id;
   });
 };
 
