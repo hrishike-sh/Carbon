@@ -17,7 +17,7 @@ module.exports = {
 
     const data = getData(message.attachments.first());
     const embed = new EmbedBuilder()
-      .setTitle(data[0]?.offender_id || 'T')
+      .setTitle('T')
       .setDescription('You can filter types of modlogs.')
       .setTimestamp()
       .setColor('NotQuiteBlack');
