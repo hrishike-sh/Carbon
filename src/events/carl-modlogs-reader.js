@@ -218,7 +218,7 @@ module.exports = {
       collector.on('end', () => {
         msg.components.forEach((c) => {
           c.components.forEach((cc) => {
-            c.setDisabled();
+            cc.setDisabled();
           });
         });
 
