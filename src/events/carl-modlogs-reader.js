@@ -21,11 +21,11 @@ module.exports = {
       .setDescription('You can filter types of modlogs.')
       .setTimestamp()
       .setColor('NotQuiteBlack');
-    for (const d of data) {
+    for (let i = 0; i < data.length; i++) {
       embed.addFields({
-        name: `Case #${d.case_id}`,
-        value: `Moderator: <@${d.moderator_id}>\nType: WARN\nWhen: <t:${(
-          Number(d.timestamp) / 1000
+        name: `Case #${d[i].case_id}`,
+        value: `Moderator: <@${d[i].moderator_id}>\nType: WARN\nWhen: <t:${(
+          Number(d[i].timestamp) / 1000
         ).toFixed(0)}:R>`
       });
     }
