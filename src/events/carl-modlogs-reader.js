@@ -41,7 +41,7 @@ module.exports = {
     let embedData = breakArray(embedRaw);
 
     const embed = new EmbedBuilder().setColor('Green').setFooter({
-      text: `${(data.length - 1).toLocaleString()} cases`
+      text: `Total ${data.length.toLocaleString()} cases`
     });
     if (embedData.length > 1) {
       let index = 0;
