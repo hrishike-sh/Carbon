@@ -38,9 +38,7 @@ module.exports = {
 
 const getData = async (t) => {
   const url = t.toJSON().url;
-  fetch(url)
-    .then((t) => t.text())
-    .then((a) => {
-      return JSON.parse(a);
-    });
+  const data = await fetch(url);
+  const text = await data.text();
+  return JSON.parse(text);
 };
