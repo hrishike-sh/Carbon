@@ -57,7 +57,7 @@ const getData = async (t) => {
 
 const fetchUser = async (message, id) => {
   message.client.users.fetch(id).then((a) => {
-    return a?.tag || id;
+    return a?.username || id;
   });
 };
 
