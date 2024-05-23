@@ -100,7 +100,7 @@ module.exports = {
             .setCustomId('cml_previous')
             .setStyle(ButtonStyle.Primary),
           new ButtonBuilder()
-            .setLabel(`1/${embedData.length - 1}`)
+            .setLabel(`${index + 1}/${embedData.length - 1}`)
             .setCustomId('a')
             .setStyle(ButtonStyle.Secondary)
             .setDisabled(),
