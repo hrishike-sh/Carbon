@@ -20,7 +20,7 @@ module.exports = {
     for (let i = 0; i < data.length; i++) {
       embedRaw.push({
         name: 'Case #' + data[i].case_id,
-        value: `Moderator: ${fetchUser(
+        value: `Moderator: ${await fetchUser(
           message,
           data[i].moderator_id
         )}\nAction: ${data[i].action.toUpperCase()}\nWhen: <t:${(
