@@ -15,7 +15,7 @@ module.exports = {
     )
       return;
 
-    const data = getData(message.attachments.first());
+    const data = await getData(message.attachments.first());
     const embed = new EmbedBuilder()
       .setTitle('T')
       .setDescription('You can filter types of modlogs.')
@@ -36,11 +36,11 @@ module.exports = {
   }
 };
 
-function getData(t) {
+const getData = async (t) => {
   const url = t.toJSON().url;
   fetch(url)
     .then((t) => t.text())
     .then((a) => {
       return JSON.parse(a);
     });
-}
+};
