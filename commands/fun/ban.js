@@ -2,6 +2,6 @@ module.exports = {
   name: 'ban',
   category: 'Fun',
   async execute(message, args) {
-    await message.reply('TEst');
+    await message.reply('test');
   }
 };
