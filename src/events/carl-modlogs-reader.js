@@ -30,6 +30,7 @@ module.exports = {
     }
     const embedData = breakArray(embedRaw);
 
+    console.log(embedData[0][0]);
     const embed = new EmbedBuilder()
       .setTitle(
         'Modlogs for: ' +
