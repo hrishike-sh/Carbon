@@ -37,8 +37,9 @@ module.exports = {
 };
 
 function getData(t) {
-  t.toJSON()
-    .then((b) => b.text())
+  const url = t.toJSON().url;
+  fetch(url)
+    .then((t) => t.text())
     .then((a) => {
       return JSON.parse(a);
     });
