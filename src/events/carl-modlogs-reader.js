@@ -17,7 +17,7 @@ module.exports = {
 
     const data = await getData(message.attachments.first());
     const embed = new EmbedBuilder()
-      .setTitle(await getUser(message, data[0].offender_id))
+      .setTitle(await getUser(message, data[0].offender_id.toString()))
       .setDescription('You can filter types of modlogs.')
       .setTimestamp()
       .setColor('DarkGold');
@@ -26,7 +26,7 @@ module.exports = {
         name: `Case #${data[i].case_id}`,
         value: `Moderator: <@${await getUser(
           message,
-          data[i].moderator_id
+          data[i].moderator_id.toString()
         )}>\nType: ${data[i].action.toUpperCase()}\nWhen: <t:${(
           Number(new Date(data[i].timestamp).getTime()) / 1000
         ).toFixed(0)}:R>`,
@@ -37,6 +37,7 @@ module.exports = {
     message.channel.send({
       embeds: [embed]
     });
+    message.client.users.fetch(id, {});
   }
 };
 
