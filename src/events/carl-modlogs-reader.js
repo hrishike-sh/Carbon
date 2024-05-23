@@ -215,6 +215,17 @@ module.exports = {
           });
         }
       });
+      collector.on('end', () => {
+        msg.components.forEach((c) => {
+          c.components.forEach((cc) => {
+            c.setDisabled();
+          });
+        });
+
+        msg.edit({
+          components: msg.components
+        });
+      });
     } else {
       embed.addFields(embedData[0]);
       message.reply({
