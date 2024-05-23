@@ -40,7 +40,9 @@ module.exports = {
     }
     let embedData = breakArray(embedRaw);
 
-    const embed = new EmbedBuilder().setColor('Green');
+    const embed = new EmbedBuilder().setColor('Green').setFooter({
+      text: `${(data.length - 1).toLocaleString()} cases`
+    });
     if (embedData.length > 1) {
       let index = 0;
       let filter = 'none';
@@ -68,7 +70,11 @@ module.exports = {
             new StringSelectMenuOptionBuilder()
               .setLabel('Warns')
               .setValue('warn')
-              .setDescription('Filter modlogs by warns.')
+              .setDescription('Filter modlogs by warns.'),
+            new StringSelectMenuOptionBuilder()
+              .setLabel('Reset Filter')
+              .setValue('all')
+              .setDescription('Reset filter.')
           ])
       ]);
 
@@ -154,16 +160,26 @@ module.exports = {
           filter = button.values[0];
           embedRaw = [];
           for (let i = 0; i < data.length; i++) {
-            if (data[i].action !== filter) {
-              continue;
+            if (filter == 'all') {
+              embedRaw.push({
+                name: 'Case #' + data[i].case_id,
+                value: `Action: ${data[i].action.toUpperCase()}\nWhen: <t:${(
+                  new Date(data[i].timestamp).getTime() / 1000
+                ).toFixed(0)}:R>\nReason: ${data[i].reason}`,
+                inline: true
+              });
+            } else {
+              if (data[i].action !== filter) {
+                continue;
+              }
+              embedRaw.push({
+                name: 'Case #' + data[i].case_id,
+                value: `Action: ${data[i].action.toUpperCase()}\nWhen: <t:${(
+                  new Date(data[i].timestamp).getTime() / 1000
+                ).toFixed(0)}:R>\nReason: ${data[i].reason}`,
+                inline: true
+              });
             }
-            embedRaw.push({
-              name: 'Case #' + data[i].case_id,
-              value: `Action: ${data[i].action.toUpperCase()}\nWhen: <t:${(
-                new Date(data[i].timestamp).getTime() / 1000
-              ).toFixed(0)}:R>\nReason: ${data[i].reason}`,
-              inline: true
-            });
           }
           embedData = breakArray(embedRaw);
 
