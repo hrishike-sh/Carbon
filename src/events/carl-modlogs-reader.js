@@ -17,14 +17,14 @@ module.exports = {
 
     const data = await getData(message.attachments.first());
     const embed = new EmbedBuilder()
-      .setTitle(getUser(message, data[0].offender_id))
+      .setTitle(await getUser(message, data[0].offender_id))
       .setDescription('You can filter types of modlogs.')
       .setTimestamp()
       .setColor('DarkGold');
     for (let i = 0; i < data.length; i++) {
       embed.addFields({
         name: `Case #${data[i].case_id}`,
-        value: `Moderator: <@${getUser(
+        value: `Moderator: <@${await getUser(
           message,
           data[i].moderator_id
         )}>\nType: ${data[i].action.toUpperCase()}\nWhen: <t:${(
@@ -47,4 +47,7 @@ const getData = async (t) => {
   return JSON.parse(text);
 };
 
-const getUser = async (message, id) => {};
+const getUser = async (message, id) => {
+  const u = await message.client.users.fetch(id);
+  return u.tag;
+};
