@@ -1,10 +1,8 @@
 const { Message, Client } = require('discord.js');
 
 module.exports = {
-  name: '',
-  aliases: [''],
-  description: '',
-  cooldown: 0,
+  name: 'ban',
+  cooldown: 5,
   /**
    *
    * @param {Message} message
