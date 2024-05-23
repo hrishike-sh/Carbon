@@ -90,12 +90,32 @@ module.exports = {
         }
         button.deferUpdate();
         embed.setFields(embedData[index]);
-        msg.components[0].components[2].setLabel(
-          `${index + 1}/${embedData.length - 1}`
-        );
+        row.setComponents([
+          new ButtonBuilder()
+            .setEmoji('⏮')
+            .setCustomId('cml_first')
+            .setStyle(ButtonStyle.Primary),
+          new ButtonBuilder()
+            .setEmoji('⬅')
+            .setCustomId('cml_previous')
+            .setStyle(ButtonStyle.Primary),
+          new ButtonBuilder()
+            .setLabel(`1/${embedData.length - 1}`)
+            .setCustomId('a')
+            .setStyle(ButtonStyle.Secondary)
+            .setDisabled(),
+          new ButtonBuilder()
+            .setEmoji('➡')
+            .setCustomId('cml_next')
+            .setStyle(ButtonStyle.Primary),
+          new ButtonBuilder()
+            .setEmoji('⏭')
+            .setCustomId('cml_last')
+            .setStyle(ButtonStyle.Primary)
+        ]);
         msg.edit({
           embeds: [embed],
-          components: msg.components
+          components: [row]
         });
       });
     } else {
