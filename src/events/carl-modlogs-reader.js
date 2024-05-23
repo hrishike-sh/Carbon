@@ -166,6 +166,37 @@ module.exports = {
             });
           }
           embedData = breakArray(embedRaw);
+
+          index = 0;
+
+          embed.setFields(embedData[index]);
+          row.setComponents([
+            new ButtonBuilder()
+              .setEmoji('⏮')
+              .setCustomId('cml_first_b')
+              .setStyle(ButtonStyle.Primary),
+            new ButtonBuilder()
+              .setEmoji('⬅')
+              .setCustomId('cml_previous_b')
+              .setStyle(ButtonStyle.Primary),
+            new ButtonBuilder()
+              .setLabel(`${index + 1}/${embedData.length}`)
+              .setCustomId('a')
+              .setStyle(ButtonStyle.Secondary)
+              .setDisabled(),
+            new ButtonBuilder()
+              .setEmoji('➡')
+              .setCustomId('cml_next_b')
+              .setStyle(ButtonStyle.Primary),
+            new ButtonBuilder()
+              .setEmoji('⏭')
+              .setCustomId('cml_last_b')
+              .setStyle(ButtonStyle.Primary)
+          ]);
+          msg.edit({
+            embeds: [embed],
+            components: [row0, row]
+          });
         }
       });
     } else {
