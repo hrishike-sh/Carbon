@@ -20,10 +20,8 @@ module.exports = {
     for (let i = 0; i < data.length; i++) {
       embedRaw.push({
         name: 'Case #' + data[i].case_id,
-        value: `Moderator: ${await fetchUser(
-          message,
-          data[i].moderator_id
-        )}\nAction: ${data[i].action.toUpperCase()}\nWhen: <t:${(
+        value: `Moderator: ${await fetchUser(message, data[i].moderator_id)
+          .username}\nAction: ${data[i].action.toUpperCase()}\nWhen: <t:${(
           new Date(data[i].timestamp).getTime() / 1000
         ).toFixed(0)}:R>`
       });
@@ -33,7 +31,7 @@ module.exports = {
     const embed = new EmbedBuilder()
       .setTitle(
         'Modlogs for: ' +
-          (await fetchUser(message, embedData[0].offender_id))?.tag ||
+          (await fetchUser(message, embedData[0][0].offender_id))?.username ||
           '????#????'
       )
       .setColor('Green')
@@ -57,7 +55,7 @@ const getData = async (t) => {
 
 const fetchUser = async (message, id) => {
   message.client.users.fetch(id).then((a) => {
-    return a?.username || id;
+    return a;
   });
 };
 
