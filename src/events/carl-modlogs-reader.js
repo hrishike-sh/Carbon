@@ -216,14 +216,37 @@ module.exports = {
         }
       });
       collector.on('end', () => {
-        msg.components.forEach((c) => {
-          c.components.forEach((cc) => {
-            cc.setDisabled();
-          });
-        });
+        row0.components[0].setDisabled();
+        row.setComponents([
+          new ButtonBuilder()
+            .setEmoji('⏮')
+            .setCustomId('cml_first_b')
+            .setDisabled()
+            .setStyle(ButtonStyle.Primary),
+          new ButtonBuilder()
+            .setEmoji('⬅')
+            .setCustomId('cml_previous_b')
+            .setDisabled()
+            .setStyle(ButtonStyle.Primary),
+          new ButtonBuilder()
+            .setLabel(`${index + 1}/${embedData.length}`)
+            .setCustomId('a')
+            .setStyle(ButtonStyle.Secondary)
+            .setDisabled(),
+          new ButtonBuilder()
+            .setEmoji('➡')
+            .setDisabled()
+            .setCustomId('cml_next_b')
+            .setStyle(ButtonStyle.Primary),
+          new ButtonBuilder()
+            .setEmoji('⏭')
+            .setDisabled()
+            .setCustomId('cml_last_b')
+            .setStyle(ButtonStyle.Primary)
+        ]);
 
         msg.edit({
-          components: msg.components
+          components: [row0, row]
         });
       });
     } else {
