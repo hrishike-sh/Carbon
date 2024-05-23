@@ -18,12 +18,12 @@ module.exports = {
     const data = await getData(message.attachments.first());
     const embedRaw = [];
     for (let i = 0; i < data.length; i++) {
+      const offId = data[0].offender_idn;
       embedRaw.push({
         name: 'Case #' + data[i].case_id,
-        value: `Moderator: ${
-          (await message.client.users.fetch(`${BigInt(data[0].offender_id)}`))
-            .username
-        }\nAction: ${data[i].action.toUpperCase()}\nWhen: <t:${(
+        value: `Moderator: ${BigInt(data[0].offender_id)}\nAction: ${data[
+          i
+        ].action.toUpperCase()}\nWhen: <t:${(
           new Date(data[i].timestamp).getTime() / 1000
         ).toFixed(0)}:R>`
       });
@@ -31,14 +31,7 @@ module.exports = {
     const embedData = breakArray(embedRaw);
 
     const embed = new EmbedBuilder()
-      .setTitle(
-        'Modlogs for: ' +
-          (
-            await message.client.users.fetch(
-              `${BigInt(embedData[0][0].offender_id)}`
-            )
-          ).username
-      )
+      .setTitle('Modlogs for: ' + embedData[0][0].offender_id)
       .setColor('Green')
       .setTimestamp();
     if (embedData.length > 1) {
