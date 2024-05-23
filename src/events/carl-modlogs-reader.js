@@ -1,4 +1,11 @@
-const { Message, Embed, EmbedBuilder } = require('discord.js');
+const {
+  Message,
+  Embed,
+  EmbedBuilder,
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle
+} = require('discord.js');
 
 module.exports = {
   name: 'messageCreate',
@@ -32,8 +39,29 @@ module.exports = {
     if (embedData.length > 1) {
       let index = 0;
       embed.setFields(embedData[0]);
-      const msg = await message.channel.send({
-        embeds: [embed]
+
+      const row = new ActionRowBuilder().addComponents([
+        new ButtonBuilder()
+          .setEmoji('⏮')
+          .setCustomId('cml_first')
+          .setStyle(ButtonStyle.Primary),
+        new ButtonBuilder()
+          .setEmoji('⬅')
+          .setCustomId('cml_previous')
+          .setStyle(ButtonStyle.Primary),
+        new ButtonBuilder()
+          .setEmoji('➡')
+          .setCustomId('cml_next')
+          .setStyle(ButtonStyle.Primary),
+        new ButtonBuilder()
+          .setEmoji('⏭')
+          .setCustomId('cml_last')
+          .setStyle(ButtonStyle.Primary)
+      ]);
+
+      const msg = await message.reply({
+        embeds: [embed],
+        components: [row]
       });
     } else {
       embed.addFields(embedData[0]);
