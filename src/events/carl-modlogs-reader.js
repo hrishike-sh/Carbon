@@ -4,7 +4,8 @@ const {
   EmbedBuilder,
   ActionRowBuilder,
   ButtonBuilder,
-  ButtonStyle
+  ButtonStyle,
+  ButtonInteraction
 } = require('discord.js');
 
 module.exports = {
@@ -35,7 +36,7 @@ module.exports = {
     }
     const embedData = breakArray(embedRaw);
 
-    const embed = new EmbedBuilder().setColor('Green').setTimestamp();
+    const embed = new EmbedBuilder().setColor('Green');
     if (embedData.length > 1) {
       let index = 0;
       embed.setFields(embedData[0]);
@@ -62,6 +63,31 @@ module.exports = {
       const msg = await message.reply({
         embeds: [embed],
         components: [row]
+      });
+      const collector = msg.createMessageComponentCollector({
+        idle: 60_000
+      });
+
+      collector.on('collect', async (button) => {
+        switch (button.customId) {
+          case 'cml_first':
+            index = 0;
+            break;
+          case 'cml_previous':
+            index == 0 ? null : index--;
+            break;
+          case 'cml_next':
+            index == embedData.length - 1 ? null : index++;
+            break;
+          case 'cml_last':
+            index = embedData.length - 1;
+            break;
+        }
+        button.deferUpdate();
+        embed.setFields(embedData[index]);
+        msg.edit({
+          embeds: [embed]
+        });
       });
     } else {
       embed.addFields(embedData[0]);
