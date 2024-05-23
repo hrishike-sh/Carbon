@@ -30,11 +30,10 @@ module.exports = {
     }
     const embedData = breakArray(embedRaw);
 
-    console.log(embedData[0][0]);
     const embed = new EmbedBuilder()
       .setTitle(
         'Modlogs for: ' +
-          (await fetchUser(message, embedData[0][0].offender_id))?.tag ||
+          (await fetchUser(message, embedData[0].offender_id))?.tag ||
           '????#????'
       )
       .setColor('Green')
