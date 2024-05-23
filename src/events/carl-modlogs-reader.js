@@ -15,7 +15,7 @@ module.exports = {
     )
       return;
 
-    const data = getData(message.attachments.first().toJSON());
+    const data = getData(message.attachments.first());
     const embed = new EmbedBuilder()
       .setTitle(data[0].offender_id)
       .setDescription('You can filter types of modlogs.')
@@ -37,7 +37,9 @@ module.exports = {
 };
 
 function getData(t) {
-  t.text().then((a) => {
-    return JSON.parse(a);
-  });
+  t.toJSON()
+    .then((b) => b.text())
+    .then((a) => {
+      return JSON.parse(a);
+    });
 }
