@@ -23,9 +23,9 @@ module.exports = {
       .setColor('NotQuiteBlack');
     for (let i = 0; i < data.length; i++) {
       embed.addFields({
-        name: `Case #${d[i].case_id}`,
-        value: `Moderator: <@${d[i].moderator_id}>\nType: WARN\nWhen: <t:${(
-          Number(d[i].timestamp) / 1000
+        name: `Case #${data[i].case_id}`,
+        value: `Moderator: <@${data[i].moderator_id}>\nType: WARN\nWhen: <t:${(
+          Number(data[i].timestamp) / 1000
         ).toFixed(0)}:R>`
       });
     }
