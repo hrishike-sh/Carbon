@@ -51,7 +51,7 @@ module.exports = {
           .setCustomId('cml_previous')
           .setStyle(ButtonStyle.Primary),
         new ButtonBuilder()
-          .setLabel(`1/${embedData - 1}`)
+          .setLabel(`1/${embedData.length - 1}`)
           .setCustomId('a')
           .setStyle(ButtonStyle.Secondary)
           .setDisabled(),
@@ -91,10 +91,11 @@ module.exports = {
         button.deferUpdate();
         embed.setFields(embedData[index]);
         msg.components[0].components[2].setLabel(
-          `${index + 1}/${embedData - 1}`
+          `${index + 1}/${embedData.length - 1}`
         );
         msg.edit({
-          embeds: [embed]
+          embeds: [embed],
+          components: msg.components
         });
       });
     } else {
