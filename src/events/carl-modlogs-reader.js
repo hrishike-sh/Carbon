@@ -28,12 +28,13 @@ module.exports = {
     }
     const embedData = breakArray(embedRaw);
 
-    const embed = new EmbedBuilder()
-      .setTitle('Modlogs for: ' + data[0].offender_id)
-      .setColor('Green')
-      .setTimestamp();
+    const embed = new EmbedBuilder().setColor('Green').setTimestamp();
     if (embedData.length > 1) {
       let index = 0;
+      embed.setFields(embedData[0]);
+      const msg = await message.channel.send({
+        embeds: [embed]
+      });
     } else {
       embed.addFields(embedData[0]);
       message.reply({
