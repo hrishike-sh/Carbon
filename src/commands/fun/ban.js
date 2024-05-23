@@ -1,5 +1,5 @@
 const { Message, Client } = require('discord.js');
-
+let banned = [];
 module.exports = {
   name: 'ban',
   cooldown: 5,
@@ -18,11 +18,14 @@ module.exports = {
       return message.reply('You cannot ban them idiot.');
 
     const chance = Math.random();
+    if (banned.includes(message.author.id)) {
+      return message.reply("You can't ban people right now.");
+    }
 
     if (chance < 0.05) {
       // ban yourself
 
-      // message.member.ban()
+      message.member.ban();
       message.reply(
         [
           `**${message.author.username}** was too weak to use the ban hammer and banned themselves :sob::sob::sob:`,
@@ -36,12 +39,11 @@ module.exports = {
       message.channel.send(
         `Someone has stealthily banned ${target.toString()}... :shushing_face:`
       );
-
-      message.reply();
+      target.ban();
     } else if (chance > 0.1 && chance < 0.2) {
       // muted for a minute
-
-      message.channel.send("you're muted (doesnt work yet)");
+      addBan(message.author.id);
+      message.reply('You cannot ban anyone for the next minute loser.');
     } else if (chance < 0.4) {
       // command fails
 
@@ -54,8 +56,23 @@ module.exports = {
       );
     } else {
       // ban
-
-      message.reply('normal ban');
+      target.ban();
+      message.reply([
+        `You have completely DEMOLISHED ${target.user.username}... they are BANNED.`,
+        `${target.user.username} was outed for... being stupid! They are now BANNED.`,
+        `WOP WOP WOP WOP WOP! ${target.user.username} was BANNED!`,
+        `${target.user.username} were listening to drake... they are BANNED!`,
+        `${target.user.username} is banned. You got the lamest response message.`
+      ]);
     }
   }
+};
+
+const addBan = async (userId) => {
+  banned.push(userId);
+  await sleep(60000);
+  banned = banned.filter((a) => a !== userId);
+};
+const sleep = (milliseconds) => {
+  return new Promise((resolve) => setTimeout(resolve, milliseconds));
 };
