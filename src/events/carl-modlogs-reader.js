@@ -5,7 +5,11 @@ const {
   ActionRowBuilder,
   ButtonBuilder,
   ButtonStyle,
-  ButtonInteraction
+  ButtonInteraction,
+  InteractionType,
+  UserSelectMenuBuilder,
+  StringSelectMenuBuilder,
+  StringSelectMenuOptionBuilder
 } = require('discord.js');
 
 module.exports = {
@@ -41,82 +45,106 @@ module.exports = {
       let index = 0;
       embed.setFields(embedData[0]);
 
+      const row0 = new ActionRowBuilder().addComponents([
+        new StringSelectMenuBuilder()
+          .setMaxValues(1)
+          .setMinValues(1)
+          .setCustomId('filter')
+          .setPlaceholder('Select a filter...')
+          .addOptions([
+            new StringSelectMenuOptionBuilder()
+              .setLabel('Mutes')
+              .setValue('mute')
+              .setDescription('Filter modlogs by mutes.'),
+            new StringSelectMenuOptionBuilder()
+              .setLabel('Bans')
+              .setValue('ban')
+              .setDescription('Filter modlogs by bans.'),
+            new StringSelectMenuOptionBuilder()
+              .setLabel('Warns')
+              .setValue('warn')
+              .setDescription('Filter modlogs by warns.')
+          ])
+      ]);
+
       const row = new ActionRowBuilder().addComponents([
         new ButtonBuilder()
           .setEmoji('⏮')
-          .setCustomId('cml_first')
+          .setCustomId('cml_first_b')
           .setStyle(ButtonStyle.Primary),
         new ButtonBuilder()
           .setEmoji('⬅')
-          .setCustomId('cml_previous')
+          .setCustomId('cml_previous_b')
           .setStyle(ButtonStyle.Primary),
         new ButtonBuilder()
-          .setLabel(`1/${embedData.length - 1}`)
+          .setLabel(`1/${embedData.length}`)
           .setCustomId('a')
           .setStyle(ButtonStyle.Secondary)
           .setDisabled(),
         new ButtonBuilder()
           .setEmoji('➡')
-          .setCustomId('cml_next')
+          .setCustomId('cml_next_b')
           .setStyle(ButtonStyle.Primary),
         new ButtonBuilder()
           .setEmoji('⏭')
-          .setCustomId('cml_last')
+          .setCustomId('cml_last_b')
           .setStyle(ButtonStyle.Primary)
       ]);
 
       const msg = await message.reply({
         embeds: [embed],
-        components: [row]
+        components: [row0, row]
       });
       const collector = msg.createMessageComponentCollector({
         idle: 60_000
       });
 
       collector.on('collect', async (button) => {
-        switch (button.customId) {
-          case 'cml_first':
-            index = 0;
-            break;
-          case 'cml_previous':
-            index == 0 ? null : index--;
-            break;
-          case 'cml_next':
-            index == embedData.length - 1 ? null : index++;
-            break;
-          case 'cml_last':
-            index = embedData.length - 1;
-            break;
+        if (button.customId.includes('_b')) {
+          switch (button.customId) {
+            case 'cml_first_b':
+              index = 0;
+              break;
+            case 'cml_previous_b':
+              index == 0 ? null : index--;
+              break;
+            case 'cml_next_b':
+              index == embedData.length - 1 ? null : index++;
+              break;
+            case 'cml_last_b':
+              index = embedData.length - 1;
+              break;
+          }
+          button.deferUpdate();
+          embed.setFields(embedData[index]);
+          row.setComponents([
+            new ButtonBuilder()
+              .setEmoji('⏮')
+              .setCustomId('cml_first_b')
+              .setStyle(ButtonStyle.Primary),
+            new ButtonBuilder()
+              .setEmoji('⬅')
+              .setCustomId('cml_previous_b')
+              .setStyle(ButtonStyle.Primary),
+            new ButtonBuilder()
+              .setLabel(`${index + 1}/${embedData.length}`)
+              .setCustomId('a')
+              .setStyle(ButtonStyle.Secondary)
+              .setDisabled(),
+            new ButtonBuilder()
+              .setEmoji('➡')
+              .setCustomId('cml_next_b')
+              .setStyle(ButtonStyle.Primary),
+            new ButtonBuilder()
+              .setEmoji('⏭')
+              .setCustomId('cml_last_b')
+              .setStyle(ButtonStyle.Primary)
+          ]);
+          msg.edit({
+            embeds: [embed],
+            components: [row0, row]
+          });
         }
-        button.deferUpdate();
-        embed.setFields(embedData[index]);
-        row.setComponents([
-          new ButtonBuilder()
-            .setEmoji('⏮')
-            .setCustomId('cml_first')
-            .setStyle(ButtonStyle.Primary),
-          new ButtonBuilder()
-            .setEmoji('⬅')
-            .setCustomId('cml_previous')
-            .setStyle(ButtonStyle.Primary),
-          new ButtonBuilder()
-            .setLabel(`${index + 1}/${embedData.length - 1}`)
-            .setCustomId('a')
-            .setStyle(ButtonStyle.Secondary)
-            .setDisabled(),
-          new ButtonBuilder()
-            .setEmoji('➡')
-            .setCustomId('cml_next')
-            .setStyle(ButtonStyle.Primary),
-          new ButtonBuilder()
-            .setEmoji('⏭')
-            .setCustomId('cml_last')
-            .setStyle(ButtonStyle.Primary)
-        ]);
-        msg.edit({
-          embeds: [embed],
-          components: [row]
-        });
       });
     } else {
       embed.addFields(embedData[0]);
