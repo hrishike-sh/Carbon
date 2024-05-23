@@ -22,7 +22,8 @@ module.exports = {
         name: 'Case #' + data[i].case_id,
         value: `Action: ${data[i].action.toUpperCase()}\nWhen: <t:${(
           new Date(data[i].timestamp).getTime() / 1000
-        ).toFixed(0)}:R>`
+        ).toFixed(0)}:R>\nReason: ${data[i].reason}`,
+        inline: true
       });
     }
     const embedData = breakArray(embedRaw);
@@ -32,6 +33,7 @@ module.exports = {
       .setColor('Green')
       .setTimestamp();
     if (embedData.length > 1) {
+      let index = 0;
     } else {
       embed.addFields(embedData[0]);
       message.reply({
