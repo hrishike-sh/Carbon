@@ -21,8 +21,7 @@ module.exports = {
       embedRaw.push({
         name: 'Case #' + data[i].case_id,
         value: `Moderator: ${
-          (await message.client.users.fetch(data[0].offender_id.toString()))
-            .username
+          (await message.client.users.fetch(`${data[0].offender_id}`)).username
         }\nAction: ${data[i].action.toUpperCase()}\nWhen: <t:${(
           new Date(data[i].timestamp).getTime() / 1000
         ).toFixed(0)}:R>`
@@ -33,11 +32,8 @@ module.exports = {
     const embed = new EmbedBuilder()
       .setTitle(
         'Modlogs for: ' +
-          (
-            await message.client.users.fetch(
-              embedData[0][0].offender_id.toString()
-            )
-          ).username
+          (await message.client.users.fetch(`${embedData[0][0].offender_id}`))
+            .username
       )
       .setColor('Green')
       .setTimestamp();
