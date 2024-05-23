@@ -51,6 +51,11 @@ module.exports = {
           .setCustomId('cml_previous')
           .setStyle(ButtonStyle.Primary),
         new ButtonBuilder()
+          .setLabel(`1/${embedData - 1}`)
+          .setCustomId('a')
+          .setStyle(ButtonStyle.Secondary)
+          .setDisabled(),
+        new ButtonBuilder()
           .setEmoji('➡')
           .setCustomId('cml_next')
           .setStyle(ButtonStyle.Primary),
@@ -85,6 +90,9 @@ module.exports = {
         }
         button.deferUpdate();
         embed.setFields(embedData[index]);
+        msg.components[0].components[2].setLabel(
+          `${index + 1}/${embedData - 1}`
+        );
         msg.edit({
           embeds: [embed]
         });
