@@ -28,7 +28,7 @@ module.exports = {
       return;
 
     const data = await getData(message.attachments.first());
-    const embedRaw = [];
+    let embedRaw = [];
     for (let i = 0; i < data.length; i++) {
       embedRaw.push({
         name: 'Case #' + data[i].case_id,
@@ -38,11 +38,12 @@ module.exports = {
         inline: true
       });
     }
-    const embedData = breakArray(embedRaw);
+    let embedData = breakArray(embedRaw);
 
     const embed = new EmbedBuilder().setColor('Green');
     if (embedData.length > 1) {
       let index = 0;
+      let filter = 'none';
       embed.setFields(embedData[0]);
 
       const row0 = new ActionRowBuilder().addComponents([
@@ -60,6 +61,10 @@ module.exports = {
               .setLabel('Bans')
               .setValue('ban')
               .setDescription('Filter modlogs by bans.'),
+            new StringSelectMenuOptionBuilder()
+              .setLabel('Unbans')
+              .setValue('unban')
+              .setDescription('Filter modlogs by unbans.'),
             new StringSelectMenuOptionBuilder()
               .setLabel('Warns')
               .setValue('warn')
@@ -144,6 +149,23 @@ module.exports = {
             embeds: [embed],
             components: [row0, row]
           });
+        } else {
+          button.deferUpdate();
+          filter = button.values[0];
+          embedRaw = [];
+          for (let i = 0; i < data.length; i++) {
+            if (data[i].action !== filter) {
+              continue;
+            }
+            embedRaw.push({
+              name: 'Case #' + data[i].case_id,
+              value: `Action: ${data[i].action.toUpperCase()}\nWhen: <t:${(
+                new Date(data[i].timestamp).getTime() / 1000
+              ).toFixed(0)}:R>\nReason: ${data[i].reason}`,
+              inline: true
+            });
+          }
+          embedData = breakArray(embedRaw);
         }
       });
     } else {
