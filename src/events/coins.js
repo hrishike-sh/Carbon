@@ -13,7 +13,7 @@ module.exports = {
     /**
      * Checks
      */
-    if (message.guild?.id === '824294231447044197') return;
+    if (message.guild?.id !== '824294231447044197') return;
     if (message.author?.bot) return;
     if (List.includes(userId)) return;
     /**
