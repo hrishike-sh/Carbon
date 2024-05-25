@@ -1,5 +1,5 @@
 const { Message, Client } = require('discord.js');
-
+const Database = require('../../database/coins');
 const map = [
   'Hrish gave you {coins} coins for your left kidney!',
   'Begging? Try sex work instead! Hrish gave you {coins} coins and advice.',

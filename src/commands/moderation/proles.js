@@ -60,7 +60,6 @@ module.exports = {
     message.channel.send({
       embeds: [
         {
-          color: 'Green',
           title: '**SERVER PINGS**',
           description:
             '<a:fh_announcement:824918261086945280> • <@&824916329848111114>\n' +
