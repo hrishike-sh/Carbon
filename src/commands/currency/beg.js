@@ -14,8 +14,8 @@ const map = [
   'Akshay paid you {coins} coins to debug his code.',
   "Mirror's cat brought you {coins} coins, clearly preferring you over Mirror.",
   'You catch steph drinking at a bar instead of moderating. She paid you {coins} coins to let her get some damn rest',
-  `\`\`\`py\nprint\("You find glitch in a computer program, he gives you {coins} coins to run the code!"\)\n```,
-  'Akshay gave you {coins} coins to not talk about his browser history.'
+  'Akshay gave you {coins} coins to not talk about his browser history.',
+  '```py\n"You find glitch in a computer program, he gives you {coins} to run the code!"\n```'
 ];
 let cd = [];
 module.exports = {
