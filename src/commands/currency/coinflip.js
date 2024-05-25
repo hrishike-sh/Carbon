@@ -53,12 +53,12 @@ module.exports = {
  */
 const removeCoins = async (userId, amount) => {
   const user = await getUser(userId);
-  user.coins -= amount;
+  user.coins -= Number(amount);
   user.save();
 };
 const addCoins = async (userId, amount) => {
   const user = await getUser(userId);
-  user.coins += amount;
+  user.coins += Number(amount);
   user.save();
 };
 
@@ -97,7 +97,7 @@ const parseAmount = (string) => {
 
   // Invalid number
   if (isNaN(calculated)) return null;
-  else return calculated;
+  else return Number(calculated);
 };
 
 const StringValues = {
