@@ -11,7 +11,9 @@ const map = [
   'You walked into steph and spaghet doing the devils tango, they paid you {coins} coins to get the hell out.',
   'You caught steph self reflecting in the bath tub, she paid you {coins} coins to leave her alone.',
   'You walked in on steph doing her makeup, she paid you {coins} coins to not tell anyone her beauty secrets.',
-  'Akshay paid you {coins} coins to debug his code.'
+  'Akshay paid you {coins} coins to debug his code.',
+  "Mirror's cat brought you {coins} coins, clearly preferring you over Mirror.",
+  'You catch steph drinking at a bar instead of moderating. She paid you {coins} coins to let her get some damn rest'
 ];
 let cd = [];
 module.exports = {
