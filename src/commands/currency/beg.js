@@ -2,7 +2,7 @@ const { Message, Client } = require('discord.js');
 
 const map = [
   'Hrish gave you {coins} coins for your left kidney!',
-  'Begging? Try sex work instead! Hrish gave you {coins} coins and an advice.',
+  'Begging? Try sex work instead! Hrish gave you {coins} coins and advice.',
   "Mirror paid you {coins} coins to not talk about her height. (4'3)",
   "Mirror's cat paid you {coins} coins to turn on the AC.",
   'Mirror gave you {coins} coins to watch KDramas with her!',
@@ -13,7 +13,9 @@ const map = [
   'You walked in on steph doing her makeup, she paid you {coins} coins to not tell anyone her beauty secrets.',
   'Akshay paid you {coins} coins to debug his code.',
   "Mirror's cat brought you {coins} coins, clearly preferring you over Mirror.",
-  'You catch steph drinking at a bar instead of moderating. She paid you {coins} coins to let her get some damn rest'
+  'You catch steph drinking at a bar instead of moderating. She paid you {coins} coins to let her get some damn rest',
+  `\`\`\`py\nprint("You find glitch in a computer program, he gives you {coins} coins to run the code!")\n```,
+  'Akshay gave you {coins} coins to not talk about his browser history.'
 ];
 let cd = [];
 module.exports = {
