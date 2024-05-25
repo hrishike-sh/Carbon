@@ -15,7 +15,7 @@ module.exports = {
       return message.reply('Try using a number next time.');
     }
     if (Math.random() < 0.5) {
-      removeCoins(userId, amount);
+      removeCoins(userId, parseInt(amount));
       message.reply({
         embeds: [
           {
@@ -30,7 +30,7 @@ module.exports = {
         ]
       });
     } else {
-      addCoins(userId, amount);
+      addCoins(userId, parseInt(amount));
       message.reply({
         embeds: [
           {
