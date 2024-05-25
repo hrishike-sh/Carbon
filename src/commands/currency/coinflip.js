@@ -15,6 +15,10 @@ module.exports = {
       return message.reply('Try using a number next time.');
     }
     amount = parseAmount(amount);
+    const user = await getUser(userId);
+    if (user.coins < amount) {
+      return message.reply('u dont have that many coins brokie');
+    }
     if (Math.random() < 0.5) {
       removeCoins(userId, amount);
       message.reply({
