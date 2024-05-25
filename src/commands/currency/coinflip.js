@@ -10,12 +10,13 @@ module.exports = {
    */
   async execute(message, args) {
     const userId = message.author.id;
-    const amount = args.shift();
+    let amount = args.shift();
     if (!amount || !parseAmount(amount)) {
       return message.reply('Try using a number next time.');
     }
+    amount = parseAmount(amount);
     if (Math.random() < 0.5) {
-      removeCoins(userId, parseInt(amount));
+      removeCoins(userId, amount);
       message.reply({
         embeds: [
           {
@@ -24,13 +25,12 @@ module.exports = {
               icon_url: message.author.displayAvatarURL()
             },
             color: Colors.Red,
-            description:
-              'You **lost** ' + parseAmount(amount).toLocaleString() + '.'
+            description: 'You **lost** ' + amount.toLocaleString() + '.'
           }
         ]
       });
     } else {
-      addCoins(userId, parseInt(amount));
+      addCoins(userId, amount);
       message.reply({
         embeds: [
           {
@@ -39,8 +39,7 @@ module.exports = {
               icon_url: message.author.displayAvatarURL()
             },
             color: Colors.Green,
-            description:
-              'You **won** ' + parseAmount(amount).toLocaleString() + '!!'
+            description: 'You **won** ' + amount.toLocaleString() + '!!'
           }
         ]
       });
@@ -97,7 +96,7 @@ const parseAmount = (string) => {
 
   // Invalid number
   if (isNaN(calculated)) return null;
-  else return Number(calculated);
+  else return calculated;
 };
 
 const StringValues = {
