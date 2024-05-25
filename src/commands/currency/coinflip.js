@@ -1,4 +1,4 @@
-const { Message, Client } = require('discord.js');
+const { Message, Client, Colors } = require('discord.js');
 const Database = require('../../database/coins');
 module.exports = {
   name: 'coinflip',
@@ -23,7 +23,7 @@ module.exports = {
               name: message.author.username,
               icon_url: message.author.displayAvatarURL()
             },
-            color: 'Red',
+            color: Colors.Red,
             description:
               'You **lost** ' + parseAmount(amount).toLocaleString() + '.'
           }
@@ -38,7 +38,7 @@ module.exports = {
               name: message.author.username,
               icon_url: message.author.displayAvatarURL()
             },
-            color: 'Green',
+            color: Colors.Green,
             description:
               'You **won** ' + parseAmount(amount).toLocaleString() + '!!'
           }
