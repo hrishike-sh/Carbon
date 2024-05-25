@@ -3,7 +3,7 @@ const Database = require('../../database/coins');
 const map = [
   'Hrish gave you {coins} coins for your left kidney!',
   'Begging? Try sex work instead! Hrish gave you {coins} coins and advice.',
-  'Mirror gave you {coins} for admiring her beauty.',
+  'Mirror gave you {coins} coins for admiring her beauty.',
   "Mirror's cat paid you {coins} coins to turn on the AC.",
   'Mirror gave you {coins} coins to watch KDramas with her!',
   'You caught spaghet touching grass, they paid you {coins} coins to keep quite.',
