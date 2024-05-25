@@ -38,7 +38,7 @@ module.exports = {
       .setStyle(ButtonStyle.Secondary);
     const hesBut = new ButtonBuilder()
       .setCustomId('prole829283902136254497')
-      .setEmoji('💰')
+      .setEmoji('1131077627382333479')
       .setStyle(ButtonStyle.Secondary);
     const touBut = new ButtonBuilder()
       .setCustomId('prole824916330905862175')
@@ -66,7 +66,7 @@ module.exports = {
             '<a:fh_Nitroboostrgb:825302229853405184> • <@&832066859653398549>\n' +
             '<a:fh_giveaway:824918033889361941> • <@&824916330574118942>\n' +
             '<a:fh_freemoney:861295940785799168> • <@&837121985787592704>\n' +
-            ':moneybag: • <@&829283902136254497>\n' +
+            '<a:fh_pepeheist:1131077627382333479> • <@&829283902136254497>\n' +
             '<a:fh_pepefight:861294809191677974> • <@&824916330905862175>\n' +
             '<a:fh_bugcatfight:855684995779264542> • <@&858088201451995137>'
         }
