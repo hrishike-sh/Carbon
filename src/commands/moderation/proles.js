@@ -16,7 +16,7 @@ module.exports = {
    * @param {Client} client
    */
   async execute(message) {
-    if (!message.member.roles.has('824539655134773269')) {
+    if (!message.member.roles.cache.has('824539655134773269')) {
       return message.reply('you need to be a moderator');
     }
 
