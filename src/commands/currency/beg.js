@@ -3,7 +3,7 @@ const { Message, Client } = require('discord.js');
 const map = [
   'Hrish gave you {coins} coins for your left kidney!',
   'Begging? Try sex work instead! Hrish gave you {coins} coins and advice.',
-  "Mirror paid you {coins} coins to not talk about her height. (4'3)",
+  'Mirror gave you {coins} for admiring her beauty.',
   "Mirror's cat paid you {coins} coins to turn on the AC.",
   'Mirror gave you {coins} coins to watch KDramas with her!',
   'You caught spaghet touching grass, they paid you {coins} coins to stay quite.',
@@ -15,7 +15,14 @@ const map = [
   "Mirror's cat brought you {coins} coins, clearly preferring you over Mirror.",
   'You catch steph drinking at a bar instead of moderating. She paid you {coins} coins to let her get some damn rest',
   'Akshay gave you {coins} coins to not talk about his browser history.',
-  '```py\n"You find glitch in a computer program, he gives you {coins} to run the code!"\n```'
+  '```py\n"You find glitch in a computer program, he gives you {coins} to run the code!"\n```',
+  "You walked in on Akshay with his 'VR headset' on and he paid you {coins} coins to keep it quiet. ",
+  "You found Akshay's stash of 'adult' magazines and he paid you {coins} coins to keep it a secret.",
+  'Riyah gave you {coins} coins to stop donating for events.',
+  "Sexcey gave you {coins} coins to not talk about the war crimes he's committed.",
+  'Tee gave you {coins} coins to buy her food',
+  'Sunshine gives you {coins} coins to stop the rain.',
+  "You walked up to Gen taking his meds, here's {coins} coins to keep it a secret"
 ];
 let cd = [];
 module.exports = {
