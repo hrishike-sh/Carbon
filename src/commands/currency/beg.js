@@ -13,12 +13,11 @@ const map = [
   'You walked in on steph doing her makeup, she paid you {coins} coins to not tell anyone her beauty secrets.',
   'Akshay paid you {coins} coins to debug his code.'
 ];
-
+let cd = [];
 module.exports = {
   name: 'beg',
   aliases: ['pleasegivemecoins'],
   description: 'beg u brokeass',
-  cooldown: 5,
   /**
    *
    * @param {Message} message
@@ -27,6 +26,24 @@ module.exports = {
    */
   async execute(message, args, client) {
     const userId = message.author.id;
+    if (cd.includes(userId)) {
+      return message.reply({
+        embeds: [
+          {
+            author: {
+              icon_url: message.author.displayAvatarURL(),
+              name: message.author.username
+            },
+            footer: {
+              text: 'Get a job'
+            },
+            description:
+              "you can beg once every 5 seconds and you're still desperate :sob::sob::sob::sob::sob:"
+          }
+        ]
+      });
+    }
+    addCd(userId);
     const randomAmount = Math.ceil(Math.random() * 30) + 10;
     addCoins(userId, randomAmount);
 
@@ -48,6 +65,15 @@ module.exports = {
       ]
     });
   }
+};
+
+const addCd = async (userId) => {
+  cd.push(userId);
+  await sleep(5000);
+  cd = cd.filter((a) => a != userId);
+};
+const sleep = (milliseconds) => {
+  return new Promise((resolve) => setTimeout(resolve, milliseconds));
 };
 
 /**
