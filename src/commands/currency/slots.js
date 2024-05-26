@@ -70,7 +70,7 @@ module.exports = {
       for (let i = 0; i < 3; i++) {
         const elem = map[Math.ceil(Math.random() * map.length)];
         slots.push(elem);
-        map = map.filter((e) => e != elem);
+        map = map.filter((e) => e !== elem);
       }
       multi = 0;
     }
@@ -97,7 +97,8 @@ module.exports = {
     await sleep(500);
     slotMessage.channel.send(
       `${message.author.toString()} you have won <:token:1003272629286883450> **${(
-        amount * multi
+        amount * multi -
+        amount
       ).toLocaleString()}** coins!!`
     );
   }
