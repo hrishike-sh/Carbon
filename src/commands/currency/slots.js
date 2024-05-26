@@ -79,7 +79,7 @@ module.exports = {
     });
     await sleep(250);
     for (let p = 0; p < 2; p++) {
-      d.replace('<a:slotspin:1244291354993885316>', slots[p]);
+      d = d.replace('<a:slotspin:1244291354993885316>', slots[p]);
       await sleep(350);
       slotBed.setDescription(d);
       slotMessage.edit(slotBed);
