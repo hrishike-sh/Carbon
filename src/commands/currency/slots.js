@@ -70,7 +70,7 @@ module.exports = {
 
     const slotBed = new EmbedBuilder()
       .setDescription(
-        '` |         | `\n` `:slotspin::slotspin::slotspin:` `\n` |         | `\n` |         | `'
+        '` |         | `\n` `:slotspin::slotspin::slotspin:` `\n `|         |` \n `|         |` '
       )
       .setColor(Colors.Yellow);
 
