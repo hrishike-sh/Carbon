@@ -6,7 +6,7 @@ const map = [
   'Mirror gave you {coins} coins for admiring her beauty.',
   "Mirror's cat paid you {coins} coins to turn on the AC.",
   'Mirror gave you {coins} coins to watch KDramas with her!',
-  'You caught spaghet touching grass, they paid you {coins} coins to keep quite.',
+  'You caught spaghet touching grass, they paid you {coins} coins to shut the fuck up.',
   "You got paid {coins} coins to not tell anyone that Inter used you for an assessment because he can't type.",
   'You walked into steph and spaghet doing the devils tango, they paid you {coins} coins to get the hell out.',
   'You caught steph self reflecting in the bath tub, she paid you {coins} coins to leave her alone.',
