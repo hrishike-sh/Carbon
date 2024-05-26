@@ -77,10 +77,10 @@ module.exports = {
     const slotMessage = await message.reply({
       embeds: [slotBed]
     });
-    await sleep(250);
+    await sleep(100);
     for (let p = 0; p < 2; p++) {
       d = d.replace('<a:slotspin:1244291354993885316>', slots[p]);
-      await sleep(350);
+      await sleep(1000);
       slotBed.setDescription(d);
       slotMessage.edit({
         embeds: [slotBed]
