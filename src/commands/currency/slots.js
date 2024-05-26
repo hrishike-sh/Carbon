@@ -1,4 +1,5 @@
 const { Message, Client, EmbedBuilder, Colors } = require('discord.js');
+let cd = [];
 const Database = require('../../database/coins');
 module.exports = {
   name: 'slots',
@@ -35,6 +36,10 @@ module.exports = {
     }
     if (amount < 100) return message.reply('Minimum bet is 100.');
     if (amount > 100_000) return message.reply('Maximum bet is 100,000!');
+    if (cd.includes(userId)) {
+      return message.reply('You can run this command once every 10 seconds.');
+    }
+    addCd(userId);
     removeCoins(userId, amount);
     console.log('==========================================');
     let map = [
@@ -186,4 +191,9 @@ const StringValues = {
   m: 1e6,
   k: 1e3,
   b: 1e9
+};
+const addCd = async (userId) => {
+  cd.push(userId);
+  await sleep(10000);
+  cd = cd.filter((a) => a != userId);
 };
