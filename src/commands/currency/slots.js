@@ -24,7 +24,7 @@ module.exports = {
       return message.reply('You dont have that typa money.');
     }
     if (amount < 100) return message.reply('Minimum bet is 100.');
-    removeCoins(userId, amount);
+    // removeCoins(userId, amount);
     let map = [':fh_crown:', '🏆', ':fh_medal:', '💰', ':dollar:'];
     // 10x 5x 4x 2x 1.5x
     const rand = Math.random();
