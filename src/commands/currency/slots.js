@@ -73,6 +73,8 @@ module.exports = {
         if (i > 1 && slots[0] == slots[1]) {
           slots[2] = map.filter((a) => a !== slots[0])[0];
           break;
+        } else {
+          slots.push(elem);
         }
       }
       multi = 0;
@@ -98,12 +100,16 @@ module.exports = {
       });
     }
     await sleep(500);
-    slotMessage.channel.send(
-      `${message.author.toString()} you have won <:token:1003272629286883450> **${(
-        amount * multi -
-        amount
-      ).toLocaleString()}** coins!!`
-    );
+    const m =
+      multi == 0
+        ? `${
+            message.author.tag
+          } you lost <:token:1003272629286883450> **${amount.toLocaleString()}** :(`
+        : `${message.author.toString()} you won <:token:1003272629286883450> **${(
+            amount * multi -
+            amount
+          ).toLocaleString()}** coins!!`;
+    slotMessage.channel.send(m);
   }
 };
 const sleep = (milliseconds) => {
