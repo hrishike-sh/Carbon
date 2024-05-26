@@ -25,7 +25,13 @@ module.exports = {
     }
     if (amount < 100) return message.reply('Minimum bet is 100.');
     removeCoins(userId, amount);
-    let map = [':fh_crown:', '🏆', ':fh_medal:', '💰', ':dollar:'];
+    let map = [
+      '<:fh_crown:911256459998797854>',
+      '🏆',
+      '<:fh_medal:924283224593661962>:',
+      '💰',
+      ':dollar:'
+    ];
     // 10x 5x 4x 2x 1.5x
     const rand = Math.random();
     const slots = [];
@@ -73,11 +79,10 @@ module.exports = {
     const slotBed = new EmbedBuilder()
       .setDescription(d)
       .setColor(Colors.Yellow);
-
     const slotMessage = await message.reply({
       embeds: [slotBed]
     });
-    await sleep(100);
+    await sleep(1000);
     for (let p = 0; p < 2; p++) {
       d = d.replace('<a:slotspin:1244291354993885316>', slots[p]);
       await sleep(1000);
