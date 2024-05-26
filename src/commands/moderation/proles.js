@@ -50,11 +50,11 @@ module.exports = {
       .setStyle(ButtonStyle.Secondary);
     const rumbleBut = new ButtonBuilder()
       .setCustomId('prole1174333433984589875')
-      .setEmoji('1174333433984589875')
+      .setEmoji('1174342793716580442')
       .setStyle(ButtonStyle.Secondary);
     const mafBot = new ButtonBuilder()
       .setCustomId('prole1154432845318721607')
-      .setEmoji('1154432845318721607')
+      .setEmoji('🗡️')
       .setStyle(ButtonStyle.Secondary);
 
     const row1 = new ActionRowBuilder().addComponents([annBut, nitBut, gawBut]);
