@@ -16,9 +16,9 @@ module.exports = {
     let description = '';
     for (let i = 0; i < 10; i++) {
       const user = (await client.users.fetch(all[i].userId)).tag;
-      description += `${(i + 1)
+      description += `\`${(i + 1)
         .toString()
-        .padStart(2, 0)}. ${user}: <:token:1003272629286883450> ${all[
+        .padStart(2, 0)}\` ${user}: <:token:1003272629286883450> ${all[
         i
       ].coins.toLocaleString()}\n`;
     }
