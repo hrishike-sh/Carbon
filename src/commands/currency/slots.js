@@ -67,14 +67,16 @@ module.exports = {
       slots.push(map[4]);
       multi = 1.5;
     } else {
-      for (let i = 0; i < 2; i++) {
+      for (let i = 0; i < 3; i++) {
         const elem = map[Math.ceil(Math.random() * map.length)];
         slots.push(elem);
         map = map.filter((e) => e != elem);
       }
       multi = 0;
     }
-    addCoins(userId, amount * multi);
+    if (multi !== 0) {
+      addCoins(userId, amount * multi);
+    }
     let d =
       '<a:aleft:1244308430437744730><a:slotspin:1244291354993885316><a:slotspin:1244291354993885316><a:slotspin:1244291354993885316><a:aright:1244308478223319075>';
     const slotBed = new EmbedBuilder()
