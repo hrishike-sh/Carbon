@@ -13,7 +13,17 @@ module.exports = {
     const user = await getUser(userId);
     let amount = args.shift();
     if (amount && amount.toLowerCase() == 'table') {
-      return message.reply({});
+      return message.reply({
+        embeds: [
+          {
+            title: 'Slots Table',
+            color: Colors.Green,
+            timestamp: new Date(),
+            description:
+              '> <:fh_crown:911256459998797854><:fh_crown:911256459998797854><:fh_crown:911256459998797854> ~ 10x\n🏆🏆🏆 ~ 5x\n<:fh_medal:924283224593661962><:fh_medal:924283224593661962><:fh_medal:924283224593661962> ~ 4x\n💰💰💰 ~ 2x\n:dollar::dollar::dollar: ~ 1.5x'
+          }
+        ]
+      });
     }
     if (!amount || !parseAmount(amount)) {
       return message.reply('Provide a valid number.');
