@@ -82,7 +82,9 @@ module.exports = {
       d = d.replace('<a:slotspin:1244291354993885316>', slots[p]);
       await sleep(350);
       slotBed.setDescription(d);
-      slotMessage.edit(slotBed);
+      slotMessage.edit({
+        embeds: [slotBed]
+      });
     }
   }
 };
