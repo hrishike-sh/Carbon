@@ -35,6 +35,7 @@ module.exports = {
     }
     if (amount < 100) return message.reply('Minimum bet is 100.');
     removeCoins(userId, amount);
+    console.log('==========================================');
     let map = [
       '<:fh_crown:911256459998797854>',
       '🏆',
@@ -44,6 +45,7 @@ module.exports = {
     ];
     // 10x 5x 4x 2x 1.5x
     const rand = Math.random();
+    console.log('Random number:', rand);
     const slots = [];
     let multi = 1;
     if (rand < 0.01) {
@@ -91,6 +93,7 @@ module.exports = {
         });
       multi = 0;
     }
+    console.log('Multi:', multi);
     addCoins(userId, amount * multi);
     let d =
       '<a:aleft:1244308430437744730><a:slotspin:1244291354993885316><a:slotspin:1244291354993885316><a:slotspin:1244291354993885316><a:aright:1244308478223319075>';
@@ -101,6 +104,7 @@ module.exports = {
       embeds: [slotBed]
     });
     await sleep(1000);
+    console.log('Slots:', ...slots);
     for (let p = 0; p < 3; p++) {
       d = d.replace('<a:slotspin:1244291354993885316>', slots[p]);
       await sleep(1000);
@@ -119,6 +123,7 @@ module.exports = {
             amount * multi
           ).toLocaleString()}** coins!!`;
     slotMessage.channel.send(m);
+    console.log('==========================================');
   }
 };
 const sleep = (milliseconds) => {
