@@ -34,6 +34,7 @@ module.exports = {
       return message.reply('You dont have that typa money.');
     }
     if (amount < 100) return message.reply('Minimum bet is 100.');
+    if (amount > 100_000) return message.reply('Maximum bet is 100,000!');
     removeCoins(userId, amount);
     console.log('==========================================');
     let map = [
