@@ -48,14 +48,26 @@ module.exports = {
       .setCustomId('prole858088201451995137')
       .setEmoji('855684995779264542')
       .setStyle(ButtonStyle.Secondary);
+    const rumbleBut = new ButtonBuilder()
+      .setCustomId('prole1174333433984589875')
+      .setEmoji('1174333433984589875')
+      .setStyle(ButtonStyle.Secondary);
+    const mafBot = new ButtonBuilder()
+      .setCustomId('prole1154432845318721607')
+      .setEmoji('1154432845318721607')
+      .setStyle(ButtonStyle.Secondary);
 
-    const row1 = new ActionRowBuilder().addComponents([
-      annBut,
-      nitBut,
-      gawBut,
-      mgawBut
+    const row1 = new ActionRowBuilder().addComponents([annBut, nitBut, gawBut]);
+    const row2 = new ActionRowBuilder().addComponents([
+      mgawBut,
+      hesBut,
+      touBut
     ]);
-    const row2 = new ActionRowBuilder().addComponents([hesBut, touBut, eveBut]);
+    const row3 = new ActionRowBuilder().addComponents([
+      eveBut,
+      rumbleBut,
+      mafBot
+    ]);
 
     message.channel.send({
       embeds: [
@@ -68,10 +80,12 @@ module.exports = {
             '<a:fh_freemoney:861295940785799168> • <@&837121985787592704>\n' +
             '<a:fh_pepeheist:1131077627382333479> • <@&829283902136254497>\n' +
             '<a:fh_pepefight:861294809191677974> • <@&824916330905862175>\n' +
-            '<a:fh_bugcatfight:855684995779264542> • <@&858088201451995137>'
+            '<a:fh_bugcatfight:855684995779264542> • <@&858088201451995137>\n' +
+            '<:fh_rumble:1174342793716580442> • <@&1174333433984589875>\n' +
+            '🗡️ • <@&1154432845318721607>'
         }
       ],
-      components: [row1, row2]
+      components: [row1, row2, row3]
     });
   }
 };
