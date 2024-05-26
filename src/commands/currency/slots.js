@@ -85,7 +85,7 @@ module.exports = {
         ':dollar:'
       ]
         .sort(() => Math.random() - 0.5)
-        .splice(0, 2)
+        .splice(0, 3)
         .forEach((e) => {
           slots.push(e);
         });
