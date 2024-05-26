@@ -69,8 +69,11 @@ module.exports = {
     } else {
       for (let i = 0; i < 3; i++) {
         const elem = map[Math.ceil(Math.random() * map.length)];
-        slots.push(elem);
-        map = map.filter((e) => e !== elem);
+        if (i > 0 && slots[0] == slots[1]) {
+          slots[2] = map.filter((a) => a !== slots[0])[0];
+          break;
+        }
+        slots.push = elem;
       }
       multi = 0;
     }
