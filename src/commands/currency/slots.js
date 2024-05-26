@@ -28,7 +28,7 @@ module.exports = {
     let map = [
       '<:fh_crown:911256459998797854>',
       '🏆',
-      '<:fh_medal:924283224593661962>:',
+      '<:fh_medal:924283224593661962>',
       '💰',
       ':dollar:'
     ];
@@ -69,11 +69,11 @@ module.exports = {
     } else {
       for (let i = 0; i < 3; i++) {
         const elem = map[Math.ceil(Math.random() * map.length)];
-        if (i > 0 && slots[0] == slots[1]) {
+        slots.push(elem);
+        if (i > 1 && slots[0] == slots[1]) {
           slots[2] = map.filter((a) => a !== slots[0])[0];
           break;
         }
-        slots.push(elem);
       }
       multi = 0;
     }
