@@ -73,7 +73,7 @@ module.exports = {
           slots[2] = map.filter((a) => a !== slots[0])[0];
           break;
         }
-        slots.push = elem;
+        slots.push(elem);
       }
       multi = 0;
     }
