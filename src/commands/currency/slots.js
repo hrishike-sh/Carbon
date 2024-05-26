@@ -83,7 +83,7 @@ module.exports = {
       embeds: [slotBed]
     });
     await sleep(1000);
-    for (let p = 0; p < 2; p++) {
+    for (let p = 0; p < 3; p++) {
       d = d.replace('<a:slotspin:1244291354993885316>', slots[p]);
       await sleep(1000);
       slotBed.setDescription(d);
