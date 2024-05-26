@@ -67,16 +67,18 @@ module.exports = {
       slots.push(map[4]);
       multi = 1.5;
     } else {
-      for (let i = 0; i < 3; i++) {
-        const elem = map[Math.ceil(Math.random() * map.length)];
-        slots.push(elem);
-        if (i > 1 && slots[0] == slots[1]) {
-          slots[2] = map.filter((a) => a !== slots[0])[0];
-          break;
-        } else {
-          slots.push(elem);
-        }
-      }
+      [
+        '<:fh_crown:911256459998797854>',
+        '🏆',
+        '<:fh_medal:924283224593661962>',
+        '💰',
+        ':dollar:'
+      ]
+        .sort(() => Math.random() - 0.5)
+        .splice(0, 2)
+        .forEach((e) => {
+          slots.push(e);
+        });
       multi = 0;
     }
     if (multi !== 0) {
@@ -104,8 +106,8 @@ module.exports = {
       multi == 0
         ? `${
             message.author.tag
-          } you lost <:token:1003272629286883450> **${amount.toLocaleString()}** :(`
-        : `${message.author.toString()} you won <:token:1003272629286883450> **${(
+          }, you lost <:token:1003272629286883450> **${amount.toLocaleString()}** :(`
+        : `${message.author.tag}, you won <:token:1003272629286883450> **${(
             amount * multi -
             amount
           ).toLocaleString()}** coins!!`;
