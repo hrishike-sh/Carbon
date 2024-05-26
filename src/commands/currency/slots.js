@@ -116,8 +116,7 @@ module.exports = {
             message.author.tag
           }, you lost <:token:1003272629286883450> **${amount.toLocaleString()}** :(`
         : `${message.author.tag}, you won <:token:1003272629286883450> **${(
-            amount * multi -
-            amount
+            amount * multi
           ).toLocaleString()}** coins!!`;
     slotMessage.channel.send(m);
   }
