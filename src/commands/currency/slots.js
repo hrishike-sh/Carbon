@@ -72,6 +72,7 @@ module.exports = {
         slots.push(elem);
         map = map.filter((e) => e != elem);
       }
+      multi = 0;
     }
     addCoins(userId, amount * multi);
     let d =
@@ -91,6 +92,12 @@ module.exports = {
         embeds: [slotBed]
       });
     }
+    await sleep(500);
+    slotMessage.channel.send(
+      `${message.author.toString()} you have won <:token:1003272629286883450> **${(
+        amount * multi
+      ).toLocaleString()}** coins!!`
+    );
   }
 };
 const sleep = (milliseconds) => {
