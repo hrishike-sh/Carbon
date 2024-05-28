@@ -38,6 +38,7 @@ module.exports = {
    * @param {Client} client
    */
   async execute(message, args, client) {
+    if (message.guildId !== '824294231447044197') return;
     const userId = message.author.id;
     if (cd.includes(userId)) {
       return message.reply({

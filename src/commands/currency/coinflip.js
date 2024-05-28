@@ -9,6 +9,7 @@ module.exports = {
    * @param {String[]} args
    */
   async execute(message, args) {
+    if (message.guildId !== '824294231447044197') return;
     const userId = message.author.id;
     let amount = args.shift();
     if (!amount || !parseAmount(amount)) {

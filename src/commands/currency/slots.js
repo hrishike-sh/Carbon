@@ -10,6 +10,7 @@ module.exports = {
    * @param {Client} client
    */
   async execute(message, args, client) {
+    if (message.guildId !== '824294231447044197') return;
     const userId = message.author.id;
     const user = await getUser(userId);
     let amount = args.shift();
@@ -21,7 +22,7 @@ module.exports = {
             color: Colors.Green,
             timestamp: new Date(),
             description:
-              '> <:fh_crown:911256459998797854><:fh_crown:911256459998797854><:fh_crown:911256459998797854> ~ 10x\n🏆🏆🏆 ~ 5x\n<:fh_medal:924283224593661962><:fh_medal:924283224593661962><:fh_medal:924283224593661962> ~ 4x\n💰💰💰 ~ 2x\n:dollar::dollar::dollar: ~ 1.5x'
+              '><:fh_crown:911256459998797854><:fh_crown:911256459998797854><:fh_crown:911256459998797854> ~ 10x\n>🏆🏆🏆 ~ 5x\n<:fh_medal:924283224593661962><:fh_medal:924283224593661962><:fh_medal:924283224593661962> ~ 4x\n>💰💰💰 ~ 2x'
           }
         ]
       });
@@ -46,8 +47,7 @@ module.exports = {
       '<:fh_crown:911256459998797854>',
       '🏆',
       '<:fh_medal:924283224593661962>',
-      '💰',
-      ':dollar:'
+      '💰'
     ];
     // 10x 5x 4x 2x 1.5x
     const rand = Math.random();
@@ -78,19 +78,12 @@ module.exports = {
       slots.push(map[3]);
       slots.push(map[3]);
       multi = 2;
-    } else if (rand < 0.4) {
-      // 1.5x 20%
-      slots.push(map[4]);
-      slots.push(map[4]);
-      slots.push(map[4]);
-      multi = 1.5;
     } else {
       [
         '<:fh_crown:911256459998797854>',
         '🏆',
         '<:fh_medal:924283224593661962>',
-        '💰',
-        ':dollar:'
+        '💰'
       ]
         .sort(() => Math.random() - 0.5)
         .splice(0, 3)
