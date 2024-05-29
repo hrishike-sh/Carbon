@@ -133,3 +133,6 @@ const addCd = async (userId) => {
   await sleep(5000);
   cd = cd.filter((a) => a != userId);
 };
+const sleep = (milliseconds) => {
+  return new Promise((resolve) => setTimeout(resolve, milliseconds));
+};
