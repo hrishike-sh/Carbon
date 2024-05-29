@@ -13,7 +13,7 @@ module.exports = {
     if (!args[0])
       // fh cdev <user> del/add/remove/ <amount>
       return message.reply(`fh cdev **<user>** del/add/remove/ <amount>`);
-    const userId = message.mentions?.users?.first().id || args[0];
+    const userId = args[0];
     if (!client.users.fetch(userId)) {
       return message.reply(`fh cdev **<user>** del/add/remove/ <amount>`);
     }
@@ -45,6 +45,7 @@ module.exports = {
         break;
       case 'remove':
       case '-':
+        args.shift();
         const Ramount = parseAmount(args[0]);
         if (!Ramount)
           return message.reply(
