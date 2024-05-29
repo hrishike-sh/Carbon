@@ -44,6 +44,7 @@ module.exports = {
     const user = await Database.findOne({ userId });
     const d = [];
     if (user?.pings) {
+      user.pings = user.pings.sort((a, b) => b.msg.when - a.msg.when);
       for (let i = 0; i < user.pings.length; i++) {
         if (i > 9) break;
         const s =
@@ -54,7 +55,7 @@ module.exports = {
           )?.tag || 'Unknown#0000';
         const cc =
           (user.pings[i].msg.content.length > 99
-            ? user.pings[i].msg.content.slice(0, 100) + '...'
+            ? user.pings[i].msg.content.slice(0, 200) + '...'
             : user.pings[i].msg.content) +
           ` [[Jump]](${user.pings[i].msg.url})`;
 
@@ -92,8 +93,23 @@ module.exports = {
       .then((p) => {
         p.awaitMessageComponent({
           filter: (m) => m.user.id == message.author.id
-        }).then((c) => {
-          c.message.delete();
+        }).then(async (c) => {
+          user.pings = [];
+          user.save();
+          await c.message.edit({
+            embeds: [
+              {
+                title: 'Last Pings',
+                color: Colors.Aqua,
+                description: 'Your pings have been cleared!',
+                footer: {
+                  text: 'Only 10 pings are stored.'
+                }
+              }
+            ],
+            components: []
+          });
+          return;
         });
       });
     if (user.pings.length > 10) {
