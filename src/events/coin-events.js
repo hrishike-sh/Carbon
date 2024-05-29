@@ -21,7 +21,8 @@ module.exports = {
     if (Math.random() > 0.03) return; // 3% chance for event
     addCd(message.channel.id);
 
-    const randomEvent = 'heist';
+    // const randomEvent = ['heist', 'math'][Math.ceil(Math.random() * 2)];
+    const randomEvent = 'math';
 
     if (randomEvent == 'heist') {
       const joined = [];
@@ -112,6 +113,34 @@ module.exports = {
           ]
         });
       });
+    } else if (randomEvent == 'math') {
+      const num1 = Math.floor(Math.random() * 1000);
+      const num2 = Math.floor(Math.random() * 1000);
+
+      await message.channel.send({
+        embeds: [
+          {
+            title: 'Math Test :nerd:',
+            color: Colors.Yellow,
+            description: `What's **${num1}+${num2}**?`,
+            footer: {
+              text: 'First to answer gets a random amount of coins!'
+            }
+          }
+        ]
+      });
+      message.channel
+        .createMessageCollector({
+          filter: (m) => m.content == num1 + num2,
+          idle: 30_000
+        })
+        .then(async (c) => {
+          const coins = Math.floor(Math.random() * 750) + 250;
+          await addCoins(c.user.id, coins);
+          message.channel.send(
+            `:nerd: ${c.author.toString()} :nerd: has answered and received <:token:1003272629286883450> **${coins}** coins.`
+          );
+        });
     }
   }
 };
