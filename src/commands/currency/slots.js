@@ -10,6 +10,7 @@ module.exports = {
    * @param {Client} client
    */
   async execute(message, args, client) {
+    return message.reply('Temporarily disabled!');
     if (message.guildId !== '824294231447044197') return;
     const userId = message.author.id;
     const user = await getUser(userId);
