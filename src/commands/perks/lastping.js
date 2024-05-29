@@ -40,7 +40,7 @@ module.exports = {
     if (user?.pings) {
       for (let i = 0; i < user.pings.length; i++) {
         if (i > 9) break;
-        const user =
+        const s =
           (
             await message.client.users
               .fetch(user.pings[i].pingerId)
@@ -50,7 +50,7 @@ module.exports = {
           user.pings[i].msg.content.slice(0, 100) +
           '...' +
           `[Jump](${user.pings[i].msg.url})`;
-        d.push(`<t:${user.pings[i].msg.when}:t> **${user}**: ${cc}`);
+        d.push(`<t:${user.pings[i].msg.when}:t> **${s}**: ${cc}`);
       }
     } else {
       d.push('You have no recent pings.');
