@@ -7,8 +7,15 @@ module.exports = {
    * @param {Message} message
    */
   async execute(message) {
-    const client = message.client;
-    const allowedRoles = ['826002228828700718'];
+    const allowedRoles = [
+      '826002228828700718',
+      '824539655134773269',
+      '999911967319924817',
+      '825283097830096908',
+      '828048225096826890',
+      '876460154705555487',
+      '824687526396297226'
+    ];
     if (
       !message?.guild ||
       message.guild.id !== '824294231447044197' ||
@@ -31,7 +38,8 @@ module.exports = {
         pingerId: message.author.id,
         msg: {
           url: `https://discord.com/channels/${message.guild.id}/${message.channel.id}/${message.id}`,
-          content: message.content
+          content: message.content,
+          when: (message.createdTimestamp / 1000).toFixed(0)
         }
       });
       dbUser.save();
