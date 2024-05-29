@@ -136,7 +136,7 @@ module.exports = {
         })
         .then(async (c) => {
           const coins = Math.floor(Math.random() * 750) + 250;
-          await addCoins(c.first().user.id, coins);
+          await addCoins(c.first().author.id, coins);
           message.channel.send(
             `:nerd: ${c
               .first()
