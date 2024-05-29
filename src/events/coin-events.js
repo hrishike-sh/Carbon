@@ -21,8 +21,7 @@ module.exports = {
     if (Math.random() > 0.03) return; // 3% chance for event
     addCd(message.channel.id);
 
-    // const randomEvent = ['heist', 'math'][Math.ceil(Math.random() * 2)];
-    const randomEvent = 'math';
+    const randomEvent = ['heist', 'math'][Math.ceil(Math.random() * 2)];
 
     if (randomEvent == 'heist') {
       const joined = [];
@@ -135,6 +134,7 @@ module.exports = {
       col.on('collect', async (msg) => {
         const coins = Math.ceil(Math.random() * 500) + 500;
         await addCoins(msg.author.id, coins);
+        col.stop();
         return message.channel.send(
           `:nerd: ${msg.author.toString()} :nerd: was the first to answer! They got <:token:1003272629286883450> **${coins}** coins!`
         );
