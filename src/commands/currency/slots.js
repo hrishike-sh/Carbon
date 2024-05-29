@@ -93,7 +93,7 @@ module.exports = {
       multi = 0;
     }
     console.log('Multi:', multi);
-    addCoins(userId, amount * multi);
+    addCoins(userId, Number(amount) * Number(multi));
     let d =
       '<a:aleft:1244308430437744730><a:slotspin:1244291354993885316><a:slotspin:1244291354993885316><a:slotspin:1244291354993885316><a:aright:1244308478223319075>';
     const slotBed = new EmbedBuilder()
