@@ -14,9 +14,6 @@ module.exports = {
       // fh cdev <user> del/add/remove/ <amount>
       return message.reply(`fh cdev **<user>** del/add/remove/ <amount>`);
     const userId = args[0];
-    if (!client.users.fetch(userId)) {
-      return message.reply(`fh cdev **<user>** del/add/remove/ <amount>`);
-    }
     args.shift();
     const what = args[0].toLowerCase();
     switch (what) {
