@@ -2,7 +2,7 @@ const { Message, Client } = require('discord.js');
 const Database = require('../../database/coins');
 module.exports = {
   name: 'coins',
-  aliases: ['coin'],
+  aliases: ['coin', 'bal', 'balance', 'cash'],
   description: 'Check your coin balance.',
   /**
    *
