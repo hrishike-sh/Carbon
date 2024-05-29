@@ -8,7 +8,7 @@ module.exports = {
    */
   async execute(message) {
     const client = message.client;
-    const allowedRoles = [];
+    const allowedRoles = ['826002228828700718'];
     if (
       !message?.guild ||
       message.guild.id !== '824294231447044197' ||
