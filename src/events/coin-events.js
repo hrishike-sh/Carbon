@@ -81,14 +81,14 @@ module.exports = {
           if (Math.random() < 0.25) {
             failed.push(joined[i]);
             const coins = ((await getUser(joined[i])).coins || 0) / 10;
-            await removeCoins(joined[i], coins.toFixed(0));
+            await removeCoins(joined[i], Number(coins.toFixed(0)));
           } else {
             won.push(joined[i]);
           }
         }
 
         won.forEach(async (a) => {
-          await addCoins(a, (pool / won.length - 1).toFixed(0));
+          await addCoins(a, Number((pool / won.length - 1).toFixed(0)));
         });
 
         return message.channel.send({
