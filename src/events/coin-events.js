@@ -130,7 +130,7 @@ module.exports = {
         ]
       });
       message.channel
-        .createMessageCollector({
+        .awaitMessages({
           filter: (m) => m.content == num1 + num2,
           idle: 30_000
         })
