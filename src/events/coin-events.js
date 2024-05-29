@@ -19,12 +19,6 @@ module.exports = {
     }
     if (cd.includes(message.channel.id)) return; // return if there was an event in the channel recently
     if (Math.random() > 0.03) return; // 3% chance for event
-    if (
-      !message.channel
-        .permissionsFor(message.guild.roles.everyone)
-        .has('SendMessages')
-    )
-      return;
     addCd(message.channel.id);
 
     const randomEvent = 'heist';
