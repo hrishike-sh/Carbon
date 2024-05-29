@@ -99,14 +99,16 @@ module.exports = {
                   .toFixed(0)
                   .toLocaleLowerCase()}** coins each!`
             },
-            {
-              title: 'Heist Losers',
-              color: Colors.Red,
-              description:
-                failed.map((a) => `<@${a}>`).join(' ') +
-                ' have lost **10% of their coins** :joy_cat:',
-              timestamp: new Date()
-            }
+            failed.length > 0
+              ? {
+                  title: 'Heist Losers',
+                  color: Colors.Red,
+                  description:
+                    failed.map((a) => `<@${a}>`).join(' ') +
+                    ' have lost **10% of their coins** :joy_cat:',
+                  timestamp: new Date()
+                }
+              : null
           ]
         });
       });
