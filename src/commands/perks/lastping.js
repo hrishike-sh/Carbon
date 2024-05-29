@@ -1,4 +1,10 @@
-const { Message, Colors } = require('discord.js');
+const {
+  Message,
+  Colors,
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle
+} = require('discord.js');
 const Database = require('../../database/lastping');
 module.exports = {
   name: 'lastping',
@@ -57,20 +63,44 @@ module.exports = {
     } else {
       d.push('You have no recent pings.');
     }
-    await message.reply({
-      embeds: [
-        {
-          title: 'Last 10 Pings',
-          color: Colors.Aqua,
-          description:
-            d.length > 1
-              ? d.join(
-                  '\n<:yes:931435927061020712><:yes:931435927061020712><:yes:931435927061020712><:yes:931435927061020712><:yes:931435927061020712>\n'
-                )
-              : d[0]
-        }
-      ]
-    });
+    message
+      .reply({
+        embeds: [
+          {
+            title: 'Last Pings',
+            color: Colors.Aqua,
+            description:
+              d.length > 1
+                ? d.join(
+                    '\n<:yes:931435927061020712><:yes:931435927061020712><:yes:931435927061020712><:yes:931435927061020712><:yes:931435927061020712>\n'
+                  )
+                : d[0],
+            footer: {
+              text: 'Only 10 pings are stored.'
+            }
+          }
+        ],
+        components: [
+          new ActionRowBuilder().addComponents([
+            new ButtonBuilder()
+              .setCustomId('delete')
+              .setEmoji('🗑')
+              .setStyle(ButtonStyle.Primary)
+          ])
+        ]
+      })
+      .then((p) => {
+        p.awaitMessageComponent({
+          filter: (m) => m.user.id == message.author.id
+        }).then((c) => {
+          c.message.delete();
+        });
+      });
+    if (user.pings.length > 10) {
+      const newPings = user.pings.slice(0, 10);
+      user.pings = newPings;
+      user.save();
+    }
   }
 };
 const sleep = (milliseconds) => {
