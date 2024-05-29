@@ -41,7 +41,7 @@ module.exports = {
 
 const getUser = async (userId) => {
   let u = await Database.findOne({ userId });
-  if (u) {
+  if (!u) {
     u = new Database({
       userId,
       pings: []
