@@ -37,7 +37,7 @@ module.exports = {
           return message.reply(
             'fh cdev <user> del/__add__/remove/ **<amount>**'
           );
-        addCoins(userId, amount);
+        await addCoins(userId, amount);
         message.react('✅');
         break;
       case 'remove':
@@ -48,7 +48,7 @@ module.exports = {
           return message.reply(
             'fh cdev <user> del/add/__remove__/ **<amount>**'
           );
-        removeCoins(userId, amount);
+        await removeCoins(userId, amount);
         message.react('✅');
         break;
     }
