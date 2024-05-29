@@ -5,4 +5,4 @@ const LastPingSchema = new Schema({
   pings: { type: [Object] }
 });
 
-module.exports = model('messages', LastPingSchema);
+module.exports = model('lastping', LastPingSchema);
