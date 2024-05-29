@@ -49,7 +49,8 @@ module.exports = {
                 text: '25% chance to lose.'
               }
             }
-          ]
+          ],
+          components: [row]
         })
       ).createMessageComponentCollector({
         idle: 10_000
