@@ -1,5 +1,6 @@
 const { Message, Client, Colors } = require('discord.js');
 const Database = require('../../database/coins');
+let cd = [];
 module.exports = {
   name: 'coinflip',
   aliases: ['cf'],
@@ -20,6 +21,24 @@ module.exports = {
     if (user.coins < amount) {
       return message.reply('u dont have that many coins brokie');
     }
+    if (cd.includes(userId)) {
+      return message.reply({
+        embeds: [
+          {
+            author: {
+              icon_url: message.author.displayAvatarURL(),
+              name: message.author.username
+            },
+            footer: {
+              text: 'Get a job'
+            },
+            description: 'You can run this command every 5 seconds!'
+          }
+        ]
+      });
+    }
+    addCd(userId);
+
     if (Math.random() < 0.5) {
       removeCoins(userId, amount);
       message.reply({
@@ -108,4 +127,9 @@ const StringValues = {
   m: 1e6,
   k: 1e3,
   b: 1e9
+};
+const addCd = async (userId) => {
+  cd.push(userId);
+  await sleep(5000);
+  cd = cd.filter((a) => a != userId);
 };
