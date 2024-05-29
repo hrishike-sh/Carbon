@@ -47,10 +47,12 @@ module.exports = {
               .catch(() => null)
           )?.tag || 'Unknown#0000';
         const cc =
-          user.pings[i].msg.content.slice(0, 100) +
-          '...' +
-          `[Jump](${user.pings[i].msg.url})`;
-        d.push(`<t:${user.pings[i].msg.when}:t> **${s}**: ${cc}`);
+          (user.pings[i].msg.content.length > 99
+            ? user.pings[i].msg.content.slice(0, 100) + '...'
+            : user.pings[i].msg.content) +
+          ` [[Jump]](${user.pings[i].msg.url})`;
+
+        d.push(`<t:${user.pings[i].msg.when}:t> **@${s}**: ${cc}`);
       }
     } else {
       d.push('You have no recent pings.');
