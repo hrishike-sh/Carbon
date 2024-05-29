@@ -5,7 +5,7 @@ const {
   ButtonStyle,
   Colors
 } = require('discord.js');
-const Database = require('discord.js');
+const Database = require('../database/coins');
 let cd = [];
 module.exports = {
   name: 'messageCreate',
