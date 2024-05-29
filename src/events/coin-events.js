@@ -114,8 +114,8 @@ module.exports = {
         });
       });
     } else if (randomEvent == 'math') {
-      const num1 = Math.floor(Math.random() * 1000);
-      const num2 = Math.floor(Math.random() * 1000);
+      const num1 = Math.floor(Math.random() * 500);
+      const num2 = Math.floor(Math.random() * 500);
 
       await message.channel.send({
         embeds: [
@@ -129,20 +129,16 @@ module.exports = {
           }
         ]
       });
-      message.channel
-        .awaitMessages({
-          filter: (m) => m.content == num1 + num2,
-          idle: 30_000
-        })
-        .then(async (c) => {
-          const coins = Math.floor(Math.random() * 750) + 250;
-          await addCoins(c.first().author.id, coins);
-          message.channel.send(
-            `:nerd: ${c
-              .first()
-              .author.toString()} :nerd: has answered and received <:token:1003272629286883450> **${coins}** coins.`
-          );
-        });
+      const col = message.channel.createMessageCollector({
+        filter: (m) => m.content == num1 + num2
+      });
+      col.on('collect', async (msg) => {
+        const coins = Math.ceil(Math.random() * 500) + 500;
+        await addCoins(msg.author.id, coins);
+        return message.channel.send(
+          `:nerd: ${msg.author.toString()} :nerd: was the first to answer! They got <:token:1003272629286883450> **${coins}** coins!`
+        );
+      });
     }
   }
 };
