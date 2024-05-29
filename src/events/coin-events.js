@@ -136,9 +136,11 @@ module.exports = {
         })
         .then(async (c) => {
           const coins = Math.floor(Math.random() * 750) + 250;
-          await addCoins(c.user.id, coins);
+          await addCoins(c.first().user.id, coins);
           message.channel.send(
-            `:nerd: ${c.author.toString()} :nerd: has answered and received <:token:1003272629286883450> **${coins}** coins.`
+            `:nerd: ${c
+              .first()
+              .author.toString()} :nerd: has answered and received <:token:1003272629286883450> **${coins}** coins.`
           );
         });
     }
