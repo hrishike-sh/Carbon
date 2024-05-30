@@ -113,7 +113,8 @@ module.exports = {
         collector.stop();
         message.channel.send('You failed!');
       } else {
-        rows[row].components[index > 4 ? index - 5 : index];
+        rows[row].components[index > 4 ? index - 5 : index].setDisabled();
+        await button.deferUpdate();
         await msg.edit({
           components: rows
         });
