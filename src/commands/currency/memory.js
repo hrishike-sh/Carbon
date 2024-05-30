@@ -109,7 +109,7 @@ module.exports = {
     collector.on('collect', async (button) => {
       const emoji = button.component.emoji;
       const [row, index] = button.customId.split('_');
-      if (flow[i] !== emoji) {
+      if (flow[count] !== emoji) {
         collector.stop();
         message.channel.send('You failed!');
       } else {
@@ -117,6 +117,7 @@ module.exports = {
         await msg.edit({
           components: [rows]
         });
+        count++;
       }
     });
 
