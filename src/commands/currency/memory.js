@@ -22,7 +22,7 @@ module.exports = {
       return message.reply("You're already in a game!");
     }
     cd.add(userId);
-    await removeCoins(userId, amount);
+    // await removeCoins(userId, amount);
     const emojis = [
       '😃',
       '🥹',
