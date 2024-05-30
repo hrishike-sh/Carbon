@@ -9,6 +9,7 @@ const {
 } = require('discord.js');
 const Database = require('../../database/coins');
 const cd = new Set();
+let ingame = [];
 module.exports = {
   name: 'memory',
   /**
@@ -33,7 +34,10 @@ module.exports = {
     if (cd.has(userId)) {
       return message.reply('You can run this command once every minute.');
     }
+    if (ingame.includes(userId))
+      return message.reply('You already have a game running');
     addCd(userId);
+    ingame.push(userId);
     await removeCoins(userId, amount);
     let emojis = [
       '😃',
@@ -152,6 +156,7 @@ module.exports = {
       rows[1].components.forEach((c) => {
         c.setDisabled();
       });
+      ingame = ingame.filter((a) => a !== message.author.id);
       return msg.edit({
         components: rows
       });
