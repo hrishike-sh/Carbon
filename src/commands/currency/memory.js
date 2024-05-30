@@ -112,6 +112,8 @@ module.exports = {
       if (flow[count] !== emoji) {
         collector.stop();
         message.channel.send('You failed!');
+        cd.delete(userId);
+        return;
       } else {
         rows[row].components[index > 4 ? index - 5 : index].setDisabled();
         await button.deferUpdate();
@@ -122,7 +124,30 @@ module.exports = {
       }
     });
 
-    cd.delete(userId);
+    collector.on('end', async () => {
+      if (count == 4) {
+        await addCoins(userId, amount * 2.5);
+        message.channel.send(
+          `${message.author.toString()} you won <:token:1003272629286883450> **${(
+            amount * 2.5
+          ).toLocaleString()}** coins!!`
+        );
+      } else {
+        message.channel.send(
+          `${message.author.toString()} you lost <:token:1003272629286883450> **${amount.toLocaleString()}** coins!!`
+        );
+      }
+      rows[0].components.forEach((c) => {
+        c.setDisabled();
+      });
+      rows[1].components.forEach((c) => {
+        c.setDisabled();
+      });
+      cd.delete(userId);
+      return msg.edit({
+        components: rows
+      });
+    });
   }
 };
 const sleep = (milliseconds) => {
