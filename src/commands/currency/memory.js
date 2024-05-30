@@ -74,14 +74,14 @@ module.exports = {
       if (i < 5) {
         rows[0].addComponents([
           new ButtonBuilder()
-            .setCustomId(`1_${i}`)
+            .setCustomId(`0_${i}`)
             .setEmoji(`${emojis[i]}`)
             .setStyle(ButtonStyle.Primary)
         ]);
       } else {
         rows[1].addComponents([
           new ButtonBuilder()
-            .setCustomId(`2_${i}`)
+            .setCustomId(`1_${i}`)
             .setEmoji(`${emojis[i]}`)
             .setStyle(ButtonStyle.Primary)
         ]);
