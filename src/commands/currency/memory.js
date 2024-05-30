@@ -58,6 +58,8 @@ module.exports = {
       });
       await sleep(500);
     }
+
+    cd.delete(userId);
   }
 };
 const sleep = (milliseconds) => {
