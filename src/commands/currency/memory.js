@@ -1,4 +1,5 @@
 const { Message, Client, EmbedBuilder, Colors } = require('discord.js');
+const Database = require('../../database/coins');
 const cd = new Set();
 module.exports = {
   name: 'memory',
