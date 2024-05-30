@@ -107,7 +107,8 @@ module.exports = {
     });
     let count = 0;
     collector.on('collect', async (button) => {
-      const emoji = button.component.emoji;
+      const emoji = button.component.emoji.toString();
+      console.log(emoji, flow[count]);
       const [row, index] = button.customId.split('_');
       if (flow[count] !== emoji) {
         collector.stop();
