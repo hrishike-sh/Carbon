@@ -27,10 +27,13 @@ module.exports = {
     if (dbUser.coins < amount) {
       return message.reply(`You don't have ${amount.toLocaleString()} coins.`);
     }
-    if (cd.has(userId)) {
-      return message.reply("You're already in a game!");
+    if (amount > 5_000) {
+      return message.reply('Maximum bet is 5,000!');
     }
-    cd.add(userId);
+    if (cd.has(userId)) {
+      return message.reply('You can run this command once every minute.');
+    }
+    addCd(userId);
     await removeCoins(userId, amount);
     let emojis = [
       '😃',
@@ -50,7 +53,7 @@ module.exports = {
       .setTitle('Memory Game')
       .setColor(Colors.Yellow)
       .setFooter({
-        text: `Win amount: ${(amount * 2.5).toLocaleString()}`
+        text: `Win amount: ${(amount * 2.5).toLocaleString()} Time: 20 seconds.`
       })
       .setDescription(
         'The game will start in 2 seconds, click the emojis in correct order later on!'
@@ -76,14 +79,14 @@ module.exports = {
           new ButtonBuilder()
             .setCustomId(`0_${i}`)
             .setEmoji(`${emojis[i]}`)
-            .setStyle(ButtonStyle.Primary)
+            .setStyle(ButtonStyle.Secondary)
         ]);
       } else {
         rows[1].addComponents([
           new ButtonBuilder()
             .setCustomId(`1_${i}`)
             .setEmoji(`${emojis[i]}`)
-            .setStyle(ButtonStyle.Primary)
+            .setStyle(ButtonStyle.Secondary)
         ]);
       }
     }
@@ -103,19 +106,25 @@ module.exports = {
           return false;
         } else return true;
       },
-      max: 5
+      max: 5,
+      time: 20_000
     });
     let count = 0;
     collector.on('collect', async (button) => {
       const emoji = button.component.emoji.name;
       const [row, index] = button.customId.split('_');
       if (flow[count] !== emoji) {
-        collector.stop();
+        rows[row].components[index > 4 ? index - 5 : index]
+          .setDisabled()
+          .setStyle(ButtonStyle.Danger);
         count = 0;
+        collector.stop();
         cd.delete(userId);
         return;
       } else {
-        rows[row].components[index > 4 ? index - 5 : index].setDisabled();
+        rows[row].components[index > 4 ? index - 5 : index]
+          .setDisabled()
+          .setStyle(ButtonStyle.Success);
         await button.deferUpdate();
         await msg.edit({
           components: rows
@@ -143,12 +152,16 @@ module.exports = {
       rows[1].components.forEach((c) => {
         c.setDisabled();
       });
-      cd.delete(userId);
       return msg.edit({
         components: rows
       });
     });
   }
+};
+const addCd = async (userId) => {
+  cd.add(userId);
+  await sleep(60_000);
+  cd.delete(userId);
 };
 const sleep = (milliseconds) => {
   return new Promise((resolve) => setTimeout(resolve, milliseconds));
