@@ -21,7 +21,7 @@ module.exports = {
     if (Math.random() > 0.03) return; // 3% chance for event
     addCd(message.channel.id);
 
-    const randomEvent = ['heist', 'math'][Math.ceil(Math.random() * 2)];
+    const randomEvent = ['heist', 'math'][Math.floor(Math.random() * 2)];
 
     if (randomEvent == 'heist') {
       const joined = [];
