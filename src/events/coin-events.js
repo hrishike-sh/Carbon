@@ -17,6 +17,7 @@ module.exports = {
       // fh only & no bots
       return;
     }
+    if (message.channel.id == '824313123728261150') return;
     if (cd.includes(message.channel.id)) return; // return if there was an event in the channel recently
     if (Math.random() > 0.03) return; // 3% chance for event
     addCd(message.channel.id);
