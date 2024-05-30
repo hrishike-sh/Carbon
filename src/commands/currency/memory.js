@@ -53,7 +53,7 @@ module.exports = {
       .setTitle('Memory Game')
       .setColor(Colors.Yellow)
       .setFooter({
-        text: `Win amount: ${(amount * 2.5).toLocaleString()} Time: 20 seconds.`
+        text: `Win amount: ${(amount * 2.5).toLocaleString()} Time: 10 seconds.`
       })
       .setDescription(
         'The game will start in 2 seconds, click the emojis in correct order later on!'
@@ -107,7 +107,7 @@ module.exports = {
         } else return true;
       },
       max: 5,
-      time: 20_000
+      time: 10_000
     });
     let count = 0;
     collector.on('collect', async (button) => {
