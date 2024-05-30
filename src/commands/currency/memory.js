@@ -31,7 +31,7 @@ module.exports = {
       return message.reply("You're already in a game!");
     }
     cd.add(userId);
-    // await removeCoins(userId, amount);
+    await removeCoins(userId, amount);
     let emojis = [
       '😃',
       '🥹',
@@ -106,12 +106,14 @@ module.exports = {
       max: 5
     });
     let count = 0;
+    let correct = 0;
     collector.on('collect', async (button) => {
       const emoji = button.component.emoji.name;
       const [row, index] = button.customId.split('_');
       if (flow[count] !== emoji) {
         collector.stop();
         message.channel.send('You failed!');
+        count = 0;
         cd.delete(userId);
         return;
       } else {
@@ -125,7 +127,7 @@ module.exports = {
     });
 
     collector.on('end', async () => {
-      if (count == 4) {
+      if (count > 0) {
         await addCoins(userId, amount * 2.5);
         message.channel.send(
           `${message.author.toString()} you won <:token:1003272629286883450> **${(
