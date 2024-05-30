@@ -115,7 +115,7 @@ module.exports = {
       } else {
         rows[row].components[index].setDisabled();
         await msg.edit({
-          components: [rows]
+          components: rows
         });
         count++;
       }
