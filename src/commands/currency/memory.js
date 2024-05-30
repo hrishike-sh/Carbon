@@ -50,7 +50,7 @@ module.exports = {
       .setTitle('Memory Game')
       .setColor(Colors.Yellow)
       .setFooter({
-        text: `Your bet: ${amount.toLocaleString()}`
+        text: `Win amount: ${(amount * 2.5).toLocaleString()}`
       })
       .setDescription(
         'The game will start in 2 seconds, click the emojis in correct order later on!'
@@ -74,23 +74,50 @@ module.exports = {
       if (i < 5) {
         rows[0].addComponents([
           new ButtonBuilder()
-            .setCustomId((Math.random() * 100000).toString())
+            .setCustomId(`1_${i}`)
             .setEmoji(`${emojis[i]}`)
             .setStyle(ButtonStyle.Primary)
         ]);
       } else {
         rows[1].addComponents([
           new ButtonBuilder()
-            .setCustomId((Math.random() * 100000).toString())
+            .setCustomId(`2_${i}`)
             .setEmoji(`${emojis[i]}`)
             .setStyle(ButtonStyle.Primary)
         ]);
       }
     }
 
-    const collector = await msg.edit({
-      embeds: [embed],
-      components: rows
+    const collector = (
+      await msg.edit({
+        embeds: [embed],
+        components: rows
+      })
+    ).createMessageComponentCollector({
+      filter: async (m) => {
+        if (m.user.id !== message.author.id) {
+          await m.reply({
+            ephemeral: true,
+            content: 'This is NOT your game.'
+          });
+          return false;
+        } else return true;
+      },
+      max: 5
+    });
+    let count = 0;
+    collector.on('collect', async (button) => {
+      const emoji = button.component.emoji;
+      const [row, index] = button.customId.split('_');
+      if (flow[i] !== emoji) {
+        collector.stop();
+        message.channel.send('You failed!');
+      } else {
+        rows[row].components[index].setDisabled();
+        await msg.edit({
+          components: [rows]
+        });
+      }
     });
 
     cd.delete(userId);
