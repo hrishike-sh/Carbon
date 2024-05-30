@@ -107,7 +107,7 @@ module.exports = {
         } else return true;
       },
       max: 5,
-      time: 10_000
+      time: 30_000
     });
     let count = 0;
     collector.on('collect', async (button) => {
@@ -125,10 +125,10 @@ module.exports = {
         rows[row].components[index > 4 ? index - 5 : index]
           .setDisabled()
           .setStyle(ButtonStyle.Success);
-        await button.deferUpdate();
         await msg.edit({
           components: rows
         });
+        await button.deferUpdate();
         count++;
       }
     });
