@@ -106,13 +106,11 @@ module.exports = {
       max: 5
     });
     let count = 0;
-    let correct = 0;
     collector.on('collect', async (button) => {
       const emoji = button.component.emoji.name;
       const [row, index] = button.customId.split('_');
       if (flow[count] !== emoji) {
         collector.stop();
-        message.channel.send('You failed!');
         count = 0;
         cd.delete(userId);
         return;
