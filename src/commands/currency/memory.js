@@ -1,4 +1,12 @@
-const { Message, Client, EmbedBuilder, Colors } = require('discord.js');
+const {
+  Message,
+  Client,
+  EmbedBuilder,
+  Colors,
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle
+} = require('discord.js');
 const Database = require('../../database/coins');
 const cd = new Set();
 module.exports = {
@@ -24,7 +32,7 @@ module.exports = {
     }
     cd.add(userId);
     // await removeCoins(userId, amount);
-    const emojis = [
+    let emojis = [
       '😃',
       '🥹',
       '😂',
@@ -56,8 +64,34 @@ module.exports = {
       await msg.edit({
         embeds: [embed]
       });
-      await sleep(750);
+      await sleep(1000);
     }
+
+    embed.setDescription('Click the emojis in correct order now!');
+    const rows = [new ActionRowBuilder(), new ActionRowBuilder()];
+    emojis = emojis.sort(() => Math.random() - 0.5);
+    for (let i = 0; i < 10; i++) {
+      if (i < 5) {
+        rows[0].addComponents([
+          new ButtonBuilder()
+            .setCustomId((Math.random() * 100000).toString())
+            .setEmoji(`${emojis[i]}`)
+            .setStyle(ButtonStyle.Primary)
+        ]);
+      } else {
+        rows[1].addComponents([
+          new ButtonBuilder()
+            .setCustomId((Math.random() * 100000).toString())
+            .setEmoji(`${emojis[i]}`)
+            .setStyle(ButtonStyle.Primary)
+        ]);
+      }
+    }
+
+    const collector = await msg.edit({
+      embeds: [embed],
+      components: rows
+    });
 
     cd.delete(userId);
   }
