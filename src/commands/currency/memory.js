@@ -47,16 +47,16 @@ module.exports = {
       .setDescription(
         'The game will start in 2 seconds, click the emojis in correct order later on!'
       );
-    await sleep(2000);
     const msg = await message.reply({
       embeds: [embed]
     });
+    await sleep(2000);
     for (let i = 0; i < 5; i++) {
       embed.setDescription(`${flow[i]}`);
       await msg.edit({
         embeds: [embed]
       });
-      await sleep(500);
+      await sleep(750);
     }
 
     cd.delete(userId);
