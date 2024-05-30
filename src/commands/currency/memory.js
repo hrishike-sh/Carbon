@@ -111,7 +111,7 @@ module.exports = {
         } else return true;
       },
       max: 5,
-      time: 30_000
+      time: 10_000
     });
     let count = 0;
     collector.on('collect', async (button) => {
@@ -121,6 +121,7 @@ module.exports = {
         rows[row].components[index > 4 ? index - 5 : index]
           .setDisabled()
           .setStyle(ButtonStyle.Danger);
+        await button.deferUpdate();
         count = 0;
         collector.stop();
         cd.delete(userId);
@@ -138,7 +139,7 @@ module.exports = {
     });
 
     collector.on('end', async () => {
-      if (count > 0) {
+      if (count > 3) {
         await addCoins(userId, amount * 2.5);
         message.channel.send(
           `${message.author.toString()} you won <:token:1003272629286883450> **${(
