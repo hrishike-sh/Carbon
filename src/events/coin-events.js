@@ -100,16 +100,14 @@ module.exports = {
                   .toFixed(0)
                   .toLocaleLowerCase()}** coins each!`
             },
-            failed.length > 0
-              ? {
-                  title: 'Heist Losers',
-                  color: Colors.Red,
-                  description:
-                    failed.map((a) => `<@${a}>`).join(' ') +
-                    ' have lost **10% of their coins** :joy_cat:',
-                  timestamp: new Date()
-                }
-              : null
+            {
+              title: 'Heist Losers',
+              color: Colors.Red,
+              description:
+                failed.map((a) => `<@${a}>`).join(' ') +
+                ' have lost **10% of their coins** :joy_cat:',
+              timestamp: new Date()
+            }
           ]
         });
       });
@@ -140,6 +138,7 @@ module.exports = {
           `:nerd: ${msg.author.toString()} :nerd: was the first to answer! They got <:token:1003272629286883450> **${coins}** coins!`
         );
       });
+    } else if (randomEvent == 'boss') {
     }
   }
 };
