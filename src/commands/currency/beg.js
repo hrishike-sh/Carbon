@@ -39,6 +39,20 @@ module.exports = {
    */
   async execute(message, args, client) {
     if (message.guildId !== '824294231447044197') return;
+    if (
+      [
+        '824313259976556544',
+        '824313275750547456',
+        '824313288967192597',
+        '824313306633863278',
+        '824318942511890452',
+        '828201384910258186',
+        '828201396334755860',
+        '832893535509676093'
+      ].includes(message.channel.id)
+    ) {
+      return message.react('❌');
+    }
     const userId = message.author.id;
     if (cd.includes(userId)) {
       return message.reply({
