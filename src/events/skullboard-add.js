@@ -19,11 +19,10 @@ module.exports = {
    */
   async execute(reaction, user) {
     const message = reaction.message;
-    const member = message.guild.members.cache.get(user.id);
-
+    if (!message.guild || message.guild.id != '824294231447044197') return;
     if (!reaction.emoji || reaction.emoji.name != '💀') return;
     const fetched = await reaction.fetch();
-    if (fetched.count < 0) return;
+    if (fetched.count < 4) return;
 
     let DBENTRY = await Database.findOne({
       'originalMessage.id': message.id
