@@ -70,6 +70,35 @@ module.exports = {
         id: msg.id
       };
       await DBENTRY.save();
+    } else {
+      const msg = await message.guild.channels.cache
+        .get(skullboardChannelId)
+        .messages.fetch(DBENTRY.skullboardMessage.id);
+
+      msg.edit({
+        embeds: [
+          {
+            author: {
+              name: message.author.tag,
+              iconURL: message.author.displayAvatarURL()
+            },
+            title: `${fetched.count.toLocaleString()} :skull:`,
+            description: message.content || '_ _',
+            image: {
+              url: message.attachments?.first()?.url || null
+            },
+            color: Colors.Gold
+          }
+        ],
+        components: [
+          new ActionRowBuilder().addComponents([
+            new ButtonBuilder()
+              .setStyle(ButtonStyle.Link)
+              .setEmoji('💀')
+              .setURL(message.url)
+          ])
+        ]
+      });
     }
   }
 };
