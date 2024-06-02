@@ -30,6 +30,8 @@ module.exports = {
         }
       });
 
+      await DBENTRY.save();
+
       message.guild.channels.cache.get(skullboardChannelId).send({
         embeds: [
           {
