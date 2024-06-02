@@ -1,44 +1,40 @@
 const { EmbedBuilder } = require('discord.js');
 const fh = '824294231447044197';
 const prefix = 'fh';
+
 module.exports = {
   name: 'dm',
   async execute(message) {
-    if(message.guild.id !== fh) {
-      return message.reply("");
+    if(message.guild.id !== fh || !message.member.roles.cache.has('1016728636365209631')) {
+      return message.reply("No permission");
     }
-    if(!message.member.roles.cache.has('1016728636365209631')) {
-      return message.reply("Only CMs+ L bozo");
-    }
+
     const user = message.mentions.users.first();
     if(!user) return message.reply("specify a user");
 
-    let content = message.content.slice(prefix.length).trim();
-    const anonymous = content.includes('-a');
-    
-    content = content.replace('-a', '').trim();
+    const content = message.content
+      .slice(prefix.length + 3) 
+      .replace(`<@${user.id}>`, '')
+      .replace(`<@!${user.id}>`, '')
+      .replace('-a', '')
+      .trim();
 
-    const args = fullContent.split(/ +/);
-    const content = args.slice(1).join(" ");
+    if(!content) return message.reply("what's the message?");
 
-    if(!content) {
-      return message.reply("what's the message?");
-    }
+    const anonymous = message.content.includes('-a');
 
     try {
       const embed = new EmbedBuilder()
         .setDescription(content)
-        .setTimestamp();
-      if(!anonymous) {
-        embed.setAuthor({
+        .setTimestamp()
+        .setAuthor(anonymous ? null : {
           name: message.author.tag,
           iconURL: message.author.displayAvatarURL()
         });
-      }
+
       await user.send({embeds: [embed]});
       await message.reply("sent em");
     } catch(err) {
-      console.error(err);
       await message.reply("unable to dm");
     }
   }
