@@ -1,4 +1,13 @@
-const { Message, Events, MessageReaction, User } = require('discord.js');
+const {
+  Message,
+  Events,
+  MessageReaction,
+  User,
+  Colors,
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle
+} = require('discord.js');
 const Database = require('../database/skullboard');
 const skullboardChannelId = '1036564782481940510';
 module.exports = {
@@ -43,8 +52,17 @@ module.exports = {
               description: message.content || '_ _',
               image: {
                 url: message.attachments?.first()?.url || null
-              }
+              },
+              color: Colors.Gold
             }
+          ],
+          components: [
+            new ActionRowBuilder().addComponents([
+              new ButtonBuilder()
+                .setStyle(ButtonStyle.Link)
+                .setEmoji('💀')
+                .setURL(message.url)
+            ])
           ]
         });
 
