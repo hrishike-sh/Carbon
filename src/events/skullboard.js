@@ -17,7 +17,7 @@ module.exports = {
     if (fetched.count < 0) return;
 
     let DBENTRY = await Database.findOne({
-      'skullboardMessage.id': message.id
+      'originalMessage.id': message.id
     });
     if (!DBENTRY) {
       DBENTRY = new Database({
