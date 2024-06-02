@@ -30,23 +30,28 @@ module.exports = {
         }
       });
 
-      await DBENTRY.save();
-
-      message.guild.channels.cache.get(skullboardChannelId).send({
-        embeds: [
-          {
-            author: {
-              name: message.author.tag,
-              iconURL: message.author.displayAvatarURL()
-            },
-            title: `${fetched.count.toLocaleString()} :skull:`,
-            description: message.content || '_ _',
-            image: {
-              url: message.attachments?.first()?.url || null
+      const msg = await message.guild.channels.cache
+        .get(skullboardChannelId)
+        .send({
+          embeds: [
+            {
+              author: {
+                name: message.author.tag,
+                iconURL: message.author.displayAvatarURL()
+              },
+              title: `${fetched.count.toLocaleString()} :skull:`,
+              description: message.content || '_ _',
+              image: {
+                url: message.attachments?.first()?.url || null
+              }
             }
-          }
-        ]
-      });
+          ]
+        });
+
+      DBENTRY.skullboardMessage = {
+        id: msg.id
+      };
+      await DBENTRY.save();
     }
   }
 };
