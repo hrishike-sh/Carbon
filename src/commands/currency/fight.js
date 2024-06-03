@@ -76,7 +76,9 @@ module.exports = {
         const embed = new EmbedBuilder()
           .setTitle(`${message.author.username} vs ${target.user.username}`)
           .setColor(Colors.Yellow)
-          .setFooter(`Winner gets: ${amount.toLocaleString()} coins`)
+          .setFooter({
+            text: `Winner gets: ${amount.toLocaleString()} coins`
+          })
           .setDescription(
             `**${message.author.tag}** (__100__) vs (__100__) **${target.user.tag}**`
           );
