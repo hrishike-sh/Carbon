@@ -136,8 +136,10 @@ module.exports = {
               target.user.tag
             }**`
           );
+          await m.deferUpdate();
           fightMessage.edit({
-            embeds: [embed]
+            embeds: [embed],
+            content: `${turn.toString()} its your turn!`
           });
         });
       } else if (m.customId === 'cancel') {
