@@ -116,7 +116,7 @@ module.exports = {
             return;
           }
 
-          if (m.id !== turn.id) {
+          if (m.user.id !== turn.id) {
             return m.reply({
               content: 'This is not your turn!',
               ephemeral: true
