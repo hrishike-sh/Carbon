@@ -18,7 +18,6 @@ module.exports = {
    */
   async execute(message, args, client) {
     if (!message.guild || message.guild.id != '824294231447044197') return;
-    if (message.author.id !== '598918643727990784') return;
     const target = message.mentions.members.first();
     if (!target) return message.reply('You have to mention someone!');
     args.shift();
@@ -172,6 +171,8 @@ module.exports = {
           fightMessage.edit({
             components: [row]
           });
+          cd.delete(message.author.id);
+          cd.delete(target.id);
         });
       } else if (m.customId === 'cancel') {
         confirmationCollector.stop();
