@@ -137,9 +137,40 @@ module.exports = {
             }**`
           );
           await m.deferUpdate();
+          if (hp.user < 0) {
+            embed.setDescription(
+              `~~${
+                embed.data.description
+              }~~\n\n:trophy: | **${target.user.toString()} has won the fight!**`
+            );
+            await addCoins(target.user.id, amount * 2);
+            await message.channel.send(
+              `:trophy: | **${target.user.toString()} has won the fight!**`
+            );
+            fightCollector.stop();
+          } else if (hp.target < 0) {
+            embed.setDescription(
+              `~~${
+                embed.data.description
+              }~~\n\n:trophy: | **${message.author.toString()} has won the fight!**`
+            );
+            await addCoins(message.author.id, amount * 2);
+            await message.channel.send(
+              `:trophy: | **${message.author.toString()} has won the fight!**`
+            );
+            fightCollector.stop();
+          }
           fightMessage.edit({
             embeds: [embed],
             content: `${turn.toString()} its your turn!`
+          });
+        });
+        fightCollector.on('end', () => {
+          row.components.forEach((c) => {
+            c.setDisabled();
+          });
+          fightMessage.edit({
+            components: [row]
           });
         });
       } else if (m.customId === 'cancel') {
@@ -151,6 +182,7 @@ module.exports = {
         );
       }
     });
+
     confirmationCollector.on('end', async () => {
       row.components.forEach((c) => {
         c.setDisabled(true);
