@@ -73,13 +73,10 @@ module.exports = {
         return message.reply('You need atleast 4 players to play.');
       }
       const embedData = breakArray(data.joined);
-      const mainRow = [
-        new ActionRowBuilder(),
-        new ActionRowBuilder(),
-        new ActionRowBuilder(),
-        new ActionRowBuilder(),
-        new ActionRowBuilder()
-      ];
+      const mainRow = [new ActionRowBuilder()];
+      for (let i = 1; i < Math.ceil(data.joined.length / 5); i++) {
+        mainRow.push(new ActionRowBuilder());
+      }
       for (let i = 0; i < data.joined.length; i++) {
         if (i < 5) {
           mainRow[0].addComponents(
