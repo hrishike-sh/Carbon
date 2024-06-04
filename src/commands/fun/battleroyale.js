@@ -176,12 +176,14 @@ module.exports = {
 
         const dmg = Math.ceil(Math.random() * 10) + 5;
         victim.health -= dmg;
+        const vBut = mainRow[
+          Number(m.customId.split('_')[2]) - 1
+        ].components.find((a) => a.data.custom_id.includes(victim.id));
         if (victim.health < 1) {
           victim.health = 0;
-          mainRow[Number(m.customId.split('_')[2]) - 1].components
-            .find((a) => a.data.custom_id.includes(victim.id))
-            .setDisabled();
+          vBut.setDisabled();
         }
+        vBut.setLabel(`${victim.name} (${victim.health})`);
         m.reply({
           ephemeral: true,
           content: `You attacked ${victim.name} and dealt ${dmg} damage!`
