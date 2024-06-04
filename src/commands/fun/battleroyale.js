@@ -18,7 +18,7 @@ module.exports = {
    * @param {Client} client
    */
   async execute(message, args, client) {
-    if (message.author.id !== '598918643727990784') return;
+    if (!message.member.roles.cache.has('858088054942203945')) return;
 
     const conf_embed = new EmbedBuilder()
       .setTitle('Battle Royale')
@@ -184,10 +184,6 @@ module.exports = {
           vBut.setDisabled().setEmoji('☠').setStyle(ButtonStyle.Secondary);
         }
         vBut.setLabel(`${victim.name} (${victim.health})`);
-        m.reply({
-          ephemeral: true,
-          content: `You attacked ${victim.name} and dealt ${dmg} damage!`
-        });
         updateMessage(gameMessage, mainRow);
       });
     });
