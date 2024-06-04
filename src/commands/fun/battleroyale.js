@@ -181,14 +181,14 @@ module.exports = {
         ].components.find((a) => a.data.custom_id.includes(victim.id));
         if (victim.health < 1) {
           victim.health = 0;
-          vBut.setDisabled();
+          vBut.setDisabled().setEmoji('☠').setStyle(ButtonStyle.Secondary);
         }
         vBut.setLabel(`${victim.name} (${victim.health})`);
         m.reply({
           ephemeral: true,
           content: `You attacked ${victim.name} and dealt ${dmg} damage!`
         });
-        gameMessage.edit({ components: mainRow });
+        updateMessage(gameMessage, mainRow);
       });
     });
   }
@@ -205,4 +205,11 @@ function sleep(ms) {
   return new Promise((resolve) => {
     setTimeout(resolve, ms);
   });
+}
+let LASTUPDATE = new Date().getTime();
+function updateMessage(msg, components) {
+  if (LASTUPDATE + 5000 < new Date().getTime()) {
+    LASTUPDATE = new Date().getTime();
+    msg.edit({ components });
+  }
 }
