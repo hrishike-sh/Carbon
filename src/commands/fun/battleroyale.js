@@ -80,15 +80,43 @@ module.exports = {
         new ActionRowBuilder(),
         new ActionRowBuilder()
       ];
-      for (let i = 0; i < embedData.length; i++) {
-        embedData[i].forEach((a) => {
-          mainRow[i].addComponents(
+      for (let i = 0; i < data.joined.length; i++) {
+        if (i < 5) {
+          mainRow[0].addComponents(
             new ButtonBuilder()
-              .setStyle(ButtonStyle.Primary)
-              .setCustomId(`br_${a.id}`)
-              .setLabel(a.name)
+              .setLabel(data.joined[i].name)
+              .setStyle(ButtonStyle.Secondary)
+              .setCustomId(`br_${data.joined[i].id}_1`)
           );
-        });
+        } else if (i < 10) {
+          mainRow[1].addComponents(
+            new ButtonBuilder()
+              .setLabel(data.joined[i].name)
+              .setStyle(ButtonStyle.Secondary)
+              .setCustomId(`br_${data.joined[i].id}_2`)
+          );
+        } else if (i < 15) {
+          mainRow[2].addComponents(
+            new ButtonBuilder()
+              .setLabel(data.joined[i].name)
+              .setStyle(ButtonStyle.Secondary)
+              .setCustomId(`br_${data.joined[i].id}_3`)
+          );
+        } else if (i < 20) {
+          mainRow[3].addComponents(
+            new ButtonBuilder()
+              .setLabel(data.joined[i].name)
+              .setStyle(ButtonStyle.Secondary)
+              .setCustomId(`br_${data.joined[i].id}_4`)
+          );
+        } else {
+          mainRow[4].addComponents(
+            new ButtonBuilder()
+              .setLabel(data.joined[i].name)
+              .setStyle(ButtonStyle.Secondary)
+              .setCustomId(`br_${data.joined[i].id}_5`)
+          );
+        }
       }
       return message.reply({
         components: mainRow,
