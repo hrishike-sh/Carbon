@@ -123,7 +123,9 @@ module.exports = {
       const game_embed = new EmbedBuilder()
         .setTitle('Battle Royale')
         .setColor(Colors.Gold)
-        .setFooter('Last man standing wins!')
+        .setFooter({
+          text: 'Last man standing wins!'
+        })
         .setDescription(
           `The game starts in **5 seconds**. Click on the button to attack that particular user.\n\nYour goal is to damage others and be the last one standing, good luck!`
         );
