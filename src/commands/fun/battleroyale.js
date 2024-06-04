@@ -184,6 +184,7 @@ module.exports = {
           vBut.setDisabled().setEmoji('☠').setStyle(ButtonStyle.Secondary);
         }
         vBut.setLabel(`${victim.name} (${victim.health})`);
+        m.deferUpdate();
         updateMessage(gameMessage, mainRow);
       });
     });
