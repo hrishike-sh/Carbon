@@ -48,7 +48,7 @@ module.exports = {
             content: 'You have already joined the game.'
           });
           return false;
-        }
+        } else return true;
       },
       time: 10 * 1000
     });
