@@ -63,6 +63,10 @@ module.exports = {
         name: m.user.tag,
         health: 100
       });
+      m.reply({
+        ephemeral: true,
+        content: 'You have joined the game.'
+      });
     });
     joinCollector.on('end', async () => {
       if (data.joined.length < 3) {
