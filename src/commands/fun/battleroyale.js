@@ -185,7 +185,7 @@ module.exports = {
         }
         vBut.setLabel(`${victim.name} (${victim.health})`);
         m.deferUpdate();
-        updateMessage(gameMessage, mainRow);
+        updateMessage(gameMessage, mainRow); // .
       });
     });
   }
