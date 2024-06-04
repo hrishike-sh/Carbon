@@ -144,14 +144,14 @@ module.exports = {
         await gameMessage.edit({ components: mainRow })
       ).createMessageComponentCollector({
         filter: (m) => {
-          if (!data.joined.map((a) => a.id).includes(m.id)) {
+          if (!data.joined.map((a) => a.id).includes(m.user.id)) {
             m.reply({
               ephemeral: true,
               content: "You're not in this game!"
             });
             return false;
           }
-          if (data.joined.find((a) => a.id == m.id).health < 1) {
+          if (data.joined.find((a) => a.id == m.user.id).health < 1) {
             m.reply({
               ephemeral: true,
               content: "You're already dead!"
