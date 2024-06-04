@@ -63,7 +63,7 @@ module.exports = {
         name: m.user.tag,
         health: 100
       });
-      m.reply({
+      await m.reply({
         ephemeral: true,
         content: 'You have joined the game.'
       });
