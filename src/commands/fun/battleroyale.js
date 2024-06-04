@@ -208,7 +208,7 @@ function sleep(ms) {
 }
 let LASTUPDATE = new Date().getTime();
 function updateMessage(msg, components) {
-  if (LASTUPDATE + 5000 < new Date().getTime()) {
+  if (LASTUPDATE + 1000 < new Date().getTime()) {
     LASTUPDATE = new Date().getTime();
     msg.edit({ components });
   }
