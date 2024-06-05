@@ -118,8 +118,8 @@ module.exports = {
             });
             return false;
           } else if (
-            data.joined.map((a) => a.id).weapon ||
-            data.joined.map((a) => a.id).health > 100
+            data.joined.map((a) => a.id == m.user.id).weapon ||
+            data.joined.map((a) => a.id == m.user.id).health > 100
           ) {
             m.reply({
               ephemeral: true,
@@ -141,13 +141,14 @@ module.exports = {
               content: 'You have already upgraded your shield or weapon!'
             });
             return;
+          } else {
+            data.joined.find((a) => a.id == button.user.id).health += 50;
+            await button.reply({
+              ephemeral: true,
+              content:
+                'You have upgraded your shield! You now have **150** Health!'
+            });
           }
-          data.joined.find((a) => a.id == button.user.id).health += 50;
-          await button.reply({
-            ephemeral: true,
-            content:
-              'You have upgraded your shield! You now have **150** Health!'
-          });
         } else {
           if (
             data.joined.find((a) => a.id == button.user.id).health < 100 ||
@@ -158,13 +159,14 @@ module.exports = {
               content: 'You have already upgraded your shield or weapon!'
             });
             return;
+          } else {
+            data.joined.find((a) => a.id == button.user.id).weapon = true;
+            await button.reply({
+              ephemeral: true,
+              content:
+                'You have upgraded your weapon! You now deal **+10** damage!'
+            });
           }
-          data.joined.find((a) => a.id == button.user.id).weapon = true;
-          await button.reply({
-            ephemeral: true,
-            content:
-              'You have upgraded your weapon! You now deal **+10** damage!'
-          });
         }
       });
       upgradeCollector.on('end', async () => {
