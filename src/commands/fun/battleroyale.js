@@ -118,8 +118,8 @@ module.exports = {
             });
             return false;
           } else if (
-            data.joined.map((a) => a.id == m.user.id).weapon ||
-            data.joined.map((a) => a.id == m.user.id).health > 100
+            data.joined.find((a) => a.id == m.user.id).weapon ||
+            data.joined.find((a) => a.id == m.user.id).health > 100
           ) {
             m.reply({
               ephemeral: true,
