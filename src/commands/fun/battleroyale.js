@@ -70,8 +70,8 @@ module.exports = {
       });
     });
     joinCollector.on('end', async () => {
-      if (data.joined.length < 3) {
-        return message.reply('You need atleast 4 players to play.');
+      if (data.joined.length < 2) {
+        return message.reply('You need atleast 3 players to play.');
       }
       const embedData = breakArray(data.joined);
       const mainRow = [new ActionRowBuilder()];
@@ -82,7 +82,9 @@ module.exports = {
       const upgradesEmbed = new EmbedBuilder()
         .setTitle('Select your upgrades!')
         .setColor('Green')
-        .setFooter('Game starts in 5 seconds.')
+        .setFooter({
+          text: 'Game starts in 5 seconds.'
+        })
         .setDescription(
           `<:dot:931436867272998922> Players: ${data.joined
             .map((a) => `<@${a.id}>`)
