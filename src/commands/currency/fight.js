@@ -20,6 +20,8 @@ module.exports = {
     if (!message.guild || message.guild.id != '824294231447044197') return;
     const target = message.mentions.members.first();
     if (!target) return message.reply('You have to mention someone!');
+    if (target.user.id == message.author.id)
+      return message.reply("You can't fight yourself!");
     args.shift();
     const amount = parseAmount(args[0]);
     if (!amount) return message.reply('Mention the bet!');
