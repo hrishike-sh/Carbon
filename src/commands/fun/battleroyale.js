@@ -132,15 +132,35 @@ module.exports = {
       });
       upgradeCollector.on('collect', async (button) => {
         if (button.customId.includes('sh')) {
+          if (
+            data.joined.find((a) => a.id == button.user.id).health < 100 ||
+            data.joined.find((a) => a.id == button.user.id).weapon
+          ) {
+            await button.reply({
+              ephemeral: true,
+              content: 'You have already upgraded your shield or weapon!'
+            });
+            return;
+          }
           data.joined.find((a) => a.id == button.user.id).health += 50;
-          button.reply({
+          await button.reply({
             ephemeral: true,
             content:
               'You have upgraded your shield! You now have **150** Health!'
           });
         } else {
+          if (
+            data.joined.find((a) => a.id == button.user.id).health < 100 ||
+            data.joined.find((a) => a.id == button.user.id).weapon
+          ) {
+            await button.reply({
+              ephemeral: true,
+              content: 'You have already upgraded your shield or weapon!'
+            });
+            return;
+          }
           data.joined.find((a) => a.id == button.user.id).weapon = true;
-          button.reply({
+          await button.reply({
             ephemeral: true,
             content:
               'You have upgraded your weapon! You now deal **+10** damage!'
