@@ -307,7 +307,17 @@ module.exports = {
           }
           vBut.setLabel(`${victim.name} (${victim.health})`);
           m.deferUpdate();
-          updateMessage(gameMessage, mainRow); // .
+          let r = mainRow
+            .map((a) => ({ sort: Math.random(), value: a }))
+            .sort((a, b) => a.sort - b.sort)
+            .map((a) => a.value);
+          r.forEach((com) => {
+            com.components
+              .map((a) => ({ sort: Math.random(), value: a }))
+              .sort((a, b) => a.sort - b.sort)
+              .map((a) => a.value);
+          });
+          updateMessage(gameMessage, r); // .
         });
       });
     });
@@ -330,10 +340,6 @@ let LASTUPDATE = new Date().getTime();
 function updateMessage(msg, components) {
   if (LASTUPDATE + 1000 < new Date().getTime()) {
     LASTUPDATE = new Date().getTime();
-    let row = components.sort(() => Math.random() - 0.5);
-    row.forEach((c) => {
-      c.components.sort(() => Math.random() - 0.5);
-    });
-    msg.edit({ row });
+    msg.edit({ components });
   }
 }
