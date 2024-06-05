@@ -148,6 +148,12 @@ module.exports = {
         }
       });
       upgradeCollector.on('end', async () => {
+        upgradesRow.components.forEach((a) => {
+          a.setDisabled();
+        });
+        upgradesMessage.edit({
+          components: [upgradesRow]
+        });
         for (let i = 0; i < data.joined.length; i++) {
           if (i < 5) {
             const but = new ButtonBuilder()
@@ -157,6 +163,8 @@ module.exports = {
               .setDisabled();
             if (data.joined[i].weapon) {
               but.setEmoji('🗡');
+            } else if (data.joined[i].health > 100) {
+              but.setEmoji('🛡');
             }
             mainRow[0].addComponents(but);
           } else if (i < 10) {
@@ -167,6 +175,8 @@ module.exports = {
               .setDisabled();
             if (data.joined[i].weapon) {
               but.setEmoji('🗡');
+            } else if (data.joined[i].health > 100) {
+              but.setEmoji('🛡');
             }
             mainRow[1].addComponents(but);
           } else if (i < 15) {
@@ -177,6 +187,8 @@ module.exports = {
               .setDisabled();
             if (data.joined[i].weapon) {
               but.setEmoji('🗡');
+            } else if (data.joined[i].health > 100) {
+              but.setEmoji('🛡');
             }
             mainRow[2].addComponents(but);
           } else if (i < 20) {
@@ -187,6 +199,8 @@ module.exports = {
               .setDisabled();
             if (data.joined[i].weapon) {
               but.setEmoji('🗡');
+            } else if (data.joined[i].health > 100) {
+              but.setEmoji('🛡');
             }
             mainRow[3].addComponents(but);
           } else {
@@ -197,6 +211,8 @@ module.exports = {
               .setDisabled();
             if (data.joined[i].weapon) {
               but.setEmoji('🗡');
+            } else if (data.joined[i].health > 100) {
+              but.setEmoji('🛡');
             }
             mainRow[4].addComponents(but);
           }
