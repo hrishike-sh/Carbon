@@ -150,45 +150,55 @@ module.exports = {
       upgradeCollector.on('end', async () => {
         for (let i = 0; i < data.joined.length; i++) {
           if (i < 5) {
-            mainRow[0].addComponents(
-              new ButtonBuilder()
-                .setLabel(`${data.joined[i].name} (100)`)
-                .setStyle(ButtonStyle.Secondary)
-                .setCustomId(`br_${data.joined[i].id}_1`)
-                .setDisabled()
-            );
+            const but = new ButtonBuilder()
+              .setLabel(`${data.joined[i].name} (${data.joined[i].health})`)
+              .setStyle(ButtonStyle.Secondary)
+              .setCustomId(`br_${data.joined[i].id}_5`)
+              .setDisabled();
+            if (data.joined[i].weapon) {
+              but.setEmoji('🗡');
+            }
+            mainRow[0].addComponents(but);
           } else if (i < 10) {
-            mainRow[1].addComponents(
-              new ButtonBuilder()
-                .setLabel(`${data.joined[i].name} (100)`)
-                .setStyle(ButtonStyle.Secondary)
-                .setCustomId(`br_${data.joined[i].id}_2`)
-                .setDisabled()
-            );
+            const but = new ButtonBuilder()
+              .setLabel(`${data.joined[i].name} (${data.joined[i].health})`)
+              .setStyle(ButtonStyle.Secondary)
+              .setCustomId(`br_${data.joined[i].id}_5`)
+              .setDisabled();
+            if (data.joined[i].weapon) {
+              but.setEmoji('🗡');
+            }
+            mainRow[1].addComponents(but);
           } else if (i < 15) {
-            mainRow[2].addComponents(
-              new ButtonBuilder()
-                .setLabel(`${data.joined[i].name} (100)`)
-                .setStyle(ButtonStyle.Secondary)
-                .setCustomId(`br_${data.joined[i].id}_3`)
-                .setDisabled()
-            );
+            const but = new ButtonBuilder()
+              .setLabel(`${data.joined[i].name} (${data.joined[i].health})`)
+              .setStyle(ButtonStyle.Secondary)
+              .setCustomId(`br_${data.joined[i].id}_5`)
+              .setDisabled();
+            if (data.joined[i].weapon) {
+              but.setEmoji('🗡');
+            }
+            mainRow[2].addComponents(but);
           } else if (i < 20) {
-            mainRow[3].addComponents(
-              new ButtonBuilder()
-                .setLabel(`${data.joined[i].name} (100)`)
-                .setStyle(ButtonStyle.Secondary)
-                .setCustomId(`br_${data.joined[i].id}_4`)
-                .setDisabled()
-            );
+            const but = new ButtonBuilder()
+              .setLabel(`${data.joined[i].name} (${data.joined[i].health})`)
+              .setStyle(ButtonStyle.Secondary)
+              .setCustomId(`br_${data.joined[i].id}_5`)
+              .setDisabled();
+            if (data.joined[i].weapon) {
+              but.setEmoji('🗡');
+            }
+            mainRow[3].addComponents(but);
           } else {
-            mainRow[4].addComponents(
-              new ButtonBuilder()
-                .setLabel(`${data.joined[i].name} (100)`)
-                .setStyle(ButtonStyle.Secondary)
-                .setCustomId(`br_${data.joined[i].id}_5`)
-                .setDisabled()
-            );
+            const but = new ButtonBuilder()
+              .setLabel(`${data.joined[i].name} (${data.joined[i].health})`)
+              .setStyle(ButtonStyle.Secondary)
+              .setCustomId(`br_${data.joined[i].id}_5`)
+              .setDisabled();
+            if (data.joined[i].weapon) {
+              but.setEmoji('🗡');
+            }
+            mainRow[4].addComponents(but);
           }
         }
         const game_embed = new EmbedBuilder()
