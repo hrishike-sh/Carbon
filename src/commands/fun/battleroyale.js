@@ -330,8 +330,8 @@ let LASTUPDATE = new Date().getTime();
 function updateMessage(msg, components) {
   if (LASTUPDATE + 1000 < new Date().getTime()) {
     LASTUPDATE = new Date().getTime();
-    let row = components.components.sort(() => Math.random() - 0.5);
-    row.components.forEach((c) => {
+    let row = components.sort(() => Math.random() - 0.5);
+    row.forEach((c) => {
       c.components.sort(() => Math.random() - 0.5);
     });
     msg.edit({ components });
