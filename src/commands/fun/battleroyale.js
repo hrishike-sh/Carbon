@@ -334,6 +334,6 @@ function updateMessage(msg, components) {
     row.forEach((c) => {
       c.components.sort(() => Math.random() - 0.5);
     });
-    msg.edit({ components });
+    msg.edit({ row });
   }
 }
