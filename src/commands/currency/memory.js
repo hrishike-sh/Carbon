@@ -138,6 +138,7 @@ module.exports = {
       }
       const emoji = button.component.emoji.name;
       const [row, index] = button.customId.split('_');
+      console.log(flow[count] !== emoji);
       if (flow[count] !== emoji) {
         count = 0;
         collector.stop();
@@ -161,6 +162,7 @@ module.exports = {
 
     collector.on('end', async () => {
       end = true;
+      console.log(count);
       if (count == 5) {
         await addCoins(userId, amount * 2.5);
         message.channel.send(
