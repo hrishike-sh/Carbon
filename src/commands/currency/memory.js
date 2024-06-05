@@ -18,6 +18,7 @@ module.exports = {
    * @param {Client} client
    */
   async execute(message, args, client) {
+    return;
     let amount = args[0];
     if (
       [
