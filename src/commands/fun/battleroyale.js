@@ -153,7 +153,7 @@ module.exports = {
             const but = new ButtonBuilder()
               .setLabel(`${data.joined[i].name} (${data.joined[i].health})`)
               .setStyle(ButtonStyle.Secondary)
-              .setCustomId(`br_${data.joined[i].id}_5`)
+              .setCustomId(`br_${data.joined[i].id}_1`)
               .setDisabled();
             if (data.joined[i].weapon) {
               but.setEmoji('🗡');
@@ -163,7 +163,7 @@ module.exports = {
             const but = new ButtonBuilder()
               .setLabel(`${data.joined[i].name} (${data.joined[i].health})`)
               .setStyle(ButtonStyle.Secondary)
-              .setCustomId(`br_${data.joined[i].id}_5`)
+              .setCustomId(`br_${data.joined[i].id}_2`)
               .setDisabled();
             if (data.joined[i].weapon) {
               but.setEmoji('🗡');
@@ -173,7 +173,7 @@ module.exports = {
             const but = new ButtonBuilder()
               .setLabel(`${data.joined[i].name} (${data.joined[i].health})`)
               .setStyle(ButtonStyle.Secondary)
-              .setCustomId(`br_${data.joined[i].id}_5`)
+              .setCustomId(`br_${data.joined[i].id}_3`)
               .setDisabled();
             if (data.joined[i].weapon) {
               but.setEmoji('🗡');
@@ -183,7 +183,7 @@ module.exports = {
             const but = new ButtonBuilder()
               .setLabel(`${data.joined[i].name} (${data.joined[i].health})`)
               .setStyle(ButtonStyle.Secondary)
-              .setCustomId(`br_${data.joined[i].id}_5`)
+              .setCustomId(`br_${data.joined[i].id}_4`)
               .setDisabled();
             if (data.joined[i].weapon) {
               but.setEmoji('🗡');
