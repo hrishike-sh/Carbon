@@ -112,8 +112,8 @@ module.exports = {
 
         fightCollector.on('collect', async (m) => {
           if (hp.target < 1 || hp.user < 1) {
-            m.deferUpdate();
             fightCollector.stop();
+            m.deferUpdate();
             return;
           }
 
@@ -150,6 +150,7 @@ module.exports = {
             );
             fightCollector.stop();
           } else if (hp.target < 0) {
+            fightCollector.stop();
             embed.setDescription(
               `~~${
                 embed.data.description
@@ -159,7 +160,6 @@ module.exports = {
             await message.channel.send(
               `:trophy: | **${message.author.toString()} has won the fight!**`
             );
-            fightCollector.stop();
           }
           fightMessage.edit({
             embeds: [embed],

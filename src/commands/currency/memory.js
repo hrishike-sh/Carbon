@@ -129,16 +129,23 @@ module.exports = {
       time: 10000
     });
     let count = 0;
+    let end = false;
     collector.on('collect', async (button) => {
+      if (end) {
+        return button.reply({
+          ephemeral: true,
+          content: 'You have run out of time.'
+        });
+      }
       const emoji = button.component.emoji.name;
       const [row, index] = button.customId.split('_');
       if (flow[count] !== emoji) {
+        count = 0;
+        collector.stop();
         rows[row].components[index > 4 ? index - 5 : index]
           .setDisabled()
           .setStyle(ButtonStyle.Danger);
         await button.deferUpdate();
-        count = 0;
-        collector.stop();
         cd.delete(userId);
         return;
       } else {
@@ -154,6 +161,7 @@ module.exports = {
     });
 
     collector.on('end', async () => {
+      end = true;
       if (count == 5) {
         await addCoins(userId, amount * 2.5);
         message.channel.send(
