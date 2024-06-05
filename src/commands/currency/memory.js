@@ -163,7 +163,7 @@ module.exports = {
     collector.on('end', async () => {
       end = true;
       console.log(count);
-      if (count == 5) {
+      if (count == 4) {
         await addCoins(userId, amount * 2.5);
         message.channel.send(
           `${message.author.toString()} you won <:token:1003272629286883450> **${(
