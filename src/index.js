@@ -33,6 +33,9 @@ client.on(Events.ClientReady, async () => {
   console.log(
     `[BOT]: Client is online!\n  Server Count: ${client.guilds.cache.size}`
   );
+  client.user.setPresence({
+    status: 'dnd'
+  });
   client.counts = {
     commandsRan: 0,
     messagesRead: 0
