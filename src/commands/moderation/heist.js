@@ -31,8 +31,8 @@ module.exports = {
       message.guild.channels.cache
         .get(channelList[i])
         .send({
-          content: 'Test'
-          //   content: `**100m Daily Heist**\n\n> Channel: <#839490512901767208>`
+          //   content: 'Test'
+          content: `**100m Daily Heist** is starting NOW!!\n\n> Channel: <#839490512901767208>`
         })
         .then((msg) => {
           setTimeout(() => {
