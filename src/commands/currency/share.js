@@ -3,7 +3,7 @@ const Database = require('../../database/coins');
 const cd = new Set();
 module.exports = {
   name: 'share',
-  alias: ['give', 'send'],
+  aliases: ['give', 'send'],
   /**
    *
    * @param {Message} message
