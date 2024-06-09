@@ -14,6 +14,8 @@ module.exports = {
     const target = message.mentions.members?.first() || null;
     if (!target) return message.reply('You have to mention someone!');
     args.shift();
+    if (target.id == message.author.id)
+      return message.reply("You can't share coins with yourself!");
     const amount = parseAmount(args[0]);
     if (!amount) return message.reply('Invalid amount!');
     const DBUSER = await getUser(message.author.id);
