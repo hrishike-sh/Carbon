@@ -18,9 +18,9 @@ module.exports = {
       const user = (await client.users.fetch(all[i].userId)).tag;
       description += `\`${(i + 1)
         .toString()
-        .padStart(2, 0)}\` ${user}: <:token:1003272629286883450> ${all[
-        i
-      ].coins.toLocaleString()}\n`;
+        .padStart(2, 0)}\` ${user}: <:token:1003272629286883450> ${
+        all[i].coins.toLocaleString().split('.')[0]
+      }\n`;
     }
     msg.edit({
       embeds: [
