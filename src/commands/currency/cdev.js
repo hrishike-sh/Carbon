@@ -10,47 +10,35 @@ module.exports = {
    */
   async execute(message, args, client) {
     if (message.author.id !== '598918643727990784') return;
-    if (!args[0])
-      // fh cdev <user> del/add/remove/ <amount>
-      return message.reply(`fh cdev **<user>** del/add/remove/ <amount>`);
-    const userId = args[0];
-    args.shift();
-    const what = args[0].toLowerCase();
-    switch (what) {
-      case 'del':
-      case 'delete':
-        try {
-          await Database.deleteOne({
-            userId
-          });
-        } catch (e) {
-          message.reply('Error: ' + e.message);
-        } finally {
-          message.react('✅');
-        }
-        break;
+    // fh cdev <user> del/add/remove/ <amount>
+    const user =
+      message.mentions.users.first() ||
+      (await message.guild.members.fetch({ user: args[0] }).catch(() => null));
+    if (!user) return message.reply('What are u doing');
+    const action = args[1];
+    const amount = parseAmount(args[2]);
+
+    if (!action || !amount)
+      return message.reply('Please provide an action and an amount');
+
+    switch (action) {
       case 'add':
       case '+':
-        args.shift();
-        const amount = parseAmount(args[0]);
-        if (!amount)
-          return message.reply(
-            'fh cdev <user> del/__add__/remove/ **<amount>**'
-          );
-        await addCoins(userId, amount);
+        await addCoins(user.id, amount);
         message.react('✅');
         break;
       case 'remove':
       case '-':
-        args.shift();
-        const Ramount = parseAmount(args[0]);
-        if (!Ramount)
-          return message.reply(
-            'fh cdev <user> del/add/__remove__/ **<amount>**'
-          );
-        await removeCoins(userId, amount);
+        await removeCoins(user.id, amount);
         message.react('✅');
         break;
+      case 'del':
+      case 'delete':
+        (await getUser(user.id)).deleteOne({ userId: user.id });
+        message.react('✅');
+        break;
+      default:
+        message.reply('Invalid action');
     }
   }
 };
