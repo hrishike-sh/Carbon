@@ -154,6 +154,28 @@ client.on(Events.MessageCreate, async (message) => {
 
   try {
     command.execute(message, args, client);
+    client.channels.cache.get('913359587317522432').send({
+      embeds: [
+        {
+          author: {
+            name: message.author.tag,
+            iconURL: message.author.displayAvatarURL()
+          },
+          title: command.name,
+          fields: [
+            {
+              name: 'Total Commands Ran',
+              value: client.counts.commandsRan.toLocaleString()
+            },
+            {
+              name: 'Server',
+              value: message.guild.name,
+              inline: true
+            }
+          ]
+        }
+      ]
+    });
     client.counts.commandsRan++;
   } catch (e) {
     console.log(e);
