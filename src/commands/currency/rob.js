@@ -40,7 +40,9 @@ module.exports = {
       (await target.createDM()).send(
         `${
           message.author.username
-        } tried robbing you but gave you ${MAX_AMOUNT.toLocaleString()} coins!`
+        } tried robbing you but gave you ${MAX_AMOUNT.toFixed(
+          0
+        ).toLocaleString()} coins!`
       );
       return message.reply(
         `You tried robbing ${target} but FAILED!!\nYou ended up giving ${target} **${DBUSER.coins.toLocaleString()}** coins <:pointandlaugh:1250074022843125760>`
@@ -51,14 +53,14 @@ module.exports = {
       await removeCoins(target.id, MAX_AMOUNT * 0.25);
       await addCoins(message.author.id, MAX_AMOUNT * 0.25);
       (await target.createDM()).send(
-        `${message.author.username} has robbed ${
-          MAX_AMOUNT * 0.25
-        } coins from you!`
+        `${message.author.username} has robbed ${(MAX_AMOUNT * 0.25)
+          .toFixed(0)
+          .toLocaleLowerCase()} coins from you!`
       );
       return message.reply(
-        `You robbed **${(
-          MAX_AMOUNT * 0.25
-        ).toLocaleString()}** coins from ${target}!`
+        `You robbed **${(MAX_AMOUNT * 0.25)
+          .toFixed(0)
+          .toLocaleString()}** coins from ${target}!`
       );
     } else if (rand < 0.9) {
       robber(message.author.id);
@@ -66,14 +68,14 @@ module.exports = {
       await removeCoins(target.id, MAX_AMOUNT * 0.5);
       await addCoins(message.author.id, MAX_AMOUNT * 0.5);
       (await target.createDM()).send(
-        `${message.author.username} has robbed ${
-          MAX_AMOUNT * 0.5
-        } coins from you!`
+        `${message.author.username} has robbed ${(MAX_AMOUNT * 0.5)
+          .toFixed(0)
+          .toLocaleLowerCase()} coins from you!`
       );
       return message.reply(
-        `You robbed **${(
-          MAX_AMOUNT * 0.5
-        ).toLocaleString()}** coins from ${target}!`
+        `You robbed **${(MAX_AMOUNT * 0.5)
+          .toFixed(0)
+          .toLocaleString()}** coins from ${target}!`
       );
     } else {
       robber(message.author.id);
