@@ -1,8 +1,8 @@
 const Database = require('../../database/coins');
-const { Message, Client } = require('discord.js');
+const { Message, Client, Collection } = require('discord.js');
 const CD = {
-  robbed: new Set(),
-  robber: new Set()
+  robbed: new Collection(),
+  robber: new Collection()
 };
 module.exports = {
   name: 'rob',
@@ -23,18 +23,28 @@ module.exports = {
     const DBTARGET = await getUser(target.id);
     const MAX_AMOUNT =
       DBTARGET.coins > DBUSER.coins ? DBUSER.coins : DBTARGET.coins;
-    if (CD.robbed.has(target.id))
-      return message.reply(
-        'Target has been robbed in the last 10 minutes, try again later.'
-      );
-    if (CD.robber.has(message.author.id))
-      return message.reply(
-        "You've robbed someone in the last 5 minutes already, take some rest."
-      );
 
+    if (
+      CD.robber.has(message.author.id) &&
+      CD.robber.get(message.author.id).time > Date.now()
+    )
+      return message.reply(
+        "You've robbed in the last 5 minutes!" +
+          `\nTry again <t:${(
+            (CD.robber.get(message.author.id).time - Date.now()) /
+            1000
+          ).toFixed(0)}:R>.`
+      );
+    if (CD.robbed.has(target.id) && CD.robbed.get(target.id).time > Date.now())
+      return message.reply(
+        `${target} has been robbed in the last 10 minutes.\nTry again <t:${(
+          (CD.robber.get(target.id).time - Date.now()) /
+          1000
+        ).toFixed(0)}:R>`
+      );
     const rand = Math.random();
     if (rand < 0.5) {
-      robber(message.author.id);
+      CD.robber.set(message.author.id, { time: Date.now() + 5 * 60 * 1000 });
       await removeCoins(message.author.id, MAX_AMOUNT);
       await addCoins(target.id, MAX_AMOUNT);
       (await target.createDM()).send(
@@ -48,8 +58,8 @@ module.exports = {
         }** coins <:pointandlaugh:1250074022843125760>`
       );
     } else if (rand < 0.7) {
-      robber(message.author.id);
-      robbed(target.id);
+      CD.robber.set(message.author.id, { time: Date.now() + 5 * 60 * 1000 });
+      CD.robbed.set(target.id, { time: Date.now() + 10 * 60 * 1000 });
       await removeCoins(target.id, MAX_AMOUNT * 0.25);
       await addCoins(message.author.id, MAX_AMOUNT * 0.25);
       (await target.createDM()).send(
@@ -63,8 +73,8 @@ module.exports = {
         }** coins from ${target}! (25% of max)`
       );
     } else if (rand < 0.9) {
-      robber(message.author.id);
-      robbed(target.id);
+      CD.robber.set(message.author.id, { time: Date.now() + 5 * 60 * 1000 });
+      CD.robbed.set(target.id, { time: Date.now() + 10 * 60 * 1000 });
       await removeCoins(target.id, MAX_AMOUNT * 0.5);
       await addCoins(message.author.id, MAX_AMOUNT * 0.5);
       (await target.createDM()).send(
@@ -78,8 +88,8 @@ module.exports = {
         }** coins from ${target}! (50% of max)`
       );
     } else {
-      robber(message.author.id);
-      robbed(target.id);
+      CD.robber.set(message.author.id, { time: Date.now() + 5 * 60 * 1000 });
+      CD.robbed.set(target.id, { time: Date.now() + 10 * 60 * 1000 });
       await removeCoins(target.id, MAX_AMOUNT);
       await addCoins(message.author.id, MAX_AMOUNT);
       (await target.createDM()).send(
@@ -96,14 +106,6 @@ module.exports = {
   }
 };
 
-const robber = (id) => {
-  CD.robber.add(id);
-  setTimeout(() => CD.robber.delete(id), 5 * 60 * 1000);
-};
-const robbed = (id) => {
-  CD.robbed.add(id);
-  setTimeout(() => CD.robber.delete(id), 10 * 60 * 1000);
-};
 /**
  * DB Functions
  */
