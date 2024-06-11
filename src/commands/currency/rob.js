@@ -38,7 +38,9 @@ module.exports = {
       await removeCoins(message.author.id, MAX_AMOUNT);
       await addCoins(target.id, MAX_AMOUNT);
       (await target.createDM()).send(
-        `${message.author.username} tried robbing you but gave you ${MAX_AMOUNT} coins!`
+        `${
+          message.author.username
+        } tried robbing you but gave you ${MAX_AMOUNT.toLocaleString()} coins!`
       );
       return message.reply(
         `You tried robbing ${target} but FAILED!!\nYou ended up giving ${target} **${DBUSER.coins.toLocaleString()}** coins <:pointandlaugh:1250074022843125760>`
