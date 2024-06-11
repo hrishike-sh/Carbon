@@ -187,6 +187,8 @@ module.exports = {
     });
 
     confirmationCollector.on('end', async () => {
+      cd.delete(message.author.id);
+      cd.delete(target.id);
       row.components.forEach((c) => {
         c.setDisabled(true);
       });
