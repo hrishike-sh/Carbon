@@ -43,11 +43,8 @@ module.exports = {
     const rand = Math.random();
     if (rand < 0.5) {
       CD.robber.set(message.author.id, { time: Date.now() + 5 * 60 * 1000 });
-      await removeCoins(
-        message.author.id,
-        DBUSER.coins.toLocaleString().split('.')[0]
-      );
-      await addCoins(target.id, DBUSER.coins.toLocaleString().split('.')[0]);
+      await removeCoins(message.author.id, DBUSER.coins);
+      await addCoins(target.id, DBUSER.coins);
       (await target.createDM()).send(
         `${message.author.username} tried robbing you but gave you ${
           DBUSER.coins.toLocaleString().split('.')[0]
