@@ -38,14 +38,14 @@ module.exports = {
       await removeCoins(message.author.id, MAX_AMOUNT);
       await addCoins(target.id, MAX_AMOUNT);
       (await target.createDM()).send(
-        `${
-          message.author.username
-        } tried robbing you but gave you ${MAX_AMOUNT.toFixed(
-          0
-        ).toLocaleString()} coins!`
+        `${message.author.username} tried robbing you but gave you ${
+          MAX_AMOUNT.toLocaleString().split('.')[0]
+        } coins!`
       );
       return message.reply(
-        `You tried robbing ${target} but FAILED!!\nYou ended up giving ${target} **${DBUSER.coins.toLocaleString()}** coins <:pointandlaugh:1250074022843125760>`
+        `You tried robbing ${target} but FAILED!!\nYou ended up giving ${target} **${
+          DBUSER.coins.toLocaleString().split('.')[0]
+        }** coins <:pointandlaugh:1250074022843125760>`
       );
     } else if (rand < 0.7) {
       robber(message.author.id);
@@ -53,14 +53,14 @@ module.exports = {
       await removeCoins(target.id, MAX_AMOUNT * 0.25);
       await addCoins(message.author.id, MAX_AMOUNT * 0.25);
       (await target.createDM()).send(
-        `${message.author.username} has robbed ${(MAX_AMOUNT * 0.25)
-          .toFixed(0)
-          .toLocaleLowerCase()} coins from you!`
+        `${message.author.username} has robbed ${
+          (MAX_AMOUNT * 0.25).toLocaleString().split('.')[0]
+        } coins from you! (25% of max)`
       );
       return message.reply(
-        `You robbed **${(MAX_AMOUNT * 0.25)
-          .toFixed(0)
-          .toLocaleString()}** coins from ${target}!`
+        `You robbed **${
+          (MAX_AMOUNT * 0.25).toLocaleString().split('.')[0]
+        }** coins from ${target}! (25% of max)`
       );
     } else if (rand < 0.9) {
       robber(message.author.id);
@@ -68,14 +68,14 @@ module.exports = {
       await removeCoins(target.id, MAX_AMOUNT * 0.5);
       await addCoins(message.author.id, MAX_AMOUNT * 0.5);
       (await target.createDM()).send(
-        `${message.author.username} has robbed ${(MAX_AMOUNT * 0.5)
-          .toFixed(0)
-          .toLocaleLowerCase()} coins from you!`
+        `${message.author.username} has robbed ${
+          (MAX_AMOUNT * 0.5).toLocaleString().split('.')[0]
+        } coins from you! (50% of max)`
       );
       return message.reply(
-        `You robbed **${(MAX_AMOUNT * 0.5)
-          .toFixed(0)
-          .toLocaleString()}** coins from ${target}!`
+        `You robbed **${
+          (MAX_AMOUNT * 0.5).toLocaleString().split('.')[0]
+        }** coins from ${target}! (50% of max)`
       );
     } else {
       robber(message.author.id);
@@ -83,10 +83,14 @@ module.exports = {
       await removeCoins(target.id, MAX_AMOUNT);
       await addCoins(message.author.id, MAX_AMOUNT);
       (await target.createDM()).send(
-        `${message.author.username} has robbed ${MAX_AMOUNT} coins from you!`
+        `${message.author.username} has robbed ${
+          MAX_AMOUNT.toLocaleString().split('.')[0]
+        } coins from you! (100% of max)`
       );
       return message.reply(
-        `You robbed **${MAX_AMOUNT.toLocaleString()}** coins from ${target}!`
+        `You robbed **${
+          MAX_AMOUNT.toLocaleString().split('.')[0]
+        }** coins from ${target}! (100% of max)`
       );
     }
   }

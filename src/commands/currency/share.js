@@ -27,7 +27,9 @@ module.exports = {
     cd.add(target.user.id);
     await removeCoins(message.author.id, amount);
     await addCoins(target.user.id, amount);
-    await message.reply(`You gave ${target} ${amount} coins!`);
+    await message.reply(
+      `You gave ${target.toLocaleString().split('.')[0]} ${amount} coins!`
+    );
     cd.delete(message.author.id);
     cd.delete(target.user.id);
   }

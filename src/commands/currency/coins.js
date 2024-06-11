@@ -22,7 +22,7 @@ module.exports = {
           timestamp: new Date(),
           description:
             '**Balance:** <:token:1003272629286883450> ' +
-              (await getUser(userId)).coins.toLocaleString() || 0
+              (await getUser(userId)).coins.toLocaleString().split('.')[0] || 0
         }
       ]
     });
