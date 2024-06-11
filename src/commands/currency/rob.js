@@ -23,6 +23,8 @@ module.exports = {
     const DBTARGET = await getUser(target.id);
     const MAX_AMOUNT =
       DBTARGET.coins > DBUSER.coins ? DBUSER.coins : DBTARGET.coins;
+    if (client.cd.has(message.author.id))
+      return message.reply('Youre already running a command');
 
     if (
       CD.robber.has(message.author.id) &&

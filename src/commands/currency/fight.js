@@ -8,7 +8,6 @@ const {
   Colors
 } = require('discord.js');
 const Database = require('../../database/coins');
-const cd = new Set();
 module.exports = {
   name: 'fight',
   /**
@@ -34,13 +33,13 @@ module.exports = {
     if (amount > db.target.coins)
       return message.reply(`${target.toString()} does not have enough coins!`);
 
-    if (cd.has(message.author.id) || cd.has(target.id)) {
+    if (client.cd.has(message.author.id) || client.cd.has(target.id)) {
       return message.reply(
         'Either you or your opponent is already in a game..'
       );
     }
-    cd.add(message.author.id);
-    cd.add(target.id);
+    client.cd.add(message.author.id);
+    client.cd.add(target.id);
 
     const row = new ActionRowBuilder().addComponents([
       new ButtonBuilder()
@@ -173,13 +172,13 @@ module.exports = {
           fightMessage.edit({
             components: [row]
           });
-          cd.delete(message.author.id);
-          cd.delete(target.id);
+          client.cd.delete(message.author.id);
+          client.cd.delete(target.id);
         });
       } else if (m.customId === 'cancel') {
         confirmationCollector.stop();
-        cd.delete(message.author.id);
-        cd.delete(target.id);
+        client.cd.delete(message.author.id);
+        client.cd.delete(target.id);
         return message.reply(
           `${target.user.username} does not want to fight you.`
         );
@@ -187,8 +186,8 @@ module.exports = {
     });
 
     confirmationCollector.on('end', async () => {
-      cd.delete(message.author.id);
-      cd.delete(target.id);
+      client.cd.delete(message.author.id);
+      client.cd.delete(target.id);
       row.components.forEach((c) => {
         c.setDisabled(true);
       });

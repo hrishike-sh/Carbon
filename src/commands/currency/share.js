@@ -18,6 +18,9 @@ module.exports = {
       return message.reply("You can't share coins with yourself!");
     const amount = parseAmount(args[0]);
     if (!amount) return message.reply('Invalid amount!');
+    if (client.cd.has(message.author.id))
+      return message.reply('Youre already running a command');
+
     const DBUSER = await getUser(message.author.id);
     if (DBUSER.coins < amount)
       return message.reply('You dont have that many coins!');

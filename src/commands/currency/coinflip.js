@@ -30,6 +30,8 @@ module.exports = {
     if (!amount || !parseAmount(amount)) {
       return message.reply('Try using a number next time.');
     }
+    if (client.cd.has(message.author.id))
+      return message.reply('Youre already running a command');
     amount = parseAmount(amount);
     const user = await getUser(userId);
     if (user.coins < amount) {
