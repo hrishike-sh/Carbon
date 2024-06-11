@@ -31,15 +31,13 @@ module.exports = {
       return message.reply(
         "You've robbed in the last 5 minutes!" +
           `\nTry again <t:${(
-            (CD.robber.get(message.author.id).time - Date.now()) /
-            1000
+            CD.robber.get(message.author.id).time / 1000
           ).toFixed(0)}:R>.`
       );
     if (CD.robbed.has(target.id) && CD.robbed.get(target.id).time > Date.now())
       return message.reply(
         `${target} has been robbed in the last 10 minutes.\nTry again <t:${(
-          (CD.robber.get(target.id).time - Date.now()) /
-          1000
+          CD.robber.get(target.id).time / 1000
         ).toFixed(0)}:R>`
       );
     const rand = Math.random();
