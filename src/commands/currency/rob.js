@@ -27,7 +27,7 @@ module.exports = {
       return message.reply(
         'Target has been robbed in the last 10 minutes, try again later.'
       );
-    if (CD.robber.has(target.id))
+    if (CD.robber.has(message.author.id))
       return message.reply(
         "You've robbed someone in the last 5 minutes already, take some rest."
       );
@@ -36,8 +36,14 @@ module.exports = {
     if (rand < 0.5) {
       robber(message.author.id);
       await removeCoins(message.author.id, MAX_AMOUNT);
+      await addCoins(target.id, MAX_AMOUNT);
+      await target
+        .createDM()
+        .send(
+          `${message.author.username} tried robbing you but gave you ${MAX_AMOUNT} coins!`
+        );
       return message.reply(
-        `You tried robbing ${target} but FAILED!!\nYou lost ${DBUSER.coins.toLocaleString()} coins <:pointandlaugh:1250074022843125760>`
+        `You tried robbing ${target} but FAILED!!\nYou ended up giving ${target} **${DBUSER.coins.toLocaleString()}** coins <:pointandlaugh:1250074022843125760>`
       );
     } else if (rand < 0.7) {
       robber(message.author.id);
@@ -50,9 +56,9 @@ module.exports = {
         } coins from you!`
       );
       return message.reply(
-        `You robbed ${(
+        `You robbed **${(
           MAX_AMOUNT * 0.25
-        ).toLocaleString()} coins from ${target}!`
+        ).toLocaleString()}** coins from ${target}!`
       );
     } else if (rand < 0.9) {
       robber(message.author.id);
@@ -65,9 +71,9 @@ module.exports = {
         } coins from you!`
       );
       return message.reply(
-        `You robbed ${(
+        `You robbed **${(
           MAX_AMOUNT * 0.5
-        ).toLocaleString()} coins from ${target}!`
+        ).toLocaleString()}** coins from ${target}!`
       );
     } else {
       robber(message.author.id);
@@ -78,7 +84,7 @@ module.exports = {
         `${message.author.username} has robbed ${MAX_AMOUNT} coins from you!`
       );
       return message.reply(
-        `You robbed ${MAX_AMOUNT.toLocaleString()} coins from ${target}!`
+        `You robbed **${MAX_AMOUNT.toLocaleString()}** coins from ${target}!`
       );
     }
   }
