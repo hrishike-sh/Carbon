@@ -248,6 +248,7 @@ module.exports = {
           .setDescription(
             `The game starts in **5 seconds**. Click on the button to attack that particular user.\n\nYour goal is to damage others and be the last one standing, good luck!`
           );
+        let description = [];
         const gameMessage = await message.channel.send({
           components: mainRow,
           embeds: [game_embed]
@@ -303,6 +304,11 @@ module.exports = {
           ].components.find((a) => a.data.custom_id.includes(victim.id));
           if (victim.health < 1) {
             victim.health = 0;
+            description.push(
+              randomActions[Math.floor(Math.random() * randomActions.length)]
+                .replace('{user}', m.user.username)
+                .replace('{target}', victim.name)
+            );
             vBut.setDisabled().setEmoji('☠').setStyle(ButtonStyle.Secondary);
           }
           vBut.setLabel(`${victim.name} (${victim.health})`);
@@ -317,7 +323,11 @@ module.exports = {
               .sort((a, b) => a.sort - b.sort)
               .map((a) => a.value);
           });
-          updateMessage(gameMessage, r); // .
+
+          game_embed.setDescription(
+            description.map((a) => `- ${a}`).join('\n')
+          );
+          updateMessage(gameMessage, r, game_embed); // .
         });
       });
     });
@@ -337,9 +347,21 @@ function sleep(ms) {
   });
 }
 let LASTUPDATE = new Date().getTime();
-function updateMessage(msg, components) {
+function updateMessage(msg, components, emb) {
   if (LASTUPDATE + 1000 < new Date().getTime()) {
     LASTUPDATE = new Date().getTime();
-    msg.edit({ components });
+    msg.edit({ components, embeds: [emb] });
   }
 }
+const randomActions = [
+  `{user} absolutely DESTROYED {target}!`,
+  `{target} tried to run away from {user} but failed and DIED.`,
+  `{user} used a dagger to kill {target}!`,
+  `{target} was no match for {user}'s dagger and DIED.`,
+  `{user} sneakily stabbed {target} to death.`,
+  `{target} tried to dodge, but {user} was too quick and plunged their dagger into their heart.`,
+  `{user} quickly disarmed {target}, then struck them with a fatal blow.`,
+  `{target} tried to defend, but {user} was too quick and managed to evade their defense.`,
+  `{user}'s dagger was too quick for {target}, and they fell to the ground, defeated.`,
+  `{target} tried to counterattack, but {user}'s dagger was too fast and they fell to the ground, defeated.`
+];
