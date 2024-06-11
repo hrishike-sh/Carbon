@@ -354,14 +354,14 @@ function updateMessage(msg, components, emb) {
   }
 }
 const randomActions = [
-  `{user} absolutely DESTROYED {target}!`,
-  `{target} tried to run away from {user} but failed and DIED.`,
-  `{user} used a dagger to kill {target}!`,
-  `{target} was no match for {user}'s dagger and DIED.`,
-  `{user} sneakily stabbed {target} to death.`,
-  `{target} tried to dodge, but {user} was too quick and plunged their dagger into their heart.`,
-  `{user} quickly disarmed {target}, then struck them with a fatal blow.`,
-  `{target} tried to defend, but {user} was too quick and managed to evade their defense.`,
-  `{user}'s dagger was too quick for {target}, and they fell to the ground, defeated.`,
-  `{target} tried to counterattack, but {user}'s dagger was too fast and they fell to the ground, defeated.`
+  `**{user}** absolutely DESTROYED **{target}**!`,
+  `**{target}** tried to run away from **{user}** but failed and DIED.`,
+  `**{user}** used a dagger to kill **{target}**!`,
+  `**{target}** was no match for **{user}**'s dagger and DIED.`,
+  `**{user}** sneakily stabbed **{target}** to death.`,
+  `**{target}** tried to dodge, but **{user}** was too quick and plunged their dagger into their heart.`,
+  `**{user}** quickly disarmed **{target}**, then struck them with a fatal blow.`,
+  `**{target}** tried to defend, but **{user}** was too quick and managed to evade their defense.`,
+  `**{user}**'s dagger was too quick for **{target}**, and they fell to the ground, defeated.`,
+  `**{target}** tried to counterattack, but **{user}**'s dagger was too fast and they fell to the ground, defeated.`
 ];
