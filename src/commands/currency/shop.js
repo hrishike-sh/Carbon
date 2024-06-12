@@ -27,7 +27,7 @@ module.exports = {
       .setColor('Green')
       .setDescription('To suggest something for the shop, dm admins!');
 
-    return message.reply({
+    message.reply({
       embeds: [embed]
     });
   }
