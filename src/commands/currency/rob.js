@@ -23,6 +23,24 @@ module.exports = {
     const DBTARGET = await getUser(target.id);
     const MAX_AMOUNT =
       DBTARGET.coins > DBUSER.coins ? DBUSER.coins : DBTARGET.coins;
+    if (
+      [
+        '824313259976556544',
+        '824313275750547456',
+        '824313288967192597',
+        '824313306633863278',
+        '824318942511890452',
+        '828201384910258186',
+        '828201396334755860',
+        '832893535509676093',
+        '870240187198885888',
+        '848939463404552222',
+        '857629233152786442',
+        '858295915428315136'
+      ].includes(message.channel.id)
+    ) {
+      return message.react('❌');
+    }
     if (client.cd.has(message.author.id))
       return message.reply('Youre already running a command');
 
