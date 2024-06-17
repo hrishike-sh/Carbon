@@ -24,11 +24,11 @@ module.exports = {
       roleId: role.id,
       name: teamName
     });
+    team.save();
     message.reply({
       embeds: [
         {
           title: 'Team created',
-          color: 'GREEN',
           description: `Name: ${teamName}\nRole: <@&${role.id}>\nDB ID: ${team._id}`
         }
       ]
