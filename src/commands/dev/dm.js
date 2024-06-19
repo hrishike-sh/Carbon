@@ -1,4 +1,4 @@
-const { EmbedBuilder, Message, Client, Embed } = require('discord.js');
+const { EmbedBuilder, Message, Client } = require('discord.js');
 const fh = '824294231447044197';
 const prefix = 'fh';
 
@@ -21,7 +21,7 @@ module.exports = {
 
     const user =
       message.mentions.users?.first() ||
-      client.users.fetch(args[0]).catch(() => null) ||
+      (await client.users.fetch(args[0]).catch(() => null)) ||
       null;
     if (!user) return message.reply('Please mention a user');
 
@@ -34,8 +34,7 @@ module.exports = {
     }
     const embed = new EmbedBuilder()
       .setTitle('You have received a message from FightHub Staff!')
-      .setColor('Green')
-      .setDescription(content)
+      .setDescription('Message: ' + content)
       .setTimestamp();
     if (!an) {
       embed.setAuthor({
