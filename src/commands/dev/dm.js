@@ -1,48 +1,56 @@
-const { EmbedBuilder } = require('discord.js');
+const { EmbedBuilder, Message, Client, Embed } = require('discord.js');
 const fh = '824294231447044197';
 const prefix = 'fh';
 
 module.exports = {
   name: 'dm',
-  async execute(message) {
-    if(message.guild.id !== fh) {
-      return message.reply("");
+  /**
+   *
+   * @param {Message} message
+   * @param {String[]} args
+   * @param {Client} client
+   * @returns
+   */
+  async execute(message, args, client) {
+    if (message.guild.id !== fh) {
+      return message.reply('');
     }
-    if(!message.member.roles.cache.has('1016728636365209631')) {
-      return message.reply("Only CMs+ L bozo");
+    if (!message.member.roles.cache.has('1016728636365209631')) {
+      return message.reply('Only CMs+ L bozo');
     }
 
-    const user = message.mentions.users.first();
-    if(!user) return message.reply("specify a user");
+    const user =
+      message.mentions.users?.first() ||
+      client.users.fetch(args[0]).catch(() => null) ||
+      null;
+    if (!user) return message.reply('Please mention a user');
 
-    let msg = message.content.slice(prefix.length).trim();
-    const anonymous = msg.includes('-a');
-
-    msg = msg.replace('-a', '').trim();
-    const args = msg.split(/ +/);
-    const content = args.slice(1).join(" ");
-
-    if(!content) {
-      return message.reply("what's the message?");
+    args.shift();
+    let content = args.join(' ');
+    let an = false;
+    if (content.includes('-a')) {
+      content = content.replace('-a', '');
+      an = true;
+    }
+    const embed = new EmbedBuilder()
+      .setTitle('You have received a message from FightHub Staff!')
+      .setColor('Green')
+      .setDescription(content)
+      .setTimestamp();
+    if (!an) {
+      embed.setAuthor({
+        name: message.author.tag,
+        iconURL: message.author.displayAvatarURL()
+      });
     }
 
     try {
-      const embed = new EmbedBuilder()
-        .setDescription(content)
-        .setTimestamp();
-      
-      if(!anonymous) {
-        embed.setAuthor({
-          name: message.author.tag,
-          iconURL: message.author.displayAvatarURL()
-        });
-      }
-      
-      await user.send({embeds: [embed]});
-      await message.reply("sent em");
-    } catch(err) {
-      console.error(err);
-      await message.reply("unable to dm");
+      (await user.createDM()).send({
+        embeds: [embed]
+      });
+      message.react('✅');
+    } catch (error) {
+      message.reply('Error: ' + error);
     }
   }
-}
+};
