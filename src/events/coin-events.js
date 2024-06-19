@@ -32,22 +32,22 @@ module.exports = {
           .setCustomId('ce_jh')
           .setStyle(ButtonStyle.Success)
       ]);
-      const collector = (
-        await message.channel.send({
-          embeds: [
-            {
-              title: "WE'RE HEISTING DAUNTLESS' BANK",
-              description:
-                'Click the `JOIN HEIST` button to join!\n\nAt your own risk tho, you may lose coins.',
-              color: Colors.Yellow,
-              footer: {
-                text: '25% chance to lose.'
-              }
+      const mm = await message.channel.send({
+        embeds: [
+          {
+            title: "WE'RE HEISTING DAUNTLESS' BANK",
+            description:
+              'Click the `JOIN HEIST` button to join!\n\nAt your own risk tho, you may lose coins.',
+            color: Colors.Yellow,
+            footer: {
+              text: '25% chance to lose.'
             }
-          ],
-          components: [row]
-        })
-      ).createMessageComponentCollector({
+          }
+        ],
+        components: [row]
+      });
+
+      const collector = mm.createMessageComponentCollector({
         idle: 10_000
       });
 
@@ -67,7 +67,12 @@ module.exports = {
 
       collector.on('end', async () => {
         if (joined.length < 1) {
-          return message.channel.send('The heist failed!');
+          message.channel.send('The heist failed!').then(async (a) => {
+            await sleep(2500);
+            a.delete();
+            mm.delete();
+          });
+          return;
         }
         const pool = joined.length * (Math.floor(Math.random() * 1000) + 500);
         const failed = [];
@@ -86,7 +91,7 @@ module.exports = {
           await addCoins(a, Number((pool / won.length - 1).toFixed(0)));
         });
 
-        return message.channel.send({
+        const m = await message.channel.send({
           embeds: [
             {
               title: 'Heist Winners',
@@ -110,12 +115,15 @@ module.exports = {
             }
           ]
         });
+        await sleep(2500);
+        mm.delete();
+        m.delete();
       });
     } else if (randomEvent == 'math') {
       const num1 = Math.floor(Math.random() * 500);
       const num2 = Math.floor(Math.random() * 500);
 
-      await message.channel.send({
+      const m = await message.channel.send({
         embeds: [
           {
             title: 'Math Test :nerd:',
@@ -134,9 +142,17 @@ module.exports = {
         const coins = Math.ceil(Math.random() * 500) + 500;
         await addCoins(msg.author.id, coins);
         col.stop();
-        return message.channel.send(
-          `:nerd: ${msg.author.toString()} :nerd: was the first to answer! They got <:token:1003272629286883450> **${coins}** coins!`
-        );
+        message.channel
+          .send(
+            `:nerd: ${msg.author.toString()} :nerd: was the first to answer! They got <:token:1003272629286883450> **${coins}** coins!`
+          )
+          .then(async (am) => {
+            await sleep(2500);
+            m.delete();
+            am.delete();
+          });
+
+        return;
       });
     } else if (randomEvent == 'boss') {
     }
