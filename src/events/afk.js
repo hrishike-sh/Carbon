@@ -16,9 +16,20 @@ module.exports = {
       const dUser = await DATABASE.findOne({
         userId: message.author.id
       });
-      message.reply(
-        `Welcome back! I have removed your AFK. You were pinged **${dUser.dms.length} times** while you were gone. I have sent you a DM with the list.`
-      );
+      message
+        .reply({
+          embeds: [
+            {
+              title: 'Welcome back ' + message.author.tag,
+              description: `You were pinged ${dUser.dms.length} times, check your dms!`
+            }
+          ]
+        })
+        .then((msg) => {
+          setTimeout(() => {
+            msg.delete();
+          }, 2500);
+        });
       client.db.afks = client.db.afks.filter((a) => a !== message.author.id);
       await DATABASE.deleteOne({
         userId: message.author.id
