@@ -13,16 +13,16 @@ module.exports = {
     const all = await Database.find({
       'dynamic.grinder': true
     });
-    const map = all
-      .sort((a, b) => a.dynamic.expires - b.dynamic.expires)
-      .map(async (a) => {
-        const user =
-          (await client.users.fetch(a.userID).catch(() => null)).tag ||
-          a.userID;
-        const time = `<t:${(a.dynamic.expires / 1000).toFixed(0)}:R>`;
+    const list = all.sort((a, b) => a.dynamic.expires - b.dynamic.expires);
+    const map = [];
+    for (let i = 0; i < list.length; i++) {
+      const user =
+        (await client.users.fetch(list[i].userID).catch(() => null)) ||
+        list[i].userID;
+      const time = `<t:${(list[i].dynamic.expires / 1000).toFixed(0)}:R>`;
 
-        return `- ${user} expires ${time}`;
-      });
+      map.push(`**${(i + 1).toString().padStart(2, 0)}.** ${user} - ${time}`);
+    }
     return message.reply({
       embeds: [
         {
