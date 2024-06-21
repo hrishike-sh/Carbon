@@ -36,8 +36,13 @@ module.exports = {
           expires: new Date().getTime() + 1000 * 60 * 60 * 24 * 3
         }
       });
-      db.save();
+    } else {
+      db.dynamic = {
+        expires: new Date().getTime() + 1000 * 60 * 60 * 24 * 3,
+        grinder: true
+      };
     }
+    db.save();
 
     return message.reply({
       content: `Added ${user} to the list of grinders!\n\nNote: This user's "expiry time" has been set to 3 days.`
