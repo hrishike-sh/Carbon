@@ -28,13 +28,13 @@ module.exports = {
     const days = args[0];
     if (!days) return message.reply('Please specify the amount of days!');
 
-    db.dynamic.grinder += Number(days) * 86400000;
+    db.dynamic.expires += Number(days) * 86400000;
     db.save();
 
     message.reply(
       `Added **${days}** days to **${
         user.user.tag
-      }**\n\nTheir grinder now expires in <t:${db.dynamic.grinder / 1000}:R>`
+      }**\n\nTheir grinder now expires in <t:${db.dynamic.expires / 1000}:R>`
     );
   }
 };
