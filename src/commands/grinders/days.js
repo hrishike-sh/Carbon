@@ -12,7 +12,7 @@ module.exports = {
     if (!message.member.roles.cache.has('1016728636365209631')) return;
     const user =
       message.mentions.users.first() ||
-      message.guild.members.cache.get(args[0]);
+      message.guild.members.cache.get(args[0])?.user;
     if (!user) return message.reply('Please mention a user!');
 
     let db = await Database.findOne({
@@ -33,7 +33,7 @@ module.exports = {
 
     message.reply(
       `Added **${days}** days to **${
-        user.user.tag
+        user.tag
       }**\n\nTheir grinder now expires in <t:${db.dynamic.expires / 1000}:R>`
     );
   }
