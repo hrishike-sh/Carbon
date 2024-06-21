@@ -34,7 +34,9 @@ module.exports = {
     message.reply(
       `Added **${days}** days to **${
         user.tag
-      }**\n\nTheir grinder now expires in <t:${db.dynamic.expires / 1000}:R>`
+      }**\n\nTheir grinder now expires in <t:${(
+        db.dynamic.expires / 1000
+      ).toFixed(0)}:R>`
     );
   }
 };
