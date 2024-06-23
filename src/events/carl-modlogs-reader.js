@@ -12,8 +12,8 @@ const {
   StringSelectMenuOptionBuilder
 } = require('discord.js');
 const getAction = (str) => {
-  if (str.includes('ban')) return '🔨 Ban';
   if (str.includes('unban')) return '🚪 Unban';
+  if (str.includes('ban')) return '🔨 Ban';
   if (str.includes('mute')) return '🔇 Mute';
   if (str.includes('warn')) return '⚠ Warn';
 };
