@@ -11,7 +11,12 @@ const {
   StringSelectMenuBuilder,
   StringSelectMenuOptionBuilder
 } = require('discord.js');
-
+const getAction = (str) => {
+  if (str.includes('ban')) return '🔨 Ban';
+  if (str.includes('unban')) return '🚪 Unban';
+  if (str.includes('mute')) return '🔇 Mute';
+  if (str.includes('warn')) return '⚠ Warn';
+};
 module.exports = {
   name: 'messageCreate',
   /**
@@ -30,11 +35,21 @@ module.exports = {
     const data = await getData(message.attachments.first());
     let embedRaw = [];
     for (let i = 0; i < data.length; i++) {
+      const user =
+        message.client.users.cache.get(data[i].moderator_id)?.tag ||
+        (
+          await message.client.users
+            .fetch(data[i].moderator_id)
+            .catch(() => null)
+        )?.tag ||
+        data[i].moderator_id;
       embedRaw.push({
-        name: 'Case #' + data[i].case_id,
-        value: `Action: ${data[i].action.toUpperCase()}\nWhen: <t:${(
-          new Date(data[i].timestamp).getTime() / 1000
-        ).toFixed(0)}:R>\nReason: ${data[i].reason}`,
+        name: `#${data[i].case_id} | ${getAction(
+          data[i].action.toLowerCase()
+        )} | <t:${(new Date(data[i].timestamp).getTime() / 1000).toFixed(
+          0
+        )}:R>`,
+        value: `Moderator: ${user}\nReason: ${data[i].reason}`,
         inline: true
       });
     }
@@ -58,22 +73,27 @@ module.exports = {
             new StringSelectMenuOptionBuilder()
               .setLabel('Mutes')
               .setValue('mute')
-              .setDescription('Filter modlogs by mutes.'),
+              .setDescription('Filter modlogs by mutes.')
+              .setEmoji('🔇'),
             new StringSelectMenuOptionBuilder()
               .setLabel('Bans')
               .setValue('ban')
+              .setEmoji('🔨')
               .setDescription('Filter modlogs by bans.'),
             new StringSelectMenuOptionBuilder()
               .setLabel('Unbans')
+              .setEmoji('🚪')
               .setValue('unban')
               .setDescription('Filter modlogs by unbans.'),
             new StringSelectMenuOptionBuilder()
               .setLabel('Warns')
+              .setEmoji('⚠')
               .setValue('warn')
               .setDescription('Filter modlogs by warns.'),
             new StringSelectMenuOptionBuilder()
               .setLabel('Reset Filter')
               .setValue('all')
+              .setEmoji('🧹')
               .setDescription('Reset filter.')
           ])
       ]);
@@ -161,22 +181,42 @@ module.exports = {
           embedRaw = [];
           for (let i = 0; i < data.length; i++) {
             if (filter == 'all') {
+              const user =
+                message.client.users.cache.get(data[i].moderator_id)?.tag ||
+                (
+                  await message.client.users
+                    .fetch(data[i].moderator_id)
+                    .catch(() => null)
+                )?.tag ||
+                data[i].moderator_id;
               embedRaw.push({
-                name: 'Case #' + data[i].case_id,
-                value: `Action: ${data[i].action.toUpperCase()}\nWhen: <t:${(
+                name: `#${data[i].case_id} | ${getAction(
+                  data[i].action.toLowerCase()
+                )} | <t:${(
                   new Date(data[i].timestamp).getTime() / 1000
-                ).toFixed(0)}:R>\nReason: ${data[i].reason}`,
+                ).toFixed(0)}:R>`,
+                value: `Moderator: ${user}\nReason: ${data[i].reason}`,
                 inline: true
               });
             } else {
               if (data[i].action !== filter) {
                 continue;
               }
+              const user =
+                message.client.users.cache.get(data[i].moderator_id)?.tag ||
+                (
+                  await message.client.users
+                    .fetch(data[i].moderator_id)
+                    .catch(() => null)
+                )?.tag ||
+                data[i].moderator_id;
               embedRaw.push({
-                name: 'Case #' + data[i].case_id,
-                value: `Action: ${data[i].action.toUpperCase()}\nWhen: <t:${(
+                name: `#${data[i].case_id} | ${getAction(
+                  data[i].action.toLowerCase()
+                )} | <t:${(
                   new Date(data[i].timestamp).getTime() / 1000
-                ).toFixed(0)}:R>\nReason: ${data[i].reason}`,
+                ).toFixed(0)}:R>`,
+                value: `Moderator: ${user}\nReason: ${data[i].reason}`,
                 inline: true
               });
             }
