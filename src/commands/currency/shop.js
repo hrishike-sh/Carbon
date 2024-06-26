@@ -114,9 +114,11 @@ module.exports = {
           embeds: [
             {
               color: Colors.Green,
-              description: `You have purchased ${
+              description: `You have purchased **${
                 item.name
-              }!\n\n-${item.price.toLocaleString()}coins\n+Nothing`
+              }**!\n\n- **${item.price.toLocaleString()}** coins\n+ **${
+                item.name
+              }**`
             }
           ]
         });
