@@ -18,11 +18,11 @@ module.exports = {
       return;
     }
 
-    const restrictedChannels = ['881128829131841596', '824313123728261150'] // mod-chat and fight-ads
-    
+    const restrictedChannels = ['881128829131841596', '824313123728261150']; // mod-chat and fight-ads
+
     if (restrictedChannels.includes(message.channel.id)) return;
-    
-    if (cd.includes(message.channel.id)) return // return if there was an event in the channel recently
+
+    if (cd.includes(message.channel.id)) return; // return if there was an event in the channel recently
     if (Math.random() > 0.03) return; // 3% chance for event
     addCd(message.channel.id);
 
@@ -78,7 +78,7 @@ module.exports = {
           });
           return;
         }
-        const pool = joined.length * (Math.floor(Math.random() * 1000) + 500);
+        const pool = joined.length * (Math.floor(Math.random() * 100) + 300);
         const failed = [];
         const won = [];
         for (let i = 0; i < joined.length; i++) {
@@ -143,7 +143,7 @@ module.exports = {
         filter: (m) => m.content == num1 + num2
       });
       col.on('collect', async (msg) => {
-        const coins = Math.ceil(Math.random() * 500) + 500;
+        const coins = Math.ceil(Math.random() * 100) + 100;
         await addCoins(msg.author.id, coins);
         col.stop();
         message.channel
