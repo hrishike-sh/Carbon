@@ -3,7 +3,8 @@ const {
   EmbedBuilder,
   StringSelectMenuOptionBuilder,
   StringSelectMenuBuilder,
-  ActionRowBuilder
+  ActionRowBuilder,
+  Colors
 } = require('discord.js');
 
 const SHOP = [
@@ -45,14 +46,18 @@ module.exports = {
    * @param {Message} message
    */
   async execute(message) {
-    const embed = new EmbedBuilder().addFields(
-      SHOP.map((item) => ({
-        name: `${item.emoji.str} ${item.name}`,
-        value: `<:blank:914473340129906708>**Price**: <:token:1003272629286883450> ${
-          item.price
-        }\n**Duration**: ${item.duration.toLocaleString()} Days`
-      }))
-    );
+    const embed = new EmbedBuilder()
+      .setTitle('Shop | Opens Soon')
+      .setFooter({
+        text: 'Prices are placeholders and are subject to change.'
+      })
+      .setColor(Colors.Green)
+      .addFields(
+        SHOP.map((item) => ({
+          name: `${item.emoji.str} ${item.name}`,
+          value: `<:blank:914473340129906708>**Price**: <:token:1003272629286883450> ${item.price.toLocaleString()}\n<:blank:914473340129906708>**Duration**: ${item.duration.toLocaleString()} Days`
+        }))
+      );
     const selectMenu = new StringSelectMenuBuilder()
       .setCustomId('shop_shop')
       .setPlaceholder('Select an item')
@@ -62,9 +67,7 @@ module.exports = {
             .setLabel(item.name)
             .setValue(item.value)
             .setEmoji(item.emoji.str)
-            .setDescription(
-              `Price: ${item.price} <:token:1003272629286883450>`
-            );
+            .setDescription(`Price: ${item.price.toLocaleString()} coins.`);
         })
       );
     const row = new ActionRowBuilder().addComponents(selectMenu);
