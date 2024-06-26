@@ -2,7 +2,8 @@ const {
   Message,
   EmbedBuilder,
   StringSelectMenuOptionBuilder,
-  StringSelectMenuBuilder
+  StringSelectMenuBuilder,
+  ActionRowBuilder
 } = require('discord.js');
 
 const SHOP = [
