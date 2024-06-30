@@ -1,96 +1,202 @@
-const { Message, Client, Colors } = require('discord.js');
+const {
+  Message,
+  Client,
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle,
+  EmbedBuilder,
+  Colors
+} = require('discord.js');
 const Database = require('../../database/coins');
-let cd = [];
 module.exports = {
-  name: 'coinflip',
-  aliases: ['cf'],
+  name: 'fight',
   /**
-   *
    * @param {Message} message
    * @param {String[]} args
+   * @param {Client} client
    */
   async execute(message, args, client) {
-    if (message.guildId !== '824294231447044197') return;
-    if (
-      [
-        '824313259976556544',
-        '824313275750547456',
-        '824313288967192597',
-        '824313306633863278',
-        '824318942511890452',
-        '828201384910258186',
-        '828201396334755860',
-        '832893535509676093',
-        '870240187198885888',
-        '848939463404552222',
-        '857629233152786442',
-        '858295915428315136'
-      ].includes(message.channel.id)
-    ) {
-      return message.react('❌');
-    }
-    const userId = message.author.id;
-    let amount = args.shift();
-    if (!amount || !parseAmount(amount)) {
-      return message.reply('Try using a number next time.');
-    }
-    if (client.cd.has(message.author.id))
-      return message.reply('Youre already running a command');
-    amount = parseAmount(amount);
-    const user = await getUser(userId);
-    if (user.coins < amount) {
-      return message.reply('u dont have that many coins brokie');
-    }
-    if (cd.includes(userId)) {
-      return message.reply({
-        embeds: [
-          {
-            author: {
-              icon_url: message.author.displayAvatarURL(),
-              name: message.author.username
-            },
-            footer: {
-              text: 'Get a job'
-            },
-            description: 'You can run this command every 5 seconds!'
-          }
-        ]
-      });
-    }
-    addCd(userId);
+    if (!message.guild || message.guild.id != '824294231447044197') return;
+    const target = message.mentions.members.first();
+    if (!target) return message.reply('You have to mention someone!');
+    if (target.user.id == message.author.id)
+      return message.reply("You can't fight yourself!");
+    args.shift();
+    const amount = parseAmount(args[0]);
+    if (!amount) return message.reply('Mention the bet!');
+    const db = {
+      user: await getUser(message.author.id),
+      target: await getUser(target.id)
+    };
+    if (amount > db.user.coins)
+      return message.reply('You dont have that many coins!');
+    if (amount > db.target.coins)
+      return message.reply(`${target.toString()} does not have enough coins!`);
 
-    if (Math.random() < 0.5) {
-      removeCoins(userId, amount);
-      message.reply({
-        embeds: [
-          {
-            author: {
-              name: message.author.username,
-              icon_url: message.author.displayAvatarURL()
-            },
-            color: Colors.Red,
-            description: 'You **lost** ' + amount.toLocaleString() + '.'
-          }
-        ]
-      });
-    } else {
-      addCoins(userId, amount);
-      message.reply({
-        embeds: [
-          {
-            author: {
-              name: message.author.username,
-              icon_url: message.author.displayAvatarURL()
-            },
-            color: Colors.Green,
-            description: 'You **won** ' + amount.toLocaleString() + '!!'
-          }
-        ]
-      });
+    if (client.cd.has(message.author.id) || client.cd.has(target.id)) {
+      return message.reply(
+        'Either you or your opponent is already in a game..'
+      );
     }
+    client.cd.add(message.author.id);
+    client.cd.add(target.id);
+
+    const row = new ActionRowBuilder().addComponents([
+      new ButtonBuilder()
+        .setStyle(ButtonStyle.Success)
+        .setCustomId('confirm')
+        .setLabel('Confirm'),
+      new ButtonBuilder()
+        .setStyle(ButtonStyle.Danger)
+        .setCustomId('cancel')
+        .setLabel('Cancel')
+    ]);
+
+    const confirmationMessage = await message.channel.send({
+      content: `${target.toString()} do you want to fight ${message.author.toString()} for ${amount.toLocaleString()} coins?`,
+      components: [row]
+    });
+    const confirmationCollector =
+      confirmationMessage.createMessageComponentCollector({
+        filter: (m) => m.user.id === target.id,
+        idle: 25_000
+      });
+
+    confirmationCollector.on('collect', async (m) => {
+      if (m.customId === 'confirm') {
+        await removeCoins(message.author.id, amount);
+        await removeCoins(target.id, amount);
+        confirmationCollector.stop();
+        let hp = {
+          user: 100,
+          target: 100
+        };
+        // start fight
+
+        const embed = new EmbedBuilder()
+          .setTitle(`${message.author.username} vs ${target.user.username}`)
+          .setColor(Colors.Yellow)
+          .setFooter({
+            text: `Winner gets: ${amount.toLocaleString()} coins`
+          })
+          .setDescription(
+            `**${message.author.tag}** (__100__) vs (__100__) **${target.user.tag}**`
+          );
+        const row = new ActionRowBuilder().addComponents([
+          new ButtonBuilder()
+            .setStyle(ButtonStyle.Success)
+            .setCustomId('fight_attack')
+            .setLabel('Attack')
+        ]);
+        const rand = [0, 1][Math.floor(Math.random() * 2)];
+        const users = [message.author, target.user];
+        let turn = users[rand];
+        const fightMessage = await message.channel.send({
+          embeds: [embed],
+          components: [row],
+          content: `${turn.toString()} your turn!`
+        });
+        const fightCollector = fightMessage.createMessageComponentCollector({
+          filter: (m) => {
+            if (!users.map((a) => a.id).includes(m.user.id)) {
+              m.reply({
+                content: 'This is not your fight!',
+                ephemeral: true
+              });
+              return false;
+            }
+            return true;
+          }
+        });
+
+        fightCollector.on('collect', async (m) => {
+          if (hp.target < 1 || hp.user < 1) {
+            fightCollector.stop();
+            m.deferUpdate();
+            return;
+          }
+
+          if (m.user.id !== turn.id) {
+            return m.reply({
+              content: 'This is not your turn!',
+              ephemeral: true
+            });
+          }
+          const damage = Math.floor(Math.random() * 15) + 10;
+          if (turn.id == message.author.id) {
+            hp.target -= damage;
+          } else {
+            hp.user -= damage;
+          }
+          turn = turn === users[0] ? users[1] : users[0];
+          embed.setDescription(
+            `**${message.author.tag}** (__${
+              hp.user < 0 ? 0 : hp.user
+            }__) vs (__${hp.target < 0 ? 0 : hp.target}__) **${
+              target.user.tag
+            }**`
+          );
+          await m.deferUpdate();
+          if (hp.user < 0) {
+            embed.setDescription(
+              `~~${
+                embed.data.description
+              }~~\n\n:trophy: | **${target.user.toString()} has won the fight!**`
+            );
+            await addCoins(target.user.id, amount * 2);
+            await message.channel.send(
+              `:trophy: | **${target.user.toString()} has won the fight!**`
+            );
+            fightCollector.stop();
+          } else if (hp.target < 0) {
+            fightCollector.stop();
+            embed.setDescription(
+              `~~${
+                embed.data.description
+              }~~\n\n:trophy: | **${message.author.toString()} has won the fight!**`
+            );
+            await addCoins(message.author.id, amount * 2);
+            await message.channel.send(
+              `:trophy: | **${message.author.toString()} has won the fight!**`
+            );
+          }
+          fightMessage.edit({
+            embeds: [embed],
+            content: `${turn.toString()} its your turn!`
+          });
+        });
+        fightCollector.on('end', () => {
+          row.components.forEach((c) => {
+            c.setDisabled();
+          });
+          fightMessage.edit({
+            components: [row]
+          });
+          client.cd.delete(message.author.id);
+          client.cd.delete(target.id);
+        });
+      } else if (m.customId === 'cancel') {
+        confirmationCollector.stop();
+        client.cd.delete(message.author.id);
+        client.cd.delete(target.id);
+        return message.reply(
+          `${target.user.username} does not want to fight you.`
+        );
+      }
+    });
+
+    confirmationCollector.on('end', async () => {
+      client.cd.delete(message.author.id);
+      client.cd.delete(target.id);
+      row.components.forEach((c) => {
+        c.setDisabled(true);
+      });
+      confirmationMessage.edit({
+        components: [row]
+      });
+    });
   }
 };
-
 /**
  * DB Functions
  */
@@ -147,11 +253,6 @@ const StringValues = {
   m: 1e6,
   k: 1e3,
   b: 1e9
-};
-const addCd = async (userId) => {
-  cd.push(userId);
-  await sleep(5000);
-  cd = cd.filter((a) => a != userId);
 };
 const sleep = (milliseconds) => {
   return new Promise((resolve) => setTimeout(resolve, milliseconds));
