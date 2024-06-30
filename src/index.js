@@ -128,8 +128,7 @@ client.on(Events.MessageCreate, async (message) => {
           {
             description: `**:x: You must wait ${Math.ceil(
               timeLeft
-            )}s before running that command again.**`,
-            color: 'Red'
+            )}s before running that command again.**`
           }
         ]
       });
