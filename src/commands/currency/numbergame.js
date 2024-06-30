@@ -28,7 +28,7 @@ module.exports = {
     const data = {
       def: amount,
       rand: Math.floor(Math.random() * 100) + 1,
-      max_win: def * 10
+      max_win: amount * 10
     };
     const infoEmbed = new EmbedBuilder()
       .setTitle('Guess the Number [1-100]')
