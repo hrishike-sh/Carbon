@@ -60,7 +60,7 @@ module.exports = {
       const guess = data.rand.toString();
       if (msg.message.content == data.rand) {
         await addCoins(message.author.id, data.max_win);
-        msg.reply({
+        msg.message.reply({
           content: `You guessed it! You won ${data.max_win.toLocaleString()}!`
         });
         win = true;
@@ -71,7 +71,7 @@ module.exports = {
         infoEmbed.setDescription(
           `**Current Win Amount: ${data.max_win.toLocaleString()}**\nAmount bet: ${data.def.toLocaleString()}`
         );
-        msg.reply({
+        msg.message.reply({
           content: `The number is **${hl}** than **${data.rand}**. Try again!`,
           embeds: [infoEmbed]
         });
