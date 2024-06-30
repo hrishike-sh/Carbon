@@ -16,6 +16,9 @@ module.exports = {
    * @param {Client} client
    */
   async execute(message, args, client) {
+    return message.reply(
+      `Will be enabled soon, check <#944995391609393152> for info`
+    );
     if (!message.guild || message.guild.id != '824294231447044197') return;
     const target = message.mentions.members.first();
     if (!target) return message.reply('You have to mention someone!');
