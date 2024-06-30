@@ -69,6 +69,7 @@ module.exports = {
           content: `You guessed it! You won ${data.max_win.toLocaleString()}!`
         });
         win = true;
+        client.cd.delete(message.author.id);
         collector.stop();
       } else {
         data.max_win = Math.floor(data.max_win / 2);
