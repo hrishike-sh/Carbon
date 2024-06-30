@@ -53,7 +53,7 @@ module.exports = {
       embeds: [infoEmbed]
     });
     const collector = message.channel.createMessageCollector({
-      filter: (i) => i.user.id === message.author.id,
+      filter: (i) => i.author.id === message.author.id,
       time: 60000
     });
     let win = false;
