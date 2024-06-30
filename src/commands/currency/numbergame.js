@@ -63,10 +63,22 @@ module.exports = {
         return msg.reply('Not a number!');
       }
       const guess = data.rand.toString();
+      if (data.max_win < 1) {
+        win = true;
+        collector.stop();
+        return message.reply({
+          content: 'You lost ' + data.def.toLocaleString() + ' coins :('
+        });
+      }
       if (msg.content == guess) {
         await addCoins(message.author.id, data.max_win);
         msg.reply({
-          content: `You guessed it! You won ${data.max_win.toLocaleString()}!`
+          content:
+            amount > data.max_win
+              ? 'You guessed the number but you lost ' +
+                (amount - data.max_win).toLocaleString() +
+                ' coins!'
+              : `You guessed it! You won ${data.max_win.toLocaleString()}!`
         });
         win = true;
         client.cd.delete(message.author.id);
@@ -84,13 +96,6 @@ module.exports = {
       }
     });
     collector.on('stop', async () => {
-      if (!win) {
-        return message.reply(
-          'You ran out of time!\nYou lost ' +
-            data.def.toLocaleString() +
-            ' coins!'
-        );
-      }
       client.cd.delete(message.author.id);
     });
   }
