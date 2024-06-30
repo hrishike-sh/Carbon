@@ -122,7 +122,7 @@ module.exports = {
               ephemeral: true
             });
           }
-          const damage = Math.floor(Math.random() * 15) + 10;
+          const damage = Math.floor(Math.random() * 20) + 5;
           if (turn.id == message.author.id) {
             hp.target -= damage;
           } else {
