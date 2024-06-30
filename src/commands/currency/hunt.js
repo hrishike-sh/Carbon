@@ -42,8 +42,7 @@ module.exports = {
             footer: {
               text: 'Get a job'
             },
-            description:
-              "you can beg once every 5 seconds and you're still desperate :sob::sob::sob::sob::sob:"
+            description: 'You can hunt every 5 seconds.'
           }
         ]
       });
@@ -95,7 +94,9 @@ const getUser = async (userId) => {
   }
   return dbu;
 };
-
+const sleep = (milliseconds) => {
+  return new Promise((resolve) => setTimeout(resolve, milliseconds));
+};
 const animalEmojis = [
   { name: 'Monkey', emoji: '🐒' },
   { name: 'Gorilla', emoji: '🦍' },
