@@ -64,6 +64,24 @@ module.exports = {
 
     confirmationCollector.on('collect', async (m) => {
       if (m.customId === 'confirm') {
+        const temp = {
+          u: await getUser(message.author.id),
+          t: await getUser(target.id)
+        };
+        if (amount > temp.u.coins) {
+          confirmationCollector.stop();
+          client.cd.delete(message.author.id);
+          client.cd.delete(target.id);
+          return message.reply('You dont have that many coins!');
+        }
+        if (amount > temp.t.coins) {
+          confirmationCollector.stop();
+          client.cd.delete(message.author.id);
+          client.cd.delete(target.id);
+          return message.reply(
+            `${target.toString()} does not have enough coins!`
+          );
+        }
         await removeCoins(message.author.id, amount);
         await removeCoins(target.id, amount);
         confirmationCollector.stop();
@@ -111,7 +129,8 @@ module.exports = {
               return false;
             }
             return true;
-          }
+          },
+          idle: 10000
         });
         let winner = null;
         fightCollector.on('collect', async (m) => {
@@ -172,8 +191,20 @@ module.exports = {
           } else {
             const heal = Math.floor(Math.random() * 15) + 5;
             if (turn.id == message.author.id) {
+              if (hp.user > 149) {
+                return m.reply({
+                  content: 'You can only heal up to 150 hp.',
+                  ephemeral: true
+                });
+              }
               hp.user += heal;
             } else {
+              if (hp.target > 149) {
+                return m.reply({
+                  content: 'You can only heal up to 150 hp.',
+                  ephemeral: true
+                });
+              }
               hp.target += heal;
             }
             turn = turn === users[0] ? users[1] : users[0];
@@ -192,7 +223,25 @@ module.exports = {
             content: `${turn.toString()} its your turn!`
           });
         });
-        fightCollector.on('end', () => {
+        fightCollector.on('end', async () => {
+          if (!winner) {
+            turn = turn === users[0] ? users[1] : users[0];
+            embed.setDescription(
+              `~~**${message.author.tag}** (__${
+                hp.user < 0 ? 0 : hp.user
+              }__) vs (__${hp.target < 0 ? 0 : hp.target}__) **${
+                target.user.tag
+              }**~~`
+            );
+            fightMessage.edit({
+              embeds: [embed]
+            });
+            message.channel.send({
+              content: `:trophy: | ${turn.toString()} has won the fight because their opponent abandoned the game.`
+            });
+            await addCoins(turn.id, amount * 2);
+            return;
+          }
           message.channel.send({
             content: `:trophy: | **${
               winner?.toString() || 'Noone'
