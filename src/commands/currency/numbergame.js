@@ -64,6 +64,7 @@ module.exports = {
       }
       const guess = data.rand.toString();
       if (data.max_win < 1) {
+        client.cd.delete(message.author.id);
         win = true;
         collector.stop();
         return message.reply({
@@ -81,6 +82,7 @@ module.exports = {
               : `You guessed it! You won ${data.max_win.toLocaleString()}!`
         });
         win = true;
+
         client.cd.delete(message.author.id);
         collector.stop();
       } else {
