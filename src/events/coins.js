@@ -21,7 +21,11 @@ module.exports = {
      */
 
     addList(userId);
-    addCoins(userId, Math.ceil(Math.random() * 13) + 12);
+    if (message.channel.id == '1256504358615519284') {
+      addCoins(userId, (Math.ceil(Math.random() * 13) + 12) * 1.5);
+    } else {
+      addCoins(userId, Math.ceil(Math.random() * 13) + 12);
+    }
   }
 };
 
