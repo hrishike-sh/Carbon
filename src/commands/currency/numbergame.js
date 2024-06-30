@@ -77,7 +77,7 @@ module.exports = {
           `**Current Win Amount: ${data.max_win.toLocaleString()}**\nAmount bet: ${data.def.toLocaleString()}`
         );
         msg.reply({
-          content: `The number is **${hl}** than **${guess}**. Try again!`,
+          content: `The number is **${hl}** than **${msg.content}**. Try again!`,
           embeds: [infoEmbed]
         });
       }
