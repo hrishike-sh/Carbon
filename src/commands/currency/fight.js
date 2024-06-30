@@ -16,9 +16,6 @@ module.exports = {
    * @param {Client} client
    */
   async execute(message, args, client) {
-    return message.reply(
-      `Will be enabled soon, check <#944995391609393152> for info`
-    );
     if (!message.guild || message.guild.id != '824294231447044197') return;
     const target = message.mentions.members.first();
     if (!target) return message.reply('You have to mention someone!');
@@ -87,9 +84,13 @@ module.exports = {
           );
         const row = new ActionRowBuilder().addComponents([
           new ButtonBuilder()
-            .setStyle(ButtonStyle.Success)
+            .setStyle(ButtonStyle.Danger)
             .setCustomId('fight_attack')
-            .setLabel('Attack')
+            .setLabel('Attack'),
+          new ButtonBuilder()
+            .setStyle(ButtonStyle.Success)
+            .setCustomId('fight_heal')
+            .setLabel('Heal')
         ]);
         const rand = [0, 1][Math.floor(Math.random() * 2)];
         const users = [message.author, target.user];
@@ -99,6 +100,7 @@ module.exports = {
           components: [row],
           content: `${turn.toString()} your turn!`
         });
+
         const fightCollector = fightMessage.createMessageComponentCollector({
           filter: (m) => {
             if (!users.map((a) => a.id).includes(m.user.id)) {
@@ -111,9 +113,15 @@ module.exports = {
             return true;
           }
         });
-
+        let winner = null;
         fightCollector.on('collect', async (m) => {
-          if (hp.target < 1 || hp.user < 1) {
+          if (hp.target < 1) {
+            winner = message.author;
+            fightCollector.stop();
+            m.deferUpdate();
+            return;
+          } else if (hp.user < 1) {
+            winner = target.user;
             fightCollector.stop();
             m.deferUpdate();
             return;
@@ -125,50 +133,71 @@ module.exports = {
               ephemeral: true
             });
           }
-          const damage = Math.floor(Math.random() * 20) + 5;
-          if (turn.id == message.author.id) {
-            hp.target -= damage;
+
+          if (m.customId === 'fight_attack') {
+            const damage = Math.floor(Math.random() * 20) + 5;
+            if (turn.id == message.author.id) {
+              hp.target -= damage;
+            } else {
+              hp.user -= damage;
+            }
+            turn = turn === users[0] ? users[1] : users[0];
+            embed.setDescription(
+              `**${message.author.tag}** (__${
+                hp.user < 0 ? 0 : hp.user
+              }__) vs (__${hp.target < 0 ? 0 : hp.target}__) **${
+                target.user.tag
+              }**`
+            );
+            await m.deferUpdate();
+            if (hp.user <= 0) {
+              winner = target.user;
+              fightCollector.stop();
+              embed.setDescription(
+                `~~${
+                  embed.data.description
+                }~~\n\n:trophy: | **${target.user.toString()} has won the fight!**`
+              );
+              await addCoins(target.user.id, amount * 2);
+            } else if (hp.target <= 0) {
+              winner = message.author;
+              fightCollector.stop();
+              embed.setDescription(
+                `~~${
+                  embed.data.description
+                }~~\n\n:trophy: | **${message.author.toString()} has won the fight!**`
+              );
+              await addCoins(message.author.id, amount * 2);
+            }
           } else {
-            hp.user -= damage;
-          }
-          turn = turn === users[0] ? users[1] : users[0];
-          embed.setDescription(
-            `**${message.author.tag}** (__${
-              hp.user < 0 ? 0 : hp.user
-            }__) vs (__${hp.target < 0 ? 0 : hp.target}__) **${
-              target.user.tag
-            }**`
-          );
-          await m.deferUpdate();
-          if (hp.user < 0) {
+            const heal = Math.floor(Math.random() * 15) + 5;
+            if (turn.id == message.author.id) {
+              hp.target += heal;
+            } else {
+              hp.user += heal;
+            }
+            turn = turn === users[0] ? users[1] : users[0];
             embed.setDescription(
-              `~~${
-                embed.data.description
-              }~~\n\n:trophy: | **${target.user.toString()} has won the fight!**`
+              `**${message.author.tag}** (__${
+                hp.user < 0 ? 0 : hp.user
+              }__) vs (__${hp.target < 0 ? 0 : hp.target}__) **${
+                target.user.tag
+              }**`
             );
-            await addCoins(target.user.id, amount * 2);
-            await message.channel.send(
-              `:trophy: | **${target.user.toString()} has won the fight!**`
-            );
-            fightCollector.stop();
-          } else if (hp.target < 0) {
-            fightCollector.stop();
-            embed.setDescription(
-              `~~${
-                embed.data.description
-              }~~\n\n:trophy: | **${message.author.toString()} has won the fight!**`
-            );
-            await addCoins(message.author.id, amount * 2);
-            await message.channel.send(
-              `:trophy: | **${message.author.toString()} has won the fight!**`
-            );
+            await m.deferUpdate();
           }
+
           fightMessage.edit({
             embeds: [embed],
             content: `${turn.toString()} its your turn!`
           });
         });
         fightCollector.on('end', () => {
+          message.channel.send({
+            content: `:trophy: | **${
+              winner?.toString() || 'Noone'
+            } has won the fight!**`
+          });
           row.components.forEach((c) => {
             c.setDisabled();
           });
