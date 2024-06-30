@@ -30,6 +30,7 @@ module.exports = {
       rand: Math.floor(Math.random() * 100) + 1,
       max_win: amount * 10
     };
+    console.log(data);
     const infoEmbed = new EmbedBuilder()
       .setTitle('Guess the Number [1-100]')
       .setDescription(
@@ -51,7 +52,7 @@ module.exports = {
       content: 'Guess the number between 1 and 100',
       embeds: [infoEmbed]
     });
-    const collector = message.channel.createMessageComponentCollector({
+    const collector = message.channel.createMessageCollector({
       filter: (i) => i.user.id === message.author.id,
       time: 60000
     });
