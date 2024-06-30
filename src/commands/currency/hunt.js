@@ -1,5 +1,6 @@
 const { Message, Client } = require('discord.js');
-
+let cd = [];
+const Database = require('../../database/coins');
 module.exports = {
   name: 'hunt',
   cooldown: 5,
@@ -10,10 +11,89 @@ module.exports = {
    * @param {Client} client Discord Client
    */
   async execute(message, args, client) {
-    return message.reply(
-      animalEmojis[Math.floor(Math.random() * animalEmojis.length)].name
-    );
+    if (message.guildId !== '824294231447044197') return;
+    if (
+      [
+        '824313259976556544',
+        '824313275750547456',
+        '824313288967192597',
+        '824313306633863278',
+        '824318942511890452',
+        '828201384910258186',
+        '828201396334755860',
+        '832893535509676093',
+        '870240187198885888',
+        '848939463404552222',
+        '857629233152786442',
+        '858295915428315136'
+      ].includes(message.channel.id)
+    ) {
+      return message.react('❌');
+    }
+    const userId = message.author.id;
+    if (cd.includes(userId)) {
+      return message.reply({
+        embeds: [
+          {
+            author: {
+              icon_url: message.author.displayAvatarURL(),
+              name: message.author.username
+            },
+            footer: {
+              text: 'Get a job'
+            },
+            description:
+              "you can beg once every 5 seconds and you're still desperate :sob::sob::sob::sob::sob:"
+          }
+        ]
+      });
+    }
+    addCd(userId);
+
+    const random = Math.floor(Math.random() * 75) + 50;
+    await addCoins(userId, random);
+    const randomAnimal =
+      animalEmojis[Math.floor(Math.random() * animalEmojis.length)];
+    message.reply({
+      embeds: [
+        {
+          author: {
+            icon_url: message.author.displayAvatarURL(),
+            name: message.author.username
+          },
+          footer: {
+            text: '👩‍🌾'
+          },
+          description: `You found ${randomAnimal.emoji} ${
+            randomAnimal.name
+          }! You sold it for <:token:1003272629286883450> ${random.toLocaleString()} coins.`
+        }
+      ]
+    });
   }
+};
+const addCd = async (userId) => {
+  cd.push(userId);
+  await sleep(5000);
+  cd = cd.filter((a) => a != userId);
+};
+const addCoins = async (userId, amount) => {
+  const user = await getUser(userId);
+  user.coins += amount;
+  user.save();
+};
+
+const getUser = async (userId) => {
+  let dbu = await Database.findOne({
+    userId
+  });
+  if (!dbu) {
+    dbu = new Database({
+      userId,
+      coins: 0
+    });
+  }
+  return dbu;
 };
 
 const animalEmojis = [

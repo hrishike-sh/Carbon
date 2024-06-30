@@ -77,7 +77,7 @@ module.exports = {
       });
     }
     addCd(userId);
-    const randomAmount = Math.ceil(Math.random() * 30) + 10;
+    const randomAmount = Math.ceil(Math.random() * 75) + 50;
     addCoins(userId, randomAmount);
 
     return message.reply({
