@@ -72,7 +72,7 @@ module.exports = {
         collector.stop();
       } else {
         data.max_win = Math.floor(data.max_win / 2);
-        const hl = Number(msg.content) > Number(data.rand) ? 'higher' : 'lower';
+        const hl = Number(msg.content) > Number(data.rand) ? 'lower' : 'higher';
         infoEmbed.setDescription(
           `**Current Win Amount: ${data.max_win.toLocaleString()}**\nAmount bet: ${data.def.toLocaleString()}`
         );
