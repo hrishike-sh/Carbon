@@ -80,7 +80,6 @@ client.cmd = {
   commands: new Collection(),
   cooldowns: new Collection()
 };
-const { cooldowns } = client.cmd;
 const commandFolders = fs.readdirSync('./commands');
 for (const folder of commandFolders) {
   const commandFiles = fs
@@ -110,12 +109,12 @@ client.on(Events.MessageCreate, async (message) => {
     null;
 
   if (!command) return;
-  if (!cooldowns.has(command.name)) {
-    cooldowns.set(command.name, new Collection());
+  if (!client.cmd.cooldowns.has(command.name)) {
+    client.cmd.cooldowns.set(command.name, new Collection());
   }
 
   const now = new Date();
-  const timestamps = cooldowns.get(command.name);
+  const timestamps = client.cmd.cooldowns.get(command.name);
   const cooldownAmt = (command.cooldown || 0) * 1000;
 
   if (timestamps.has(message.author.id)) {
