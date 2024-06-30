@@ -24,7 +24,8 @@ const map = [
   'Sunshine gives you {coins} coins to stop the rain.',
   "You walked up to Gen taking his meds, here's {coins} coins to keep it a secret",
   'Apple gave you {coins} coins to spend on Valorant.',
-  'Apple gave you {coins} coins to annoy Tee.'
+  'Apple gave you {coins} coins to annoy Tee.',
+  'Ali paid you {coins} coins to stop looking for his uncle, who has been missing since 2001.'
 ];
 let cd = [];
 module.exports = {
