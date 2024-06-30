@@ -240,6 +240,8 @@ module.exports = {
               content: `:trophy: | ${turn.toString()} has won the fight because their opponent abandoned the game.`
             });
             await addCoins(turn.id, amount * 2);
+            client.cd.delete(message.author.id);
+            client.cd.delete(target.id);
             return;
           }
           message.channel.send({

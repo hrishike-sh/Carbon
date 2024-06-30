@@ -60,6 +60,7 @@ module.exports = {
     collector.on('collect', async (msg) => {
       infoEmbed.setFields([]);
       if (!parseAmount(msg.content)) {
+        client.cd.delete(message.author.id);
         return msg.reply('Not a number!');
       }
       const guess = data.rand.toString();
