@@ -172,9 +172,9 @@ module.exports = {
           } else {
             const heal = Math.floor(Math.random() * 15) + 5;
             if (turn.id == message.author.id) {
-              hp.target += heal;
-            } else {
               hp.user += heal;
+            } else {
+              hp.target += heal;
             }
             turn = turn === users[0] ? users[1] : users[0];
             embed.setDescription(
