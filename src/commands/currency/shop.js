@@ -122,10 +122,7 @@ module.exports = {
             }
           ]
         });
-      } else {
-        msg.reply({
-          content: 'You cannot buy this item yet.'
-        });
+      } else if (value == 'point') {
       }
     });
 
