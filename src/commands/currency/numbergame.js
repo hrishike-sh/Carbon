@@ -58,6 +58,10 @@ module.exports = {
     });
     let win = false;
     collector.on('collect', async (msg) => {
+      infoEmbed.setFields([]);
+      if (!parseAmount(msg.content)) {
+        return msg.reply('Not a number!');
+      }
       const guess = data.rand.toString();
       if (msg.content == guess) {
         await addCoins(message.author.id, data.max_win);
@@ -73,20 +77,20 @@ module.exports = {
           `**Current Win Amount: ${data.max_win.toLocaleString()}**\nAmount bet: ${data.def.toLocaleString()}`
         );
         msg.reply({
-          content: `The number is **${hl}** than **${data.rand}**. Try again!`,
+          content: `The number is **${hl}** than **${guess}**. Try again!`,
           embeds: [infoEmbed]
         });
       }
     });
     collector.on('stop', async () => {
       if (!win) {
-        client.cd.delete(message.author.id);
         return message.reply(
           'You ran out of time!\nYou lost ' +
             data.def.toLocaleString() +
             ' coins!'
         );
       }
+      client.cd.delete(message.author.id);
     });
   }
 };
