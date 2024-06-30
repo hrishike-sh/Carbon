@@ -58,7 +58,7 @@ module.exports = {
     let win = false;
     collector.on('collect', async (msg) => {
       const guess = data.rand.toString();
-      if (msg.message.content == data.rand) {
+      if (msg.message.content == guess) {
         await addCoins(message.author.id, data.max_win);
         msg.message.reply({
           content: `You guessed it! You won ${data.max_win.toLocaleString()}!`
@@ -67,7 +67,8 @@ module.exports = {
         collector.stop();
       } else {
         data.max_win = Math.floor(data.max_win / 2);
-        const hl = Number(guess) > Number(data.rand) ? 'higher' : 'lower';
+        const hl =
+          Number(msg.message.content) > Number(data.rand) ? 'higher' : 'lower';
         infoEmbed.setDescription(
           `**Current Win Amount: ${data.max_win.toLocaleString()}**\nAmount bet: ${data.def.toLocaleString()}`
         );
