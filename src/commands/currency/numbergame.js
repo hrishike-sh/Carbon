@@ -4,7 +4,6 @@ const Database = require('../../database/coins');
 module.exports = {
   name: 'numbergame',
   aliases: ['ng', 'num'],
-  roles: [],
   /**
    *
    * @param {Message} message Discord Message
@@ -80,6 +79,7 @@ module.exports = {
     });
     collector.on('stop', async () => {
       if (!win) {
+        client.cd.delete(message.author.id);
         return message.reply(
           'You ran out of time!\nYou lost ' +
             data.def.toLocaleString() +
