@@ -11,18 +11,21 @@ module.exports = {
    * @param {Client} client
    */
   async execute(message, args, client) {
-    const userId = message.author.id;
+    const user =
+      message.mentions.members?.first() ||
+      message.guild.members.cache.get(args[0]) ||
+      message.member;
     return message.reply({
       embeds: [
         {
           author: {
-            icon_url: message.author.displayAvatarURL(),
-            name: message.author.username
+            icon_url: user.user.displayAvatarURL(),
+            name: user.user.username
           },
           timestamp: new Date(),
           description:
             '**Balance:** <:token:1003272629286883450> ' +
-              (await getUser(userId)).coins.toLocaleString().split('.')[0] || 0
+              (await getUser(user.id)).coins.toLocaleString().split('.')[0] || 0
         }
       ]
     });
