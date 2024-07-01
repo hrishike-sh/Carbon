@@ -1,4 +1,11 @@
-const { Message, Client } = require('discord.js');
+const {
+  Message,
+  Client,
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle,
+  Colors
+} = require('discord.js');
 const Database = require('../../database/coins');
 const map = [
   'Hrish gave you {coins} coins for your left kidney!',
@@ -80,7 +87,7 @@ module.exports = {
     const randomAmount = Math.ceil(Math.random() * 75) + 50;
     addCoins(userId, randomAmount);
 
-    return message.reply({
+    message.reply({
       embeds: [
         {
           author: {
@@ -97,6 +104,84 @@ module.exports = {
         }
       ]
     });
+
+    if (Math.random() < 0.01) {
+      const d = await getUser(userId);
+      const amt = d.coins;
+
+      const row = new ActionRowBuilder().addComponents([
+        new ButtonBuilder()
+          .setCustomId('yes')
+          .setStyle(ButtonStyle.Success)
+          .setLabel('YES'),
+        new ButtonBuilder()
+          .setCustomId('no')
+          .setStyle(ButtonStyle.Danger)
+          .setLabel('NO')
+      ]);
+      const msg = await message.reply({
+        embeds: [
+          {
+            description: `Hello ${message.author.tag}... Have you tried gambling?\n\nDo you want to coinflip **${amt}** coins?`,
+            footer: {
+              text: '1% Chance of event spawning.'
+            },
+            author: {
+              icon_url:
+                'https://imgcdn.stablediffusionweb.com/2024/4/11/e3ee8859-cd4e-450a-a6b0-13ea78be5f4e.jpg',
+              name: 'Casino Owner'
+            }
+          }
+        ],
+        components: [row]
+      });
+      const coll = msg.createMessageComponentCollector({
+        filter: (i) => i.user.id === message.author.id,
+        max: 1,
+        time: 5000
+      });
+      coll.on('collect', async (button) => {
+        const id = button.customId;
+        if (id == 'yes') {
+          const dd = await getUser(userId);
+          const amt = dd.coins;
+          const random = Math.floor(Math.random() * 2) + 1;
+          if (random == 1) {
+            await addCoins(userId, amt);
+            message.channel.send({
+              content: message.author.toString(),
+              embeds: [
+                {
+                  title: 'Coinflip!',
+                  color: Colors.Green,
+                  description: `You won **${amt.toLocaleString()}** coins!`,
+                  footer: {
+                    text: 'This is why you should gamble!'
+                  }
+                }
+              ]
+            });
+          } else {
+            await removeCoins(userId, amt);
+            message.channel.send({
+              content: message.author.toString(),
+              embeds: [
+                {
+                  title: 'Coinflip!',
+                  color: Colors.Red,
+                  description: `You lost **${amt.toLocaleString()}** coins.`,
+                  footer: {
+                    text: "This is why you shouldn't gamble."
+                  }
+                }
+              ]
+            });
+          }
+        } else {
+          coll.stop();
+        }
+      });
+    }
   }
 };
 
@@ -112,7 +197,11 @@ const sleep = (milliseconds) => {
 /**
  * DB Functions
  */
-
+const removeCoins = async (userId, amount) => {
+  const user = await getUser(userId);
+  user.coins -= Number(amount);
+  user.save();
+};
 const addCoins = async (userId, amount) => {
   const user = await getUser(userId);
   user.coins += amount;
