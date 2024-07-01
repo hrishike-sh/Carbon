@@ -124,7 +124,7 @@ module.exports = {
           {
             description: `Hello ${message.author.tag}... Have you tried gambling?\n\nDo you want to coinflip **${amt}** coins?`,
             footer: {
-              text: '1% Chance of event spawning.'
+              text: '1% Chance of event spawning. You have 5 SECONDS.'
             },
             author: {
               icon_url:
@@ -137,11 +137,12 @@ module.exports = {
       });
       const coll = msg.createMessageComponentCollector({
         filter: (i) => i.user.id === message.author.id,
-        max: 1,
         time: 5000
       });
       coll.on('collect', async (button) => {
         const id = button.customId;
+        coll.stop();
+
         if (id == 'yes') {
           const dd = await getUser(userId);
           const amt = dd.coins;
@@ -178,8 +179,11 @@ module.exports = {
             });
           }
         } else {
-          coll.stop();
         }
+      });
+      coll.on('end', () => {
+        row.components.forEach((c) => c.setDisabled(true));
+        msg.edit({ components: [row] });
       });
     }
   }
