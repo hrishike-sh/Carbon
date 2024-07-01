@@ -73,7 +73,14 @@ module.exports = {
         });
       }
       if (msg.content == guess) {
-        await addCoins(message.author.id, data.max_win);
+        await Database.findOneAndUpdate(
+          { userId: message.author.id },
+          {
+            $inc: {
+              coins: data.max_win
+            }
+          }
+        );
         msg.reply({
           content:
             amount > data.max_win
