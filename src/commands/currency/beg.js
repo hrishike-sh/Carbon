@@ -71,7 +71,7 @@ module.exports = {
               text: 'Get a job'
             },
             description:
-              "you can beg once every 5 seconds and you're still desperate :sob::sob::sob::sob::sob:"
+              "you can beg once every 7.5 seconds and you're still desperate :sob::sob::sob::sob::sob:"
           }
         ]
       });
@@ -102,7 +102,7 @@ module.exports = {
 
 const addCd = async (userId) => {
   cd.push(userId);
-  await sleep(5000);
+  await sleep(7500);
   cd = cd.filter((a) => a != userId);
 };
 const sleep = (milliseconds) => {

@@ -42,7 +42,7 @@ module.exports = {
             footer: {
               text: 'Get a job'
             },
-            description: 'You can hunt every 5 seconds.'
+            description: 'You can hunt every 10 seconds.'
           }
         ]
       });
@@ -73,7 +73,7 @@ module.exports = {
 };
 const addCd = async (userId) => {
   cd.push(userId);
-  await sleep(5000);
+  await sleep(10000);
   cd = cd.filter((a) => a != userId);
 };
 const addCoins = async (userId, amount) => {
