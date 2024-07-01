@@ -7,37 +7,17 @@ const {
   Colors
 } = require('discord.js');
 const Database = require('../../database/coins');
-
+const Teams = require('../../database/teams');
 const SHOP = [
   {
     name: 'Point for Team',
-    price: 1e6,
+    price: 100_000,
     duration: Infinity,
     emoji: {
       str: '<:plusone:1255581374661005363>',
       id: '1255581374661005363'
     },
     value: 'point'
-  },
-  {
-    name: 'Custom Channel',
-    price: 1e6,
-    duration: 31,
-    emoji: {
-      str: '<:text_channel:1003342275037888522>',
-      id: '1003342275037888522'
-    },
-    value: 'channel'
-  },
-  {
-    name: 'Custom Role',
-    price: 1e6,
-    duration: 31,
-    emoji: {
-      str: '<:role:1003345268751741099>',
-      id: '1003345268751741099'
-    },
-    value: 'role'
   },
   {
     name: 'Absolutely Nothing',
@@ -48,6 +28,26 @@ const SHOP = [
       id: '1255590797416333364'
     },
     value: 'nothing'
+  },
+  {
+    name: 'Custom Channel [Soon]',
+    price: 1e6,
+    duration: 31,
+    emoji: {
+      str: '<:text_channel:1003342275037888522>',
+      id: '1003342275037888522'
+    },
+    value: 'channel'
+  },
+  {
+    name: 'Custom Role [Soon]',
+    price: 1e6,
+    duration: 31,
+    emoji: {
+      str: '<:role:1003345268751741099>',
+      id: '1003345268751741099'
+    },
+    value: 'role'
   }
 ];
 module.exports = {
@@ -123,6 +123,49 @@ module.exports = {
           ]
         });
       } else if (value == 'point') {
+        const TeamUser = await Teams.findOne({
+          users: message.author.id
+        });
+        const DatabaseUser = await Database.findOne({
+          userId: message.author.id
+        });
+        if (!TeamUser) {
+          return msg.reply({
+            embeds: [
+              {
+                description: "You're not in a team!",
+                color: Colors.Red
+              }
+            ]
+          });
+        }
+
+        const item = SHOP.filter((a) => a.value == value)[0];
+        if (item.price > DatabaseUser?.coins) {
+          return msg.reply({
+            embeds: [
+              {
+                description: `You don't have ${item.price.toLocaleString()} coins.`,
+                color: Colors.Red
+              }
+            ]
+          });
+        }
+        DatabaseUser.coins -= item.price;
+        DatabaseUser.save();
+        TeamUser.points++;
+        TeamUser.save();
+
+        return msg.reply({
+          embeds: [
+            {
+              title: 'Purchase Successful!',
+              description: `You bought 1 point for your team **${TeamUser.name}**!\nYour team now has **${TeamUser.points}** points.`,
+              color: Colors.Green,
+              timestamp: new Date()
+            }
+          ]
+        });
       }
     });
 
