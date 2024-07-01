@@ -123,6 +123,7 @@ module.exports = {
           ]
         });
       } else if (value == 'point') {
+        return message.reply('Opens soon again!');
         const TeamUser = await Teams.findOne({
           users: message.author.id
         });
