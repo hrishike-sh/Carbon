@@ -87,7 +87,9 @@ module.exports = {
         confirmationCollector.stop();
         let hp = {
           user: 100,
-          target: 100
+          userT: 5,
+          target: 100,
+          targetT: 5
         };
         // start fight
 
@@ -189,22 +191,24 @@ module.exports = {
               await addCoins(message.author.id, amount * 2);
             }
           } else {
-            const heal = Math.floor(Math.random() * 15) + 5;
+            const heal = 20;
             if (turn.id == message.author.id) {
-              if (hp.user > 149) {
+              if (hp.userT < 1) {
                 return m.reply({
-                  content: 'You can only heal up to 150 hp.',
+                  content: 'You have used all your 5 heals.',
                   ephemeral: true
                 });
               }
+              hp.userT--;
               hp.user += heal;
             } else {
-              if (hp.target > 149) {
+              if (hp.targetT < 1) {
                 return m.reply({
-                  content: 'You can only heal up to 150 hp.',
+                  content: 'You have used all your 5 heals.',
                   ephemeral: true
                 });
               }
+              hp.targetT--;
               hp.target += heal;
             }
             turn = turn === users[0] ? users[1] : users[0];
