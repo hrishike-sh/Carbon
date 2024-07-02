@@ -245,7 +245,7 @@ module.exports = {
           if (!team) return;
           team.points--;
           team.save();
-          dbuser -= item.price;
+          dbuser.coins -= item.price;
           dbuser.save();
           sabotaged = true;
           msg.reply({
@@ -254,11 +254,13 @@ module.exports = {
         });
         col.on('end', (collected) => {
           row.components[0].setDisabled(true);
-          msg.edit({ components: [row] });
           emb.edit({
-            components: [],
-            content: 'Time limit exceeded.'
+            components: [row]
           });
+          if (!sabotaged)
+            msg.reply({
+              content: '5 second limit exceeded. Try again!'
+            });
         });
       }
     });
