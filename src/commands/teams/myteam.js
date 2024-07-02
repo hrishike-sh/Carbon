@@ -15,13 +15,9 @@ module.exports = {
     if (!team) return message.reply('You are not in a team.');
 
     let totalCoins = 0;
-    team.users.forEach(async (user) => {
-      totalCoins += (
-        await database.findOne({
-          userId: user
-        })
-      ).coins;
-    });
+    for (let i = 0; i < 5; i++) {
+      totalCoins += (await database.findOne({ userId: team.users[i] })).coins;
+    }
 
     const embed = new EmbedBuilder()
       .setTitle(team.name)
@@ -35,7 +31,7 @@ module.exports = {
         },
         {
           name: 'Members',
-          value: team.users.map((a) => `- <@${a}>`).join('\n'),
+          value: team.users.map((a) => `<@${a}>`).join(' '),
           inline: true
         }
       ])
