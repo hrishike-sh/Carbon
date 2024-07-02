@@ -178,8 +178,6 @@ module.exports = {
           ]
         });
       } else if (value == 'sabotage') {
-        if (message.author.id !== '598918643727990784')
-          return msg.reply('youre not hrish');
         const teamuser = await Teams.findOne({
           users: message.author.id
         });
@@ -236,7 +234,7 @@ module.exports = {
         const col = emb.createMessageComponentCollector({
           filter: (i) => i.user.id === message.author.id,
           idle: 5_000,
-          max: 1
+          max: 2
         });
         let sabotaged = false;
         col.on('collect', async (i) => {
@@ -251,6 +249,7 @@ module.exports = {
           msg.reply({
             content: `Sabotaged ${team.name}! They now have ${team.points} points!`
           });
+          col.stop();
         });
         col.on('end', (collected) => {
           row.components[0].setDisabled(true);
