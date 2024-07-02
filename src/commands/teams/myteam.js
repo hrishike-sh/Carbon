@@ -35,7 +35,7 @@ module.exports = {
         },
         {
           name: 'Members',
-          value: team.users.map((a) => `- <@${a}>`).join(', '),
+          value: team.users.map((a) => `- <@${a}>`).join('\n'),
           inline: true
         }
       ])
