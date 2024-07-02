@@ -1,5 +1,6 @@
-const { Message, Client } = require('discord.js');
+const { Message, Client, EmbedBuilder, Colors } = require('discord.js');
 const TeamDB = require('../../database/teams');
+const database = require('../../database/coins');
 module.exports = {
   name: 'myteam',
   aliases: ['team'],
@@ -13,22 +14,36 @@ module.exports = {
     const team = await TeamDB.findOne({ users: userId });
     if (!team) return message.reply('You are not in a team.');
 
-    return message.reply({
-      embeds: [
+    let totalCoins = 0;
+    team.users.forEach(async (user) => {
+      totalCoins += (
+        await database.findOne({
+          userId: user
+        })
+      ).coins;
+    });
+
+    const embed = new EmbedBuilder()
+      .setTitle(team.name)
+      .addFields([
         {
-          author: {
-            name: message.author.username,
-            icon_url: message.author.displayAvatarURL()
-          },
-          title: team.name,
-          description: `**Role:** <@&${team.roleId}>\n**Points:** ${
+          name: 'Wealth',
+          value: `Points: ${
             team.points
-          }\n**Members:** ${team.users.map((a) => `<@${a}>`).join(', ')}`,
-          footer: {
-            text: 'Check the event leaderboards with fh tlb'
-          }
+          }\nCoins: ${totalCoins.toLocaleString()}`,
+          inline: true
+        },
+        {
+          name: 'Members',
+          value: team.users.map((a) => `- <@${a}>`).join(', '),
+          inline: true
         }
-      ]
+      ])
+      .setColor(Colors.Gold)
+      .setTimestamp();
+
+    return message.reply({
+      embeds: [embed]
     });
   }
 };
