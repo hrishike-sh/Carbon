@@ -183,7 +183,7 @@ module.exports = {
         const teamuser = await Teams.findOne({
           users: message.author.id
         });
-        const dbuser = await Database.findOne({
+        let dbuser = await Database.findOne({
           userId: message.author.id
         });
         if (!teamuser)
@@ -195,7 +195,7 @@ module.exports = {
         const allTeams = await Teams.find({ points: { $gt: 0 } }).sort({
           points: -1
         });
-
+        let emb;
         if (item.price > dbuser.coins) {
           return msg.reply({
             embeds: [
@@ -229,11 +229,11 @@ module.exports = {
 
         const row = new ActionRowBuilder().addComponents(selectMenu);
 
-        const emb = msg.reply({
+        emb = await msg.reply({
           embeds: [embed],
           components: [row]
         });
-        const col = (await emb).createMessageComponentCollector({
+        const col = emb.createMessageComponentCollector({
           filter: (i) => i.user.id === message.author.id,
           idle: 5_000,
           max: 1
@@ -255,6 +255,10 @@ module.exports = {
         col.on('end', (collected) => {
           row.components[0].setDisabled(true);
           msg.edit({ components: [row] });
+          emb.edit({
+            components: [],
+            content: 'Time limit exceeded.'
+          });
         });
       }
     });
