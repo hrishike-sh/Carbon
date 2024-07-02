@@ -211,7 +211,8 @@ module.exports = {
           .setDescription(`Select the team you want to sabotage...`)
           .setFooter({
             text: "You don't have to do this."
-          });
+          })
+          .setColor(Colors.Red);
 
         const selectMenu = new StringSelectMenuBuilder()
           .setCustomId('sabotage_menu')
@@ -231,6 +232,29 @@ module.exports = {
         const emb = msg.reply({
           embeds: [embed],
           components: [row]
+        });
+        const col = (await emb).createMessageComponentCollector({
+          filter: (i) => i.user.id === message.author.id,
+          idle: 5_000,
+          max: 1
+        });
+        let sabotaged = false;
+        col.on('collect', async (i) => {
+          if (sabotaged) return;
+          const team = await Teams.findOne({ _id: i.values[0] });
+          if (!team) return;
+          team.points--;
+          team.save();
+          dbuser -= item.price;
+          dbuser.save();
+          sabotaged = true;
+          msg.reply({
+            content: `Sabotaged ${team.name}! They now have ${team.points} points!`
+          });
+        });
+        col.on('end', (collected) => {
+          row.components[0].setDisabled(true);
+          msg.edit({ components: [row] });
         });
       }
     });
