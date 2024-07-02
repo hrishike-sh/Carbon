@@ -10,25 +10,35 @@ const Database = require('../../database/coins');
 const Teams = require('../../database/teams');
 const SHOP = [
   {
-    name: 'Point for Team',
-    price: 100_000,
+    name: 'Sabotage',
+    price: 200_000,
     duration: Infinity,
     emoji: {
-      str: '<:plusone:1255581374661005363>',
-      id: '1255581374661005363'
+      str: '<:sabotage:1257584833333559359>',
+      id: '1257584833333559359'
     },
-    value: 'point'
+    value: 'sabotage'
   },
-  {
-    name: 'Absolutely Nothing',
-    price: 1000,
-    duration: Infinity,
-    emoji: {
-      str: '<:shrug:1255590797416333364>',
-      id: '1255590797416333364'
-    },
-    value: 'nothing'
-  },
+  // {
+  //   name: 'Point for Team',
+  //   price: 100_000,
+  //   duration: Infinity,
+  //   emoji: {
+  //     str: '<:plusone:1255581374661005363>',
+  //     id: '1255581374661005363'
+  //   },
+  //   value: 'point'
+  // },
+  // {
+  //   name: 'Absolutely Nothing',
+  //   price: 1000,
+  //   duration: Infinity,
+  //   emoji: {
+  //     str: '<:shrug:1255590797416333364>',
+  //     id: '1255590797416333364'
+  //   },
+  //   value: 'nothing'
+  // },
   {
     name: 'Custom Channel [Soon]',
     price: 1e6,
@@ -166,6 +176,61 @@ module.exports = {
               timestamp: new Date()
             }
           ]
+        });
+      } else if (value == 'sabotage') {
+        if (message.author.id !== '598918643727990784')
+          return msg.reply('youre not hrish');
+        const teamuser = await Teams.findOne({
+          users: message.author.id
+        });
+        const dbuser = await Database.findOne({
+          userId: message.author.id
+        });
+        if (!teamuser)
+          return msg.reply({
+            content: "You're not in a team!"
+          });
+
+        const item = SHOP.filter((a) => a.value == value)[0];
+        const allTeams = await Teams.find({ points: { $gt: 0 } }).sort({
+          points: -1
+        });
+
+        if (item.price > dbuser.coins) {
+          return msg.reply({
+            embeds: [
+              {
+                description: `You don't have ${item.price.toLocaleString()} coins.`,
+                color: Colors.Red
+              }
+            ]
+          });
+        }
+        const embed = new EmbedBuilder()
+          .setTitle('<:sabotage:1257584833333559359> Sabotage')
+          .setDescription(`Select the team you want to sabotage...`)
+          .setFooter({
+            text: "You don't have to do this."
+          });
+
+        const selectMenu = new StringSelectMenuBuilder()
+          .setCustomId('sabotage_menu')
+          .setMaxValues(1)
+          .setPlaceholder('Select team...');
+        allTeams.forEach((team) => {
+          selectMenu.addOptions(
+            new StringSelectMenuOptionBuilder()
+              .setLabel(team.name)
+              .setDescription(`Points: ${team.points}`)
+              .setValue(team._id.toString())
+          );
+        });
+
+        const row = new ActionRowBuilder().addComponents(selectMenu);
+
+        const emb = msg.reply({
+          embeds: [embed],
+          components: [row]
         });
       }
     });
