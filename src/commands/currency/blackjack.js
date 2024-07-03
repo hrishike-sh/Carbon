@@ -40,9 +40,10 @@ module.exports = {
         },
         {
           name: 'Carbon',
-          value: `Hand: ${formatHand(botHand)}\nScore: ${calculateScore(
-            botHand
-          )}`,
+          value: `Hand: ${formatHand(botHand, true)}\nScore: ${calculateScore(
+            botHand,
+            true
+          )}+`,
           inline: true
         }
       ]);
@@ -97,7 +98,7 @@ module.exports = {
                 value: `Hand: ${formatHand(
                   botHand,
                   true
-                )}\nScore: ${calculateScore(botHand, true)}`,
+                )}\nScore: ${calculateScore(botHand, true)}+`,
                 inline: true
               }
             ])
