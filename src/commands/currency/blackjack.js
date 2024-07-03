@@ -100,5 +100,5 @@ function calculateScore(cards) {
 }
 
 function formatHand(hand) {
-  return hand.map((a) => `\`${card.suit}${card.value}\``).join(' ');
+  return hand.map((a) => `\`${a.suit}${a.value}\``).join(' ');
 }
