@@ -105,7 +105,7 @@ module.exports = {
       ]
     });
 
-    if (Math.random() < 0.01) {
+    if (Math.random() < 0.05) {
       const d = await getUser(userId);
       const amt = d.coins;
 
@@ -124,7 +124,7 @@ module.exports = {
           {
             description: `Hello ${message.author.tag}... Have you tried gambling?\n\nDo you want to coinflip **${amt}** coins?`,
             footer: {
-              text: '1% Chance of event spawning. You have 5 SECONDS.'
+              text: '5% Chance of event spawning. You have 5 SECONDS.'
             },
             author: {
               icon_url:
