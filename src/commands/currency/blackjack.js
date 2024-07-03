@@ -183,7 +183,12 @@ module.exports = {
           botsc = calculateScore(botHand);
         }
 
-        if (playersc > botsc) {
+        if (botsc > 21) {
+          winMsg = {
+            msg: 'The dealer busted, you win!',
+            color: 'Green'
+          };
+        } else if (playersc > botsc) {
           winMsg = {
             msg: `You won! You had a higher score than the dealer.`,
             color: 'Green'
