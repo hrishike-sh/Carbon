@@ -201,7 +201,7 @@ module.exports = {
         } else {
           winMsg = {
             msg: 'Its a tie!',
-            Color: 'Yellow'
+            color: 'Yellow'
           };
         }
 
