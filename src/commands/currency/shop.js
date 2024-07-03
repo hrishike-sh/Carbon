@@ -9,26 +9,26 @@ const {
 const Database = require('../../database/coins');
 const Teams = require('../../database/teams');
 const SHOP = [
-  {
-    name: 'Sabotage',
-    price: 200_000,
-    duration: Infinity,
-    emoji: {
-      str: '<:sabotage:1257584833333559359>',
-      id: '1257584833333559359'
-    },
-    value: 'sabotage'
-  },
   // {
-  //   name: 'Point for Team',
-  //   price: 100_000,
+  //   name: 'Sabotage',
+  //   price: 200_000,
   //   duration: Infinity,
   //   emoji: {
-  //     str: '<:plusone:1255581374661005363>',
-  //     id: '1255581374661005363'
+  //     str: '<:sabotage:1257584833333559359>',
+  //     id: '1257584833333559359'
   //   },
-  //   value: 'point'
+  //   value: 'sabotage'
   // },
+  {
+    name: 'Point for Team',
+    price: 125_000,
+    duration: Infinity,
+    emoji: {
+      str: '<:plusone:1255581374661005363>',
+      id: '1255581374661005363'
+    },
+    value: 'point'
+  },
   // {
   //   name: 'Absolutely Nothing',
   //   price: 1000,
