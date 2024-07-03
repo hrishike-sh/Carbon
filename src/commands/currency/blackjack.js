@@ -98,7 +98,7 @@ module.exports = {
                 value: `Hand: ${formatHand(
                   botHand,
                   true
-                )}\nScore: ${calculateScore(botHand, true)}+`,
+                )}\nScore: ${calculateScore(botHand)}`,
                 inline: true
               }
             ])
