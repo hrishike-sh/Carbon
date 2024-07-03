@@ -17,7 +17,6 @@ module.exports = {
    * @param {Client} client Discord Client
    */
   async execute(message, args, client) {
-    if (message.author.id !== '598918643727990784') return;
     const deck = createDeck();
     shuffleDeck(deck);
 
@@ -186,6 +185,16 @@ module.exports = {
         if (botsc > 21) {
           winMsg = {
             msg: 'The dealer busted, you win!',
+            color: 'Green'
+          };
+        } else if (botsc == 21) {
+          winMsg = {
+            msg: 'The dealer had a Blackjack, you lose!',
+            color: 'Red'
+          };
+        } else if (playersc == 21) {
+          winMsg = {
+            msg: 'You have a Blackjack, you win!',
             color: 'Green'
           };
         } else if (playersc > botsc) {
