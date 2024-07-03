@@ -7,7 +7,8 @@ const {
   ButtonBuilder,
   ButtonStyle
 } = require('discord.js');
-
+const Database = require('../../database/coins');
+let cd = [];
 module.exports = {
   name: 'blackjack',
   aliases: ['bj'],
@@ -17,6 +18,12 @@ module.exports = {
    * @param {Client} client Discord Client
    */
   async execute(message, args, client) {
+    if (cd.includes(message.author.id)) {
+      return message.reply(
+        'Please wait 10 seconds before using this command again'
+      );
+    }
+    addCd(userId);
     const deck = createDeck();
     shuffleDeck(deck);
 
@@ -144,6 +151,15 @@ module.exports = {
             components: [row],
             content: 'The dealer busted, you win!'
           });
+
+          await Database.findOneAndUpdate(
+            { userId: message.author.id },
+            {
+              $inc: {
+                coins: Math.floor(Math.random() * 25) + 75
+              }
+            }
+          );
           return;
         }
         button.deferUpdate();
@@ -232,7 +248,20 @@ module.exports = {
             }
           ])
           .setColor(winMsg.color);
-
+        if (winMsg.color == 'Green') {
+          const coins = Math.floor(Math.random() * 25) + 75;
+          await Database.findOneAndUpdate(
+            { userId: message.author.id },
+            {
+              $inc: {
+                coins
+              }
+            }
+          );
+          embed.setFooter({
+            text: `You won ${coins.toLocaleString()} coins!`
+          });
+        }
         row.components[0].setDisabled(true);
         row.components[1].setDisabled(true);
         await msg.edit({
@@ -337,3 +366,8 @@ function formatHand(hand, bot) {
       .join(' ');
   }
 }
+const addCd = async (userId) => {
+  cd.push(userId);
+  await sleep(10_000);
+  cd = cd.filter((a) => a != userId);
+};
