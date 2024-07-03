@@ -1,4 +1,12 @@
-const { Message, Client, EmbedBuilder, Colors } = require('discord.js');
+const {
+  Message,
+  Client,
+  EmbedBuilder,
+  Colors,
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle
+} = require('discord.js');
 
 module.exports = {
   name: 'blackjack',
@@ -24,19 +32,93 @@ module.exports = {
       })
       .addFields([
         {
-          name: 'Your Hand',
+          name: message.member.displayName,
           value: `Hand: ${formatHand(playerHand)}\nScore: ${calculateScore(
             playerHand
-          )}`
+          )}`,
+          inline: true
         },
         {
-          name: "Carbon's Hand",
+          name: 'Carbon',
           value: `Hand: ${formatHand(botHand)}\nScore: ${calculateScore(
             botHand
-          )}`
+          )}`,
+          inline: true
         }
       ]);
-    await message.channel.send({ embeds: [embed] });
+
+    const row = new ActionRowBuilder().addComponents([
+      new ButtonBuilder()
+        .setStyle(ButtonStyle.Primary)
+        .setCustomId('hit')
+        .setLabel('Hit'),
+      new ButtonBuilder()
+        .setStyle(ButtonStyle.Primary)
+        .setCustomId('stand')
+        .setLabel('Stand')
+    ]);
+
+    const msg = await message.reply({ embeds: [embed], components: [row] });
+    const collector = msg.createMessageComponentCollector({
+      filter: (button) => {
+        if (button.user.id !== message.author.id) {
+          button.reply({
+            ephemeral: true,
+            embeds: [
+              {
+                description: `Start your own game using \`fh blackjack\``
+              }
+            ]
+          });
+          return true;
+        } else return true;
+      },
+      idle: 30_000
+    });
+
+    collector.on('collect', async (button) => {
+      const what = button.customId;
+
+      if (what == 'hit') {
+        playerHand.push(drawCard(deck));
+        const playerScore = calculateScore(playerHand);
+
+        if (playerScore > 21) {
+          collector.stop();
+          embed
+            .setFields([
+              {
+                name: message.member.displayName,
+                value: `Hand: ${formatHand(playerHand)}\nScore: ${playerScore}`,
+                inline: true
+              },
+              {
+                name: 'Carbon',
+                value: `Hand: ${formatHand(botHand)}\nScore: ${calculateScore(
+                  botHand
+                )}`,
+                inline: true
+              }
+            ])
+            .setColor('Red');
+          row.components[0].setDisabled(true);
+          row.components[1].setDisabled(true);
+          await msg.edit({
+            embeds: [embed],
+            components: [row],
+            content: 'You busted!'
+          });
+          return;
+        }
+
+        let botScore = calculateScore(botHand);
+        if (botScore < 18) {
+          botHand.push(drawCard(deck));
+          botScore = calculateScore(botHand);
+        }
+      } else {
+      }
+    });
   }
 };
 
@@ -100,5 +182,10 @@ function calculateScore(cards) {
 }
 
 function formatHand(hand) {
-  return hand.map((a) => `\`${a.suit}${a.value}\``).join(' ');
+  return hand
+    .map(
+      (a) =>
+        `[\`${a.suit}${a.value}\`](https://discord.com/invite/fight "Fuck you")`
+    )
+    .join(' ');
 }
