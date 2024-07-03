@@ -172,6 +172,56 @@ module.exports = {
           components: [row]
         });
       } else {
+        collector.stop();
+        button.deferUpdate();
+        let winMsg = null;
+        const playersc = calculateScore(playerHand);
+        const botsc = calculateScore(botHand);
+
+        if (playersc > botsc) {
+          winMsg = {
+            msg: `You won! You had a higher score than the dealer.`,
+            color: 'Green'
+          };
+        } else if (botsc > playersc) {
+          winMsg = {
+            msg: 'You lost! The dealer had a higher score than you.',
+            color: 'Red'
+          };
+        } else {
+          winMsg = {
+            msg: 'Its a tie!',
+            Color: 'Yellow'
+          };
+        }
+
+        embed
+          .setFields([
+            {
+              name: message.member.displayName,
+              value: `Hand: ${formatHand(playerHand)}\nScore: ${calculateScore(
+                playerHand
+              )}`,
+              inline: true
+            },
+            {
+              name: 'Carbon',
+              value: `Hand: ${formatHand(botHand)}\nScore: ${calculateScore(
+                botHand
+              )}`,
+              inline: true
+            }
+          ])
+          .setColor(winMsg.color);
+
+        row.components[0].setDisabled(true);
+        row.components[1].setDisabled(true);
+        await msg.edit({
+          embeds: [embed],
+          content: winMsg.msg,
+          components: [row]
+        });
+        return;
       }
     });
   }
