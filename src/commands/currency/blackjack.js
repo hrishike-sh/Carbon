@@ -94,15 +94,17 @@ module.exports = {
               },
               {
                 name: 'Carbon',
-                value: `Hand: ${formatHand(botHand)}\nScore: ${calculateScore(
-                  botHand
-                )}`,
+                value: `Hand: ${formatHand(
+                  botHand,
+                  true
+                )}\nScore: ${calculateScore(botHand, true)}`,
                 inline: true
               }
             ])
             .setColor('Red');
           row.components[0].setDisabled(true);
           row.components[1].setDisabled(true);
+          button.deferUpdate();
           await msg.edit({
             embeds: [embed],
             components: [row],
@@ -112,7 +114,7 @@ module.exports = {
         }
 
         let botScore = calculateScore(botHand);
-        if (botScore < 18) {
+        if (botScore < 17) {
           botHand.push(drawCard(deck));
           botScore = calculateScore(botHand);
         }
@@ -159,33 +161,57 @@ function drawCard(deck) {
   return deck.pop();
 }
 
-function calculateScore(cards) {
-  let score = 0;
-  let ace = false;
-
-  for (const card of cards) {
+function calculateScore(cards, bot) {
+  if (bot) {
+    let score = 0;
+    const card = cards[0];
     if (card.value === 'A') {
-      ace = true;
       score += 11;
     } else if (['J', 'Q', 'K'].includes(card.value)) {
       score += 10;
     } else {
       score += parseInt(card.value);
     }
-  }
+    return score;
+  } else {
+    let score = 0;
+    let ace = false;
 
-  if (ace && score > 21) {
-    score -= 10;
-  }
+    for (const card of cards) {
+      if (card.value === 'A') {
+        ace = true;
+        score += 11;
+      } else if (['J', 'Q', 'K'].includes(card.value)) {
+        score += 10;
+      } else {
+        score += parseInt(card.value);
+      }
+    }
 
-  return score;
+    if (ace && score > 21) {
+      score -= 10;
+    }
+
+    return score;
+  }
 }
 
-function formatHand(hand) {
-  return hand
-    .map(
-      (a) =>
-        `[\`${a.suit}${a.value}\`](https://discord.com/invite/fight "Fuck you")`
-    )
-    .join(' ');
+function formatHand(hand, bot) {
+  if (bot) {
+    return hand.map(
+      (a, ind) =>
+        `${
+          ind == 0
+            ? `[\`${a.suit}${a.value}\`](https://discord.com/invite/fight "nuh uh")`
+            : `[\`??\`](https://discord.com/invite/fight "nuh uh")`
+        }`
+    );
+  } else {
+    return hand
+      .map(
+        (a) =>
+          `[\`${a.suit}${a.value}\`](https://discord.com/invite/fight "nuh uh")`
+      )
+      .join(' ');
+  }
 }
