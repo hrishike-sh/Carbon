@@ -176,7 +176,12 @@ module.exports = {
         button.deferUpdate();
         let winMsg = null;
         const playersc = calculateScore(playerHand);
-        const botsc = calculateScore(botHand);
+        let botsc = calculateScore(botHand);
+
+        while (botsc < 17) {
+          botHand.push(drawCard(deck));
+          botsc = calculateScore(botHand);
+        }
 
         if (playersc > botsc) {
           winMsg = {
