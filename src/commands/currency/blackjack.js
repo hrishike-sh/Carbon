@@ -147,7 +147,7 @@ module.exports = {
           });
           return;
         }
-
+        button.deferUpdate();
         embed
           .setFields([
             {
