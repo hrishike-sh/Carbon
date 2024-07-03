@@ -23,7 +23,7 @@ module.exports = {
         'Please wait 10 seconds before using this command again'
       );
     }
-    addCd(userId);
+    addCd(message.author.id);
     const deck = createDeck();
     shuffleDeck(deck);
 
