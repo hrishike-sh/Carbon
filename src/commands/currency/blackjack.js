@@ -26,7 +26,7 @@ module.exports = {
 
     const embed = new EmbedBuilder()
       .setTitle('Blackjack')
-      .setColor(Colors.DarkGreen)
+      .setColor('Yellow')
       .setFooter({
         text: 'Gambling is good for your health!'
       })
@@ -95,10 +95,9 @@ module.exports = {
               },
               {
                 name: 'Carbon',
-                value: `Hand: ${formatHand(
-                  botHand,
-                  true
-                )}\nScore: ${calculateScore(botHand)}`,
+                value: `Hand: ${formatHand(botHand)}\nScore: ${calculateScore(
+                  botHand
+                )}`,
                 inline: true
               }
             ])
@@ -119,6 +118,56 @@ module.exports = {
           botHand.push(drawCard(deck));
           botScore = calculateScore(botHand);
         }
+
+        if (botScore > 21) {
+          collector.stop();
+          embed
+            .setFields([
+              {
+                name: message.member.displayName,
+                value: `Hand: ${formatHand(playerHand)}\nScore: ${playerScore}`,
+                inline: true
+              },
+              {
+                name: 'Carbon',
+                value: `Hand: ${formatHand(botHand)}\nScore: ${calculateScore(
+                  botHand
+                )}`,
+                inline: true
+              }
+            ])
+            .setColor('Green');
+          row.components[0].setDisabled(true);
+          row.components[1].setDisabled(true);
+          button.deferUpdate();
+          await msg.edit({
+            embeds: [embed],
+            components: [row],
+            content: 'The dealer busted, you win!'
+          });
+          return;
+        }
+
+        embed
+          .setFields([
+            {
+              name: message.member.displayName,
+              value: `Hand: ${formatHand(playerHand)}\nScore: ${playerScore}`,
+              inline: true
+            },
+            {
+              name: 'Carbon',
+              value: `Hand: ${formatHand(botHand, true)}\nScore: ${
+                (botScore, true)
+              }`,
+              inline: true
+            }
+          ])
+          .setColor('Yellow');
+        await msg.edit({
+          embeds: [embed],
+          components: [row]
+        });
       } else {
       }
     });
