@@ -152,14 +152,17 @@ module.exports = {
           .setFields([
             {
               name: message.member.displayName,
-              value: `Hand: ${formatHand(playerHand)}\nScore: ${playerScore}`,
+              value: `Hand: ${formatHand(playerHand)}\nScore: ${calculateScore(
+                playerHand
+              )}`,
               inline: true
             },
             {
               name: 'Carbon',
-              value: `Hand: ${formatHand(botHand, true)}\nScore: ${
-                (botScore, true)
-              }`,
+              value: `Hand: ${formatHand(
+                botHand,
+                true
+              )}\nScore: ${calculateScore(botHand, true)}+`,
               inline: true
             }
           ])
