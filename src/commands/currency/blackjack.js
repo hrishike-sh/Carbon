@@ -77,7 +77,7 @@ module.exports = {
               }
             ]
           });
-          return true;
+          return false;
         } else return true;
       },
       idle: 30_000
