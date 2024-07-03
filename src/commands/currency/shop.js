@@ -162,9 +162,9 @@ module.exports = {
           });
         }
         DatabaseUser.coins -= item.price;
-        DatabaseUser.save();
+        await DatabaseUser.save();
         TeamUser.points++;
-        TeamUser.save();
+        await TeamUser.save();
 
         return msg.reply({
           embeds: [
@@ -241,9 +241,9 @@ module.exports = {
           const team = await Teams.findOne({ _id: i.values[0] });
           if (!team) return;
           team.points--;
-          team.save();
+          await team.save();
           dbuser.coins -= item.price;
-          dbuser.save();
+          await dbuser.save();
           sabotaged = true;
           msg.reply({
             content: `Sabotaged ${team.name}! They now have ${team.points} points!`

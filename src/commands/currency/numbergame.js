@@ -117,12 +117,12 @@ module.exports = {
 const removeCoins = async (userId, amount) => {
   const user = await getUser(userId);
   user.coins -= Number(amount);
-  user.save();
+  await user.save();
 };
 const addCoins = async (userId, amount) => {
   const user = await getUser(userId);
   user.coins += Number(amount);
-  user.save();
+  await user.save();
 };
 
 const getUser = async (userId) => {

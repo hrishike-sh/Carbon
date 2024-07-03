@@ -85,7 +85,7 @@ const addCd = async (userId) => {
 const addCoins = async (userId, amount) => {
   const user = await getUser(userId);
   user.coins += amount;
-  user.save();
+  await user.save();
 };
 
 const getUser = async (userId) => {
