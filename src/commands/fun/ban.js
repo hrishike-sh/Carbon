@@ -42,8 +42,7 @@ module.exports = {
       target.ban();
     } else if (chance > 0.1 && chance < 0.2) {
       // muted for a minute
-      addBan(message.author.id);
-      message.reply('You cannot ban anyone for the next minute loser.');
+      message.reply('Your command failed :joy_cat:');
     } else if (chance < 0.4) {
       // command fails
 
@@ -57,13 +56,15 @@ module.exports = {
     } else {
       // ban
       target.ban();
-      message.reply([
-        `You have completely DEMOLISHED ${target.user.username}... they are BANNED.`,
-        `${target.user.username} was outed for... being stupid! They are now BANNED.`,
-        `WOP WOP WOP WOP WOP! ${target.user.username} was BANNED!`,
-        `${target.user.username} were listening to drake... they are BANNED!`,
-        `${target.user.username} is banned. You got the lamest response message.`
-      ]);
+      message.reply(
+        [
+          `You have completely DEMOLISHED ${target.user.username}... they are BANNED.`,
+          `${target.user.username} was outed for... being stupid! They are now BANNED.`,
+          `WOP WOP WOP WOP WOP! ${target.user.username} was BANNED!`,
+          `${target.user.username} were listening to drake... they are BANNED!`,
+          `${target.user.username} is banned. You got the lamest response message.`
+        ][Math.floor(Math.random() * 5)]
+      );
     }
   }
 };
