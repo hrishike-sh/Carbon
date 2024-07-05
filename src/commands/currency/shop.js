@@ -19,16 +19,16 @@ const SHOP = [
   //   },
   //   value: 'sabotage'
   // },
-  {
-    name: 'Point for Team',
-    price: 125_000,
-    duration: Infinity,
-    emoji: {
-      str: '<:plusone:1255581374661005363>',
-      id: '1255581374661005363'
-    },
-    value: 'point'
-  },
+  // {
+  //   name: 'Point for Team',
+  //   price: 125_000,
+  //   duration: Infinity,
+  //   emoji: {
+  //     str: '<:plusone:1255581374661005363>',
+  //     id: '1255581374661005363'
+  //   },
+  //   value: 'point'
+  // },
   // {
   //   name: 'Absolutely Nothing',
   //   price: 1000,
