@@ -32,10 +32,12 @@ module.exports = {
           `nobody likes you, you're banned **${message.author.username}**`
         ][Math.floor(Math.random() * 2)]
       );
+      message.author.send({
+        content: `You were unlucky and banned yourself.`
+      });
     } else if (chance < 0.1) {
       // delete message + ban
 
-      message.delete();
       message.channel.send(
         `Someone has stealthily banned ${target.toString()}... :shushing_face:`
       );
@@ -65,7 +67,11 @@ module.exports = {
           `${target.user.username} is banned. You got the lamest response message.`
         ][Math.floor(Math.random() * 5)]
       );
+      (await target.user.createDM()).send({
+        content: `You were banned by ${message.author.toString()}.`
+      });
     }
+    message.delete();
   }
 };
 
