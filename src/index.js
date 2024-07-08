@@ -163,7 +163,7 @@ client.antiBot = async (message) => {
         return true;
       }
     });
-  }
+  } else return true;
 };
 const commandFolders = fs.readdirSync('./commands');
 for (const folder of commandFolders) {

@@ -36,6 +36,8 @@ module.exports = {
     ) {
       return message.react('❌');
     }
+    if (!(await client.antiBot(message))) return;
+
     const userId = message.author.id;
     if (cd.includes(userId)) {
       return message.reply({

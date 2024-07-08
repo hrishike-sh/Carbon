@@ -18,6 +18,8 @@ module.exports = {
    * @param {Client} client Discord Client
    */
   async execute(message, args, client) {
+    if (!(await client.antiBot(message))) return;
+
     if (cd.includes(message.author.id)) {
       return message.reply(
         'Please wait 10 seconds before using this command again'
