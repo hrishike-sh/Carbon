@@ -98,7 +98,7 @@ client.antiBot = async (message) => {
   if (!MAP.has(message.author.id)) {
     MAP.set(message.author.id, 0);
   }
-  if (processing.has(message.id)) {
+  if (processing.has(message.author.id)) {
     message.react('❌');
     return false;
   }
