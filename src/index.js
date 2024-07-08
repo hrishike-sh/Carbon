@@ -5,7 +5,11 @@ const {
   Collection,
   GatewayIntentBits,
   Message,
-  Partials
+  Partials,
+  Colors,
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle
 } = require('discord.js');
 const fs = require('fs');
 const path = require('node:path');
@@ -79,6 +83,87 @@ mongoose.connect(process.env.mongopath);
 client.cmd = {
   commands: new Collection(),
   cooldowns: new Collection()
+};
+const MAP = new Collection();
+/**
+ *
+ * @param {Message} message
+ * @returns
+ */
+client.antiBot = async (message) => {
+  if (!message.guild) return true;
+
+  if (!MAP.has(message.author.id)) {
+    MAP.set(message.author.id, 0);
+  }
+  const count = MAP.get(message.author.id);
+  MAP.set(message.author.id, count + 1);
+  if (count >= 25) {
+    const msg = await message.channel.send({
+      content: message.author.toString(),
+      embeds: [
+        {
+          title: 'Anti-Bot',
+          color: Colors.Red,
+          description: `Click the **RED** button to continue!`,
+          footer: {
+            text: 'Failing the captcha will get you banned. You have 10 seconds.'
+          }
+        }
+      ],
+      components: [
+        new ActionRowBuilder().addComponents(
+          [
+            new ButtonBuilder()
+              .setCustomId(`${Math.random()}`)
+              .setStyle(ButtonStyle.Danger)
+              .setLabel('Click'),
+            new ButtonBuilder()
+              .setCustomId(`${Math.random()}`)
+              .setStyle(ButtonStyle.Success)
+              .setLabel('Click'),
+            new ButtonBuilder()
+              .setCustomId(`${Math.random()}`)
+              .setStyle(ButtonStyle.Success)
+              .setLabel('Click'),
+            new ButtonBuilder()
+              .setCustomId(`${Math.random()}`)
+              .setStyle(ButtonStyle.Success)
+              .setLabel('Click'),
+            new ButtonBuilder()
+              .setCustomId(`${Math.random()}`)
+              .setStyle(ButtonStyle.Success)
+              .setLabel('Click')
+          ].sort(() => Math.random() - 0.5)
+        )
+      ]
+    });
+    const collector = msg.createMessageComponentCollector({
+      filter: (m) => m.user.id == message.author.id,
+      time: 10_000,
+      max: 1
+    });
+    let captcha = false;
+    collector.on('collect', async (button) => {
+      if (button.component.style !== ButtonStyle.Danger) {
+        collector.stop();
+        client.users.cache.get('598918643727990784').send({
+          content: `${message.author.toString()} failed the captcha [Jump](${
+            message.url
+          })`
+        });
+      } else {
+        captcha = true;
+      }
+    });
+    collector.on('end', () => {
+      if (!captcha) return false;
+      else {
+        MAP.set(message.author.id, 0);
+        return true;
+      }
+    });
+  }
 };
 const commandFolders = fs.readdirSync('./commands');
 for (const folder of commandFolders) {
