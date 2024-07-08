@@ -86,6 +86,7 @@ client.cmd = {
 };
 const MAP = new Collection();
 const CoinDB = require('./database/coins');
+const processing = new Set();
 /**
  *
  * @param {Message} message
@@ -97,9 +98,14 @@ client.antiBot = async (message) => {
   if (!MAP.has(message.author.id)) {
     MAP.set(message.author.id, 0);
   }
+  if (processing.has(message.id)) {
+    message.react('❌');
+    return false;
+  }
   const count = MAP.get(message.author.id);
   MAP.set(message.author.id, count + 1);
   if (count >= 25) {
+    processing.add(message.id);
     const msg = await message.channel.send({
       content: message.author.toString(),
       embeds: [
@@ -170,10 +176,13 @@ client.antiBot = async (message) => {
           content: `${message.author.toString()} you failed the captcha! All your coins are wiped.`
         });
         MAP.set(message.author.id, 0);
+        processing.delete(message.id);
 
         return false;
       } else {
         MAP.set(message.author.id, 0);
+        processing.delete(message.id);
+
         message.channel.send(
           `${message.author.toString()} you can continue using the bot!`
         );
