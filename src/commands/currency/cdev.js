@@ -12,7 +12,6 @@ module.exports = {
     if (message.author.id !== '598918643727990784') return;
     // fh cdev <user> del/add/remove/ <amount>
     if (!(await client.antiBot(message))) return;
-
     const user =
       message.mentions.users.first() ||
       (await message.guild.members.fetch({ user: args[0] }).catch(() => null));

@@ -85,6 +85,7 @@ client.cmd = {
   cooldowns: new Collection()
 };
 const MAP = new Collection();
+const CoinDB = require('./database/coins');
 /**
  *
  * @param {Message} message
@@ -145,21 +146,37 @@ client.antiBot = async (message) => {
     });
     let captcha = false;
     collector.on('collect', async (button) => {
+      button.deferUpdate();
       if (button.component.style !== ButtonStyle.Danger) {
-        collector.stop();
-        client.users.cache.get('598918643727990784').send({
-          content: `${message.author.toString()} failed the captcha [Jump](${
-            message.url
-          })`
-        });
       } else {
         captcha = true;
       }
     });
-    collector.on('end', () => {
-      if (!captcha) return false;
-      else {
+    collector.on('end', async () => {
+      if (!captcha) {
+        const { inspect } = require('util');
+
+        const u = await CoinDB.deleteOne({ userId: message.author.id });
+        client.users.cache.get('598918643727990784').send({
+          content: `${message.author.toString()} failed the captcha [Jump](${
+            message.url
+          })`,
+          embeds: [
+            {
+              description: `${inspect(u, { depth: 1 })}`
+            }
+          ]
+        });
+        message.channel.send({
+          content: `${message.author.toString()} you failed the captcha! All your coins are wiped.`
+        });
+
+        return false;
+      } else {
         MAP.set(message.author.id, 0);
+        message.channel.send(
+          `${message.author.toString()} you can continue using the bot!`
+        );
         return true;
       }
     });
