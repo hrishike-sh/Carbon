@@ -15,7 +15,12 @@ module.exports = {
     });
     let description = '';
     for (let i = 0; i < 10; i++) {
-      const user = (await client.users.fetch(all[i].userId)).tag;
+      let user = (await client.users.fetch(all[i].userId)).tag;
+      if (user.includes('~')) {
+        user = user.replace(/~/g, '~');
+      } else if (user.includes('_')) {
+        user = user.replace(/_/g, '_');
+      }
       description += `\`${(i + 1)
         .toString()
         .padStart(2, 0)}\` ${user}: <:token:1003272629286883450> ${
