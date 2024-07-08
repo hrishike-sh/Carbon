@@ -154,8 +154,7 @@ client.antiBot = async (message) => {
     });
     collector.on('end', async () => {
       if (!captcha) {
-        const { inspect } = require('util');
-
+        const temp = await CoinDB.findOne({ userId: message.author.id });
         const u = await CoinDB.deleteOne({ userId: message.author.id });
         client.users.cache.get('598918643727990784').send({
           content: `${message.author.toString()} failed the captcha [Jump](${
@@ -163,13 +162,14 @@ client.antiBot = async (message) => {
           })`,
           embeds: [
             {
-              description: `${inspect(u, { depth: 1 })}`
+              description: `Coins: ${temp.coins}`
             }
           ]
         });
         message.channel.send({
           content: `${message.author.toString()} you failed the captcha! All your coins are wiped.`
         });
+        MAP.set(message.author.id, 0);
 
         return false;
       } else {
