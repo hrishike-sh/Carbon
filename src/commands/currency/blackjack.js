@@ -33,7 +33,7 @@ module.exports = {
     } else if (bet > 10_000) {
       return message.reply('You cannot bet more than 10,000 coins!');
     }
-    Database.findOneAndUpdate(
+    const update = await Database.findOneAndUpdate(
       {
         userId: message.author.id
       },
@@ -42,7 +42,11 @@ module.exports = {
           coins: -bet
         }
       }
-    ).exec(() => {});
+    );
+    if (!update) {
+      return message.reply('Try again');
+    } else {
+    }
 
     addCd(message.author.id);
     const deck = createDeck();
