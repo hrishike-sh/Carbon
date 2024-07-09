@@ -25,15 +25,24 @@ module.exports = {
         'Please wait 10 seconds before using this command again'
       );
     }
-    const bet = parseAmount(args[0] || '1');
+    let bet = parseAmount(args[0]);
+    if (!bet) bet = 1;
     const dbUser = await Database.findOne({ userId: message.author.id });
     if (dbUser.coins < bet) {
       return message.reply('You do not have enough coins!');
     } else if (bet > 25_000) {
       return message.reply('You cannot bet more than 25,000 coins!');
     }
-    dbUser.coins -= bet;
-    await dbUser.save();
+    await Database.findOneAndUpdate(
+      {
+        userId: message.author.id
+      },
+      {
+        $inc: {
+          coins: -bet
+        }
+      }
+    );
     addCd(message.author.id);
     const deck = createDeck();
     shuffleDeck(deck);

@@ -70,7 +70,9 @@ client.on(Events.ClientReady, async () => {
  * Database Handling
  */
 
-mongoose.connect(process.env.mongopath);
+mongoose.connect(process.env.mongopath, {
+  useFindAndModify: false
+});
 
 /**
  * Database Handling
