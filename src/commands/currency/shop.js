@@ -89,15 +89,13 @@ module.exports = {
     const selectMenu = new StringSelectMenuBuilder()
       .setCustomId('shop_shop')
       .setPlaceholder('Select an item')
-      .addOptions(
-        SHOP.map((item) => {
-          return new StringSelectMenuOptionBuilder()
-            .setLabel('Point for Team')
-            .setValue(`point`)
-            .setEmoji('1255581374661005363')
-            .setDescription(`Price: ${coins.toLocaleString()} coins.`);
-        })
-      )
+      .addOptions([
+        new StringSelectMenuOptionBuilder()
+          .setLabel('Point for Team')
+          .setValue(`point`)
+          .setEmoji('1255581374661005363')
+          .setDescription(`Price: ${cost.toLocaleString()} coins.`)
+      ])
       .setMaxValues(1)
       .setMinValues(1);
     const row = new ActionRowBuilder().addComponents(selectMenu);
