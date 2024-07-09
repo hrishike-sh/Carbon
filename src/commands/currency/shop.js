@@ -110,7 +110,6 @@ module.exports = {
     });
     collector.on('collect', async (button) => {
       const value = button.values[0];
-      button.deferUpdate();
       if (value == 'point') {
         const userBalance = await Database.findOne({
           userId: message.author.id
