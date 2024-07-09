@@ -18,6 +18,7 @@ module.exports = {
    * @param {Client} client Discord Client
    */
   async execute(message, args, client) {
+    return message.reply('holon');
     if (!(await client.antiBot(message))) return;
 
     if (cd.includes(message.author.id)) {
