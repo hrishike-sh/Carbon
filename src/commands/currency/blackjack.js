@@ -33,8 +33,10 @@ module.exports = {
     } else if (bet > 10_000) {
       return message.reply('You cannot bet more than 10,000 coins!');
     }
+    if (client.cd.has(message.author.id))
+      return message.reply("You're already running a command");
     await removeCoins(message.author.id, bet);
-
+    client.cd.add(message.author.id);
     addCd(message.author.id);
     const deck = createDeck();
     shuffleDeck(deck);
@@ -129,6 +131,7 @@ module.exports = {
             components: [row],
             content: `You busted! You lost **${bet.toLocaleString()}** coins!`
           });
+          client.cd.delete(message.author.id);
           return;
         }
 
@@ -169,6 +172,7 @@ module.exports = {
           });
 
           await addCoins(message.author.id, bet * 2);
+          client.cd.delete(message.author.id);
 
           return;
         }
@@ -199,6 +203,8 @@ module.exports = {
       } else {
         collector.stop();
         button.deferUpdate();
+        client.cd.delete(message.author.id);
+
         let winMsg = null;
         const playersc = calculateScore(playerHand);
         let botsc = calculateScore(botHand);
