@@ -82,8 +82,8 @@ module.exports = {
       .setColor(Colors.Green)
       .addFields([
         {
-          name: 'Point for Team',
-          value: `<:plusone:1255581374661005363> **Price**: <:token:1003272629286883450> ${cost.toLocaleString()}\n<:plusone:1255581374661005363> **Duration**: ${Infinity.toString()} Days`
+          name: '<:plusone:1255581374661005363> Point for Team',
+          value: `<:blank:914473340129906708> **Price**: <:token:1003272629286883450> ${cost.toLocaleString()}\n<:blank:914473340129906708> **Duration**: ${Infinity.toString()} Days`
         }
       ]);
     const selectMenu = new StringSelectMenuBuilder()
