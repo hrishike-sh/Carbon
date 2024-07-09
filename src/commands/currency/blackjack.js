@@ -25,6 +25,15 @@ module.exports = {
         'Please wait 10 seconds before using this command again'
       );
     }
+    const bet = parseAmount(args[0]) || 1;
+    const dbUser = await Database.findOne({ userId: message.author.id });
+    if (dbUser.coins < bet) {
+      return message.reply('You do not have enough coins!');
+    } else if (bet > 25_000) {
+      return message.reply('You cannot bet more than 25,000 coins!');
+    }
+    dbUser.coins -= bet;
+    await dbUser.save();
     addCd(message.author.id);
     const deck = createDeck();
     shuffleDeck(deck);
@@ -116,7 +125,7 @@ module.exports = {
           await msg.edit({
             embeds: [embed],
             components: [row],
-            content: 'You busted!'
+            content: `You busted! You lost **${bet.toLocaleString()}** coins!`
           });
           return;
         }
@@ -151,17 +160,23 @@ module.exports = {
           await msg.edit({
             embeds: [embed],
             components: [row],
-            content: 'The dealer busted, you win!'
+            content:
+              'The dealer busted, you won **' +
+              bet.toLocaleString() +
+              '** coins!'
           });
 
           await Database.findOneAndUpdate(
-            { userId: message.author.id },
+            {
+              userId: message.author.id
+            },
             {
               $inc: {
-                coins: Math.floor(Math.random() * 25) + 75
+                coins: bet * 2
               }
             }
           );
+
           return;
         }
         button.deferUpdate();
@@ -202,27 +217,42 @@ module.exports = {
 
         if (botsc > 21) {
           winMsg = {
-            msg: 'The dealer busted, you win!',
+            msg: `The dealer busted! You won ${bet.toLocaleString()} coins!`,
             color: 'Green'
           };
+        } else if (botsc == 21 && playersc == 21) {
+          winMsg = {
+            msg: 'Its a tie!',
+            color: 'Yellow'
+          };
+          await Database.findOneAndUpdate(
+            {
+              userId: message.author.id
+            },
+            {
+              $inc: {
+                coins: bet
+              }
+            }
+          );
         } else if (botsc == 21) {
           winMsg = {
-            msg: 'The dealer had a Blackjack, you lose!',
+            msg: `The dealer had a Blackjack, you lost ${bet.toLocaleString()} coins!`,
             color: 'Red'
           };
         } else if (playersc == 21) {
           winMsg = {
-            msg: 'You have a Blackjack, you win!',
+            msg: `You had a Blackjack, you won ${bet.toLocaleString()} coins!`,
             color: 'Green'
           };
         } else if (playersc > botsc) {
           winMsg = {
-            msg: `You won! You had a higher score than the dealer.`,
+            msg: `You won ${bet.toLocaleString()} coins!`,
             color: 'Green'
           };
         } else if (botsc > playersc) {
           winMsg = {
-            msg: 'You lost! The dealer had a higher score than you.',
+            msg: `You lost ${bet.toLocaleString()} coins!`,
             color: 'Red'
           };
         } else {
@@ -251,18 +281,16 @@ module.exports = {
           ])
           .setColor(winMsg.color);
         if (winMsg.color == 'Green') {
-          const coins = Math.floor(Math.random() * 25) + 75;
           await Database.findOneAndUpdate(
-            { userId: message.author.id },
+            {
+              userId: message.author.id
+            },
             {
               $inc: {
-                coins
+                coins: bet * 2
               }
             }
           );
-          embed.setFooter({
-            text: `You won ${coins.toLocaleString()} coins!`
-          });
         }
         row.components[0].setDisabled(true);
         row.components[1].setDisabled(true);
@@ -376,4 +404,30 @@ const addCd = async (userId) => {
 
 const sleep = (milliseconds) => {
   return new Promise((resolve) => setTimeout(resolve, milliseconds));
+};
+const parseAmount = (string) => {
+  // Checks if first digit is valid number
+  if (isNaN(string[0])) return null;
+
+  // Return if number is like "5e4" etc.
+  if (!isNaN(Number(string))) return Number(string);
+
+  // Check for "m", "k" etc. and return value
+  if (!string.endsWith('m') && !string.endsWith('k') && !string.endsWith('b'))
+    return null;
+
+  // Add values of m, k and b
+  const val = string[string.length - 1];
+  const rawString = string.replace(string[string.length - 1], '');
+  const calculated = parseInt(rawString) * StringValues[val];
+
+  // Invalid number
+  if (isNaN(calculated)) return null;
+  else return calculated;
+};
+
+const StringValues = {
+  m: 1e6,
+  k: 1e3,
+  b: 1e9
 };
