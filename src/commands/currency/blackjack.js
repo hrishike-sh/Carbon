@@ -18,7 +18,6 @@ module.exports = {
    * @param {Client} client Discord Client
    */
   async execute(message, args, client) {
-    return message.reply('holon');
     if (!(await client.antiBot(message))) return;
 
     if (cd.includes(message.author.id)) {
@@ -34,27 +33,13 @@ module.exports = {
     } else if (bet > 10_000) {
       return message.reply('You cannot bet more than 10,000 coins!');
     }
-    const update = await Database.findOneAndUpdate(
-      {
-        userId: message.author.id
-      },
-      {
-        $inc: {
-          coins: -bet
-        }
-      },
-      {
-        new: true
-      }
-    );
-    if (!update) {
-      return message.reply('Try again');
-    } else {
-    }
+    dbUser.coins -= bet;
+    await dbUser.save();
 
     addCd(message.author.id);
     const deck = createDeck();
     shuffleDeck(deck);
+    let d;
 
     let playerHand = [drawCard(deck), drawCard(deck)];
     let botHand = [drawCard(deck), drawCard(deck)];
@@ -180,20 +165,15 @@ module.exports = {
             components: [row],
             content:
               'The dealer busted, you won **' +
-              (bet * 2).toLocaleString() +
+              bet.toLocaleString() +
               '** coins!'
           });
 
-          await Database.findOneAndUpdate(
-            {
-              userId: message.author.id
-            },
-            {
-              $inc: {
-                coins: bet * 2
-              }
-            }
-          );
+          d = await Database.findOne({
+            userId: message.author.id
+          });
+          d.coins += bet * 2;
+          await d.save();
 
           return;
         }
@@ -235,9 +215,7 @@ module.exports = {
 
         if (botsc > 21) {
           winMsg = {
-            msg: `The dealer busted! You won ${(
-              bet * 2
-            ).toLocaleString()} coins!`,
+            msg: `The dealer busted! You won ${bet.toLocaleString()} coins!`,
             color: 'Green'
           };
         } else if (botsc == 21 && playersc == 21) {
@@ -245,16 +223,11 @@ module.exports = {
             msg: 'Its a tie!',
             color: 'Yellow'
           };
-          await Database.findOneAndUpdate(
-            {
-              userId: message.author.id
-            },
-            {
-              $inc: {
-                coins: bet
-              }
-            }
-          );
+          d = await Database.findOne({
+            userId: message.author.id
+          });
+          d.coins += bet;
+          await d.save();
         } else if (botsc == 21) {
           winMsg = {
             msg: `The dealer had a Blackjack, you lost ${bet.toLocaleString()} coins!`,
@@ -262,14 +235,12 @@ module.exports = {
           };
         } else if (playersc == 21) {
           winMsg = {
-            msg: `You had a Blackjack, you won ${(
-              bet * 2
-            ).toLocaleString()} coins!`,
+            msg: `You had a Blackjack, you won ${bet.toLocaleString()} coins!`,
             color: 'Green'
           };
         } else if (playersc > botsc) {
           winMsg = {
-            msg: `You won ${(bet * 2).toLocaleString()} coins!`,
+            msg: `You won ${bet.toLocaleString()} coins!`,
             color: 'Green'
           };
         } else if (botsc > playersc) {
@@ -282,16 +253,12 @@ module.exports = {
             msg: 'Its a tie!',
             color: 'Yellow'
           };
-          await Database.findOneAndUpdate(
-            {
-              userId: message.author.id
-            },
-            {
-              $inc: {
-                coins: bet
-              }
-            }
-          );
+
+          d = await Database.findOne({
+            userId: message.author.id
+          });
+          d.coins += bet;
+          await d.save();
         }
 
         embed
@@ -313,16 +280,11 @@ module.exports = {
           ])
           .setColor(winMsg.color);
         if (winMsg.color == 'Green') {
-          await Database.findOneAndUpdate(
-            {
-              userId: message.author.id
-            },
-            {
-              $inc: {
-                coins: bet * 2
-              }
-            }
-          );
+          d = await Database.findOne({
+            userId: message.author.id
+          });
+          d.coins += bet * 2;
+          await d.save();
         }
         row.components[0].setDisabled(true);
         row.components[1].setDisabled(true);
