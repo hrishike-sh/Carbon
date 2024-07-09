@@ -41,6 +41,9 @@ module.exports = {
         $inc: {
           coins: -bet
         }
+      },
+      {
+        new: true
       }
     );
     if (!update) {
