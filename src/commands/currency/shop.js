@@ -19,16 +19,16 @@ const SHOP = [
   //   },
   //   value: 'sabotage'
   // },
-  // {
-  //   name: 'Point for Team',
-  //   price: 125_000,
-  //   duration: Infinity,
-  //   emoji: {
-  //     str: '<:plusone:1255581374661005363>',
-  //     id: '1255581374661005363'
-  //   },
-  //   value: 'point'
-  // },
+  {
+    name: 'Point for Team',
+    price: 25_000,
+    duration: Infinity,
+    emoji: {
+      str: '<:plusone:1255581374661005363>',
+      id: '1255581374661005363'
+    },
+    value: 'point'
+  }
   // {
   //   name: 'Absolutely Nothing',
   //   price: 1000,
@@ -39,26 +39,26 @@ const SHOP = [
   //   },
   //   value: 'nothing'
   // },
-  {
-    name: 'Custom Channel [Soon]',
-    price: 1e6,
-    duration: 31,
-    emoji: {
-      str: '<:text_channel:1003342275037888522>',
-      id: '1003342275037888522'
-    },
-    value: 'channel'
-  },
-  {
-    name: 'Custom Role [Soon]',
-    price: 1e6,
-    duration: 31,
-    emoji: {
-      str: '<:role:1003345268751741099>',
-      id: '1003345268751741099'
-    },
-    value: 'role'
-  }
+  // {
+  //   name: 'Custom Channel [Soon]',
+  //   price: 1e6,
+  //   duration: 31,
+  //   emoji: {
+  //     str: '<:text_channel:1003342275037888522>',
+  //     id: '1003342275037888522'
+  //   },
+  //   value: 'channel'
+  // },
+  // {
+  //   name: 'Custom Role [Soon]',
+  //   price: 1e6,
+  //   duration: 31,
+  //   emoji: {
+  //     str: '<:role:1003345268751741099>',
+  //     id: '1003345268751741099'
+  //   },
+  //   value: 'role'
+  // }
 ];
 module.exports = {
   name: 'shop',
@@ -67,10 +67,93 @@ module.exports = {
    * @param {Message} message
    */
   async execute(message) {
+    const team = await Teams.findOne({
+      users: message.author.id
+    });
+    if (!team)
+      return message.reply('You must be in a team to access the shop.');
+
+    const cost = 25_000 * team.points;
     const embed = new EmbedBuilder()
       .setTitle('Shop | Opens Soon')
       .setFooter({
-        text: 'Prices are placeholders and are subject to change.'
+        text: '25,000 * <your points>'
+      })
+      .setColor(Colors.Green)
+      .addFields([
+        {
+          name: 'Point for Team',
+          value: `<:plusone:1255581374661005363> **Price**: <:token:1003272629286883450> ${cost.toLocaleString()}\n<:plusone:1255581374661005363> **Duration**: ${Infinity.toString()} Days`
+        }
+      ]);
+    const selectMenu = new StringSelectMenuBuilder()
+      .setCustomId('shop_shop')
+      .setPlaceholder('Select an item')
+      .addOptions(
+        SHOP.map((item) => {
+          return new StringSelectMenuOptionBuilder()
+            .setLabel('Point for Team')
+            .setValue(`point`)
+            .setEmoji('1255581374661005363')
+            .setDescription(`Price: ${coins.toLocaleString()} coins.`);
+        })
+      )
+      .setMaxValues(1)
+      .setMinValues(1);
+    const row = new ActionRowBuilder().addComponents(selectMenu);
+    const msg = await message.reply({
+      embeds: [embed],
+      components: [row]
+    });
+    const collector = msg.createMessageComponentCollector({
+      filter: (i) => i.user.id === message.author.id,
+      idle: 30_000,
+      max: 1
+    });
+    collector.on('collect', async (button) => {
+      const value = button.values[0];
+      button.deferUpdate();
+      if (value == 'point') {
+        const userBalance = await Database.findOne({
+          userId: message.author.id
+        });
+        if (userBalance?.coins < cost) {
+          return button.reply({
+            embeds: [
+              {
+                description: "You don't have enough coins to buy this item."
+              }
+            ]
+          });
+        } else {
+          userBalance.coins -= cost;
+          await userBalance.save();
+
+          team.points += 1;
+          await team.save();
+
+          return button.reply({
+            embeds: [
+              {
+                description: `You bought **1** point for your team.\n\nYou now have ${team.points} points.`,
+                color: Colors.Green,
+                title: 'Purchase Successful',
+                timestamp: new Date()
+              }
+            ]
+          });
+        }
+      }
+    });
+    collector.on('end', (collected) => {
+      row.components[0].setDisabled(true);
+      msg.edit({ components: [row] });
+    });
+    /**
+    const embed = new EmbedBuilder()
+      .setTitle('Shop | Opens Soon')
+      .setFooter({
+        text: '25,000 * <your points>'
       })
       .setColor(Colors.Green)
       .addFields(
@@ -267,5 +350,6 @@ module.exports = {
       row.components[0].setDisabled(true);
       msg.edit({ components: [row] });
     });
+    **/
   }
 };
