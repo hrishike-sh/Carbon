@@ -27,14 +27,13 @@ module.exports = {
     }
     let bet = parseAmount(args[0]);
     if (!bet) bet = 1;
-    const dbUser = await Database.findOne({ userId: message.author.id });
+    const dbUser = await getUser(message.author.id);
     if (dbUser.coins < bet) {
       return message.reply('You do not have enough coins!');
     } else if (bet > 10_000) {
       return message.reply('You cannot bet more than 10,000 coins!');
     }
-    dbUser.coins -= bet;
-    await dbUser.save();
+    await removeCoins(message.author.id, bet);
 
     addCd(message.author.id);
     const deck = createDeck();
@@ -169,11 +168,7 @@ module.exports = {
               '** coins!'
           });
 
-          d = await Database.findOne({
-            userId: message.author.id
-          });
-          d.coins += bet * 2;
-          await d.save();
+          await addCoins(message.author.id, bet * 2);
 
           return;
         }
@@ -223,11 +218,7 @@ module.exports = {
             msg: 'Its a tie!',
             color: 'Yellow'
           };
-          d = await Database.findOne({
-            userId: message.author.id
-          });
-          d.coins += bet;
-          await d.save();
+          await addCoins(message.author.id, bet);
         } else if (botsc == 21) {
           winMsg = {
             msg: `The dealer had a Blackjack, you lost ${bet.toLocaleString()} coins!`,
@@ -254,11 +245,7 @@ module.exports = {
             color: 'Yellow'
           };
 
-          d = await Database.findOne({
-            userId: message.author.id
-          });
-          d.coins += bet;
-          await d.save();
+          await addCoins(message.author.id, bet);
         }
 
         embed
@@ -280,11 +267,7 @@ module.exports = {
           ])
           .setColor(winMsg.color);
         if (winMsg.color == 'Green') {
-          d = await Database.findOne({
-            userId: message.author.id
-          });
-          d.coins += bet * 2;
-          await d.save();
+          await addCoins(message.author.id, bet * 2);
         }
         row.components[0].setDisabled(true);
         row.components[1].setDisabled(true);
@@ -424,4 +407,27 @@ const StringValues = {
   m: 1e6,
   k: 1e3,
   b: 1e9
+};
+const removeCoins = async (userId, amount) => {
+  const user = await getUser(userId);
+  user.coins -= Number(amount);
+  user.save();
+};
+const addCoins = async (userId, amount) => {
+  const user = await getUser(userId);
+  user.coins += amount;
+  user.save();
+};
+
+const getUser = async (userId) => {
+  let dbu = await Database.findOne({
+    userId
+  });
+  if (!dbu) {
+    dbu = new Database({
+      userId,
+      coins: 0
+    });
+  }
+  return dbu;
 };
