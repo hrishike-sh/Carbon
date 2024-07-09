@@ -25,7 +25,7 @@ module.exports = {
         'Please wait 10 seconds before using this command again'
       );
     }
-    const bet = parseAmount(args[0]) || 1;
+    const bet = parseAmount(args[0] || '1');
     const dbUser = await Database.findOne({ userId: message.author.id });
     if (dbUser.coins < bet) {
       return message.reply('You do not have enough coins!');
@@ -162,7 +162,7 @@ module.exports = {
             components: [row],
             content:
               'The dealer busted, you won **' +
-              bet.toLocaleString() +
+              (bet * 2).toLocaleString() +
               '** coins!'
           });
 
@@ -217,7 +217,9 @@ module.exports = {
 
         if (botsc > 21) {
           winMsg = {
-            msg: `The dealer busted! You won ${bet.toLocaleString()} coins!`,
+            msg: `The dealer busted! You won ${(
+              bet * 2
+            ).toLocaleString()} coins!`,
             color: 'Green'
           };
         } else if (botsc == 21 && playersc == 21) {
@@ -242,12 +244,14 @@ module.exports = {
           };
         } else if (playersc == 21) {
           winMsg = {
-            msg: `You had a Blackjack, you won ${bet.toLocaleString()} coins!`,
+            msg: `You had a Blackjack, you won ${(
+              bet * 2
+            ).toLocaleString()} coins!`,
             color: 'Green'
           };
         } else if (playersc > botsc) {
           winMsg = {
-            msg: `You won ${bet.toLocaleString()} coins!`,
+            msg: `You won ${(bet * 2).toLocaleString()} coins!`,
             color: 'Green'
           };
         } else if (botsc > playersc) {
@@ -260,6 +264,16 @@ module.exports = {
             msg: 'Its a tie!',
             color: 'Yellow'
           };
+          await Database.findOneAndUpdate(
+            {
+              userId: message.author.id
+            },
+            {
+              $inc: {
+                coins: bet
+              }
+            }
+          );
         }
 
         embed
