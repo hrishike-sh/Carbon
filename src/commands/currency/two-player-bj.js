@@ -147,6 +147,12 @@ module.exports = {
               false
             )}`
           });
+          await button.deferUpdate();
+          await btn.followUp({
+            embeds: [handEmbed],
+            components: [gameRow],
+            ephemeral: true
+          });
         } else {
         }
       });
