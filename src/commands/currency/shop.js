@@ -67,6 +67,7 @@ module.exports = {
    * @param {Message} message
    */
   async execute(message) {
+    return message.reply('Shop is closed.');
     const team = await Teams.findOne({
       users: message.author.id
     });
