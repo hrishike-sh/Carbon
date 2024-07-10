@@ -30,8 +30,8 @@ module.exports = {
     const dbUser = await getUser(message.author.id);
     if (dbUser.coins < bet) {
       return message.reply('You do not have enough coins!');
-    } else if (bet > 10_000) {
-      return message.reply('You cannot bet more than 10,000 coins!');
+    } else if (bet > 25000) {
+      return message.reply('You cannot bet more than 25,000 coins!');
     }
     if (client.cd.has(message.author.id))
       return message.reply("You're already running a command");
