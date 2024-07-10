@@ -25,8 +25,18 @@ module.exports = {
     const deck = createDeck();
     shuffleDeck(deck);
 
-    let playerHand = [drawCard(deck), drawCard(deck)];
-    let targetHand = [drawCard(deck), drawCard(deck)];
+    const decks = [
+      {
+        type: 'player',
+        id: message.author.id,
+        deck: [drawCard(deck), drawCard(deck)]
+      },
+      {
+        type: 'target',
+        id: target.id,
+        deck: [drawCard(deck), drawCard(deck)]
+      }
+    ];
 
     const embed = new EmbedBuilder()
       .setTitle('<:bj:1260496579941503016> Blackjack')
@@ -38,17 +48,17 @@ module.exports = {
         {
           name: message.author.displayName,
           value: `Hand: ${formatHand(
-            playerHand,
+            decks[0].deck,
             true
-          )}\nScore: ${calculateScore(playerHand, true)}`,
+          )}\nScore: ${calculateScore(decks[0].deck, true)}`,
           inline: true
         },
         {
           name: target.displayName,
           value: `Hand: ${formatHand(
-            targetHand,
+            decks[1].deck,
             true
-          )}\nScore: ${calculateScore(targetHand, true)}`,
+          )}\nScore: ${calculateScore(decks[1].deck, true)}`,
           inline: true
         }
       ]);
@@ -68,21 +78,32 @@ module.exports = {
       filter: (m) => [message.author.id, target.id].includes(m.user.id)
     });
 
-    collector.on('collect', (btn) => {
+    collector.on('collect', async (btn) => {
       const handEmbed = new EmbedBuilder()
         .setTitle(`<:bj:1260496579941503016> Blackjack | Your Hand`)
         .setColor('Yellow')
         .setFooter({
           text: 'This is your hand.'
         });
+      const gameRow = new ActionRowBuilder().addComponents([
+        new ButtonBuilder()
+          .setCustomId('hit_bj')
+          .setLabel('Hit')
+          .setStyle(ButtonStyle.Danger),
+        new ButtonBuilder()
+          .setCustomId('stand_bj')
+          .setLabel('Stand')
+          .setStyle(ButtonStyle.Success)
+      ]);
+
       if (btn.user.id === message.author.id) {
         handEmbed.addFields([
           {
             name: message.author.displayName,
             value: `Hand: ${formatHand(
-              playerHand,
+              decks[0].deck,
               false
-            )}\nScore: ${calculateScore(playerHand, false)}`
+            )}\nScore: ${calculateScore(decks[0].deck, false)}`
           }
         ]);
       } else {
@@ -90,16 +111,43 @@ module.exports = {
           {
             name: target.displayName,
             value: `Hand: ${formatHand(
-              targetHand,
+              decks[1].deck,
               false
-            )}\nScore: ${calculateScore(targetHand, false)}`
+            )}\nScore: ${calculateScore(decks[1].deck, false)}`
           }
         ]);
       }
 
-      btn.reply({
-        embeds: [handEmbed],
-        ephemeral: true
+      const gameCol = (
+        await btn.reply({
+          embeds: [handEmbed],
+          ephemeral: true,
+          components: [gameRow]
+        })
+      ).createMessageComponentCollector({});
+      const gameDat = {
+        stood: []
+      };
+      gameCol.on('collect', async (button) => {
+        if (button.customId === 'hit_bj') {
+          decks.find((a) => a.id == button.user.id).deck.push(drawCard(deck));
+          handEmbed.setFields({
+            name: button.user.displayName,
+            value: `Hand: ${formatHand(
+              decks.find((a) => a.id == button.user.id).deck,
+              false
+            )}\nScore: ${calculateScore(
+              decks.find((a) => a.id == button.user.id).deck,
+              false
+            )}`
+          });
+          await button.update({
+            embeds: [handEmbed],
+            components: [gameRow],
+            ephemeral: true
+          });
+        } else {
+        }
       });
     });
   }
