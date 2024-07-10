@@ -40,14 +40,16 @@ module.exports = {
           value: `Hand: ${formatHand(
             playerHand,
             true
-          )}\nScore: ${calculateScore(playerHand, true)}`
+          )}\nScore: ${calculateScore(playerHand, true)}`,
+          inline: true
         },
         {
           name: target.displayName,
           value: `Hand: ${formatHand(
             targetHand,
             true
-          )}\nScore: ${calculateScore(targetHand, true)}`
+          )}\nScore: ${calculateScore(targetHand, true)}`,
+          inline: true
         }
       ]);
 
@@ -94,6 +96,11 @@ module.exports = {
           }
         ]);
       }
+
+      btn.reply({
+        embeds: [handEmbed],
+        ephemeral: true
+      });
     });
   }
 };
