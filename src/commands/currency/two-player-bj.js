@@ -123,13 +123,16 @@ module.exports = {
         components: [gameRow],
         ephemeral: true
       });
+      console.log(epmessage);
       const gameCol = epmessage.createMessageComponentCollector({
         filter: (m) => [message.author.id, target.id].includes(m.user.id)
       });
+      console.log(gameCol);
       const gameDat = {
         stood: []
       };
       gameCol.on('collect', async (button) => {
+        console.log(button.customId);
         if (button.customId === 'hit_bj') {
           decks.find((a) => a.id == button.user.id).deck.push(drawCard(deck));
           handEmbed.setFields({
