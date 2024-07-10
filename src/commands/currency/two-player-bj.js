@@ -232,10 +232,10 @@ module.exports = {
         const deck = decks.find((a) => a.id == button.user.id);
         if (button.customId === 'hit_bj') {
           deck.push(drawCard(deck));
-          if (calculateScore(deck) > 21) {
+          if (calculateScore(deck.deck) > 21) {
             gameDat[deck.type].busted = true;
             gameDat[deck.type].end = true;
-          } else if (calculateScore(deck) === 21) {
+          } else if (calculateScore(deck.deck) === 21) {
             gameDat[deck.type].stood = true;
             gameDat[deck.type].blackjack = true;
             gameDat[deck.type].end = true;
