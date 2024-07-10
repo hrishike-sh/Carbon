@@ -118,13 +118,14 @@ module.exports = {
         ]);
       }
 
-      const gameCol = (
-        await btn.reply({
-          embeds: [handEmbed],
-          ephemeral: true,
-          components: [gameRow]
-        })
-      ).createMessageComponentCollector({});
+      const epmessage = await btn.reply({
+        embeds: [handEmbed],
+        components: [gameRow],
+        ephemeral: true
+      });
+      const gameCol = epmessage.createMessageComponentCollector({
+        filter: (m) => [message.author.id, target.id].includes(m.user.id)
+      });
       const gameDat = {
         stood: []
       };
@@ -141,7 +142,7 @@ module.exports = {
               false
             )}`
           });
-          await button.update({
+          await button.editReply({
             embeds: [handEmbed],
             components: [gameRow],
             ephemeral: true
