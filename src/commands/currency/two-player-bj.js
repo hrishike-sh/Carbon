@@ -229,31 +229,31 @@ module.exports = {
           return;
         }
 
-        const deck = decks.find((a) => a.id == button.user.id);
+        const deckk = decks.find((a) => a.id == button.user.id);
         if (button.customId === 'hit_bj') {
-          deck.push(drawCard(deck));
-          if (calculateScore(deck.deck) > 21) {
-            gameDat[deck.type].busted = true;
-            gameDat[deck.type].end = true;
-          } else if (calculateScore(deck.deck) === 21) {
-            gameDat[deck.type].stood = true;
-            gameDat[deck.type].blackjack = true;
-            gameDat[deck.type].end = true;
-          } else if (deck.deck.length >= 4) {
-            gameDat[deck.type].stood = true;
-            gameDat[deck.type].five_charlie = true;
-            gameDat[deck.type].end = true;
+          deckk.push(drawCard(deck));
+          if (calculateScore(deckk.deck) > 21) {
+            gameDat[deckk.type].busted = true;
+            gameDat[deckk.type].end = true;
+          } else if (calculateScore(deckk.deck) === 21) {
+            gameDat[deckk.type].stood = true;
+            gameDat[deckk.type].blackjack = true;
+            gameDat[deckk.type].end = true;
+          } else if (deckk.deck.length >= 4) {
+            gameDat[deckk.type].stood = true;
+            gameDat[deckk.type].five_charlie = true;
+            gameDat[deckk.type].end = true;
           }
 
           await button.deferUpdate();
           await btn.editReply({
             embeds: [handEmbed],
-            components: gameDat[deck.type].end ? [] : [gameRow],
+            components: gameDat[deckk.type].end ? [] : [gameRow],
             ephemeral: true
           });
         } else {
-          gameDat[deck.type].end = true;
-          gameDat[deck.type].stood = true;
+          gameDat[deckk.type].end = true;
+          gameDat[deckk.type].stood = true;
 
           await button.deferUpdate();
           handEmbed.setFooter({
