@@ -231,7 +231,7 @@ module.exports = {
 
         const deckk = decks.find((a) => a.id == button.user.id);
         if (button.customId === 'hit_bj') {
-          deckk.push(drawCard(deck));
+          deckk.deck.push(drawCard(deck));
           if (calculateScore(deckk.deck) > 21) {
             gameDat[deckk.type].busted = true;
             gameDat[deckk.type].end = true;
