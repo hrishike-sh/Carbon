@@ -131,29 +131,139 @@ module.exports = {
         componentType: ComponentType.Button
       });
       const gameDat = {
-        stood: []
+        player: {
+          busted: false,
+          stood: false,
+          five_charlie: false,
+          blackjack: false,
+          end: false
+        },
+        target: {
+          busted: false,
+          stood: false,
+          five_charlie: false,
+          blackjack: false,
+          end: false
+        }
       };
       gameCol.on('collect', async (button) => {
-        console.log(button.customId);
-        if (button.customId === 'hit_bj') {
-          decks.find((a) => a.id == button.user.id).deck.push(drawCard(deck));
-          handEmbed.setFields({
-            name: button.user.displayName,
-            value: `Hand: ${formatHand(
-              decks.find((a) => a.id == button.user.id).deck,
-              false
-            )}\nScore: ${calculateScore(
-              decks.find((a) => a.id == button.user.id).deck,
-              false
-            )}`
+        const getWinner = () => {
+          if (gameDat.player.end && gameDat.target.end) {
+            gameCol.stop();
+
+            if (gameDat.player.busted && gameDat.target.busted) {
+              // tie
+
+              return `<@${message.author.id}> and <@${target.id}> tied.`;
+            } else if (gameDat.player.busted) {
+              // target wins
+
+              return `<@${target.id}> won.`;
+            } else if (gameDat.target.busted) {
+              // player wins
+
+              return `<@${message.author.id}> won.`;
+            } else if (gameDat.player.blackjack && gameDat.target.blackjack) {
+              // tie
+
+              return `<@${message.author.id}> and <@${target.id}> tied.`;
+            } else if (gameDat.player.blackjack) {
+              // player wins
+
+              return `<@${message.author.id}> got a blackjack and won.`;
+            } else if (gameDat.target.blackjack) {
+              // target wins
+
+              return `<@${target.id}> got a blackjack and won.`;
+            } else if (
+              gameDat.player.five_charlie &&
+              gameDat.target.five_charlie
+            ) {
+              // tie
+
+              return `<@${message.author.id}> and <@${target.id}> tied.`;
+            } else if (gameDat.player.five_charlie) {
+              // player wins
+
+              return `<@${message.author.id}> got five cards without going over 21 and won.`;
+            } else if (gameDat.target.five_charlie) {
+              // target wins
+
+              return `<@${target.id}> got five cards without going over 21 and won.`;
+            } else {
+              if (
+                calculateScore(decks[0].deck) > calculateScore(decks[1].deck)
+              ) {
+                // player wins
+
+                return `<@${message.author.id}> had a higher score than <@${target.id}> and won.`;
+              } else if (
+                calculateScore(decks[0].deck) < calculateScore(decks[1].deck)
+              ) {
+                // target wins
+
+                return `<@${target.id}> had a higher score than <@${message.author.id}> and won.`;
+              } else {
+                // tie
+                if (
+                  ![gameDat.player.end, gameDat.target.end].every(
+                    (a) => a === true
+                  )
+                ) {
+                  return false;
+                }
+                return `<@${message.author.id}> and <@${target.id}> tied.`;
+              }
+            }
+          } else return false;
+        };
+
+        if (getWinner()) {
+          btn.editReply({
+            embeds: [handEmbed],
+            components: [],
+            ephemeral: true,
+            content: getWinner()
           });
+          collector.stop();
+          return;
+        }
+
+        const deck = decks.find((a) => a.id == button.user.id);
+        if (button.customId === 'hit_bj') {
+          deck.push(drawCard(deck.deck));
+          if (calculateScore(deck) > 21) {
+            gameDat[deck.type].busted = true;
+            gameDat[deck.type].end = true;
+          } else if (calculateScore(deck) === 21) {
+            gameDat[deck.type].stood = true;
+            gameDat[deck.type].blackjack = true;
+            gameDat[deck.type].end = true;
+          } else if (deck.deck.length >= 4) {
+            gameDat[deck.type].stood = true;
+            gameDat[deck.type].five_charlie = true;
+            gameDat[deck.type].end = true;
+          }
+
           await button.deferUpdate();
           await btn.editReply({
             embeds: [handEmbed],
-            components: [gameRow],
+            components: gameDat[deck.type].end ? [] : [gameRow],
             ephemeral: true
           });
         } else {
+          gameDat[deck.type].end = true;
+          gameDat[deck.type].stood = true;
+
+          await button.deferUpdate();
+          handEmbed.setFooter({
+            text: 'You stood! Waiting for opponent.'
+          });
+          await btn.editReply({
+            embeds: [handEmbed],
+            components: [],
+            ephemeral: true
+          });
         }
       });
     });
