@@ -148,7 +148,7 @@ module.exports = {
             )}`
           });
           await button.deferUpdate();
-          await btn.followUp({
+          await btn.editReply({
             embeds: [handEmbed],
             components: [gameRow],
             ephemeral: true
