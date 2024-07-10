@@ -5,7 +5,8 @@ const {
   ActionRowBuilder,
   ButtonBuilder,
   ButtonStyle,
-  ComponentType
+  ComponentType,
+  InteractionResponseType
 } = require('discord.js');
 
 module.exports = {
@@ -122,7 +123,8 @@ module.exports = {
       const epmessage = await btn.reply({
         embeds: [handEmbed],
         components: [gameRow],
-        ephemeral: true
+        ephemeral: true,
+        fetchReply: true
       });
       const gameCol = epmessage.createMessageComponentCollector({
         filter: (m) => [message.author.id, target.id].includes(m.user.id),
@@ -144,12 +146,6 @@ module.exports = {
               decks.find((a) => a.id == button.user.id).deck,
               false
             )}`
-          });
-          await button.deferUpdate();
-          await button.message.edit({
-            embeds: [handEmbed],
-            components: [gameRow],
-            ephemeral: true
           });
         } else {
         }
