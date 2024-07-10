@@ -4,7 +4,8 @@ const {
   EmbedBuilder,
   ActionRowBuilder,
   ButtonBuilder,
-  ButtonStyle
+  ButtonStyle,
+  ComponentType
 } = require('discord.js');
 
 module.exports = {
@@ -123,11 +124,10 @@ module.exports = {
         components: [gameRow],
         ephemeral: true
       });
-      console.log(epmessage);
       const gameCol = epmessage.createMessageComponentCollector({
-        filter: (m) => [message.author.id, target.id].includes(m.user.id)
+        filter: (m) => [message.author.id, target.id].includes(m.user.id),
+        componentType: ComponentType.Button
       });
-      console.log(gameCol);
       const gameDat = {
         stood: []
       };
@@ -145,7 +145,8 @@ module.exports = {
               false
             )}`
           });
-          await button.editReply({
+          await button.deferUpdate();
+          await button.message.edit({
             embeds: [handEmbed],
             components: [gameRow],
             ephemeral: true
