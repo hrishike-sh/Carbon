@@ -25,6 +25,7 @@ module.exports = {
     const dbUser = await getUser(userId);
     if (dbUser.coins < amount)
       return message.reply("You don't have that much money!");
+    if (amount > 10_000) return message.reply('You can only bet up to 10,000.');
 
     addCd(userId);
     client.cd.add(userId);
@@ -55,7 +56,7 @@ module.exports = {
       await removeCoins(userId, amount);
       embed.setColor('Red');
       embed.setDescription(
-        `You lost <:token:1003272629286883450> **${amount.toLocaleString()}**\n\nNew balance: <:token:1003272629286883450> ${(
+        `You lost: <:token:1003272629286883450> **${amount.toLocaleString()}**\n\nNew balance: <:token:1003272629286883450> ${(
           dbUser.coins - amount
         ).toLocaleString()}`
       );
@@ -66,7 +67,7 @@ module.exports = {
       await addCoins(userId, toAdd);
       embed.setColor('Green');
       embed.setDescription(
-        `You won <:token:1003272629286883450> **${toAdd.toLocaleString()}**\nWin percent: ${winPercent}%\n\nNew balance: <:token:1003272629286883450> ${(
+        `You won: <:token:1003272629286883450> **${toAdd.toLocaleString()}**\nWin percent: ${winPercent}%\n\nNew balance: <:token:1003272629286883450> ${(
           dbUser.coins + toAdd
         ).toLocaleString()}`
       );
