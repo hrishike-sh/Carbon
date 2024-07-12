@@ -56,18 +56,18 @@ module.exports = {
       await removeCoins(userId, amount);
       embed.setColor('Red');
       embed.setDescription(
-        `You lost: <:token:1003272629286883450> **${amount.toLocaleString()}**\n\nNew balance: <:token:1003272629286883450> ${(
+        `You lost: <:token:1003272629286883450> **${amount.toLocaleString()}**\n\nNew balance: <:token:1003272629286883450> ${Math.round(
           dbUser.coins - amount
         ).toLocaleString()}`
       );
 
       message.reply({ embeds: [embed] });
     } else if (playerRoll > carbonRoll) {
-      const toAdd = amount * (winPercent / 100);
+      const toAdd = Math.round(amount * (winPercent / 100));
       await addCoins(userId, toAdd);
       embed.setColor('Green');
       embed.setDescription(
-        `You won: <:token:1003272629286883450> **${toAdd.toLocaleString()}**\nWin percent: ${winPercent}%\n\nNew balance: <:token:1003272629286883450> ${(
+        `You won: <:token:1003272629286883450> **${toAdd.toLocaleString()}**\nWin percent: ${winPercent}%\n\nNew balance: <:token:1003272629286883450> ${Math.round(
           dbUser.coins + toAdd
         ).toLocaleString()}`
       );
@@ -76,9 +76,9 @@ module.exports = {
     } else {
       embed.setColor('Yellow');
       embed.setDescription(
-        `You tied!\n\nNew balance: <:token:1003272629286883450> ${
+        `You tied!\n\nNew balance: <:token:1003272629286883450> ${Math.round(
           (await getUser(userId)).coins
-        }`
+        )}`
       );
 
       message.reply({ embeds: [embed] });
