@@ -98,6 +98,10 @@ module.exports = {
       idle: 30_000
     });
 
+    collector.on('end', async () => {
+      client.cd.delete(message.author.id);
+    });
+
     collector.on('collect', async (button) => {
       const what = button.customId;
 
