@@ -56,7 +56,7 @@ module.exports = {
       embed.setColor('Red');
       embed.setDescription(
         `You lost <:token:1003272629286883450> **${amount.toLocaleString()}**\n\nNew balance: <:token:1003272629286883450> ${(
-          dbUser - amount
+          dbUser.coins - amount
         ).toLocaleString()}`
       );
 
@@ -67,7 +67,7 @@ module.exports = {
       embed.setColor('Green');
       embed.setDescription(
         `You won <:token:1003272629286883450> **${toAdd.toLocaleString()}**\nWin percent: ${winPercent}%\n\nNew balance: <:token:1003272629286883450> ${(
-          dbUser + toAdd
+          dbUser.coins + toAdd
         ).toLocaleString()}`
       );
 
