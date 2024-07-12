@@ -41,12 +41,12 @@ module.exports = {
       .setFields([
         {
           name: message.member.displayName,
-          value: 'Rolled: ' + playerRoll,
+          value: `Rolled: \`${playerRoll}\``,
           inline: true
         },
         {
           name: 'Carbon',
-          value: 'Rolled: ' + carbonRoll,
+          value: `Rolled: \`${carbonRoll}\``,
           inline: true
         }
       ]);
@@ -55,9 +55,9 @@ module.exports = {
       await removeCoins(userId, amount);
       embed.setColor('Red');
       embed.setDescription(
-        `You lost <:token:1003272629286883450> **${amount.toLocaleString()}**\n\nNew balance: <:token:1003272629286883450> ${
-          (await getUser(userId)).coins
-        }`
+        `You lost <:token:1003272629286883450> **${amount.toLocaleString()}**\n\nNew balance: <:token:1003272629286883450> ${(
+          dbUser - amount
+        ).toLocaleString()}`
       );
 
       message.reply({ embeds: [embed] });
@@ -66,9 +66,9 @@ module.exports = {
       await addCoins(userId, toAdd);
       embed.setColor('Green');
       embed.setDescription(
-        `You won <:token:1003272629286883450> **${amount.toLocaleString()}**\nWin percent: ${winPercent}%\n\nNew balance: <:token:1003272629286883450> ${
-          (await getUser(userId)).coins
-        }`
+        `You won <:token:1003272629286883450> **${toAdd.toLocaleString()}**\nWin percent: ${winPercent}%\n\nNew balance: <:token:1003272629286883450> ${(
+          dbUser + toAdd
+        ).toLocaleString()}`
       );
 
       message.reply({ embeds: [embed] });
