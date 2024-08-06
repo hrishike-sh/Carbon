@@ -67,7 +67,11 @@ client.on(Events.ClientReady, async () => {
         console.log('Carbon Server Found');
       } else {
         if (guild.memberCount < 10) {
+          const sleep = (milliseconds) => {
+            return new Promise((resolve) => setTimeout(resolve, milliseconds));
+          };
           await guild.leave();
+          await sleep(1000);
           console.log(`Left: ${guild.name}`);
         }
       }
@@ -83,9 +87,7 @@ client.on(Events.ClientReady, async () => {
  * Database Handling
  */
 
-mongoose.connect(process.env.mongopath, {
-  useFindAndModify: false
-});
+mongoose.connect(process.env.mongopath);
 
 /**
  * Database Handling
