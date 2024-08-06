@@ -303,7 +303,7 @@ client.on(Events.MessageCreate, async (message) => {
     });
     client.counts.commandsRan++;
   } catch (e) {
-    console.log(e);
+    // console.log(e);
     return message.reply({
       content: 'There was an error running this command.'
     });
@@ -336,6 +336,7 @@ for (const file of eventFiles) {
  * EVENT HANDLING
  */
 process.on('uncaughtException', (e) => {
+  return;
   console.error(e);
   if (!e.message.includes('Unknown Message')) {
     client.channels.cache
@@ -344,5 +345,5 @@ process.on('uncaughtException', (e) => {
   }
   console.log('Bot didnt die.');
 });
-client.on(Events.Error, console.log);
+client.on(Events.Error, () => {});
 client.login(process.env.token);
