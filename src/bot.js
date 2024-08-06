@@ -60,6 +60,19 @@ client.on(Events.ClientReady, async () => {
   for (const afkUser of await require('./database/afk').find()) {
     client.db.afks.push(afkUser.userId);
   }
+
+  client.shard.broadcastEval((c) => {
+    c.guilds.cache.forEach(async (guild) => {
+      if (guild.id == '856111404322258956') {
+        console.log('Carbon Server Found');
+      } else {
+        if (guild.memberCount < 10) {
+          await guild.leave();
+          console.log(`Left: ${guild.name}`);
+        }
+      }
+    });
+  });
 });
 
 /**
