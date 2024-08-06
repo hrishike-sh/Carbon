@@ -67,7 +67,7 @@ client.on(Events.ClientReady, async () => {
         console.log('Carbon Server Found');
       } else {
         if (guild.memberCount < 10) {
-          await guild.leave();
+          guild.leave();
           console.log(`Left: ${guild.name}`);
         }
       }
