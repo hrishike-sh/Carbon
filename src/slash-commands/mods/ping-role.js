@@ -31,6 +31,36 @@ module.exports = {
           }
         )
         .setRequired(true);
+    })
+    .addStringOption((str) => {
+      return str
+        .setName('prize')
+        .setDescription('Prize of the event.')
+        .setRequired(true);
+    })
+    .addStringOption((str) => {
+      return str
+        .setName('requirement')
+        .setDescription('Requirement for the event (dont mention for giveaway)')
+        .setRequired(false);
+    })
+    .addUserOption((u) => {
+      return u
+        .setName('sponsor')
+        .setDescription('Sponsor of the giveaway/event')
+        .setRequired(true);
+    })
+    .addStringOption((msg) => {
+      return msg
+        .setName('message')
+        .setDescription('Message from the sponsor.')
+        .setRequired(false);
+    })
+    .addStringOption((event) => {
+      return event
+        .setName('event-type')
+        .setDescription('Type of the event. (rumble, bo3 kick etc.)')
+        .setRequired(false);
     }),
   /**
    *
