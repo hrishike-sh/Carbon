@@ -5,8 +5,8 @@ const {
 } = require('discord.js');
 
 module.exports = {
-  data: new SlashCommandBuilder().setName('pingrole').addStringOption((str) =>
-    str
+  data: new SlashCommandBuilder().setName('pingrole').addStringOption((str) => {
+    return str
       .setChoices([
         {
           name: 'Giveaway Ping',
@@ -25,8 +25,8 @@ module.exports = {
           value: 'Minimum amount: 100,000,000 Ping Cooldown: 30 minutes / ping'
         }
       ])
-      .setDescription('Ping roles!')
-  ),
+      .setDescription('Ping roles!');
+  }),
   /**
    *
    * @param {CommandInteraction} interaction
