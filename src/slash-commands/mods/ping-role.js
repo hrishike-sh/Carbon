@@ -12,7 +12,7 @@ module.exports = {
       return str
         .setName('role')
         .setDescription('Ping Cooldown: 30 minutes / role')
-        .addChoices([
+        .addChoices(
           {
             name: 'Giveaway Ping',
             value: '824916330574118942'
@@ -29,7 +29,7 @@ module.exports = {
             name: 'Mafia Ping',
             value: '1154432845318721607'
           }
-        ])
+        )
         .setRequired(true);
     }),
   /**
