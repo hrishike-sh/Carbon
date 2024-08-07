@@ -116,15 +116,14 @@ module.exports = {
               date / 1000
             )}:R>`
           });
-        } else {
-          cooldowns.set('giveaway', Date.now() + 1800000);
-
-          interaction.reply({
-            content: 'Pinged!',
-            ephemeral: true
-          });
         }
       }
+      cooldowns.set('giveaway', Date.now() + 1800000);
+
+      interaction.reply({
+        content: 'Pinged!',
+        ephemeral: true
+      });
     } else if (data.role.value == '858088201451995137') {
       // event ping
     } else if (data.role.value == '837121985787592704') {
