@@ -16,7 +16,8 @@ module.exports = {
     }
     const user =
       message.mentions.users?.first() ||
-      message.guild.members.cache.get(args[0]);
+      message.guild.members.cache.get(args[0]) ||
+      (await client.users.fetch(args[0]).catch(() => {}));
     if (!user)
       return message.reply(
         'Please mention a user to remove from the list of grinders!'
