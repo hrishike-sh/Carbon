@@ -1,8 +1,11 @@
 const {
   SlashCommandBuilder,
   Client,
-  CommandInteraction
+  CommandInteraction,
+  EmbedBuilder
 } = require('discord.js');
+
+const cooldowns = new Map();
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -78,10 +81,56 @@ module.exports = {
       '858088054942203945' // event manager
     ];
 
-    if (!member.roles.cache.hasAny(...roles)) {
-      return interaction.reply("You can't run this command!");
-    } else {
-      return interaction.reply('You can run this command!');
+    // if (!member.roles.cache.hasAny(...roles)) {
+    //   return interaction.reply("You can't run this command!");
+    // } else {
+    //   return interaction.reply('You can run this command!');
+    // }
+
+    const data = {
+      sponsor: interaction.options.get('sponsor'),
+      role: interaction.options.get('role'),
+      prize: interaction.options.get('prize'),
+      requirement: interaction.options.get('requirement'),
+      message: interaction.options.get('message'),
+      eventType: interaction.options.get('event-type')
+    };
+
+    if (data.role.value == '824916330574118942') {
+      // giveaway ping
+
+      // if (interaction.channel.id !== '826065190973210634') {
+      //   return interaction.reply({
+      //     ephemeral: true,
+      //     content: 'You can only run this command in <#826065190973210634>'
+      //   });
+      // }
+      if (interaction.user.id != '598918643727990784')
+        return interaction.reply('Testing only!');
+      if (cooldowns.get('giveaway')) {
+        const date = cooldowns.get('giveaway');
+        if (Date.now() < date) {
+          return interaction.reply({
+            ephemeral: true,
+            content: `This command is on cooldown! Try again <t:${Math.floor(
+              date / 1000
+            )}:R>`
+          });
+        } else {
+          cooldowns.set('giveaway', Date.now() + 1800000);
+
+          interaction.reply({
+            content: 'Pinged!',
+            ephemeral: true
+          });
+        }
+      }
+    } else if (data.role.value == '858088201451995137') {
+      // event ping
+    } else if (data.role.value == '837121985787592704') {
+      // mini gaw and event ping
+    } else if (data.role.value == '1154432845318721607') {
+      // mafia ping
     }
   }
 };
