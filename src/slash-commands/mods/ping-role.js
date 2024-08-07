@@ -5,28 +5,32 @@ const {
 } = require('discord.js');
 
 module.exports = {
-  data: new SlashCommandBuilder().setName('pingrole').addStringOption((str) => {
-    return str
-      .setChoices([
-        {
-          name: 'Giveaway Ping',
-          value: 'Minimum amount: 100,000,000 Ping Cooldown: 30 minutes / ping'
-        },
-        {
-          name: 'Event Ping',
-          value: 'Minimum amount: 100,000,000 Ping Cooldown: 30 minutes / ping'
-        },
-        {
-          name: 'Mini Gaw and Event Ping',
-          value: 'Minimum amount: 25,000,000 Ping Cooldown: 30 minutes / ping'
-        },
-        {
-          name: 'Mafia Ping',
-          value: 'Minimum amount: 100,000,000 Ping Cooldown: 30 minutes / ping'
-        }
-      ])
-      .setDescription('Ping roles!');
-  }),
+  data: new SlashCommandBuilder()
+    .setName('pingrole')
+    .setDescription('Ping roles!')
+    .addStringOption((str) => {
+      return str
+        .setName('Role')
+        .setDescription('Ping Cooldown: 30 minutes / role')
+        .setChoices([
+          {
+            name: 'Giveaway Ping',
+            value: '824916330574118942'
+          },
+          {
+            name: 'Event Ping',
+            value: '858088201451995137'
+          },
+          {
+            name: 'Mini Gaw and Event Ping',
+            value: '837121985787592704'
+          },
+          {
+            name: 'Mafia Ping',
+            value: '1154432845318721607'
+          }
+        ]);
+    }),
   /**
    *
    * @param {CommandInteraction} interaction
