@@ -38,17 +38,17 @@ module.exports = {
         .setDescription('Prize of the event.')
         .setRequired(true);
     })
-    .addStringOption((str) => {
-      return str
-        .setName('requirement')
-        .setDescription('Requirement for the event (dont mention for giveaway)')
-        .setRequired(false);
-    })
     .addUserOption((u) => {
       return u
         .setName('sponsor')
         .setDescription('Sponsor of the giveaway/event')
         .setRequired(true);
+    })
+    .addStringOption((str) => {
+      return str
+        .setName('requirement')
+        .setDescription('Requirement for the event (dont mention for giveaway)')
+        .setRequired(false);
     })
     .addStringOption((msg) => {
       return msg
