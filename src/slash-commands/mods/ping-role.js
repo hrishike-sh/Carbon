@@ -10,7 +10,7 @@ module.exports = {
     .setDescription('Ping roles!')
     .addStringOption((str) => {
       return str
-        .setName('Role')
+        .setName('role')
         .setDescription('Ping Cooldown: 30 minutes / role')
         .setChoices([
           {
@@ -29,7 +29,8 @@ module.exports = {
             name: 'Mafia Ping',
             value: '1154432845318721607'
           }
-        ]);
+        ])
+        .setRequired(true);
     }),
   /**
    *
