@@ -5,6 +5,7 @@ module.exports = {
     .setName('ping')
     .setDescription('Ping the bot!'),
   async execute(interaction) {
+    const client = interaction.client;
     await interaction.reply(`🏓 Pong!\nPing: ${client.ws.ping}`);
   }
 };
