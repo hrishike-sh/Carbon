@@ -178,8 +178,8 @@ module.exports = {
             `\n⦿ **Event**: ${
               data.eventType?.value || 'Not mentioned'
             }\n⦿ **Sponsor:** ${data.sponsor.member.toString()}\n⦿ **Requirement:** ${
-              data.requirement.value || 'No requirement'
-            }\n⦿ **Prize:** ${data.prize.value}\n`
+              data.requirement?.value || 'No requirement'
+            }\n⦿ **Prize:** ${data.prize?.value}\n`
           )
           .setThumbnail(
             'https://media.discordapp.net/attachments/841358137398788096/894574822699434014/image0.png?ex=66bab4fa&is=66b9637a&hm=4a05904925b15517a7cc27de29118209f7147b95debe11a511208cace67f1528&'
