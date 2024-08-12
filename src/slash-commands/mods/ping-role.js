@@ -142,15 +142,15 @@ module.exports = {
     } else if (data.role.value == '837121985787592704') {
       // mini gaw and event ping
 
-      if (
-        interaction.channel.id !== '826065190973210634' ||
-        interaction.channel.id != '853280287777882142'
-      ) {
-        return interaction.reply({
-          ephemeral: true,
-          content:
-            'You can only run this command in <#826065190973210634> and <#853280287777882142>'
-        });
+      // if (
+      //   interaction.channel.id !== '826065190973210634' ||
+      //   interaction.channel.id != '853280287777882142'
+      // ) {
+      //   return interaction.reply({
+      //     ephemeral: true,
+      //     content:
+      //       'You can only run this command in <#826065190973210634> and <#853280287777882142>'
+      //   });
       }
       if (cooldowns.get('mgaw')) {
         const date = cooldowns.get('mgaw');
