@@ -151,7 +151,7 @@ module.exports = {
       //     content:
       //       'You can only run this command in <#826065190973210634> and <#853280287777882142>'
       //   });
-      }
+      // }
       if (cooldowns.get('mgaw')) {
         const date = cooldowns.get('mgaw');
         if (Date.now() < date) {
