@@ -47,6 +47,12 @@ module.exports = {
         .setDescription('Sponsor of the giveaway/event')
         .setRequired(true);
     })
+    .addBooleanOption((b) => {
+      return b
+        .setName('event')
+        .setDescription('Is it an event?')
+        .setRequired(true);
+    })
     .addStringOption((str) => {
       return str
         .setName('requirement')
@@ -63,12 +69,6 @@ module.exports = {
       return event
         .setName('event-type')
         .setDescription('Type of the event. (rumble, bo3 kick etc.)')
-        .setRequired(false);
-    })
-    .addBooleanOption((b) => {
-      return b
-        .setName('event')
-        .setDescription('Is it an event?')
         .setRequired(false);
     }),
   /**
@@ -87,11 +87,9 @@ module.exports = {
       '858088054942203945' // event manager
     ];
 
-    // if (!member.roles.cache.hasAny(...roles)) {
-    //   return interaction.reply("You can't run this command!");
-    // } else {
-    //   return interaction.reply('You can run this command!');
-    // }
+    if (!member.roles.cache.hasAny(...roles)) {
+      return interaction.reply("You can't use this!");
+    }
 
     const data = {
       sponsor: interaction.options.get('sponsor'),
@@ -112,14 +110,13 @@ module.exports = {
           content: 'You can only run this command in <#826065190973210634>'
         });
       }
-      if (interaction.user.id != '598918643727990784')
-        return interaction.reply('Testing only!');
+
       if (cooldowns.get('giveaway')) {
         const date = cooldowns.get('giveaway');
         if (Date.now() < date) {
           return interaction.reply({
             ephemeral: true,
-            content: `This command is on cooldown! Try again <t:${Math.floor(
+            content: `This ping is on cooldown! Try again <t:${Math.floor(
               date / 1000
             )}:R>`
           });
@@ -139,25 +136,79 @@ module.exports = {
       });
     } else if (data.role.value == '858088201451995137') {
       // event ping
+
+      if (interaction.channel.id !== '853280287777882142') {
+        return interaction.reply({
+          ephemeral: true,
+          content: 'You can only run this command in <#853280287777882142>'
+        });
+      }
+
+      if (cooldowns.get('event')) {
+        const date = cooldowns.get('event');
+        if (Date.now() < date) {
+          return interaction.reply({
+            ephemeral: true,
+            content: `This ping is on cooldown! Try again <t:${Math.floor(
+              date / 1000
+            )}:R>`
+          });
+        }
+      }
+      cooldowns.set('event', Date.now() + 1800000);
+
+      const embed = new EmbedBuilder()
+        .setTitle('Fighthub Event')
+        .setDescription(
+          `\n\n⦿ **Event**: ${
+            data.eventType?.value || 'Not mentioned'
+          }\n⦿ **Sponsor:** ${data.sponsor.member.toString()}\n⦿ **Requirement:** ${
+            data.requirement?.value || 'No requirement'
+          }\n⦿ **Prize:** ${data.prize?.value}\n`
+        )
+        .setThumbnail(
+          'https://media.discordapp.net/attachments/841358137398788096/894574822699434014/image0.png?ex=66bab4fa&is=66b9637a&hm=4a05904925b15517a7cc27de29118209f7147b95debe11a511208cace67f1528&'
+        )
+        .setColor('#9BFA8D');
+
+      if (data.message) {
+        embed.setDescription(
+          embed.data.description + '⦿ **Message:**' + data.message.value
+        );
+      }
+
+      embed.setDescription(
+        embed.data.description +
+          `\nMake sure to thank ${data.sponsor.user.toString()} in <#870240187198885888>`
+      );
+      interaction.reply({
+        content: 'Pinged!',
+        ephemeral: true
+      });
+
+      await interaction.channel.send({
+        embeds: [embed],
+        content: `<@&${data.role.value}>: New event!`
+      });
     } else if (data.role.value == '837121985787592704') {
       // mini gaw and event ping
 
-      // if (
-      //   interaction.channel.id !== '826065190973210634' ||
-      //   interaction.channel.id != '853280287777882142'
-      // ) {
-      //   return interaction.reply({
-      //     ephemeral: true,
-      //     content:
-      //       'You can only run this command in <#826065190973210634> and <#853280287777882142>'
-      //   });
-      // }
+      if (
+        interaction.channel.id !== '826065190973210634' ||
+        interaction.channel.id != '853280287777882142'
+      ) {
+        return interaction.reply({
+          ephemeral: true,
+          content:
+            'You can only run this command in <#826065190973210634> and <#853280287777882142>'
+        });
+      }
       if (cooldowns.get('mgaw')) {
         const date = cooldowns.get('mgaw');
         if (Date.now() < date) {
           return interaction.reply({
             ephemeral: true,
-            content: `This command is on cooldown! Try again <t:${Math.floor(
+            content: `This ping is on cooldown! Try again <t:${Math.floor(
               date / 1000
             )}:R>`
           });
@@ -185,7 +236,9 @@ module.exports = {
             'https://media.discordapp.net/attachments/841358137398788096/894574822699434014/image0.png?ex=66bab4fa&is=66b9637a&hm=4a05904925b15517a7cc27de29118209f7147b95debe11a511208cace67f1528&'
           );
         if (data.message) {
-          embed.setDescription(embed.data.description + '⦿ **Prize:**');
+          embed.setDescription(
+            embed.data.description + '⦿ **Message:**' + data.message.value
+          );
         }
 
         embed.setDescription(
@@ -194,7 +247,8 @@ module.exports = {
         );
 
         return interaction.channel.send({
-          embeds: [embed]
+          embeds: [embed],
+          content: `<@&${data.role.value}>: New event!`
         });
       } else {
         await interaction.channel.send({
