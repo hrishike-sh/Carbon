@@ -175,7 +175,7 @@ module.exports = {
           .setTitle('Fighthub Event!')
           .setColor('#9BFA8D')
           .setDescription(
-            `\n⦿ **Event**: ${
+            `\n\n⦿ **Event**: ${
               data.eventType?.value || 'Not mentioned'
             }\n⦿ **Sponsor:** ${data.sponsor.member.toString()}\n⦿ **Requirement:** ${
               data.requirement?.value || 'No requirement'
@@ -190,7 +190,7 @@ module.exports = {
 
         embed.setDescription(
           embed.data.description +
-            `\n\nMake sure to thank ${data.sponsor.user.toString()} in <#870240187198885888>`
+            `\nMake sure to thank ${data.sponsor.user.toString()} in <#870240187198885888>`
         );
 
         return interaction.channel.send({
