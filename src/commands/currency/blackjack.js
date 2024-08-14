@@ -22,7 +22,7 @@ module.exports = {
 
     if (cd.includes(message.author.id)) {
       return message.reply(
-        'Please wait 10 seconds before using this command again'
+        'Please wait 5 seconds before using this command again'
       );
     }
     let bet = parseAmount(args[0]);
@@ -385,7 +385,7 @@ function formatHand(hand, bot) {
 }
 const addCd = async (userId) => {
   cd.push(userId);
-  await sleep(10_000);
+  await sleep(5_000);
   cd = cd.filter((a) => a != userId);
 };
 
