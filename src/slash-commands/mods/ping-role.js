@@ -173,7 +173,7 @@ module.exports = {
 
       if (data.message) {
         embed.setDescription(
-          embed.data.description + '⦿ **Message:**' + data.message.value
+          embed.data.description + '⦿ **Message:**' + data.message.value + '\n'
         );
       }
 
@@ -237,7 +237,10 @@ module.exports = {
           );
         if (data.message) {
           embed.setDescription(
-            embed.data.description + '⦿ **Message:**' + data.message.value
+            embed.data.description +
+              '⦿ **Message:**' +
+              data.message.value +
+              '\n'
           );
         }
 
