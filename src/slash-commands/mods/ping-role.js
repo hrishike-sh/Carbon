@@ -194,8 +194,8 @@ module.exports = {
       // mini gaw and event ping
 
       if (
-        interaction.channel.id !== '826065190973210634' ||
-        interaction.channel.id != '853280287777882142'
+        interaction.channel.id !== '826065190973210634' &&
+        interaction.channel.id !== '853280287777882142'
       ) {
         return interaction.reply({
           ephemeral: true,
