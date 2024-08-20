@@ -17,7 +17,7 @@ module.exports = {
       'originalMessage.id': message.id
     });
     if (!DBENTRY) return;
-    if (fetched.count > 5) {
+    if (fetched.count > 10) {
       message.guild.channels.cache
         .get('1036564782481940510')
         .messages.fetch(DBENTRY.skullboardMessage.id)

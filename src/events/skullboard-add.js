@@ -25,7 +25,7 @@ module.exports = {
     if (processing.has(message.id)) return;
     processing.add(message.id);
     const fetched = await reaction.fetch();
-    if (fetched.count < 5) {
+    if (fetched.count < 10) {
       processing.delete(message.id);
       return;
     }
