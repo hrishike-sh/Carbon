@@ -5,7 +5,6 @@ module.exports = {
   name: 'coinflip',
   aliases: ['cf'],
   description: 'Flip a coin!',
-  roles: [],
   cooldown: 3,
   /**
    *
@@ -47,7 +46,6 @@ module.exports = {
     databaseEntry.coins -= amount;
     await databaseEntry.save();
     const result = Math.floor(Math.random() * 2);
-
     if (result == 0) {
       databaseEntry += amount;
       await databaseEntry.save();
