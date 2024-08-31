@@ -47,18 +47,9 @@ module.exports = {
     const time = require('ms')(interaction.options.getString('time'));
     const reason = `Action requested by @${interaction.user.username} (${interaction.user.id})`;
 
-    await channel.permissionOverwrites.set(
-      [
-        {
-          id: user.id,
-          deny: [
-            PermissionFlagsBits.ViewChannel,
-            PermissionFlagsBits.SendMessages
-          ]
-        }
-      ],
-      reason
-    );
+    await channel.permissionOverwrites.edit(user.id, {
+      ViewChannel: false
+    });
 
     await new Database({
       when: new Date().getTime() + time,
