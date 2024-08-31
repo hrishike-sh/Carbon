@@ -2,7 +2,8 @@ const {
   SlashCommandBuilder,
   EmbedBuilder,
   CommandInteraction,
-  TextChannel
+  TextChannel,
+  PermissionFlagsBits
 } = require('discord.js');
 const Database = require('../../database/timed');
 const ms = require('ms');
@@ -44,12 +45,20 @@ module.exports = {
     const user = interaction.options.getUser('user');
     const channel = interaction.options.getChannel('channel');
     const time = require('ms')(interaction.options.getString('time'));
-
-    await channel.permissionOverwrites.edit(user.id, {
-      SendMessages: false,
-      ViewChannel: false
-    });
     const reason = `Action requested by ${interaction.user.username} (${interaction.user.id})`;
+
+    await channel.permissionOverwrites.set(
+      [
+        {
+          id: user.id,
+          deny: [
+            PermissionFlagsBits.ViewChannel,
+            PermissionFlagsBits.SendMessages
+          ]
+        }
+      ],
+      reason
+    );
 
     await new Database({
       when: new Date().getTime() + time,
@@ -64,8 +73,11 @@ module.exports = {
     const embed = new EmbedBuilder()
       .setTitle('Viewlock')
       .setDescription(
-        `**User:** ${user}\n**Reason:** ${reason}\n**Moderator:** ${interaction.user}`
-      );
+        `**User:** ${user}\n**Reason:** ${reason}\n**Moderator:** @${
+          interaction.user
+        }\n**Duration:** ${ms(time)}`
+      )
+      .setColor('Green');
 
     await interaction.reply({ embeds: [embed] });
   }
