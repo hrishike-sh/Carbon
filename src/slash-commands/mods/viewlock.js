@@ -45,7 +45,7 @@ module.exports = {
     const user = interaction.options.getUser('user');
     const channel = interaction.options.getChannel('channel');
     const time = require('ms')(interaction.options.getString('time'));
-    const reason = `Action requested by ${interaction.user.username} (${interaction.user.id})`;
+    const reason = `Action requested by @${interaction.user.username} (${interaction.user.id})`;
 
     await channel.permissionOverwrites.set(
       [
@@ -73,9 +73,9 @@ module.exports = {
     const embed = new EmbedBuilder()
       .setTitle('Viewlock')
       .setDescription(
-        `**User:** ${user}\n**Reason:** ${reason}\n**Moderator:** @${
+        `**User:** ${user}\n**Reason:** ${reason}\n**Moderator:** ${
           interaction.user
-        }\n**Duration:** ${ms(time)}`
+        }\n**Duration:** ~${ms(time, { long: true })}`
       )
       .setColor('Green');
 
