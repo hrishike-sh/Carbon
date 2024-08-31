@@ -47,16 +47,18 @@ module.exports = {
     await databaseEntry.save();
     const result = Math.floor(Math.random() * 2);
     if (result == 0) {
-      await Database.findOneAndUpdate(
-        {
-          userId
-        },
-        {
-          $inc: {
-            coins: amount
+      (
+        await Database.findOneAndUpdate(
+          {
+            userId
+          },
+          {
+            $inc: {
+              coins: amount
+            }
           }
-        }
-      );
+        )
+      ).save();
 
       return await message.reply({
         embeds: [
