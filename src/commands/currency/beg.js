@@ -46,6 +46,9 @@ module.exports = {
    * @param {Client} client
    */
   async execute(message, args, client) {
+    if (message.channel.parentId == '824313026248179782') {
+      return message.react('❌');
+    }
     if (message.guildId !== '824294231447044197') return;
     if (
       [

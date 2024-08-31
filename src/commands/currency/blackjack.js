@@ -20,6 +20,9 @@ module.exports = {
   async execute(message, args, client) {
     if (!(await client.antiBot(message))) return;
 
+    if (message.channel.parentId == '824313026248179782') {
+      return message.react('❌');
+    }
     if (cd.includes(message.author.id)) {
       return message.reply(
         'Please wait 5 seconds before using this command again'

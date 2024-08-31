@@ -12,7 +12,9 @@ module.exports = {
   async execute(message, args, client) {
     const amount = parseAmount(args[0]);
     if (!amount) return message.reply('Invalid amount!');
-
+    if (message.channel.parentId == '824313026248179782') {
+      return message.react('❌');
+    }
     if (message.guildId !== '824294231447044197') return;
     const userId = message.author.id;
     if (cd.includes(userId))
