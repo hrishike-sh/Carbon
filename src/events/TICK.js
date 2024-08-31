@@ -12,7 +12,7 @@ module.exports = {
      */
 
     const viewlocks = await TimedDatabase.find({
-      what: 'viewlock',
+      what: 'viewlock_timeout',
       time: { $lt: Date.now() }
     });
     if (!viewlocks.length) return;
