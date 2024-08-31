@@ -51,7 +51,7 @@ module.exports = {
         userId
       });
       d.coins += amount;
-      d.save();
+      await d.save();
 
       return await message.reply({
         embeds: [
