@@ -15,7 +15,7 @@ module.exports = {
     if (message.channel.parentId == '824313026248179782') {
       return message.react('❌');
     }
-    if (message.guildId !== '824294231447044197') return;
+    // if (message.guildId !== '824294231447044197') return;
     const userId = message.author.id;
     if (cd.includes(userId))
       return message.reply(

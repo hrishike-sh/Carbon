@@ -9,7 +9,8 @@ const {
   Colors,
   ActionRowBuilder,
   ButtonBuilder,
-  ButtonStyle
+  ButtonStyle,
+  EmbedBuilder
 } = require('discord.js');
 const fs = require('fs');
 const path = require('node:path');
@@ -104,6 +105,7 @@ client.cmd = {
 };
 const MAP = new Collection();
 const CoinDB = require('./database/coins');
+const { deserialize } = require('v8');
 const processing = new Set();
 /**
  *
@@ -367,6 +369,19 @@ client.on(Events.MessageCreate, async (message) => {
  * COMMAND HANDLING
  */
 
+client.log = async (data) => {
+  if (!data) return;
+
+  const embed = new EmbedBuilder()
+    .setColor(0x00ffff)
+    .setTimestamp()
+    .setDescription(data.description || null)
+    .setTitle(data.title)
+    .setFields(fields);
+
+  client.channels.cache.get('913359587317522432').send({ embeds: [embed] });
+};
+
 /**
  * EVENT HANDLING
  */
@@ -380,7 +395,7 @@ for (const file of eventFiles) {
   const filePath = path.join(eventsPath, file);
   const event = require(filePath);
   if (event.once) {
-    client.once(event.name, (...args) => event.execute(...args));
+    client.once(event.name, (...args) => event.execute(...args, client));
   } else {
     client.on(event.name, (...args) => event.execute(...args, client));
   }
