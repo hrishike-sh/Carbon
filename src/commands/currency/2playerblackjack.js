@@ -60,7 +60,10 @@ module.exports = {
         }
       ]);
     const Row = new ActionRowBuilder().addComponents(
-      new ButtonBuilder().setCustomId('bj_showhand').setLabel('Show hand')
+      new ButtonBuilder()
+        .setCustomId('bj_showhand')
+        .setLabel('Show hand')
+        .setStyle(ButtonStyle.Primary)
     );
 
     const GameMessage = await message.channel.send({
