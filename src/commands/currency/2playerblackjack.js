@@ -111,7 +111,7 @@ module.exports = {
             )}\nScore: ${calculateScore(InterfaceUserData.hand, false)}`
           },
           {
-            name: OpponentUser.username,
+            name: OpponentUser.user.username,
             value: `Hand: ${formatHand(
               OpponentUserData.hand,
               true
