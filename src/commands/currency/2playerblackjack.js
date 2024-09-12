@@ -1,4 +1,4 @@
-const { Message, Client, EmbedBuilder } = require('discord.js');
+const { Message, Client, EmbedBuilder, ButtonBuilder } = require('discord.js');
 
 module.exports = {
   name: '2playerblackjack',
@@ -17,10 +17,15 @@ module.exports = {
     // Initialise & shuffle deck
     const deck = createDeck();
     shuffleDeck(deck);
-
-    const hands = {
-      player: [drawCard(deck), drawCard(deck)],
-      opponent: [drawCard(deck), drawCard(deck)]
+    const data = {
+      player: {
+        id: message.author.id,
+        hand: [drawCard(deck), drawCard(deck)]
+      },
+      opponent: {
+        id: target.id,
+        hand: [drawCard(deck), drawCard(deck)]
+      }
     };
 
     const embed = new EmbedBuilder()
@@ -33,22 +38,82 @@ module.exports = {
         {
           name: `${message.author.username}`,
           value: `Hand: ${formatHand(
-            hands.player,
+            data.player.hand,
             true
-          )}\nScore: ${calculateScore(hands.player, true)}`,
+          )}\nScore: ${calculateScore(data.player.hand, true)}`,
           inline: true
         },
         {
           name: `${target.user.username}`,
           value: `Hand: ${formatHand(
-            hands.opponent,
+            data.opponent.hand,
             true
-          )}\nScore: ${calculateScore(hands.opponent, true)}`,
+          )}\nScore: ${calculateScore(data.opponent.hand, true)}`,
           inline: true
         }
       ]);
+    const Row = new ActionRowBuilder().addComponents(
+      new ButtonBuilder().setCustomId('bj_showhand').setLabel('Show hand')
+    );
 
-    message.reply({ embeds: [embed] });
+    const GameMessage = await message.channel.send({
+      embeds: [embed],
+      components: [Row]
+    });
+
+    const collector = GameMessage.createMessageComponentCollector({
+      componentType: 'BUTTON'
+    });
+
+    collector.on('collect', async (ShowHandButton) => {
+      if (![message.author.id, target.id].includes(ShowHandButton.user.id)) {
+        return ShowHandButton.reply({
+          content: 'This is not your game :bangbang:',
+          ephemeral: true
+        });
+      }
+      const InterfaceUser = ShowHandButton.user;
+      const OpponentUser =
+        InterfaceUser.id == data.player.id ? target : message.author;
+      let InterfaceUserData, OpponentUserData;
+      if (InterfaceUser.id == data.player.id) {
+        InterfaceUserData = data.player;
+        OpponentUserData = data.opponent;
+      } else {
+        InterfaceUserData = data.opponent;
+        OpponentUserData = data.player;
+      }
+      const InterfaceEmbed = new EmbedBuilder()
+        .setAuthor({
+          name: InterfaceUser.username,
+          iconURL: InterfaceUser.displayAvatarURL()
+        })
+        .setColor('Yellow')
+        .setFooter({
+          text: `${message.author.username} vs ${target.user.username}`
+        })
+        .setFields([
+          {
+            name: InterfaceUser.username,
+            value: `Hand: ${formatHand(
+              InterfaceUserData.hand,
+              false
+            )}\nScore: ${calculateScore(InterfaceUserData.hand, false)}`
+          },
+          {
+            name: OpponentUser.username,
+            value: `Hand: ${formatHand(
+              OpponentUserData.hand,
+              true
+            )}\nScore: ${calculateScore(OpponentUserData.hand, true)}`
+          }
+        ]);
+
+      const InterfaceMessage = await ShowHandButton.reply({
+        ephemeral: true,
+        embeds: [InterfaceEmbed]
+      });
+    });
   }
 };
 
