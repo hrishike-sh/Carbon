@@ -71,11 +71,11 @@ module.exports = {
       components: [Row]
     });
 
-    const collector = GameMessage.createMessageComponentCollector({
-      componentType: 'BUTTON'
+    const ShowHandCollector = GameMessage.createMessageComponentCollector({
+      idle: 120_000
     });
 
-    collector.on('collect', async (ShowHandButton) => {
+    ShowHandCollector.on('collect', async (ShowHandButton) => {
       if (![message.author.id, target.id].includes(ShowHandButton.user.id)) {
         return ShowHandButton.reply({
           content: 'This is not your game :bangbang:',
