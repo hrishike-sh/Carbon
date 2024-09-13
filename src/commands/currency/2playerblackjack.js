@@ -165,7 +165,7 @@ module.exports = {
             }
           ]);
 
-          ActionButton.editReply({
+          InterfaceMessage.edit({
             embeds: [InterfaceEmbed],
             components: [Row]
           });
