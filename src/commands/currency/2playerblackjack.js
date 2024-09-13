@@ -118,10 +118,32 @@ module.exports = {
             )}\nScore: ${calculateScore(OpponentUserData.hand, true)}`
           }
         ]);
-
+      const Row = new ActionRowBuilder().addComponents([
+        new ButtonBuilder()
+          .setCustomId('bj_int_hit')
+          .setStyle(ButtonStyle.Danger)
+          .setLabel('HIT'),
+        new ButtonBuilder()
+          .setCustomId('bj_int_stand')
+          .setStyle(ButtonStyle.Success)
+          .setLabel('STAND')
+      ]);
       const InterfaceMessage = await ShowHandButton.reply({
         ephemeral: true,
-        embeds: [InterfaceEmbed]
+        embeds: [InterfaceEmbed],
+        components: [Row]
+      });
+
+      const ActionCollector = InterfaceMessage.createMessageComponentCollector({
+        idle: 15_000
+      });
+
+      ActionCollector.on('collect', async (ActionButton) => {
+        const id = ActionButton.customId;
+        if (id == 'bj_int_hit') {
+          // HIT
+        } else if (id == 'bj_int_stand') {
+        } else;
       });
     });
   }
