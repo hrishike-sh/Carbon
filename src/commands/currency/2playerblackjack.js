@@ -11,6 +11,7 @@ const {
 
 module.exports = {
   name: '2bj',
+  aliases: ['tpbj'],
   /**
    * @param {Message} message Discord Message
    * @param {String[]} args Command Arguments
@@ -229,7 +230,7 @@ module.exports = {
           return;
         }
 
-        const deck = decks.find((a) => a.id == button.user.id);
+        const deck = decks.filter((a) => a.id == button.user.id)[0];
         if (button.customId === 'hit_bj') {
           deck.push(drawCard(deck.deck));
           if (calculateScore(deck) > 21) {
