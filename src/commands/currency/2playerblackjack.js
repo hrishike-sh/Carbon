@@ -250,9 +250,9 @@ module.exports = {
             {
               name: button.user.displayName,
               value: `Hand: ${formatHand(
-                decks[1].deck,
+                DECK.deck,
                 false
-              )}\nScore: ${calculateScore(decks[1].deck, false)}`
+              )}\nScore: ${calculateScore(DECK.deck, false)}`
             }
           ]);
 
