@@ -130,11 +130,13 @@ module.exports = {
       ]);
       const InterfaceMessage = await ShowHandButton.reply({
         embeds: [InterfaceEmbed],
-        components: [Row]
+        components: [Row],
+        ephemeral: true
       });
 
+      InterfaceMessage.fetch();
       const ActionCollector = InterfaceMessage.createMessageComponentCollector({
-        idle: 15_000
+        idle: 120_000
       });
 
       ActionCollector.on('collect', async (ActionButton) => {
