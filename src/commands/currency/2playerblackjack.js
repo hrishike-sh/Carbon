@@ -129,14 +129,11 @@ module.exports = {
           .setLabel('STAND')
       ]);
       const InterfaceMessage = await ShowHandButton.reply({
-        ephemeral: true,
         embeds: [InterfaceEmbed],
         components: [Row]
       });
 
-      const ActionCollector = (
-        await InterfaceMessage.fetch()
-      ).createMessageComponentCollector({
+      const ActionCollector = InterfaceMessage.createMessageComponentCollector({
         idle: 15_000
       });
 
