@@ -246,6 +246,16 @@ module.exports = {
             gameDat[DECK.type].end = true;
           }
 
+          handEmbed.setFields([
+            {
+              name: button.user.displayName,
+              value: `Hand: ${formatHand(
+                decks[1].deck,
+                false
+              )}\nScore: ${calculateScore(decks[1].deck, false)}`
+            }
+          ]);
+
           await button.deferUpdate();
           await btn.editReply({
             embeds: [handEmbed],
