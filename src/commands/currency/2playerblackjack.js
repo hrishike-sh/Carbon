@@ -80,7 +80,22 @@ module.exports = {
     const collector = startMessage.createMessageComponentCollector({
       filter: (m) => [message.author.id, target.id].includes(m.user.id)
     });
-
+    const gameDat = {
+      player: {
+        busted: false,
+        stood: false,
+        five_charlie: false,
+        blackjack: false,
+        end: false
+      },
+      target: {
+        busted: false,
+        stood: false,
+        five_charlie: false,
+        blackjack: false,
+        end: false
+      }
+    };
     collector.on('collect', async (btn) => {
       const handEmbed = new EmbedBuilder()
         .setTitle(`<:bj:1260496579941503016> Blackjack | Your Hand`)
@@ -137,22 +152,7 @@ module.exports = {
         filter: (m) => [message.author.id, target.id].includes(m.user.id),
         componentType: ComponentType.Button
       });
-      const gameDat = {
-        player: {
-          busted: false,
-          stood: false,
-          five_charlie: false,
-          blackjack: false,
-          end: false
-        },
-        target: {
-          busted: false,
-          stood: false,
-          five_charlie: false,
-          blackjack: false,
-          end: false
-        }
-      };
+
       gameCol.on('collect', async (button) => {
         const getWinner = () => {
           if (gameDat.player.end && gameDat.target.end) {
