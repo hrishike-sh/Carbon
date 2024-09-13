@@ -140,6 +140,7 @@ module.exports = {
 
       ActionCollector.on('collect', async (ActionButton) => {
         const id = ActionButton.customId;
+        console.log(id);
         if (id == 'bj_int_hit') {
           // HIT
 
