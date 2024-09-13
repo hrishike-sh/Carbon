@@ -142,6 +142,31 @@ module.exports = {
         const id = ActionButton.customId;
         if (id == 'bj_int_hit') {
           // HIT
+
+          InterfaceUserData.hand.push(drawCard(deck));
+          const playerScore = calculateScore(InterfaceUserData.hand, false);
+
+          InterfaceEmbed.setFields([
+            {
+              name: InterfaceUser.username,
+              value: `Hand: ${formatHand(
+                InterfaceUserData.hand,
+                false
+              )}\nScore: ${calculateScore(InterfaceUserData.hand, false)}`
+            },
+            {
+              name: OpponentUser.user.username,
+              value: `Hand: ${formatHand(
+                OpponentUserData.hand,
+                true
+              )}\nScore: ${calculateScore(OpponentUserData.hand, true)}`
+            }
+          ]);
+
+          ActionButton.editReply({
+            embeds: [InterfaceEmbed],
+            components: [Row]
+          });
         } else if (id == 'bj_int_stand') {
         } else;
       });
