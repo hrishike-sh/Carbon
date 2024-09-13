@@ -134,7 +134,9 @@ module.exports = {
         components: [Row]
       });
 
-      const ActionCollector = InterfaceMessage.createMessageComponentCollector({
+      const ActionCollector = (
+        await InterfaceMessage.fetch()
+      ).createMessageComponentCollector({
         idle: 15_000
       });
 
