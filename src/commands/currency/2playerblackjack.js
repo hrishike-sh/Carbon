@@ -98,7 +98,7 @@ module.exports = {
           .setLabel('Stand')
           .setStyle(ButtonStyle.Success)
       ]);
-
+      let show = true;
       if (btn.user.id === message.author.id) {
         handEmbed.addFields([
           {
@@ -109,6 +109,9 @@ module.exports = {
             )}\nScore: ${calculateScore(decks[0].deck, false)}`
           }
         ]);
+        if (gameDat.player.end) {
+          show = false;
+        }
       } else {
         handEmbed.addFields([
           {
@@ -119,11 +122,14 @@ module.exports = {
             )}\nScore: ${calculateScore(decks[1].deck, false)}`
           }
         ]);
+        if (gameDat.target.end) {
+          show = false;
+        }
       }
 
       const epmessage = await btn.reply({
         embeds: [handEmbed],
-        components: [gameRow],
+        components: show ? [gameRow] : [],
         ephemeral: true,
         fetchReply: true
       });
