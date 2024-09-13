@@ -232,7 +232,7 @@ module.exports = {
 
         const DECK = decks.filter((a) => a.id == button.user.id)[0];
         if (button.customId === 'hit_bj') {
-          DECK.push(drawCard(deck));
+          DECK.deck.push(drawCard(deck));
           if (calculateScore(DECK.deck) > 21) {
             gameDat[DECK.type].busted = true;
             gameDat[DECK.type].end = true;
