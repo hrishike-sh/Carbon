@@ -141,7 +141,11 @@ module.exports = {
           show = false;
         }
       }
-
+      if (!show) {
+        handEmbed.setFooter({
+          text: 'You are out of turns.'
+        });
+      }
       const epmessage = await btn.reply({
         embeds: [handEmbed],
         components: show ? [gameRow] : [],
