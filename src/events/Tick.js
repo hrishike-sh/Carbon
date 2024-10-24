@@ -18,36 +18,37 @@ module.exports = {
       }
     });
     console.log(giveaways);
-    if (giveaways.length == 0) {
+    if (giveaways.length === 0) {
       // make new gaw
       console.log('Giveaway length is zero');
       const g = {
-        endsAt: new Date(new Date().getTime() * 300000),
+        endsAt: new Date(Date.now() + 300000),
         prize:
-          Math.floor(Math.random() * 5) + 5 * Math.sign(Math.random() - 0.5),
+          Math.floor(Math.random() * 10) + 5 * Math.sign(Math.random() - 0.5),
         channelId: '881128829131841596'
       };
-      const channel = client.channels.cache.get('881128829131841596');
+      const channel = client.channels.cache.get(g.channelId);
       console.log(channel.name);
-      const gawMessage = (await channel.fetch()).send({
+      const gawMessage = await channel.send({
         embeds: [
           {
             title: 'House Points',
             color: Colors.Green,
             description: `React with :tada: to enter!\nEnds <t:${Math.floor(
-              new Date(g.endsAt).getTime() / 1000
+              g.endsAt.getTime() / 1000
             )}:R>\n\n*Prize may be positive or negative points*`,
             footer: {
               text: '1 Winner'
             },
-            timestamp: new Date(g.endsAt)
+            timestamp: new Date()
           }
         ]
       });
       console.log(gawMessage);
       g.messageId = gawMessage.id;
       await giveaway.create(g);
-      gawMessage.react('🎉');
+      await gawMessage.react('🎉');
+
       return;
     }
 
