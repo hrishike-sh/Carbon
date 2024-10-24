@@ -28,6 +28,7 @@ module.exports = {
         channelId: '881128829131841596'
       };
       const channel = client.channels.cache.get('881128829131841596');
+      console.log(channel.name);
       const gawMessage = await channel.send({
         embeds: [
           {
@@ -43,6 +44,7 @@ module.exports = {
           }
         ]
       });
+      console.log(gawMessage);
       g.messageId = gawMessage.id;
       await giveaway.create(g);
       gawMessage.react('🎉');
