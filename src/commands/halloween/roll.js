@@ -96,7 +96,7 @@ module.exports = {
       if (count == 6) {
         row.components.forEach((a) => a.setDisabled(true));
         f = `${hist
-          .map((a) => a.toString)
+          .map((a) => a.toString())
           .join(' -> ')}\n\nNew Score: **${sum}**`;
         await roll.updateOne(
           {
