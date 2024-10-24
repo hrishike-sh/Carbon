@@ -49,7 +49,7 @@ module.exports = {
         }
       ])
       .setFooter({
-        text: `Current score: ${userScore}`
+        text: `Previous score: ${userScore}`
       })
       .setColor(Colors.Green);
 
