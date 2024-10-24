@@ -12,7 +12,7 @@ module.exports = {
     console.log('TICKRAN');
     await sleep(30000); // 5 minutes
     client.emit('tick');
-
+    if (new Date().getDate() == 24) return;
     try {
       const giveaways = await giveaway.find({});
       console.log(giveaways);
@@ -107,7 +107,7 @@ module.exports = {
           content: winner.toString(),
           embeds: [
             {
-              title: `[You won the Bingo Giveaway! 🥳](${message.url})`,
+              title: `You won the Bingo Giveaway! 🥳`,
               color: Colors.Green
             }
           ]
@@ -126,5 +126,15 @@ function sleep(ms) {
 }
 
 const getMillis = (t) => {
-  return 10000;
+  if (t == 25 || t == 26) {
+    return 21600000;
+  } else if (t == 27) {
+    return 14400000;
+  } else if (t == 28) {
+    return 10800000;
+  } else if (t == 29) {
+    return 7200000;
+  } else if (t == 30) {
+    return 3600000;
+  } else return 1800000;
 };
