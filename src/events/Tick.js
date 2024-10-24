@@ -1,4 +1,4 @@
-const { Client, Message } = require('discord.js');
+const { Client, Message, Colors } = require('discord.js');
 const giveaway = require('../database/giveaway');
 const halloween = require('../database/halloween');
 const Processing = new Set();
@@ -33,14 +33,14 @@ module.exports = {
         embeds: [
           {
             title: 'House Points',
-            color: '00f664',
+            color: Colors.Green,
             description: `React with :tada: to enter!\nEnds <t:${Math.floor(
               g.endsAt.getTime() / 1000
             )}:R>\n\n*Prize may be positive or negative points*`,
             footer: {
               text: '1 Winner'
-            }
-            // timestamp: g.endsAt
+            },
+            timestamp: g.endsAt
           }
         ]
       });
