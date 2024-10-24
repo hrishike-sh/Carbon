@@ -60,7 +60,10 @@ module.exports = {
         .setLabel('Start')
     ]);
     if (Cooldown.has(message.author.id)) {
-      row.components[0].setDisabled(true).setLabel('30s Cooldown!');
+      row.components[0]
+        .setDisabled(true)
+        .setStyle(ButtonStyle.Secondary)
+        .setLabel('30s Cooldown!');
     }
     Cooldown.add(message.author.id);
     const msg = await message.reply({ embeds: [embed], components: [row] });
@@ -80,15 +83,17 @@ module.exports = {
     let count = 0;
     let f = '';
     let sum = 0;
+    const hist = [];
     collector.on('collect', async (button) => {
       row.components[0].setLabel('Roll!');
       const rand = Math.floor(Math.random() * 100) + 1;
       sum += rand;
+      hist.push(rand);
       count++;
       f += `${count}. You rolled __${rand}__!\n`;
       if (count == 6) {
         row.components.forEach((a) => a.setDisabled(true));
-        f += `\n\nTotal: **${sum}**`;
+        f += `${hist.map((a) => `${a}`).join(' -> ')}\n\nNew Score: **${sum}**`;
         await roll.updateOne(
           {
             userId: message.author.id
