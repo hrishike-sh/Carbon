@@ -9,13 +9,15 @@ module.exports = {
    * @param {Client} client
    */
   async execute(client) {
-    await sleep(60000);
+    console.log('TICKRAN');
+    await sleep(5000);
     client.emit('tick');
     const giveaways = await giveaway.find({
       endsAt: {
         $lte: new Date()
       }
     });
+    console.log(giveaways);
     if (!giveaways.length) {
       // make new gaw
 

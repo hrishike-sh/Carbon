@@ -45,6 +45,7 @@ client.on(Events.ClientReady, async () => {
     commandsRan: 0,
     messagesRead: 0
   };
+  client.emit('tick');
   client.db = {
     afks: [],
     afkIgnore: (
