@@ -20,14 +20,14 @@ module.exports = {
     console.log(giveaways);
     if (giveaways.length == 0) {
       // make new gaw
-
+      console.log('Giveaway length is zero');
       const g = new giveaway({
         endsAt: new Date(new Date().getTime() * 300000),
         prize:
           Math.floor(Math.random() * 5) + 5 * Math.sign(Math.random() - 0.5),
         channelId: '881128829131841596'
       });
-
+      console.log(g);
       const gawMessage = await client.channels.cache
         .get('881128829131841596')
         .send({
@@ -45,7 +45,6 @@ module.exports = {
             }
           ]
         });
-
       g.messageId = gawMessage.id;
       gawMessage.react('🎉');
       await g.save();
