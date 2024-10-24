@@ -39,8 +39,8 @@ module.exports = {
             )}:R>\n\n*Prize may be positive or negative points*`,
             footer: {
               text: '1 Winner'
-            },
-            timestamp: g.endsAt
+            }
+            // timestamp: g.endsAt
           }
         ]
       });
