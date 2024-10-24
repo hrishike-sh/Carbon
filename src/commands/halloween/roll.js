@@ -4,7 +4,8 @@ const {
   EmbedBuilder,
   ButtonBuilder,
   ButtonStyle,
-  ActionRowBuilder
+  ActionRowBuilder,
+  Colors
 } = require('discord.js');
 const roll = require('../../database/roll');
 const Cooldown = new Set();
@@ -52,7 +53,8 @@ module.exports = {
       ])
       .setFooter({
         text: `Current score: ${userScore}`
-      });
+      })
+      .setColor(Colors.Green);
 
     const row = new ActionRowBuilder().addComponents([
       new ButtonBuilder()
@@ -70,6 +72,7 @@ module.exports = {
     let f = '';
     let sum = 0;
     collector.on('collect', async (button) => {
+      row.components[0].setLabel('Roll!');
       const rand = Math.floor(Math.random() * 100) + 1;
       sum += rand;
       count++;
@@ -89,6 +92,12 @@ module.exports = {
           }
         );
       }
+      embed.setFields([
+        {
+          name: 'Your game',
+          value: f
+        }
+      ]);
 
       await button.update({ embeds: [embed], components: [row] });
     });
