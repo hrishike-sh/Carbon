@@ -65,7 +65,15 @@ module.exports = {
     const msg = await message.reply({ embeds: [embed], components: [row] });
 
     const collector = msg.createMessageComponentCollector({
-      filter: (i) => i.user.id === message.author.id,
+      filter: (i) => {
+        if (i.user.id !== message.author.id) {
+          i.reply({
+            content: 'Not your game!',
+            ephemeral: true
+          });
+          return false;
+        } else return true;
+      },
       idle: 30_000
     });
     let count = 0;
@@ -76,7 +84,7 @@ module.exports = {
       const rand = Math.floor(Math.random() * 100) + 1;
       sum += rand;
       count++;
-      f += `${count + 1}. You rolled ${rand}!`;
+      f += `${count + 1}. You rolled __${rand}__!\n`;
       if (count == 5) {
         row.components.forEach((a) => a.setDisabled(true));
         f += `\n\nTotal: **${sum}**`;
@@ -89,6 +97,9 @@ module.exports = {
               userId: message.author.id,
               amount: sum
             }
+          },
+          {
+            upsert: true
           }
         );
       }
