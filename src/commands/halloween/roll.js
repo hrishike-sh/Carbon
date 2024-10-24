@@ -90,10 +90,14 @@ module.exports = {
       sum += rand;
       hist.push(rand);
       count++;
-      f += `${count}. You rolled __${rand}__!\n`;
+      f = `${hist
+        .map((a, ind) => (ind + 1 == count ? `**${a}**` : a))
+        .join(' -> ')}`;
       if (count == 6) {
         row.components.forEach((a) => a.setDisabled(true));
-        f += `${hist.map((a) => `${a}`).join(' -> ')}\n\nNew Score: **${sum}**`;
+        f = `${hist
+          .map((a) => a.toString)
+          .join(' -> ')}\n\nNew Score: **${sum}**`;
         await roll.updateOne(
           {
             userId: message.author.id
