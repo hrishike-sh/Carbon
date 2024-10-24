@@ -12,11 +12,7 @@ module.exports = {
     console.log('TICKRAN');
     await sleep(5000);
     client.emit('tick');
-    const giveaways = await giveaway.find({
-      endsAt: {
-        $lte: new Date()
-      }
-    });
+    const giveaways = await giveaway.find({});
     console.log(giveaways);
     if (giveaways.length === 0) {
       // make new gaw
