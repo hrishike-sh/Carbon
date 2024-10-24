@@ -22,7 +22,7 @@ module.exports = {
         console.log('No active giveaways, creating a new one...');
         const g = {
           endsAt: new Date(Date.now() + getMillis(new Date().getDate())),
-          channelId: '1294900964091760660'
+          channelId: '1298986234412011541'
         };
         if (g.prize === 0) g.prize = 1;
 
@@ -64,7 +64,7 @@ module.exports = {
         if (new Date() < gaw.endsAt) continue;
 
         const message = await client.channels.cache
-          .get('1294900964091760660')
+          .get('1298986234412011541')
           .messages.fetch(gaw.messageId)
           .catch((err) => console.error('Failed to fetch message:', err));
 
@@ -112,11 +112,6 @@ module.exports = {
             }
           ]
         });
-        await halloween.updateOne(
-          { members: winner.id },
-          { $inc: { points: gaw.prize } }
-        );
-
         await giveaway.deleteOne({ messageId: gaw.messageId });
         Processing.delete(message.id);
       }
