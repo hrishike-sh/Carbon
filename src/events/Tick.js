@@ -10,7 +10,7 @@ module.exports = {
    */
   async execute(client) {
     console.log('TICKRAN');
-    await sleep(5000);
+    await sleep(10000);
     client.emit('tick');
     const giveaways = await giveaway.find({});
     console.log(giveaways);
@@ -18,11 +18,14 @@ module.exports = {
       // make new gaw
       console.log('Giveaway length is zero');
       const g = {
-        endsAt: new Date(Date.now() + 30000),
+        endsAt: new Date(Date.now() + 300000),
         prize:
-          Math.floor(Math.random() * 10) + 5 * Math.sign(Math.random() - 0.5),
+          Math.floor(Math.random() * 5) + 5 * Math.sign(Math.random() - 0.5),
         channelId: '881128829131841596'
       };
+      if (g.prize == 0) {
+        g.prize = 1;
+      }
       const channel = client.channels.cache.get(g.channelId);
       console.log(channel.name);
       const gawMessage = await channel.send({
