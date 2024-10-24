@@ -27,23 +27,22 @@ module.exports = {
           Math.floor(Math.random() * 5) + 5 * Math.sign(Math.random() - 0.5),
         channelId: '881128829131841596'
       };
-      const gawMessage = await client.channels.cache
-        .get('881128829131841596')
-        .send({
-          embeds: [
-            {
-              title: 'House Points',
-              color: '00f664',
-              description: `React with :tada: to enter!\nEnds <t:${Math.floor(
-                g.endsAt.getTime() / 1000
-              )}:R>\n\n*Prize may be positive or negative points*`,
-              footer: {
-                text: '1 Winner'
-              },
-              timestamp: g.endsAt
-            }
-          ]
-        });
+      const channel = client.channels.cache.get('881128829131841596');
+      const gawMessage = await channel.send({
+        embeds: [
+          {
+            title: 'House Points',
+            color: '00f664',
+            description: `React with :tada: to enter!\nEnds <t:${Math.floor(
+              g.endsAt.getTime() / 1000
+            )}:R>\n\n*Prize may be positive or negative points*`,
+            footer: {
+              text: '1 Winner'
+            },
+            timestamp: g.endsAt
+          }
+        ]
+      });
       g.messageId = gawMessage.id;
       await giveaway.create(g);
       gawMessage.react('🎉');
