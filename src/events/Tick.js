@@ -54,7 +54,7 @@ module.exports = {
     // end gaw
 
     for (const gaw of giveaways) {
-      const message: Message = await client.channels.cache
+      const message = await client.channels.cache
         .get(gaw.channelId)
         .messages.fetch(gaw.messageId);
 
