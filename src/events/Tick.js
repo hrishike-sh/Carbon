@@ -18,7 +18,7 @@ module.exports = {
       }
     });
     console.log(giveaways);
-    if (!giveaways.length) {
+    if (giveaways.length == 0) {
       // make new gaw
 
       const g = new giveaway({
