@@ -24,10 +24,7 @@ module.exports = {
         return message.reply('All rolls have been reset.');
       }
     }
-    if (Cooldown.has(message.author.id)) {
-      return message.reply('You can only roll once every 30 seconds!');
-    }
-    Cooldown.add(message.author.id);
+
     setTimeout(() => {
       Cooldown.delete(message.author.id);
     }, 30000);
@@ -62,6 +59,10 @@ module.exports = {
         .setCustomId('start')
         .setLabel('Start')
     ]);
+    if (Cooldown.has(message.author.id)) {
+      row.components[0].setDisabled(true).setLabel('30s Cooldown!');
+    }
+    Cooldown.add(message.author.id);
     const msg = await message.reply({ embeds: [embed], components: [row] });
 
     const collector = msg.createMessageComponentCollector({
