@@ -29,7 +29,7 @@ module.exports = {
       };
       const channel = client.channels.cache.get('881128829131841596');
       console.log(channel.name);
-      const gawMessage = await channel.send({
+      const gawMessage = (await channel.fetch()).send({
         embeds: [
           {
             title: 'House Points',
