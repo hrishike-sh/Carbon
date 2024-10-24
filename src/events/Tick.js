@@ -73,9 +73,9 @@ module.exports = {
 
       Processing.add(message.id);
 
-      const winner = (
-        await message.reactions.cache.first().users.fetch()
-      ).random();
+      const winner = (await message.reactions.cache.first().users.fetch())
+        .filter((a) => a.id !== client.user.id)
+        .random();
       if (!winner) {
         // delete gaw
         await giveaway.deleteOne({
