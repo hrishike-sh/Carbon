@@ -10,7 +10,7 @@ module.exports = {
    */
   async execute(client) {
     console.log('TICKRAN');
-    await sleep(10000); // 5 minutes
+    await sleep(30000); // 5 minutes
     client.emit('tick');
 
     try {
@@ -21,10 +21,8 @@ module.exports = {
         // Create a new giveaway if none are active
         console.log('No active giveaways, creating a new one...');
         const g = {
-          endsAt: new Date(Date.now() + 300000), // 5 minutes from now
-          prize:
-            Math.floor(Math.random() * 5) + 5 * Math.sign(Math.random() - 0.5),
-          channelId: '881128829131841596'
+          endsAt: new Date(Date.now() + getMillis(new Date().getDate())),
+          channelId: '1294900964091760660'
         };
         if (g.prize === 0) g.prize = 1;
 
@@ -39,11 +37,11 @@ module.exports = {
           .send({
             embeds: [
               {
-                title: 'House Points',
+                title: 'Bingo Giveaway',
                 color: Colors.Green,
                 description: `React with 🎉 to enter!\nEnds <t:${Math.floor(
                   g.endsAt.getTime() / 1000
-                )}:R>\n\n*Prize may be positive or negative points*`,
+                )}:R>`,
                 footer: {
                   text: '1 Winner'
                 },
@@ -62,23 +60,20 @@ module.exports = {
         return;
       }
 
-      // Check and end ongoing giveaways
       for (const gaw of giveaways) {
-        if (new Date() < gaw.endsAt) continue; // Skip if giveaway hasn't ended yet
+        if (new Date() < gaw.endsAt) continue;
 
         const message = await client.channels.cache
-          .get(gaw.channelId)
+          .get('1294900964091760660')
           .messages.fetch(gaw.messageId)
           .catch((err) => console.error('Failed to fetch message:', err));
 
         if (!message) {
-          // If the message no longer exists, delete the giveaway from the database
           await giveaway.deleteOne({ messageId: gaw.messageId });
           continue;
         }
 
         if (Processing.has(message.id)) {
-          // Already processing this giveaway
           continue;
         }
 
@@ -88,13 +83,11 @@ module.exports = {
           .filter((a) => a.id !== client.user.id)
           .random();
         if (!winner) {
-          // No winner, delete the giveaway
           await giveaway.deleteOne({ messageId: gaw.messageId });
           Processing.delete(message.id);
           continue;
         }
 
-        // Announce the winner
         await message
           .edit({
             embeds: [
@@ -110,14 +103,20 @@ module.exports = {
             ]
           })
           .catch((err) => console.error('Failed to edit message:', err));
-
-        // Update the database for the winner
+        await message.channel.send({
+          content: winner.toString(),
+          embeds: [
+            {
+              title: `[You won the Bingo Giveaway! 🥳](${message.url})`,
+              color: Colors.Green
+            }
+          ]
+        });
         await halloween.updateOne(
           { members: winner.id },
           { $inc: { points: gaw.prize } }
         );
 
-        // Remove processed giveaway
         await giveaway.deleteOne({ messageId: gaw.messageId });
         Processing.delete(message.id);
       }
@@ -130,3 +129,7 @@ module.exports = {
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
+
+const getMillis = (t) => {
+  return 10000;
+};
