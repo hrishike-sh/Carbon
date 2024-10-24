@@ -84,7 +84,7 @@ module.exports = {
       const rand = Math.floor(Math.random() * 100) + 1;
       sum += rand;
       count++;
-      f += `${count + 1}. You rolled __${rand}__!\n`;
+      f += `${count}. You rolled __${rand}__!\n`;
       if (count == 5) {
         row.components.forEach((a) => a.setDisabled(true));
         f += `\n\nTotal: **${sum}**`;
