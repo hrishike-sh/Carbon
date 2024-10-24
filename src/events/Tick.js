@@ -10,7 +10,7 @@ module.exports = {
    */
   async execute(client) {
     console.log('TICKRAN');
-    await sleep(300000); // 5 minutes
+    await sleep(10000); // 5 minutes
     client.emit('tick');
 
     try {
