@@ -35,12 +35,12 @@ module.exports = {
             title: 'House Points',
             color: Colors.Green,
             description: `React with :tada: to enter!\nEnds <t:${Math.floor(
-              g.endsAt.getTime() / 1000
+              new Date(g.endsAt).getTime() / 1000
             )}:R>\n\n*Prize may be positive or negative points*`,
             footer: {
               text: '1 Winner'
             },
-            timestamp: g.endsAt
+            timestamp: new Date(g.endsAt)
           }
         ]
       });
