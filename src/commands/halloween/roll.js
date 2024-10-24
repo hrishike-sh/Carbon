@@ -85,7 +85,7 @@ module.exports = {
       sum += rand;
       count++;
       f += `${count}. You rolled __${rand}__!\n`;
-      if (count == 5) {
+      if (count == 6) {
         row.components.forEach((a) => a.setDisabled(true));
         f += `\n\nTotal: **${sum}**`;
         await roll.updateOne(
