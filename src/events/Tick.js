@@ -18,7 +18,7 @@ module.exports = {
       // make new gaw
       console.log('Giveaway length is zero');
       const g = {
-        endsAt: new Date(Date.now() + 300000),
+        endsAt: new Date(Date.now() + 30000),
         prize:
           Math.floor(Math.random() * 10) + 5 * Math.sign(Math.random() - 0.5),
         channelId: '881128829131841596'
@@ -75,14 +75,31 @@ module.exports = {
       ).random();
       if (!winner) {
         // delete gaw
-        giveaway.deleteOne({
+        await giveaway.deleteOne({
           messageId: gaw.messageId
         });
         continue;
       }
 
       // edit message
-      return;
+
+      await giveaway.deleteOne({
+        messageId: gaw.messageId
+      });
+
+      await message.edit({
+        embeds: [
+          {
+            title: 'House Points',
+            color: Colors.Green,
+            description: `**${winner}** won ${gaw.prize} points!`,
+            footer: {
+              text: '1 Winner'
+            },
+            timestamp: new Date()
+          }
+        ]
+      });
       await halloween.updateOne(
         {
           members: winner.id
