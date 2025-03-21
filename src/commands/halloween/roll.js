@@ -34,7 +34,7 @@ module.exports = {
           userId: message.author.id
         })
       )?.amount || 0;
-    const lb = await roll.find({}).sort({ amount: -1 }).limit(10);
+    const lb = await roll.find({}).sort({ amount: -1 }).limit(5);
     const embed = new EmbedBuilder()
       .setTitle('Carbon TopRoll')
       .setDescription(
