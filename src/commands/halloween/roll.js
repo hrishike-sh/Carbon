@@ -98,20 +98,23 @@ module.exports = {
         f = `${hist
           .map((a) => a.toString())
           .join(' -> ')}\n\nNew Score: **${sum}**`;
-        await roll.updateOne(
-          {
-            userId: message.author.id
-          },
-          {
-            $set: {
-              userId: message.author.id,
-              amount: sum
+
+        if (sum > userScore) {
+          await roll.updateOne(
+            {
+              userId: message.author.id
+            },
+            {
+              $set: {
+                userId: message.author.id,
+                amount: sum
+              }
+            },
+            {
+              upsert: true
             }
-          },
-          {
-            upsert: true
-          }
-        );
+          );
+        }
       }
       embed.setFields([
         {
