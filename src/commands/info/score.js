@@ -33,6 +33,7 @@ module.exports = {
       const data = await req.json();
       console.log('Data fetched successfully');
       const match = data.data[0];
+      console.log(match);
       const embed = new EmbedBuilder().setTitle(match.title).setColor(0x00ffff);
       for (let i = 0; i < 2; i++) {
         embed.addFields({
