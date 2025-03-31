@@ -36,12 +36,19 @@ module.exports = {
       console.log(match);
       const embed = new EmbedBuilder()
         .setTitle(match.name)
-        .setColor(0x00ffff)
-        .setDescription(match.status);
+        .setColor(1652874)
+        .setDescription(match.status)
+        .setThumbnail(
+          'https://www.jagranimages.com/images/newimg/21082020/21_08_2020-ipl_logo_20650553.jpg'
+        )
+        .setFooter({
+          text: match.venue
+        })
+        .setTimestamp(new Date(match.dateTimeGMT));
       for (let i = 0; i < 2; i++) {
         embed.addFields({
-          name: match.score[i].inning,
-          value: `**Score:** ${match.score[i].r}.${match.score[i].w}\n**Overs:** ${match.score[i].o}`
+          name: match.score[i].inning.split('Inning')[0],
+          value: `**Score:** ${match.score[i].r}/${match.score[i].w}\n**Overs:** ${match.score[i].o}`
         });
       }
 
