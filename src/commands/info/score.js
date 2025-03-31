@@ -37,7 +37,7 @@ module.exports = {
       const embed = new EmbedBuilder().setTitle(match.title).setColor(0x00ffff);
       for (let i = 0; i < 2; i++) {
         embed.addFields({
-          name: match.teams[i].name,
+          name: match.teams[i],
           value: `**Score:** ${match.score.r}.${match.score.w}\n**Overs:** ${match.score.o}`
         });
       }
