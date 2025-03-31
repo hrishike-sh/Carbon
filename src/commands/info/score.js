@@ -34,11 +34,14 @@ module.exports = {
       console.log('Data fetched successfully');
       const match = data.data[0];
       console.log(match);
-      const embed = new EmbedBuilder().setTitle(match.title).setColor(0x00ffff);
+      const embed = new EmbedBuilder()
+        .setTitle(match.name)
+        .setColor(0x00ffff)
+        .setDescription(match.status);
       for (let i = 0; i < 2; i++) {
         embed.addFields({
-          name: match.teams[i],
-          value: `**Score:** ${match.score.r}.${match.score.w}\n**Overs:** ${match.score.o}`
+          name: match.score[i].inning,
+          value: `**Score:** ${match.score[i].r}.${match.score[i].w}\n**Overs:** ${match.score[i].o}`
         });
       }
 
