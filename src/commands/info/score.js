@@ -44,11 +44,12 @@ module.exports = {
         .setFooter({
           text: match.venue
         })
-        .setTimestamp(new Date(match.dateTimeGMT));
+        .setTimestamp();
       for (let i = 0; i < 2; i++) {
         embed.addFields({
           name: match.score[i].inning.split('Inning')[0],
-          value: `**Score:** ${match.score[i].r}/${match.score[i].w}\n**Overs:** ${match.score[i].o}`
+          value: `**Score:** ${match.score[i].r}/${match.score[i].w}\n**Overs:** ${match.score[i].o}`,
+          inline: true
         });
       }
 
