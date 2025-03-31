@@ -29,13 +29,15 @@ module.exports = {
 
       const data = await req.json();
       const match = data.data[0];
-      const embed = new EmbedBuilder().setTitle(match.title);
+      const embed = new EmbedBuilder().setTitle(match.title).setColor(0x00ffff);
       for (let i = 0; i < 2; i++) {
         embed.addFields({
           name: match.teams[i].name,
           value: `**Score:** ${match.score.r}.${match.score.w}\n**Overs:** ${match.score.o}`
         });
       }
+
+      await msg.edit({ embeds: [embed] });
     } catch (error) {}
   }
 };
