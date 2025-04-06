@@ -12,9 +12,9 @@ module.exports = {
   async execute(message, args, client) {
     const target =
       message.mentions.users.first() ||
-      message.guild.members.cache.get(args[0]) ||
+      message.guild.members.cache.get(args[0]).user ||
       (await client.users.fetch(args[0]).catch(() => null)) ||
-      message.member;
+      message.member.user;
     console.log(__dirname);
     const rawNames = readFileSync(
       path.join(__dirname, '../../lib/Fighthub names.json'),
