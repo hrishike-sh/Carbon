@@ -36,7 +36,7 @@ module.exports = {
         `No names or nicknames found for ${target.toString()}`
       );
     }
-
+    console.log(name, nickname);
     message.reply(
       `${target.username}'s previous tags:\n${
         name?.past_names?.join(', ') || ''
