@@ -16,9 +16,12 @@ module.exports = {
       (await client.users.fetch(args[0]).catch(() => null)) ||
       message.member;
     console.log(__dirname);
-    const rawNames = readFileSync(path.join(__dirname), 'utf-8');
+    const rawNames = readFileSync(
+      path.join(__dirname, '../../lib/Fighthub names.json'),
+      'utf-8'
+    );
     const rawNicknames = readFileSync(
-      '../../lib/Fighthub nicknames.json',
+      path.join(__dirname, '../../lib/Fighthub nicknames.json'),
       'utf-8'
     );
 
