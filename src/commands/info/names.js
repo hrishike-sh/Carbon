@@ -26,7 +26,7 @@ module.exports = {
     );
 
     const names = JSON.parse(rawNames);
-    const nicknames = JSON.parse(rawNicknames);
+    const nicknames = JSON.parse(rawNicknames)['824294231447044197'];
 
     const name = names[target.id];
     const nickname = nicknames[target.id];
