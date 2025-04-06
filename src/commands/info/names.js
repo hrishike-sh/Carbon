@@ -37,6 +37,8 @@ module.exports = {
       );
     }
 
+    console.log(name, nickname);
+
     message.reply(
       `${target.username}'s previous tags:\n${name.past_names.join(', ')}\n\n${
         target.username
