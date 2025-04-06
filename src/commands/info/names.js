@@ -12,9 +12,9 @@ module.exports = {
   async execute(message, args, client) {
     const target =
       message.mentions.users.first() ||
-      message.guild.members.cache.get(args[0]).user ||
+      message.guild.members.cache.get(args[0])?.user ||
       (await client.users.fetch(args[0]).catch(() => null)) ||
-      message.member.user;
+      message.member?.user;
     console.log(__dirname);
     const rawNames = readFileSync(
       path.join(__dirname, '../../lib/Fighthub names.json'),
@@ -36,8 +36,6 @@ module.exports = {
         `No names or nicknames found for ${target.toString()}`
       );
     }
-
-    console.log(name, nickname);
 
     message.reply(
       `${target.username}'s previous tags:\n${
