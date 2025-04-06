@@ -1,5 +1,6 @@
 const { Message, Client } = require('discord.js');
 const { readFileSync, writeFileSyn } = require('fs');
+const path = require('path');
 module.exports = {
   name: 'names',
   /**
@@ -14,8 +15,8 @@ module.exports = {
       message.guild.members.cache.get(args[0]) ||
       (await client.users.fetch(args[0]).catch(() => null)) ||
       message.member;
-
-    const rawNames = readFileSync('../../lib/Fighthub names.json', 'utf-8');
+    console.log(__dirname);
+    const rawNames = readFileSync(path.join(__dirname), 'utf-8');
     const rawNicknames = readFileSync(
       '../../lib/Fighthub nicknames.json',
       'utf-8'
