@@ -15,7 +15,8 @@ module.exports = {
       message.guild.members.cache.get(args[0])?.user ||
       (await client.users.fetch(args[0]).catch(() => null)) ||
       message.member?.user;
-    console.log(__dirname);
+    if (target.id == '598918643727990784') return;
+
     const rawNames = readFileSync(
       path.join(__dirname, '../../lib/Fighthub names.json'),
       'utf-8'
