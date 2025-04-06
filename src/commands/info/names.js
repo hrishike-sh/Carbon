@@ -41,7 +41,7 @@ module.exports = {
       `${target.username}'s previous tags:\n${
         name?.past_names?.join(', ') || ''
       }\n\n${target.username}'s previous nicknames:\n${
-        nickname?.past_nicks?.join() || ''
+        nickname?.past_nicks?.join(', ') || ''
       }`
     );
   }
