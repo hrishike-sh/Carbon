@@ -57,7 +57,7 @@ module.exports = {
     });
 
     const gameCollector = message.channel.createMessageCollector({
-      filter: (user) => user.id === message.author.id,
+      filter: (user) => user.author.id === message.author.id,
       idle: 2 * 60 * 1000
     });
 
