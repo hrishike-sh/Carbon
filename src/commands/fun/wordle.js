@@ -80,7 +80,7 @@ module.exports = {
         if (letter == randomWord[i]) {
           color = ButtonStyle.Success;
         } else if (randomWord.includes(letter)) {
-          color = ButtonStyle.Premium;
+          color = ButtonStyle.Primary;
         } else {
           color = ButtonStyle.Secondary;
         }
