@@ -75,11 +75,21 @@ module.exports = {
       const guess = msg.content;
       rows[row] = new ActionRowBuilder();
       for (let i = 0; i < 5; i++) {
+        const letter = guess[i];
+        let color;
+        if (letter == randomWord[i]) {
+          color = ButtonStyle.Success;
+        } else if (randomWord.includes(letter)) {
+          color = ButtonStyle.Premium;
+        } else {
+          color = ButtonStyle.Secondary;
+        }
+
         rows[row].addComponents([
           new ButtonBuilder()
             .setCustomId(`row_${row}_button_${i}`)
-            .setLabel(guess[i])
-            .setStyle(ButtonStyle.Secondary)
+            .setLabel(letter)
+            .setStyle(color)
             .setDisabled(true)
         ]);
       }
