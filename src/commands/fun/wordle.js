@@ -72,7 +72,7 @@ module.exports = {
         await msg.reply('This is not a real word!');
         return;
       }
-      const guess = msg.content;
+      const guess = msg.content.toLowerCase();
       rows[row] = new ActionRowBuilder();
       for (let i = 0; i < 5; i++) {
         const letter = guess[i];
