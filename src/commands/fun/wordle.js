@@ -83,7 +83,11 @@ module.exports = {
             .setDisabled(true)
         ]);
       }
+      row++;
 
+      if (row >= 5) {
+        gameCollector.stop();
+      }
       await GameMessage.edit({
         components: rows
       });
