@@ -26,29 +26,67 @@ module.exports = {
           new ButtonBuilder()
             .setCustomId(`row_${i}_button_0`)
             .setEmoji('914473340129906708')
-            .setStyle(ButtonStyle.Secondary),
+            .setStyle(ButtonStyle.Secondary)
+            .setDisabled(true),
           new ButtonBuilder()
             .setCustomId(`row_${i}_button_1`)
             .setEmoji('914473340129906708')
-            .setStyle(ButtonStyle.Secondary),
+            .setStyle(ButtonStyle.Secondary)
+            .setDisabled(true),
           new ButtonBuilder()
             .setCustomId(`row_${i}_button_2`)
             .setEmoji('914473340129906708')
-            .setStyle(ButtonStyle.Secondary),
+            .setStyle(ButtonStyle.Secondary)
+            .setDisabled(true),
           new ButtonBuilder()
             .setCustomId(`row_${i}_button_3`)
             .setEmoji('914473340129906708')
-            .setStyle(ButtonStyle.Secondary),
+            .setStyle(ButtonStyle.Secondary)
+            .setDisabled(true),
           new ButtonBuilder()
             .setCustomId(`row_${i}_button_4`)
             .setEmoji('914473340129906708')
             .setStyle(ButtonStyle.Secondary)
+            .setDisabled(true)
         ])
       );
     }
 
     const GameMessage = await message.reply({
       components: rows
+    });
+
+    const gameCollector = message.channel.createMessageCollector({
+      filter: (user) => user.id === message.author.id,
+      idle: 2 * 60 * 1000
+    });
+
+    gameCollector.on('collect', async (msg) => {
+      if (msg.content.length != 5) {
+        await msg.reply('Word should be 5 characters long!');
+        return;
+      }
+
+      const checkValid = await checkValidWord(msg.content);
+      if (!checkValid) {
+        await msg.reply('This is not a real word!');
+        return;
+      }
+      const guess = msg.content;
+      rows[row] = new ActionRowBuilder();
+      for (let i = 0; i < 5; i++) {
+        rows[row].addComponents([
+          new ButtonBuilder()
+            .setCustomId(`row_${row}_button_${i}`)
+            .setLabel(guess[i])
+            .setStyle(ButtonStyle.Secondary)
+            .setDisabled(true)
+        ]);
+      }
+
+      await GameMessage.edit({
+        components: rows
+      });
     });
   }
 };
