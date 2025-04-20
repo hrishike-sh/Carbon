@@ -94,7 +94,9 @@ module.exports = {
         ]);
       }
       row++;
-
+      await GameMessage.edit({
+        components: rows
+      });
       if (guess === randomWord) {
         await msg.reply('Congratulations! You guessed the word correctly!');
         gameCollector.stop();
@@ -105,9 +107,6 @@ module.exports = {
         gameCollector.stop();
         await msg.reply(`You lost! The word was ${randomWord}`);
       }
-      await GameMessage.edit({
-        components: rows
-      });
     });
   }
 };
