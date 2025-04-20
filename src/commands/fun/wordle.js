@@ -17,7 +17,7 @@ module.exports = {
   async execute(message, args, client) {
     let row = 0;
     const randomWord = await getRandomWord();
-
+    console.log(randomWord);
     const rows = [];
 
     for (let i = 0; i < 5; i++) {
