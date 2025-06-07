@@ -66,7 +66,7 @@ module.exports = {
             }
           }
           const logEmbed = new EmbedBuilder()
-            .setTitle(`Night ${nightNumber}`)
+            .setTitle(`Night ${nightNumber - 1}`)
             .setColor(Colors.Green)
             .setTimestamp(new Date())
             .addFields(
@@ -94,22 +94,38 @@ module.exports = {
               .join('\n')
           );
           const msgEmbed = new EmbedBuilder()
-            .setTitle(`Night ${nightNumber} messages`)
+            .setTitle(`Night ${nightNumber - 1} messages`)
             .setColor(Colors.Green)
             .setDescription(
               currentGame.players
-                .map(
-                  (p) =>
-                    `<@${p.id}>: ${
-                      MESSAGES.get(`${channelId}-${p.id}`)?.filter(
-                        (a) => a.night == nightNumber
-                      )?.length || 0
-                    }`
-                )
-                .join('\n') || 'None'
+                .map((player) => {
+                  let msgs = 0;
+                  const playerMessages = MESSAGES.get(
+                    `${channelId}-${player.id}`
+                  );
+                  if (!playerMessages.length) msgs = 0;
+                  else {
+                    msgs = playerMessages.filter(
+                      (a) => a.night == nightNumber
+                    ).length;
+
+                    console.log(
+                      playerMessages.filter((a) => a.night == nightNumber)
+                        .length,
+                      playerMessages.filter((a) => a.night == nightNumber - 1)
+                        .length,
+                      playerMessages.filter((a) => a.night == nightNumber + 1)
+                        .length
+                    );
+
+                    return `<@${player.id}>: ${msgs}`;
+                  }
+                })
+                .join('\n')
             );
 
-          logChannel.send({ embeds: [logEmbed, msgEmbed] });
+          nightNumber !== 1 &&
+            logChannel.send({ embeds: [logEmbed, msgEmbed] });
         }
       } else {
         console.log('Processing player message');
