@@ -79,18 +79,26 @@ module.exports = {
               }
             ]
           });
-
+          const d = new Collection();
+          for (const msg of currentGame.messages) {
+            if (msg.night == nightNumber) {
+              if (d.has(msg.user)) {
+                d.set(msg.user, d.get(msg.user) + 1);
+              } else {
+                d.set(msg.user, 1);
+              }
+            }
+          }
           logChannel.send({
             embeds: [
               {
                 title: `Night ${nightNumber} messages`,
                 color: Colors.Green,
                 timestamp: new Date(),
-                description:
-                  currentGame.messages
-                    .filter((m) => m.night === nightNumber)
-                    .map((m) => `<@${m.user}>: 1`)
-                    .join('\n') || 'No messages'
+                description: d
+                  .entries()
+                  .map(([user, count]) => `<@${user}>: ${count}/3`)
+                  .join('\n')
               }
             ]
           });
