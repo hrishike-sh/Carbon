@@ -41,7 +41,8 @@ module.exports = {
           console.log(`Night number: ${nightNumber}`);
 
           const fields = embed.fields;
-
+          const alive = [];
+          const dead = [];
           for (const field of fields) {
             const userMatches = [...field.value.matchAll(/<@!?(\d+)>/g)];
             const userIds = userMatches.map((m) => m[1]);
@@ -51,6 +52,7 @@ module.exports = {
               for (const user of userIds) {
                 const player = currentGame.players.get(user);
                 if (player) player.alive = true;
+                alive.push(user);
               }
             }
 
@@ -59,6 +61,7 @@ module.exports = {
               for (const user of userIds) {
                 const player = currentGame.players.get(user);
                 if (player) player.alive = false;
+                dead.push(user);
               }
             }
           }
@@ -69,24 +72,27 @@ module.exports = {
             .addFields(
               {
                 name: 'Alive',
-                value:
-                  currentGame.players
-                    .filter((p) => p.alive)
-                    .map((_, id) => `<@${id}>`)
-                    .join('\n') || 'None',
+                value: alive.map((a) => `<@${a}>`).join('\n') || 'None',
                 inline: true
               },
               {
                 name: 'Dead',
-                value:
-                  currentGame.players
-                    .filter((p) => !p.alive)
-                    .map((_, id) => `<@${id}>`)
-                    .join('\n') || 'None',
+                value: dead.map((a) => `<@${a}>`).join('\n') || 'None',
                 inline: true
               }
             );
-
+          console.log(
+            currentGame.players
+              .map(
+                (p) =>
+                  `<@${p.id}>: ${
+                    MESSAGES.get(`${channelId}-${p.id}`)?.filter(
+                      (a) => a.night == nightNumber
+                    )?.length || 0
+                  }`
+              )
+              .join('\n')
+          );
           const msgEmbed = new EmbedBuilder()
             .setTitle(`Night ${nightNumber} messages`)
             .setColor(Colors.Green)
@@ -95,12 +101,12 @@ module.exports = {
                 .map(
                   (p) =>
                     `<@${p.id}>: ${
-                      MESSAGES.get(`${channelId}-${p.id}`).filter(
+                      MESSAGES.get(`${channelId}-${p.id}`)?.filter(
                         (a) => a.night == nightNumber
-                      ).length ?? 0
+                      )?.length || 0
                     }`
                 )
-                .join('\n')
+                .join('\n') || 'None'
             );
 
           logChannel.send({ embeds: [logEmbed, msgEmbed] });
