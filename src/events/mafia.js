@@ -15,7 +15,7 @@ module.exports = {
 
     const mafiaBotId = '511786918783090688';
     const channelId = message.channel.id;
-    const logChannel = client.channels.cache.get('1380882395863056404');
+    const logChannel = client.channels.cache.get('1340975244122259506');
 
     if (GAMEDATA.has(channelId)) {
       const currentGame = GAMEDATA.get(channelId);
