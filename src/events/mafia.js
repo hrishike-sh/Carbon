@@ -1,6 +1,13 @@
-const { Message, Client, Colors, Collection } = require('discord.js');
+const {
+  Message,
+  Client,
+  Colors,
+  Collection,
+  EmbedBuilder
+} = require('discord.js');
 
 const GAMEDATA = new Collection();
+const MESSAGES = new Collection();
 
 module.exports = {
   name: 'messageCreate',
@@ -18,6 +25,7 @@ module.exports = {
     const logChannel = client.channels.cache.get('1340975244122259506');
 
     if (GAMEDATA.has(channelId)) {
+      console.log(`Game data found for channel ${channelId}`);
       const currentGame = GAMEDATA.get(channelId);
 
       if (message.author.id === mafiaBotId) {
@@ -39,6 +47,7 @@ module.exports = {
             const userIds = userMatches.map((m) => m[1]);
 
             if (field.name.includes('Alive')) {
+              console.log('Processing alive players');
               for (const user of userIds) {
                 const player = currentGame.players.get(user);
                 if (player) player.alive = true;
@@ -46,97 +55,109 @@ module.exports = {
             }
 
             if (field.name.includes('Dead')) {
+              console.log('Processing dead players');
               for (const user of userIds) {
                 const player = currentGame.players.get(user);
                 if (player) player.alive = false;
               }
             }
           }
+          const logEmbed = new EmbedBuilder()
+            .setTitle(`Night ${nightNumber}`)
+            .setColor(Colors.Green)
+            .setTimestamp(new Date())
+            .addFields(
+              {
+                name: 'Alive',
+                value:
+                  currentGame.players
+                    .filter((p) => p.alive)
+                    .map((_, id) => `<@${id}>`)
+                    .join('\n') || 'None',
+                inline: true
+              },
+              {
+                name: 'Dead',
+                value:
+                  currentGame.players
+                    .filter((p) => !p.alive)
+                    .map((_, id) => `<@${id}>`)
+                    .join('\n') || 'None',
+                inline: true
+              }
+            );
 
-          logChannel.send({
-            embeds: [
-              {
-                title: `Night ${nightNumber}`,
-                color: Colors.Green,
-                timestamp: new Date(),
-                fields: [
-                  {
-                    name: 'Alive',
-                    value:
-                      currentGame.players
-                        .filter((p) => p.alive)
-                        .map((_, id) => `<@${id}>`)
-                        .join('\n') || 'None',
-                    inline: true
-                  },
-                  {
-                    name: 'Dead',
-                    value:
-                      currentGame.players
-                        .filter((p) => !p.alive)
-                        .map((_, id) => `<@${id}>`)
-                        .join('\n') || 'None',
-                    inline: true
-                  }
-                ]
-              }
-            ]
-          });
-          const d = new Collection();
-          for (const msg of currentGame.messages) {
-            console.log(msg.night, nightNumber);
-            if (msg.night == nightNumber - 1) {
-              if (d.has(msg.user)) {
-                d.set(msg.user, d.get(msg.user) + 1);
-              } else {
-                d.set(msg.user, 1);
-              }
-            }
-          }
-          logChannel.send({
-            embeds: [
-              {
-                title: `Night ${nightNumber} messages`,
-                color: Colors.Green,
-                timestamp: new Date(),
-                description:
-                  d
-                    .entries()
-                    .map(([user, count]) => `<@${user}>: ${count}/3`)
-                    .join('\n') || 'None'
-              }
-            ]
-          });
+          const msgEmbed = new EmbedBuilder()
+            .setTitle(`Night ${nightNumber} messages`)
+            .setColor(Colors.Green)
+            .setDescription(
+              currentGame.players
+                .map(
+                  (p) =>
+                    `<@${p.id}>: ${
+                      MESSAGES.get(`${channelId}-${p.id}`).filter(
+                        (a) => a.night == nightNumber
+                      ).length ?? 0
+                    }`
+                )
+                .join('\n')
+            );
+
+          logChannel.send({ embeds: [logEmbed, msgEmbed] });
         }
       } else {
-        const userId = message.author.id;
-        const currentNight = currentGame.night;
+        console.log('Processing player message');
+        const gameId = message.channel.id;
+        const userId = currentGame.players.get(message.author.id);
 
-        currentGame.messages.push({
-          user: userId,
-          night: currentGame.night
-        });
+        if (!userId) return;
+        const userMessages = MESSAGES.get(`${gameId}-${userId}`);
 
-        console.log(
-          `User ${message.author.tag} sent message during night ${currentNight}`
-        );
+        if (userMessages) {
+          console.log('Adding to existing user messages');
+          MESSAGES.get(`${gameId}-${userId}`).push({
+            night: currentGame.night,
+            content: message.content
+          });
+        } else {
+          console.log('New user message');
+          MESSAGES.set(`${gameId}-${userId}`, [
+            {
+              night: currentGame.night,
+              content: message.content
+            }
+          ]);
+        }
       }
     } else {
-      // New game trigger
+      console.log('No active game found');
       if (message.mentions.users.size > 0) {
         console.log(`New game started in channel ${channelId}`);
+
+        const embed = new EmbedBuilder()
+          .setTitle('New Mafia Game')
+          .setTimestamp(new Date())
+          .setColor(Colors.Green)
+          .setDescription(
+            `Players: ${message.mentions.users
+              .map((u) => u.toString())
+              .join(', ')}`
+          );
+
+        logChannel.send({ embeds: [embed] });
+
         const players = new Collection();
 
         for (const [_, player] of message.mentions.users) {
           players.set(player.id, {
-            alive: true
+            alive: true,
+            id: player.id
           });
         }
 
         GAMEDATA.set(channelId, {
           players,
-          night: 1,
-          messages: []
+          night: 1
         });
       }
     }
