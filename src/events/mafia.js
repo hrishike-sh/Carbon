@@ -28,6 +28,8 @@ module.exports = {
           console.log('Night message detected');
 
           const nightNumber = Number(embed.title.match(/\d+/)[0]);
+          currentGame.night = nightNumber;
+
           console.log(`Night number: ${nightNumber}`);
 
           const fields = embed.fields;
@@ -50,6 +52,7 @@ module.exports = {
               }
             }
           }
+
           logChannel.send({
             embeds: [
               {
@@ -95,15 +98,14 @@ module.exports = {
                 title: `Night ${nightNumber} messages`,
                 color: Colors.Green,
                 timestamp: new Date(),
-                description: d
-                  .entries()
-                  .map(([user, count]) => `<@${user}>: ${count}/3`)
-                  .join('\n')
+                description:
+                  d
+                    .entries()
+                    .map(([user, count]) => `<@${user}>: ${count}/3`)
+                    .join('\n') || 'None'
               }
             ]
           });
-
-          currentGame.night = nightNumber;
         }
       } else {
         const userId = message.author.id;
@@ -132,7 +134,7 @@ module.exports = {
 
         GAMEDATA.set(channelId, {
           players,
-          night: 0,
+          night: 1,
           messages: []
         });
       }
