@@ -50,80 +50,63 @@ module.exports = {
               }
             }
           }
+          logChannel.send({
+            embeds: [
+              {
+                title: `Night ${nightNumber}`,
+                color: Colors.Green,
+                timestamp: new Date(),
+                fields: [
+                  {
+                    name: 'Alive',
+                    value:
+                      currentGame.players
+                        .filter((p) => p.alive)
+                        .map((_, id) => `<@${id}>`)
+                        .join('\n') || 'None',
+                    inline: true
+                  },
+                  {
+                    name: 'Dead',
+                    value:
+                      currentGame.players
+                        .filter((p) => !p.alive)
+                        .map((_, id) => `<@${id}>`)
+                        .join('\n') || 'None',
+                    inline: true
+                  }
+                ]
+              }
+            ]
+          });
 
-          if (nightNumber === 1) {
-            logChannel.send({
-              embeds: [
-                {
-                  title: 'New mafia game started!',
-                  color: Colors.Green,
-                  description: `Players: ${currentGame.players
-                    .map((_, id) => `<@${id}>`)
-                    .join(', ')}`,
-                  timestamp: new Date()
-                }
-              ]
-            });
-          } else {
-            logChannel.send({
-              embeds: [
-                {
-                  title: `Night ${nightNumber}`,
-                  color: Colors.Green,
-                  timestamp: new Date(),
-                  fields: [
-                    {
-                      name: 'Alive',
-                      value:
-                        currentGame.players
-                          .filter((p) => p.alive)
-                          .map((_, id) => `<@${id}>`)
-                          .join('\n') || 'None',
-                      inline: true
-                    },
-                    {
-                      name: 'Dead',
-                      value:
-                        currentGame.players
-                          .filter((p) => !p.alive)
-                          .map((_, id) => `<@${id}>`)
-                          .join('\n') || 'None',
-                      inline: true
-                    }
-                  ]
-                }
-              ]
-            });
-
-            logChannel.send({
-              embeds: [
-                {
-                  title: `Night ${nightNumber} messages`,
-                  color: Colors.Green,
-                  timestamp: new Date(),
-                  description:
-                    currentGame.players
-                      .filter((p) => p.alive)
-                      .map(
-                        (p, id) =>
-                          `<@${id}>: ${
-                            GAMEDATA.messages.filter(
-                              (m) => m.user === id && m.night === nightNumber
-                            ).length || 0
-                          }/3`
-                      )
-                      .join('\n') || 'No messages'
-                }
-              ]
-            });
-          }
+          logChannel.send({
+            embeds: [
+              {
+                title: `Night ${nightNumber} messages`,
+                color: Colors.Green,
+                timestamp: new Date(),
+                description:
+                  currentGame.players
+                    .filter((p) => p.alive)
+                    .map(
+                      (p, id) =>
+                        `<@${id}>: ${
+                          GAMEDATA.messages.filter(
+                            (m) => m.user === id && m.night === nightNumber
+                          ).length || 0
+                        }/3`
+                    )
+                    .join('\n') || 'No messages'
+              }
+            ]
+          });
 
           currentGame.night = nightNumber;
         }
       } else {
         const userId = message.author.id;
-        const gameUser = currentGame.players.get(userId);
-        if (!gameUser) return;
+        const currentNight = currentGame.night;
 
         currentGame.messages.push({
           user: userId,
