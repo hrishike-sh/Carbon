@@ -125,7 +125,7 @@ module.exports = {
         const gameUser = currentGame.players.get(userId);
         if (!gameUser) return;
 
-        GAMEDATA.messages.push({
+        currentGame.messages.push({
           user: userId,
           night: currentGame.night
         });
