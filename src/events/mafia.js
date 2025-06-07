@@ -104,7 +104,14 @@ module.exports = {
                   description:
                     currentGame.players
                       .filter((p) => p.alive)
-                      .map((p, id) => `<@${id}>: ${p.nights[nightNumber] || 0}`)
+                      .map(
+                        (p, id) =>
+                          `<@${id}>: ${
+                            GAMEDATA.messages.filter(
+                              (m) => m.user === id && m.night === nightNumber
+                            ).length || 0
+                          }/3`
+                      )
                       .join('\n') || 'No messages'
                 }
               ]
@@ -115,18 +122,12 @@ module.exports = {
         }
       } else {
         const userId = message.author.id;
-        const currentPlayer = currentGame.players.get(userId);
-        if (!currentPlayer) return;
+        const gameUser = currentGame.players.get(userId);
+        if (!gameUser) return;
 
-        const currentNight = currentGame.night;
-        const messageCount = currentPlayer.nights[currentNight] ?? 0;
-
-        currentGame.players.set(userId, {
-          ...currentPlayer,
-          nights: {
-            ...currentPlayer.nights,
-            [currentNight]: messageCount + 1
-          }
+        GAMEDATA.messages.push({
+          user: userId,
+          night: currentGame.night
         });
 
         console.log(
@@ -141,14 +142,14 @@ module.exports = {
 
         for (const [_, player] of message.mentions.users) {
           players.set(player.id, {
-            alive: true,
-            nights: {}
+            alive: true
           });
         }
 
         GAMEDATA.set(channelId, {
           players,
-          night: 0
+          night: 0,
+          messages: []
         });
       }
     }
