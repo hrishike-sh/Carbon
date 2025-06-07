@@ -87,16 +87,9 @@ module.exports = {
                 color: Colors.Green,
                 timestamp: new Date(),
                 description:
-                  currentGame.players
-                    .filter((p) => p.alive)
-                    .map(
-                      (p, id) =>
-                        `<@${id}>: ${
-                          GAMEDATA.messages.filter(
-                            (m) => m.user === id && m.night === nightNumber
-                          ).length || 0
-                        }/3`
-                    )
+                  currentGame.messages
+                    .filter((m) => m.night === nightNumber)
+                    .map((m) => `<@${m.user}>: 1`)
                     .join('\n') || 'No messages'
               }
             ]
