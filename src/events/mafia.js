@@ -85,7 +85,7 @@ module.exports = {
           const d = new Collection();
           for (const msg of currentGame.messages) {
             console.log(msg.night, nightNumber);
-            if (msg.night == nightNumber) {
+            if (msg.night == nightNumber - 1) {
               if (d.has(msg.user)) {
                 d.set(msg.user, d.get(msg.user) + 1);
               } else {
