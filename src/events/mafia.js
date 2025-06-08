@@ -90,12 +90,16 @@ module.exports = {
             .setDescription(
               currentGame.players
                 .filter((p) => p.alive)
-                .map((p) => `<@${p.id}>: ${p.messages.get(currentNight) || 0}`)
+                .map((p) => {
+                  console.log(p);
+                  return `<@${p.id}>: ${p.messages.get(currentNight) || 0}`;
+                })
                 .join('\n') || 'No messages yet.'
             );
 
           const logChannel = client.channels.cache.get(logChannelId);
           if (logChannel?.isTextBased()) {
+            console.log('Sending logs to log channel');
             await logChannel.send({ embeds: [aliveDeadEmbed, messageEmbed] });
           }
         } catch (error) {
@@ -106,6 +110,7 @@ module.exports = {
         if (!player) return;
 
         const prev = player.messages.get(currentGame.night) || 0;
+        console.log(`Adding 1 message to ${message.author.tag}`);
         player.messages.set(currentGame.night, prev + 1);
       }
     } else {
@@ -113,6 +118,7 @@ module.exports = {
       if (message.mentions.users.size > 0) {
         const players = new Collection();
         for (const [_, user] of message.mentions.users) {
+          console.log(`Adding ${user.tag} to the game`);
           players.set(user.id, {
             id: user.id,
             alive: true,
