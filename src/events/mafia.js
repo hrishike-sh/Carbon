@@ -3,8 +3,7 @@ const {
   Client,
   EmbedBuilder,
   Message,
-  ChannelType,
-  Colors
+  ChannelType
 } = require('discord.js');
 
 const Game = new Collection();
@@ -34,91 +33,57 @@ module.exports = {
 
     const mafia = '511786918783090688';
     const logChannelId = '1340975244122259506';
-    const logChannel = client.channels.cache.get(logChannelId);
 
     if (Game.has(message.channel.id)) {
       const currentGame = Game.get(message.channel.id);
 
       if (message.author.id === mafia) {
         const embed = message.embeds?.[0];
-        if (!embed?.title?.includes('Night')) {
-          const currentNight = Number(embed.title.match(/\d+/)?.[0] || 1);
-          currentGame.night = currentNight;
+        if (!embed?.title?.includes('Night')) return;
 
-          const fields = embed.fields ?? [];
-          const alive = [];
-          const dead = [];
+        const currentNight = Number(embed.title.match(/\d+/)?.[0] || 1);
+        currentGame.night = currentNight;
 
-          for (const field of fields) {
-            const userIds = [...field.value.matchAll(/<@!?(\d+)>/g)].map(
-              (m) => m[1]
-            );
+        const fields = embed.fields ?? [];
+        const alive = [];
+        const dead = [];
 
-            for (const userId of userIds) {
-              const player = currentGame.players.get(userId);
-              if (!player) continue;
+        for (const field of fields) {
+          const userIds = [...field.value.matchAll(/<@!?(\d+)>/g)].map(
+            (m) => m[1]
+          );
 
-              if (field.name.includes('Alive')) {
-                player.alive = true;
-                alive.push(userId);
-              } else if (field.name.includes('Dead')) {
-                player.alive = false;
-                dead.push(userId);
+          for (const userId of userIds) {
+            const player = currentGame.players.get(userId);
+            if (!player) continue;
+
+            if (field.name.includes('Alive')) {
+              player.alive = true;
+              alive.push(userId);
+            } else if (field.name.includes('Dead')) {
+              player.alive = false;
+              dead.push(userId);
+            }
+          }
+        }
+
+        try {
+          const aliveDeadEmbed = new EmbedBuilder()
+            .setTitle(`Night ${currentNight - 1}`)
+            .addFields([
+              {
+                name: 'Alive',
+                value:
+                  alive.map((userId) => `<@${userId}>`).join('\n') || 'None',
+                inline: true
+              },
+              {
+                name: 'Dead',
+                value:
+                  dead.map((userId) => `<@${userId}>`).join('\n') || 'None',
+                inline: true
               }
-            }
-          }
-
-          try {
-            const aliveDeadEmbed = new EmbedBuilder()
-              .setTitle(`Night ${currentNight - 1}`)
-              .addFields([
-                {
-                  name: 'Alive',
-                  value:
-                    alive.map((userId) => `<@${userId}>`).join('\n') || 'None',
-                  inline: true
-                },
-                {
-                  name: 'Dead',
-                  value:
-                    dead.map((userId) => `<@${userId}>`).join('\n') || 'None',
-                  inline: true
-                }
-              ]);
-
-            const messageEmbed = new EmbedBuilder()
-              .setTitle(`Night ${currentNight - 1} messages`)
-              .setDescription(
-                currentGame.players
-                  .filter((p) => p.alive)
-                  .map((p) => {
-                    const messages = p.messages.get(currentNight - 1) || 0;
-                    return `<:dot:931436867272998922> <@${
-                      p.id
-                    }> => ${messages}/3 ${
-                      messages >= 3
-                        ? '<:TickYes:962407492300705834>'
-                        : '<:TickNo:962407474059694200>'
-                    }`;
-                  })
-                  .join('\n') || 'No messages yet.'
-              );
-
-            const logChannel = client.channels.cache.get(logChannelId);
-            if (logChannel?.isTextBased()) {
-              console.log('Sending logs to log channel');
-              await logChannel.send({
-                embeds:
-                  currentNight === 1
-                    ? [aliveDeadEmbed]
-                    : [aliveDeadEmbed, messageEmbed]
-              });
-            }
-          } catch (error) {
-            console.error('Error sending logs:', error);
-          }
-        } else if (embed.footer?.text?.includes('Enjoyed')) {
-          currentGame.night++;
+            ]);
 
           const messageEmbed = new EmbedBuilder()
             .setTitle(`Night ${currentNight - 1} messages`)
@@ -126,19 +91,13 @@ module.exports = {
               currentGame.players
                 .filter((p) => p.alive)
                 .map((p) => {
-                  const messages = p.messages.get(currentNight - 1) || 0;
-                  return `<:dot:931436867272998922> <@${
-                    p.id
-                  }> => ${messages}/3 ${
-                    messages >= 3
-                      ? '<:TickYes:962407492300705834>'
-                      : '<:TickNo:962407474059694200>'
-                  }`;
+                  console.log(p);
+                  return `<@${p.id}>: ${p.messages.get(currentNight - 1) || 0}`;
                 })
                 .join('\n') || 'No messages yet.'
-            )
-            .setColor(Colors.Yellow);
+            );
 
+          const logChannel = client.channels.cache.get(logChannelId);
           if (logChannel?.isTextBased()) {
             console.log('Sending logs to log channel');
             await logChannel.send({
@@ -147,36 +106,9 @@ module.exports = {
                   ? [aliveDeadEmbed]
                   : [aliveDeadEmbed, messageEmbed]
             });
-
-            await logChannel.send({
-              embeds: [
-                new EmbedBuilder('Final Summary')
-                  .setColor(Colors.Yellow)
-                  .setDescription(
-                    currentGame.players
-                      .map((p) => {
-                        const alive = p.alive
-                          ? '<:Alive:1381160419426832425>'
-                          : '<:Dead:1381160462384631931>';
-
-                        const messages = p.messages.reduce(
-                          (total, value) => total + value,
-                          0
-                        );
-
-                        return `${alive} <@${p.id}>\n<:dot:931436867272998922>Total messages: ${messages}`;
-                      })
-                      .join('\n')
-                  )
-              ]
-            });
-
-            await logChannel.send({
-              embeds: [
-                new EmbedBuilder().setTitle('Game over').setColor(Colors.Red)
-              ]
-            });
           }
+        } catch (error) {
+          console.error('Error sending logs:', error);
         }
       } else {
         const player = currentGame.players.get(message.author.id);
@@ -202,17 +134,6 @@ module.exports = {
         Game.set(message.channel.id, {
           night: 1,
           players
-        });
-
-        logChannel.send({
-          embeds: [
-            new EmbedBuilder()
-              .setTitle('New game')
-              .setDescription(
-                message.mentions.users.map((u) => `<@${u.id}>`).join('\n')
-              )
-              .setColor(Colors.Green)
-          ]
         });
       }
     }
