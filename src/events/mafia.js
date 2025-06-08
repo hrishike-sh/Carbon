@@ -69,7 +69,7 @@ module.exports = {
 
         try {
           const aliveDeadEmbed = new EmbedBuilder()
-            .setTitle(`Night ${currentNight}`)
+            .setTitle(`Night ${currentNight - 1}`)
             .addFields([
               {
                 name: 'Alive',
@@ -86,13 +86,13 @@ module.exports = {
             ]);
 
           const messageEmbed = new EmbedBuilder()
-            .setTitle(`Night ${currentNight} messages`)
+            .setTitle(`Night ${currentNight - 1} messages`)
             .setDescription(
               currentGame.players
                 .filter((p) => p.alive)
                 .map((p) => {
                   console.log(p);
-                  return `<@${p.id}>: ${p.messages.get(currentNight) || 0}`;
+                  return `<@${p.id}>: ${p.messages.get(currentNight - 1) || 0}`;
                 })
                 .join('\n') || 'No messages yet.'
             );
@@ -100,7 +100,12 @@ module.exports = {
           const logChannel = client.channels.cache.get(logChannelId);
           if (logChannel?.isTextBased()) {
             console.log('Sending logs to log channel');
-            await logChannel.send({ embeds: [aliveDeadEmbed, messageEmbed] });
+            await logChannel.send({
+              embeds:
+                currentNight === 1
+                  ? aliveDeadEmbed
+                  : [aliveDeadEmbed, messageEmbed]
+            });
           }
         } catch (error) {
           console.error('Error sending logs:', error);
