@@ -122,13 +122,12 @@ module.exports = {
           currentGame.night++;
           const currentNight = currentGame.night;
           const messageEmbed = new EmbedBuilder()
-            .setTitle(`Night ${currentNight} messages`)
+            .setTitle(`Night ${currentNight - 1} messages`)
             .setDescription(
               currentGame.players
                 .filter((p) => p.alive)
                 .map((p) => {
-                  console.log(p, currentNight);
-                  const messages = p.messages.get(currentNight) || 0;
+                  const messages = p.messages.get(currentNight - 1) || 0;
                   return `<:dot:931436867272998922> <@${
                     p.id
                   }> => ${messages}/3 ${
@@ -144,6 +143,7 @@ module.exports = {
           if (logChannel?.isTextBased()) {
             await logChannel.send({
               embeds: [
+                messageEmbed,
                 new EmbedBuilder('Final Summary')
                   .setColor(Colors.Yellow)
                   .setDescription(
