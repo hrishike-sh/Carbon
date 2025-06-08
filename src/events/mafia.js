@@ -103,7 +103,7 @@ module.exports = {
             await logChannel.send({
               embeds:
                 currentNight === 1
-                  ? aliveDeadEmbed
+                  ? [aliveDeadEmbed]
                   : [aliveDeadEmbed, messageEmbed]
             });
           }
