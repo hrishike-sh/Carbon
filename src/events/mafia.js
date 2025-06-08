@@ -1,7 +1,12 @@
-const { Collection, Client, EmbedBuilder, Message } = require('discord.js');
+const {
+  Collection,
+  Client,
+  EmbedBuilder,
+  Message,
+  ChannelType
+} = require('discord.js');
 
 const Game = new Collection();
-const Messages = new Collection();
 
 /**
  * @typedef {Object} Gamedata
@@ -9,115 +14,104 @@ const Messages = new Collection();
  * @property {Collection<string, {
  *   id: string;
  *   alive: boolean;
- *   messages: Collection<number, number>
+ *   messages: Collection<number, number>;
  * }>} players
  */
 
 module.exports = {
   name: 'messageCreate',
+
   /**
-   *
    * @param {Message} message
    * @param {Client} client
-   * @returns
    */
   async execute(message, client) {
-    if (!message.guild || message.channel.type !== 'GUILD_TEXT') return;
+    if (!message.guild || message.channel.type !== ChannelType.GuildText)
+      return;
     if (message.guild.id !== '824294231447044197') return;
     if (message.channel.name !== 'mafia') return;
 
     const mafia = '511786918783090688';
-    const logChannel = '1340975244122259506';
+    const logChannelId = '1340975244122259506';
 
     if (Game.has(message.channel.id)) {
       const currentGame = Game.get(message.channel.id);
 
       if (message.author.id === mafia) {
-        const embed = message?.embeds[0];
+        const embed = message.embeds?.[0];
+        if (!embed?.title?.includes('Night')) return;
 
-        if (embed.title?.includes('Night')) {
-          const currentNight = Number(embed.title?.match(/\d+/)[0]);
+        const currentNight = Number(embed.title.match(/\d+/)?.[0] || 1);
+        currentGame.night = currentNight;
 
-          currentGame.night = currentNight;
+        const fields = embed.fields ?? [];
+        const alive = [];
+        const dead = [];
 
-          const fields = embed.fields;
+        for (const field of fields) {
+          const userIds = [...field.value.matchAll(/<@!?(\d+)>/g)].map(
+            (m) => m[1]
+          );
 
-          const [alive, dead] = [[], []];
-
-          for (const field of fields) {
-            const userMatches = [...field.value.matchAll(/<@!?(\d+)>/g)];
-            const userIds = userMatches.map((m) => m[1]);
+          for (const userId of userIds) {
+            const player = currentGame.players.get(userId);
+            if (!player) continue;
 
             if (field.name.includes('Alive')) {
-              for (const user of userIds) {
-                const player = currentGame.players.get(user);
-                if (player) player.alive = true;
-                alive.push(user);
-              }
-            }
-
-            if (field.name.includes('Dead')) {
-              for (const user of userIds) {
-                const player = currentGame.players.get(user);
-                if (player) player.alive = false;
-                dead.push(user);
-              }
+              player.alive = true;
+              alive.push(userId);
+            } else if (field.name.includes('Dead')) {
+              player.alive = false;
+              dead.push(userId);
             }
           }
+        }
 
-          try {
-            const aliveDeadEmbed = new EmbedBuilder()
-              .setTitle(`Night ${currentNight}`)
-              .addFields([
-                {
-                  name: 'Alive',
-                  value: alive.map((_, id) => `<@${id}>`).join('\n'),
-                  inline: true
-                },
-                {
-                  name: 'Dead',
-                  value: dead.map((_, id) => `<@${id}>`).join('\n'),
-                  inline: true
-                }
-              ]);
+        try {
+          const aliveDeadEmbed = new EmbedBuilder()
+            .setTitle(`Night ${currentNight}`)
+            .addFields([
+              {
+                name: 'Alive',
+                value:
+                  alive.map((userId) => `<@${userId}>`).join('\n') || 'None',
+                inline: true
+              },
+              {
+                name: 'Dead',
+                value:
+                  dead.map((userId) => `<@${userId}>`).join('\n') || 'None',
+                inline: true
+              }
+            ]);
 
-            const messageEmbed = new EmbedBuilder()
-              .setTitle(`Night ${currentNight} messages`)
-              .setDescription(
-                currentGame.players
-                  .filter((a) => a.alive)
-                  .map((a) => {
-                    const playerMessages = a.messages.get(currentNight) || 0;
-                    return `<@${a.id}>: ${playerMessages}`;
-                  })
-                  .join('\n')
-              );
+          const messageEmbed = new EmbedBuilder()
+            .setTitle(`Night ${currentNight} messages`)
+            .setDescription(
+              currentGame.players
+                .filter((p) => p.alive)
+                .map((p) => `<@${p.id}>: ${p.messages.get(currentNight) || 0}`)
+                .join('\n') || 'No messages yet.'
+            );
 
-            client.channels.cache
-              .get(logChannel)
-              ?.send({ embeds: [aliveDeadEmbed, messageEmbed] });
-          } catch (error) {
-            console.log(error);
+          const logChannel = client.channels.cache.get(logChannelId);
+          if (logChannel?.isTextBased()) {
+            await logChannel.send({ embeds: [aliveDeadEmbed, messageEmbed] });
           }
+        } catch (error) {
+          console.error('Error sending logs:', error);
         }
       } else {
         const player = currentGame.players.get(message.author.id);
+        if (!player) return;
 
-        if (player) {
-          if (player.messages.has(currentGame.night)) {
-            player.messages.set(
-              currentGame.night,
-              player.messages.get(currentGame.night) + 1
-            );
-          } else {
-            player.messages.set(currentGame.night, 1);
-          }
-        }
+        const prev = player.messages.get(currentGame.night) || 0;
+        player.messages.set(currentGame.night, prev + 1);
       }
     } else {
+      // Start new game if users are mentioned
       if (message.mentions.users.size > 0) {
         const players = new Collection();
-
         for (const [_, user] of message.mentions.users) {
           players.set(user.id, {
             id: user.id,
@@ -127,8 +121,8 @@ module.exports = {
         }
 
         Game.set(message.channel.id, {
-          players,
-          night: 1
+          night: 1,
+          players
         });
       }
     }
