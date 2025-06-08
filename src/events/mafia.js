@@ -122,14 +122,13 @@ module.exports = {
           currentGame.night++;
           const currentNight = currentGame.night;
           const messageEmbed = new EmbedBuilder()
-            .setTitle(`Night ${currentNight - 1} messages`)
+            .setTitle(`Night ${currentNight} messages`)
             .setDescription(
               currentGame.players
                 .filter((p) => p.alive)
                 .map((p) => {
-                  console.log(p);
-                  console.log();
-                  const messages = p.messages.get(currentNight - 1) || 0;
+                  console.log(p, currentNight);
+                  const messages = p.messages.get(currentNight) || 0;
                   return `<:dot:931436867272998922> <@${
                     p.id
                   }> => ${messages}/3 ${
@@ -143,14 +142,6 @@ module.exports = {
             .setColor(Colors.Yellow);
 
           if (logChannel?.isTextBased()) {
-            console.log('Sending logs to log channel');
-            await logChannel.send({
-              embeds:
-                currentNight === 1
-                  ? [aliveDeadEmbed]
-                  : [aliveDeadEmbed, messageEmbed]
-            });
-
             await logChannel.send({
               embeds: [
                 new EmbedBuilder('Final Summary')
