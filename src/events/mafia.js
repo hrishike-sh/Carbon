@@ -15,6 +15,12 @@ const Messages = new Collection();
 
 module.exports = {
   name: 'messageCreate',
+  /**
+   *
+   * @param {Message} message
+   * @param {Client} client
+   * @returns
+   */
   async execute(message, client) {
     if (!message.guild || message.channel.type !== 'GUILD_TEXT') return;
     if (message.guild.id !== '824294231447044197') return;
@@ -59,36 +65,40 @@ module.exports = {
             }
           }
 
-          const aliveDeadEmbed = new EmbedBuilder()
-            .setTitle(`Night ${currentNight}`)
-            .addFields([
-              {
-                name: 'Alive',
-                value: alive.map((_, id) => `<@${id}>`).join('\n'),
-                inline: true
-              },
-              {
-                name: 'Dead',
-                value: dead.map((_, id) => `<@${id}>`).join('\n'),
-                inline: true
-              }
-            ]);
+          try {
+            const aliveDeadEmbed = new EmbedBuilder()
+              .setTitle(`Night ${currentNight}`)
+              .addFields([
+                {
+                  name: 'Alive',
+                  value: alive.map((_, id) => `<@${id}>`).join('\n'),
+                  inline: true
+                },
+                {
+                  name: 'Dead',
+                  value: dead.map((_, id) => `<@${id}>`).join('\n'),
+                  inline: true
+                }
+              ]);
 
-          const messageEmbed = new EmbedBuilder()
-            .setTitle(`Night ${currentNight} messages`)
-            .setDescription(
-              currentGame.players
-                .filter((a) => a.alive)
-                .map((a) => {
-                  const playerMessages = a.messages.get(currentNight) || 0;
-                  return `<@${a.id}>: ${playerMessages}`;
-                })
-                .join('\n')
-            );
+            const messageEmbed = new EmbedBuilder()
+              .setTitle(`Night ${currentNight} messages`)
+              .setDescription(
+                currentGame.players
+                  .filter((a) => a.alive)
+                  .map((a) => {
+                    const playerMessages = a.messages.get(currentNight) || 0;
+                    return `<@${a.id}>: ${playerMessages}`;
+                  })
+                  .join('\n')
+              );
 
-          client.channels.cache
-            .get(logChannel)
-            ?.send({ embeds: [aliveDeadEmbed, messageEmbed] });
+            client.channels.cache
+              .get(logChannel)
+              ?.send({ embeds: [aliveDeadEmbed, messageEmbed] });
+          } catch (error) {
+            console.log(error);
+          }
         }
       } else {
         const player = currentGame.players.get(message.author.id);
