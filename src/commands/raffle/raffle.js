@@ -1,4 +1,4 @@
-const { Message, Client } = require('discord.js');
+const { Message, Client, Colors } = require('discord.js');
 
 const Database = require('../../database/raffle');
 const { EmbedBuilder } = require('@discordjs/builders');
@@ -157,6 +157,7 @@ module.exports = {
       const data = [];
 
       for (const user of all) {
+        if (user.amount <= 0) continue;
         end = start + user.amount - 1;
         data.push(
           `\`${start}-${end}\`: <@${user.userId}> (${user.amount}) entries`
@@ -169,6 +170,7 @@ module.exports = {
           new EmbedBuilder()
             .setTitle('Raffle List')
             .setDescription(data.join('\n'))
+            .setColor(Colors.Green)
         ]
       });
     }
