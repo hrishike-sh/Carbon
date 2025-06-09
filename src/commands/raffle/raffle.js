@@ -143,6 +143,34 @@ module.exports = {
             )
         ]
       });
+    } else if (subcommand == 'list') {
+      if (!isMod)
+        return message.reply(
+          'You must be a moderator to run this sub-command!'
+        );
+
+      const all = await Database.find({}).sort({ created: -1 });
+
+      let start = 1;
+      let end;
+
+      const data = [];
+
+      for (const user of all) {
+        end = start + user.amount - 1;
+
+        data.push(
+          `\`${start}-${end}\`: <@${user.userId}> (${user.amount}) entries`
+        );
+      }
+
+      message.reply({
+        embeds: [
+          new EmbedBuilder()
+            .setTitle('Raffle List')
+            .setDescription(data.join('\n'))
+        ]
+      });
     }
   }
 };
