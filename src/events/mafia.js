@@ -6,6 +6,10 @@ const {
   ChannelType,
   Colors
 } = require('discord.js');
+const os = require('os');
+const discordTranscripts = require('discord-html-transcripts');
+const path = require('path');
+const fs = require('fs');
 
 const Game = new Collection();
 const Messages = new Collection();
@@ -188,6 +192,23 @@ module.exports = {
             });
 
             Game.delete(message.channel.id);
+            const transcriptBuffer =
+              await discordTranscripts.generateFromMessages(messages, channel, {
+                returnType: 'buffer'
+              });
+            const name = `mafia-${channel.id}-${Date.now()}`;
+            const transcriptPath = path.join(
+              os.homedir(),
+              'transcripts',
+              'public',
+              `${name}.html`
+            );
+
+            fs.writeFileSync(transcriptPath, transcriptBuffer);
+
+            logChannel.send(
+              `Transcript: https://hrish.dev/transcripts/${name}`
+            );
           }
         }
       } else {
