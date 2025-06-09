@@ -158,10 +158,10 @@ module.exports = {
 
       for (const user of all) {
         end = start + user.amount - 1;
-
         data.push(
           `\`${start}-${end}\`: <@${user.userId}> (${user.amount}) entries`
         );
+        start = end + 1;
       }
 
       message.reply({
