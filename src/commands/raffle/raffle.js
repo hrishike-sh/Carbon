@@ -150,7 +150,6 @@ module.exports = {
         );
 
       const all = await Database.find({}).sort({ created: 1 });
-      const padAmount = all.length.toString().length;
 
       let start = 1;
       let end;
@@ -161,11 +160,7 @@ module.exports = {
         if (user.amount <= 0) continue;
         end = start + user.amount - 1;
         data.push(
-          `\`${start.toString().padStart(padAmount, '0')}-${end
-            .toString()
-            .padStart(padAmount, '0')}\`: <@${user.userId}> (${
-            user.amount
-          }) entries`
+          `\`${start}-${end}\`: <@${user.userId}> (${user.amount}) entries`
         );
         start = end + 1;
       }
