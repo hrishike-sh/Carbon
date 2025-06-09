@@ -149,7 +149,7 @@ module.exports = {
           'You must be a moderator to run this sub-command!'
         );
 
-      const all = await Database.find({}).sort({ created: -1 });
+      const all = await Database.find({}).sort({ created: 1 });
 
       let start = 1;
       let end;
