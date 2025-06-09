@@ -6,8 +6,10 @@ const {
   ChannelType,
   Colors
 } = require('discord.js');
+const transcripter = require('discord-html-transcripts');
 
 const Game = new Collection();
+const Messages = new Collection();
 
 /**
  * @typedef {Object} Gamedata
@@ -39,6 +41,12 @@ module.exports = {
     if (Game.has(message.channel.id)) {
       const currentGame = Game.get(message.channel.id);
 
+      if (Messages.has(message.channel.id)) {
+        Messages.get(message.channel.id).push(message);
+      } else {
+        Messages.set(message.channel.id, [message]);
+      }
+
       if (message.author.id === mafia) {
         const embed = message.embeds?.[0];
         if (embed?.title?.includes('Night')) {
@@ -62,7 +70,9 @@ module.exports = {
                 player.alive = true;
                 alive.push(userId);
               } else if (field.name.includes('Dead')) {
+                if (!player.alive) continue;
                 player.alive = false;
+                player.deadAt = currentNight - 1;
                 dead.push(userId);
               }
             }
@@ -84,7 +94,8 @@ module.exports = {
                     dead.map((userId) => `<@${userId}>`).join('\n') || 'None',
                   inline: true
                 }
-              ]);
+              ])
+              .setColor(Colors.Yellow);
 
             const messageEmbed = new EmbedBuilder()
               .setTitle(`Night ${currentNight - 1} messages`)
@@ -102,7 +113,8 @@ module.exports = {
                     }`;
                   })
                   .join('\n') || 'No messages yet.'
-              );
+              )
+              .setColor(Colors.Yellow);
 
             const logChannel = client.channels.cache.get(logChannelId);
             if (logChannel?.isTextBased()) {
@@ -118,8 +130,11 @@ module.exports = {
             console.error('Error sending logs:', error);
           }
         } else if (embed.footer?.text?.includes('Enjoyed')) {
-          console.log('Game ended');
+          const messages = Messages.get(message.channel.id);
+          const channel = message.channel;
+
           currentGame.night++;
+
           const currentNight = currentGame.night;
           const messageEmbed = new EmbedBuilder()
             .setTitle(`Night ${currentNight - 1} messages`)
@@ -158,7 +173,7 @@ module.exports = {
                           0
                         );
 
-                        return `${alive} <@${p.id}>\n<:dot:931436867272998922>Total messages: ${messages}`;
+                        return `${alive} <@${p.id}> Died N${p.deadAt}\n<:dot:931436867272998922>Total messages: ${messages}`;
                       })
                       .join('\n')
                   )
@@ -170,6 +185,9 @@ module.exports = {
                 new EmbedBuilder().setTitle('Game over').setColor(Colors.Red)
               ]
             });
+
+            Game.delete(message.channel.id);
+            const attachment = await transcripter.createTranscript();
           }
         }
       } else {
