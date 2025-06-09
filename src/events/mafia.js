@@ -6,7 +6,6 @@ const {
   ChannelType,
   Colors
 } = require('discord.js');
-const transcripter = require('discord-html-transcripts');
 
 const Game = new Collection();
 const Messages = new Collection();
@@ -173,7 +172,9 @@ module.exports = {
                           0
                         );
 
-                        return `${alive} <@${p.id}> Died N${p.deadAt}\n<:dot:931436867272998922>Total messages: ${messages}`;
+                        return `${alive} <@${p.id}> ${
+                          p.alive ? '' : `Died N${p.deadAt}`
+                        }\n<:dot:931436867272998922>Total messages: ${messages}`;
                       })
                       .join('\n')
                   )
@@ -187,7 +188,6 @@ module.exports = {
             });
 
             Game.delete(message.channel.id);
-            const attachment = await transcripter.createTranscript();
           }
         }
       } else {
