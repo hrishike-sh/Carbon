@@ -1,4 +1,12 @@
-const { Message, Client, EmbedBuilder, Colors } = require('discord.js');
+const {
+  Message,
+  Client,
+  EmbedBuilder,
+  Colors,
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle
+} = require('discord.js');
 
 const EVENTS = ['find_the_ball'];
 
@@ -23,12 +31,38 @@ module.exports = {
           text: 'You get one try! Click the button to guess!'
         });
 
+      const row = new ActionRowBuilder().addComponents(
+        [
+          new ButtonBuilder()
+            .setCustomId('ball')
+            .setEmoji('914473340129906708')
+            .setStyle(ButtonStyle.Secondary),
+          new ButtonBuilder()
+            .setCustomId('not_ball')
+            .setEmoji('914473340129906708')
+            .setStyle(ButtonStyle.Secondary),
+          new ButtonBuilder()
+            .setCustomId('not_ball')
+            .setEmoji('914473340129906708')
+            .setStyle(ButtonStyle.Secondary)
+        ].sort(() => Math.random() - 0.5)
+      );
+
       await message.channel.send({
         embeds: [ballEmbed]
       });
+
       const mainMessage = await message.channel.send({
         content:
-          '<:UpsideDownCup:1382593749036695654><:UpsideDownCup:1382593749036695654><:UpsideDownCup:1382593749036695654>'
+          '<:UpsideDownCup:1382593749036695654><:UpsideDownCup:1382593749036695654><:UpsideDownCup:1382593749036695654>',
+        components: [row]
+      });
+      const collector = mainMessage.createMessageComponentCollector({
+        idle: 30_000
+      });
+
+      collector.on('collect', async (button) => {
+        button.reply(button.customId);
       });
     }
   }
