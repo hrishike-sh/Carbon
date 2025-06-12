@@ -35,17 +35,14 @@ module.exports = {
         [
           new ButtonBuilder()
             .setCustomId('ball')
-            .setEmoji('914473340129906708')
             .setStyle(ButtonStyle.Secondary)
             .setLabel('   '),
           new ButtonBuilder()
             .setCustomId('not_ball_1')
-            .setEmoji('914473340129906708')
             .setStyle(ButtonStyle.Secondary)
             .setLabel('   '),
           new ButtonBuilder()
             .setCustomId('not_ball_2')
-            .setEmoji('914473340129906708')
             .setStyle(ButtonStyle.Secondary)
             .setLabel('   ')
         ].sort(() => Math.random() - 0.5)
