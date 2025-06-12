@@ -54,7 +54,7 @@ module.exports = {
 
       const mainMessage = await message.channel.send({
         content:
-          '<:UpsideDownCup:1382593749036695654>   <:UpsideDownCup:1382593749036695654>   <:UpsideDownCup:1382593749036695654>',
+          '<:UpsideDownCup:1382593749036695654>          <:UpsideDownCup:1382593749036695654>          <:UpsideDownCup:1382593749036695654>',
         components: [row]
       });
       const collector = mainMessage.createMessageComponentCollector({
