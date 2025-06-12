@@ -36,15 +36,15 @@ module.exports = {
           new ButtonBuilder()
             .setCustomId('ball')
             .setStyle(ButtonStyle.Secondary)
-            .setLabel('   '),
+            .setLabel('‎‎'),
           new ButtonBuilder()
             .setCustomId('not_ball_1')
             .setStyle(ButtonStyle.Secondary)
-            .setLabel('   '),
+            .setLabel('‎‎'),
           new ButtonBuilder()
             .setCustomId('not_ball_2')
             .setStyle(ButtonStyle.Secondary)
-            .setLabel('   ')
+            .setLabel('‎‎')
         ].sort(() => Math.random() - 0.5)
       );
 
