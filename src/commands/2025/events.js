@@ -35,16 +35,16 @@ module.exports = {
         [
           new ButtonBuilder()
             .setCustomId('ball')
-            .setStyle(ButtonStyle.Secondary)
-            .setLabel('‎ ‎ ‎ ‎ ‎ ‎'),
+            .setEmoji('914473340129906708')
+            .setStyle(ButtonStyle.Secondary),
           new ButtonBuilder()
             .setCustomId('not_ball_1')
-            .setStyle(ButtonStyle.Secondary)
-            .setLabel('‎ ‎ ‎ ‎ ‎ ‎'),
+            .setEmoji('914473340129906708')
+            .setStyle(ButtonStyle.Secondary),
           new ButtonBuilder()
             .setCustomId('not_ball_2')
+            .setEmoji('914473340129906708')
             .setStyle(ButtonStyle.Secondary)
-            .setLabel('‎ ‎ ‎ ‎ ‎ ‎')
         ].sort(() => Math.random() - 0.5)
       );
 
@@ -54,7 +54,7 @@ module.exports = {
 
       const mainMessage = await message.channel.send({
         content:
-          '<:UpsideDownCup:1382593749036695654><:blank:914473340129906708><:UpsideDownCup:1382593749036695654><:blank:914473340129906708><:UpsideDownCup:1382593749036695654>',
+          '<:UpsideDownCup:1382593749036695654>   <:UpsideDownCup:1382593749036695654>   <:UpsideDownCup:1382593749036695654>',
         components: [row]
       });
       const collector = mainMessage.createMessageComponentCollector({
