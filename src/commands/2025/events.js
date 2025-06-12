@@ -38,11 +38,11 @@ module.exports = {
             .setEmoji('914473340129906708')
             .setStyle(ButtonStyle.Secondary),
           new ButtonBuilder()
-            .setCustomId('not_ball')
+            .setCustomId('not_ball_1')
             .setEmoji('914473340129906708')
             .setStyle(ButtonStyle.Secondary),
           new ButtonBuilder()
-            .setCustomId('not_ball')
+            .setCustomId('not_ball_2')
             .setEmoji('914473340129906708')
             .setStyle(ButtonStyle.Secondary)
         ].sort(() => Math.random() - 0.5)
