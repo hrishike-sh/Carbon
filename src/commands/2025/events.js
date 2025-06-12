@@ -20,14 +20,15 @@ module.exports = {
         .setTitle('Guess where the ball is!')
         .setColor(Colors.Yellow)
         .setFooter({
-          text: 'You get one try! Click the correct button to start!'
-        })
-        .setDescription(
-          `<:UpsideDownCup:1382593749036695654><:UpsideDownCup:1382593749036695654><:UpsideDownCup:1382593749036695654>`
-        );
+          text: 'You get one try! Click the button to guess!'
+        });
 
-      const mainMessage = await message.channel.send({
+      await message.channel.send({
         embeds: [ballEmbed]
+      });
+      const mainMessage = await message.channel.send({
+        content:
+          '<:UpsideDownCup:1382593749036695654><:UpsideDownCup:1382593749036695654><:UpsideDownCup:1382593749036695654>'
       });
     }
   }
