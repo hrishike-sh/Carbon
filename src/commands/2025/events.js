@@ -116,20 +116,24 @@ module.exports = {
           text: 'You get one try only!'
         });
       const p = emojis.slice(0, 10).sort(() => Math.random() - 0.5);
-      const row = new ActionRowBuilder().addComponents([
-        p.slice(0, 5).map((emoji) => {
-          return new ButtonBuilder()
-            .setCustomId(emoji)
-            .setEmoji(emoji)
-            .setStyle(ButtonStyle.Secondary);
-        }),
-        p.slice(5, 10).map((emoji) => {
-          return new ButtonBuilder()
-            .setCustomId(emoji)
-            .setEmoji(emoji)
-            .setStyle(ButtonStyle.Secondary);
-        })
-      ]);
+      const row = [
+        new ActionRowBuilder().addComponents([
+          p.slice(0, 5).map((emoji) => {
+            return new ButtonBuilder()
+              .setCustomId(emoji)
+              .setEmoji(emoji)
+              .setStyle(ButtonStyle.Secondary);
+          })
+        ]),
+        new ActionRowBuilder().addComponents([
+          p.slice(5, 10).map((emoji) => {
+            return new ButtonBuilder()
+              .setCustomId(emoji)
+              .setEmoji(emoji)
+              .setStyle(ButtonStyle.Secondary);
+          })
+        ])
+      ];
 
       await mainMessage.edit({
         content: '',
