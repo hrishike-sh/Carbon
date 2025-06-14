@@ -227,17 +227,37 @@ module.exports = {
           '<:blank:914473340129906708>',
           '<:lebron_james:1383477589670236301>',
           '<:blank:914473340129906708>'
-        ].sort(() => Math.random() - 0.5),
+        ],
         [
+          ('<:blank:914473340129906708>',
           '<:blank:914473340129906708>',
-          '<:blank:914473340129906708>',
-          '<:blank:914473340129906708>'
+          '<:blank:914473340129906708>')
         ]
       ];
 
-      return message.reply({
+      const row = new ActionRowBuilder().addComponents([
+        new ButtonBuilder()
+          .setEmoji('🏀')
+          .setCustomId('0')
+          .setStyle(ButtonStyle.Secondary),
+        new ButtonBuilder()
+          .setEmoji('🏀')
+          .setCustomId('1')
+          .setStyle(ButtonStyle.Secondary),
+        new ButtonBuilder()
+          .setEmoji('🏀')
+          .setCustomId('2')
+          .setStyle(ButtonStyle.Secondary)
+      ]);
+
+      const mainMessage = await message.channel.send({
         content:
-          arr[0].join('') + '\n' + arr[1].join('') + '\n' + arr[2].join('')
+          arr[0].join('') +
+          '\n' +
+          shuffle(arr[1]).join('') +
+          '\n' +
+          arr[2].join(''),
+        components: [row]
       });
     }
   }
@@ -245,4 +265,12 @@ module.exports = {
 
 const sleep = (milliseconds) => {
   return new Promise((resolve) => setTimeout(resolve, milliseconds));
+};
+
+const shuffle = (array) => {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
 };
