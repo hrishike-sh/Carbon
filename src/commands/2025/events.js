@@ -148,7 +148,52 @@ module.exports = {
       const gameData = new Collection();
 
       collector.on('collect', async (button) => {
-        button.reply(button.customId);
+        if (!gameData.has(message.author.id)) {
+          gameData.set(message.author.id, {
+            failed: false,
+            correct: 0,
+            won: false
+          });
+        }
+
+        const user = gameData.get(message.author.id);
+        if (user.failed) {
+          return button.reply({
+            ephemeral: true,
+            embeds: [
+              {
+                description: 'You have already failed this game!',
+                color: Colors.Red
+              }
+            ]
+          });
+        }
+
+        if (toShow[user.correct] == button.customId) {
+          user.correct++;
+          if (user.correct == toShow.length) {
+            user.won = true;
+            button.reply({
+              ephemeral: true,
+              embeds: [
+                {
+                  description: 'You won!',
+                  color: Colors.Green
+                }
+              ]
+            });
+          } else {
+            button.reply({
+              ephemeral: true,
+              embeds: [
+                {
+                  description: 'Correct! Guess the next emoji',
+                  color: Colors.Green
+                }
+              ]
+            });
+          }
+        }
       });
     }
   }
