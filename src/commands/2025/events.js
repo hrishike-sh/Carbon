@@ -118,7 +118,7 @@ module.exports = {
       const p = emojis.slice(0, 10).sort(() => Math.random() - 0.5);
       const row = [
         new ActionRowBuilder().addComponents([
-          p.slice(0, 5).map((emoji) => {
+          ...p.slice(0, 5).map((emoji) => {
             return new ButtonBuilder()
               .setCustomId(emoji)
               .setEmoji(emoji)
@@ -126,7 +126,7 @@ module.exports = {
           })
         ]),
         new ActionRowBuilder().addComponents([
-          p.slice(5, 10).map((emoji) => {
+          ...p.slice(5, 10).map((emoji) => {
             return new ButtonBuilder()
               .setCustomId(emoji)
               .setEmoji(emoji)
@@ -138,7 +138,7 @@ module.exports = {
       await mainMessage.edit({
         content: '',
         embeds: [mainEmbed],
-        components: [row]
+        components: row
       });
 
       const collector = mainMessage.createMessageComponentCollector({
