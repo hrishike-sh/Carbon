@@ -259,6 +259,83 @@ module.exports = {
           arr[2].join(''),
         components: [row]
       });
+
+      const intervalId = setInterval(async () => {
+        const shuffledArr = shuffle(arr[1]);
+        await mainMessage.edit({
+          content:
+            arr[0].join('') +
+            '\n' +
+            shuffledArr.join('') +
+            '\n' +
+            arr[2].join('')
+        });
+        arr[1] = shuffledArr;
+      }, 1000);
+      const collector = mainMessage.createMessageComponentCollector({
+        idle: 30_000
+      });
+      const gamedat = new Collection();
+      collector.on('collect', async (button) => {
+        if (!gamedat.has(message.author.id)) {
+          gamedat.set(message.author.id, {
+            failed: false,
+            won: false
+          });
+        }
+
+        const user = gamedat.get(message.author.id);
+        if (user.failed) {
+          return button.reply({
+            ephemeral: true,
+            embeds: [
+              {
+                description: 'You have already failed this game!',
+                color: Colors.Red
+              }
+            ]
+          });
+        }
+        if (user.won) {
+          return button.reply({
+            ephemeral: true,
+            embeds: [
+              {
+                description: 'You have already won this game!',
+                color: Colors.Green
+              }
+            ]
+          });
+        }
+
+        const ind = parseInt(button.customId);
+
+        if (arr[1][ind] != '<:lebron_james:1383477589670236301>') {
+          user.won = true;
+          button.reply({
+            ephemeral: true,
+            embeds: [
+              {
+                description: 'You won!',
+                color: Colors.Green
+              }
+            ]
+          });
+        } else {
+          user.failed = true;
+          button.reply({
+            ephemeral: true,
+            embeds: [
+              {
+                description: 'Incorrect! You lost!',
+                color: Colors.Red
+              }
+            ]
+          });
+        }
+      });
+
+      collector.on('end', () => clearInterval(intervalId));
     }
   }
 };
