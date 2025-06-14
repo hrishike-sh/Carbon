@@ -5,10 +5,11 @@ const {
   Colors,
   ActionRowBuilder,
   ButtonBuilder,
-  ButtonStyle
+  ButtonStyle,
+  Collection
 } = require('discord.js');
 
-const EVENTS = ['find_the_ball'];
+const EVENTS = ['find_the_ball', 'emoji_memory'];
 
 module.exports = {
   name: 'events',
@@ -64,6 +65,91 @@ module.exports = {
       collector.on('collect', async (button) => {
         button.reply(button.customId);
       });
+    } else if (index == 1) {
+      const emojis = [
+        '🏊',
+        '👡',
+        '😎',
+        '🌻',
+        '🏝️',
+        '🕶️',
+        '👕',
+        '🌴',
+        '☀️',
+        '👙',
+        '🌞',
+        '🍹',
+        '🏄',
+        '🥵',
+        '🩱',
+        '🩴',
+        '🩳',
+        '🍦',
+        '🍨',
+        '🧢',
+        '🌄',
+        '🌅',
+        '🌡️',
+        '🌊',
+        '🥥'
+      ].sort(() => Math.random() - 0.5);
+
+      const toShow = emojis.slice(0, 5);
+
+      const mainMessage = await message.channel.send({
+        content: 'Memorise the following emojis!'
+      });
+
+      for (let i = 0; i < toShow.length; i++) {
+        await sleep(1500);
+        await mainMessage.edit({
+          content: toShow[i++]
+        });
+      }
+
+      await sleep(1000);
+      const mainEmbed = new EmbedBuilder()
+        .setTitle('Memorize')
+        .setDescription('Now click the emojis in order to win!')
+        .setColor(Colors.Yellow)
+        .setFooter({
+          text: 'You get one try only!'
+        });
+      const p = emojis.slice(0, 10).sort(() => Math.random() - 0.5);
+      const row = new ActionRowBuilder().addComponents([
+        p.slice(0, 5).map((emoji) => {
+          return new ButtonBuilder()
+            .setCustomId(emoji)
+            .setEmoji(emoji)
+            .setStyle(ButtonStyle.Secondary);
+        }),
+        p.slice(5, 10).map((emoji) => {
+          return new ButtonBuilder()
+            .setCustomId(emoji)
+            .setEmoji(emoji)
+            .setStyle(ButtonStyle.Secondary);
+        })
+      ]);
+
+      await mainMessage.edit({
+        content: '',
+        embeds: [mainEmbed],
+        components: [row]
+      });
+
+      const collector = mainMessage.createMessageComponentCollector({
+        idle: 30_000
+      });
+
+      const gameData = new Collection();
+
+      collector.on('collect', async (button) => {
+        button.reply(button.customId);
+      });
     }
   }
+};
+
+const sleep = (milliseconds) => {
+  return new Promise((resolve) => setTimeout(resolve, milliseconds));
 };
