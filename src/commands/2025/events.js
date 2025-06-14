@@ -100,10 +100,10 @@ module.exports = {
         content: 'Memorise the following emojis!'
       });
 
-      for (let i = 0; i < toShow.length; i++) {
+      for await (const emoji of toShow) {
         await sleep(1500);
         await mainMessage.edit({
-          content: toShow[i++]
+          content: emoji
         });
       }
 
