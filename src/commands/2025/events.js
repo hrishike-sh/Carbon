@@ -229,9 +229,9 @@ module.exports = {
           '<:blank:914473340129906708>'
         ],
         [
-          ('<:blank:914473340129906708>',
           '<:blank:914473340129906708>',
-          '<:blank:914473340129906708>')
+          '<:blank:914473340129906708>',
+          '<:blank:914473340129906708>'
         ]
       ];
 
@@ -346,6 +346,27 @@ module.exports = {
 
       collector.on('end', () => {
         clearInterval(intervalId);
+        mainMessage.edit({
+          components: [
+            new ActionRowBuilder().addComponents([
+              new ButtonBuilder()
+                .setEmoji('🏀')
+                .setCustomId('0')
+                .setStyle(ButtonStyle.Secondary)
+                .setDisabled(true),
+              new ButtonBuilder()
+                .setEmoji('🏀')
+                .setCustomId('1')
+                .setStyle(ButtonStyle.Secondary)
+                .setDisabled(true),
+              new ButtonBuilder()
+                .setEmoji('🏀')
+                .setCustomId('2')
+                .setStyle(ButtonStyle.Secondary)
+                .setDisabled(true)
+            ])
+          ]
+        });
       });
     }
   }
