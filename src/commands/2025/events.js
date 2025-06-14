@@ -168,7 +168,17 @@ module.exports = {
             ]
           });
         }
-
+        if (user.won) {
+          return button.reply({
+            ephemeral: true,
+            embeds: [
+              {
+                description: 'You have already won this game!',
+                color: Colors.Green
+              }
+            ]
+          });
+        }
         if (toShow[user.correct] == button.customId) {
           user.correct++;
           if (user.correct == toShow.length) {
@@ -193,6 +203,17 @@ module.exports = {
               ]
             });
           }
+        } else {
+          user.failed = true;
+          button.reply({
+            ephemeral: true,
+            embeds: [
+              {
+                description: 'Incorrect! You lost!',
+                color: Colors.Red
+              }
+            ]
+          });
         }
       });
     }
