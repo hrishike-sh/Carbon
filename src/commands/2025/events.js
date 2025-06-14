@@ -312,6 +312,15 @@ module.exports = {
 
         if (arr[1][ind] != '<:lebron_james:1383477589670236301>') {
           user.won = true;
+          collector.stop();
+          message.channel.send({
+            embeds: [
+              {
+                description: `${message.author} won!`,
+                color: Colors.Green
+              }
+            ]
+          });
           button.reply({
             ephemeral: true,
             embeds: [
@@ -335,7 +344,9 @@ module.exports = {
         }
       });
 
-      collector.on('end', () => clearInterval(intervalId));
+      collector.on('end', () => {
+        clearInterval(intervalId);
+      });
     }
   }
 };
