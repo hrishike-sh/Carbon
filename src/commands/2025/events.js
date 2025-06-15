@@ -532,7 +532,7 @@ module.exports = {
     } else if (index == 4) {
       const randomNumber = Math.floor(Math.random() * 100) + 1;
       let reference = Math.floor(Math.random() * 100) + 1;
-      while (reference != randomNumber) {
+      while (reference == randomNumber) {
         reference = Math.floor(Math.random() * 100) + 1;
       }
       const embed = new EmbedBuilder()
@@ -576,7 +576,8 @@ module.exports = {
                 title: ':x: You have already guessed!',
                 color: Colors.Red
               }
-            ]
+            ],
+            ephemeral: true
           });
         }
         const what = button.customId;
@@ -595,7 +596,8 @@ module.exports = {
           });
         } else {
           button.reply({
-            content: `You got it wrong! The number was ${randomNumber}`
+            content: `You got it wrong! The number was ${randomNumber}`,
+            ephemeral: true
           });
         }
       });
