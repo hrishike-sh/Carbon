@@ -602,7 +602,7 @@ module.exports = {
         }
       });
 
-      collector.on('end', {
+      collector.on('end', (a) => {
         //
       });
     }
