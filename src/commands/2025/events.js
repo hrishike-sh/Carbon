@@ -566,7 +566,7 @@ module.exports = {
 
       const data = new Set();
 
-      collector.on('collect', async (button: ButtonInteraction) => {
+      collector.on('collect', async (button) => {
         if (!data.has(message.author.id)) {
           data.add(message.author.id);
         } else {
