@@ -6,7 +6,8 @@ const {
   ActionRowBuilder,
   ButtonBuilder,
   ButtonStyle,
-  Collection
+  Collection,
+  ButtonInteraction
 } = require('discord.js');
 
 const EVENTS = ['find_the_ball', 'emoji_memory'];
@@ -527,6 +528,80 @@ module.exports = {
             break;
           }
         }
+      });
+    } else if (index == 4) {
+      const randomNumber = Math.floor(Math.random() * 100) + 1;
+      let reference = Math.floor(Math.random() * 100) + 1;
+      while (reference != randomNumber) {
+        reference = Math.floor(Math.random() * 100) + 1;
+      }
+      const embed = new EmbedBuilder()
+        .setTitle('Higher or Lower')
+        .setDescription(
+          `I have chosen a number, is it Higher or Lower than **${reference}**?`
+        )
+        .setFooter({
+          text: 'Summer Event'
+        })
+        .setColor(Colors.Yellow);
+      const row = new ActionRowBuilder().addComponents([
+        new ButtonBuilder()
+          .setLabel('Higher')
+          .setCustomId('hol_high')
+          .setStyle(ButtonStyle.Success),
+        new ButtonBuilder()
+          .setLabel('Lower')
+          .setCustomId('hol_low')
+          .setStyle(ButtonStyle.Danger)
+      ]);
+
+      const mainMessage = await message.channel.send({
+        embeds: [embed],
+        components: [row]
+      });
+
+      const collector = mainMessage.createMessageComponentCollector({
+        idle: 30_000
+      });
+
+      const data = new Set();
+
+      collector.on('collect', async (button: ButtonInteraction) => {
+        if (!data.has(message.author.id)) {
+          data.add(message.author.id);
+        } else {
+          return button.reply({
+            embeds: [
+              {
+                title: ':x: You have already guessed!',
+                color: Colors.Red
+              }
+            ]
+          });
+        }
+        const what = button.customId;
+        if (what == 'hol_high' && randomNumber > reference) {
+          message.channel.send({
+            content: `${button.user} won "coins"`
+          });
+          button.reply({
+            content: `You're correct! The number was ${randomNumber}`,
+            ephemeral: true
+          });
+        } else if (what == 'hol_low' && randomNumber < reference) {
+          button.reply({
+            content: `You're correct! The number was ${randomNumber}`,
+            ephemeral: true
+          });
+        } else {
+          button.reply({
+            content: `You got it wrong! The number was ${randomNumber}`
+          });
+        }
+      });
+
+      collector.on('end', {
+        //
       });
     }
   }
