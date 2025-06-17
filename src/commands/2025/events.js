@@ -605,6 +605,36 @@ module.exports = {
       collector.on('end', (a) => {
         //
       });
+    } else if (index == 5) {
+      const req = await fetch(
+        'https://random-word-api.herokuapp.com/word?length=' +
+          Math.floor(Math.random() * 7) +
+          3
+      );
+      const word = (await req.json())[0];
+
+      let scrambled = word
+        .split('')
+        .sort(() => Math.random() - 0.5)
+        .join('');
+      while (scrambled == word) {
+        scrambled = word
+          .split('')
+          .sort(() => Math.random() - 0.5)
+          .join('');
+      }
+
+      const embed = new EmbedBuilder()
+        .setTitle('Guess the word!')
+        .setColor(Colors.Yellow)
+        .setFooter({
+          text: 'You get one try only!'
+        })
+        .setDescription(`Scrambled word: **\`${scrambled}\`**`);
+
+      const mainMessage = await message.channel.send({
+        embeds: [embed]
+      });
     }
   }
 };
