@@ -630,8 +630,32 @@ module.exports = {
         })
         .setDescription(`Scrambled word: **\`${scrambled}\`**`);
 
-      const mainMessage = await message.channel.send({
+      await message.channel.send({
         embeds: [embed]
+      });
+
+      const messageCollector = await message.channel.createMessageCollector({
+        time: 30_000
+      });
+      const s = new Set();
+      messageCollector.on('collect', async (msg) => {
+        if (s.has(msg.author.id)) return;
+
+        if (msg.content.toLowerCase() == word) {
+          await msg.reply({
+            embeds: [
+              {
+                title: 'You got the word! It was ' + word,
+                color: Colors.Green
+              }
+            ]
+          });
+          messageCollector.stop();
+          s.add(msg.author.id);
+        } else {
+          msg.react('❌');
+          s.add(msg.author.id);
+        }
       });
     }
   }
