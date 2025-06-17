@@ -640,7 +640,7 @@ module.exports = {
       const s = new Set();
       messageCollector.on('collect', async (msg) => {
         if (s.has(msg.author.id)) return;
-
+        if (msg.author.bot) return;
         if (msg.content.toLowerCase() == word) {
           await msg.reply({
             embeds: [
