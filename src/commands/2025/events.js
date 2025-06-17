@@ -607,7 +607,7 @@ module.exports = {
       });
     } else if (index == 5) {
       const req = await fetch(
-        'https://random-word-api.vercel.app/api?words=1&length=6'
+        'https://random-word-api.vercel.app/api?words=1&length=4'
       );
       const word = (await req.json())[0];
       console.log(word);
