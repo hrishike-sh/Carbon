@@ -607,12 +607,10 @@ module.exports = {
       });
     } else if (index == 5) {
       const req = await fetch(
-        'https://random-word-api.herokuapp.com/word?length=' +
-          Math.floor(Math.random() * 7) +
-          3
+        'https://random-word-api.herokuapp.com/word?length=6' +
       );
       const word = (await req.json())[0];
-
+      console.log(word);
       let scrambled = word
         .split('')
         .sort(() => Math.random() - 0.5)
