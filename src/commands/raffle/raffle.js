@@ -176,24 +176,22 @@ module.exports = {
         await message.reply("You haven't joined this raffle!");
       }
 
-      const allEntries = (
-        await Database.aggregate([
-          {
-            $group: {
-              _id: null,
-              totalAmount: {
-                $sum: '$amount'
-              }
-            }
-          },
-          {
-            $project: {
-              totalAmount: 1
+      const allEntries = await Database.aggregate([
+        {
+          $group: {
+            _id: null,
+            totalAmount: {
+              $sum: '$amount'
             }
           }
-        ])
-      ).totalAmount;
-
+        },
+        {
+          $project: {
+            totalAmount: 1
+          }
+        }
+      ]);
+      console.log(allEntries);
       const embed = new EmbedBuilder()
         .setAuthor({
           name: message.author.tag,
@@ -201,7 +199,7 @@ module.exports = {
         })
         .setColor(Colors.Green)
         .setDescription(
-          `**Your entries:** ${dbUser.amount}\n**Total entries:** ${allEntries}`
+          `**Your entries:** ${dbUser.amount}\n**Total entries:** ${allEntries.totalAmount}`
         )
         .setTimestamp();
       await message.reply({
