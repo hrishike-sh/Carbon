@@ -57,7 +57,7 @@ module.exports = {
       }
 
       await message.reply({
-        embeds: []
+        embeds: [embed]
       });
     } else if (subcommand == 'add') {
       if (!isMod)
