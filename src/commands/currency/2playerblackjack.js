@@ -78,7 +78,7 @@ module.exports = {
 
     collector.on('collect', async (interaction) => {
       if (interaction.customId === 'decline_bj') {
-        return interaction.reply({
+        return interaction.update({
           content: 'The challenge has been declined.',
           embeds: [],
           components: []
@@ -92,38 +92,31 @@ module.exports = {
       shuffleDeck(deck);
 
       const hands = {
-        [message.author.id]: [drawCard(deck), drawCard(deck)],
-        [target.id]: [drawCard(deck), drawCard(deck)]
+        [message.author.id]: { hand: [drawCard(deck), drawCard(deck)], stood: false, busted: false },
+        [target.id]: { hand: [drawCard(deck), drawCard(deck)], stood: false, busted: false }
       };
 
       const gameEmbed = new EmbedBuilder()
         .setTitle('Blackjack')
         .setColor('Yellow')
+        .setDescription('The game has started! Click "Show Hand" to see your cards.')
         .addFields(
           {
             name: message.author.username,
-            value: `Hand: ${formatHand(
-              hands[message.author.id]
-            )}\nScore: ${calculateScore(hands[message.author.id])}`,
+            value: 'Hand: [??] [??]\nScore: ?',
             inline: true
           },
           {
             name: target.username,
-            value: `Hand: ${formatHand(
-              hands[target.id]
-            )}\nScore: ${calculateScore(hands[target.id])}`,
+            value: 'Hand: [??] [??]\nScore: ?',
             inline: true
           }
         );
 
       const gameRow = new ActionRowBuilder().addComponents(
         new ButtonBuilder()
-          .setCustomId('hit_bj')
-          .setLabel('Hit')
-          .setStyle(ButtonStyle.Primary),
-        new ButtonBuilder()
-          .setCustomId('stand_bj')
-          .setLabel('Stand')
+          .setCustomId('show_hand_bj')
+          .setLabel('Show Hand')
           .setStyle(ButtonStyle.Secondary)
       );
 
@@ -134,66 +127,56 @@ module.exports = {
 
       const gameCollector = acceptMessage.createMessageComponentCollector({
         filter: (i) => [message.author.id, target.id].includes(i.user.id),
-        time: 120000
+        time: 180000
       });
 
-      const playerState = {
-        [message.author.id]: { stood: false },
-        [target.id]: { stood: false }
-      };
-
       gameCollector.on('collect', async (i) => {
-        if (playerState[i.user.id].stood) {
-          return i.reply({
-            content: 'You have already stood.',
-            ephemeral: true
-          });
-        }
-
-        if (i.customId === 'hit_bj') {
-          hands[i.user.id].push(drawCard(deck));
-          const score = calculateScore(hands[i.user.id]);
-
-          if (score > 21) {
-            playerState[i.user.id].stood = true;
-            checkWinCondition();
+        if (i.customId === 'show_hand_bj') {
+          const userHand = hands[i.user.id];
+          if (userHand.stood || userHand.busted) {
+            return i.reply({ content: 'You have already finished your turn.', ephemeral: true });
           }
-        } else if (i.customId === 'stand_bj') {
-          playerState[i.user.id].stood = true;
-          checkWinCondition();
-        }
 
-        const updatedEmbed = new EmbedBuilder()
-          .setTitle('Blackjack')
-          .setColor('Yellow')
-          .addFields(
-            {
-              name: message.author.username,
-              value: `Hand: ${formatHand(
-                hands[message.author.id]
-              )}\nScore: ${calculateScore(hands[message.author.id])}`,
-              inline: true
-            },
-            {
-              name: target.username,
-              value: `Hand: ${formatHand(
-                hands[target.id]
-              )}\nScore: ${calculateScore(hands[target.id])}`,
-              inline: true
-            }
+          const handEmbed = new EmbedBuilder()
+            .setTitle('Your Hand')
+            .setDescription(`Your hand is: ${formatHand(userHand.hand)}\nYour score is: ${calculateScore(userHand.hand)}`)
+            .setColor('Blue');
+
+          const handRow = new ActionRowBuilder().addComponents(
+            new ButtonBuilder().setCustomId('hit_bj').setLabel('Hit').setStyle(ButtonStyle.Primary),
+            new ButtonBuilder().setCustomId('stand_bj').setLabel('Stand').setStyle(ButtonStyle.Secondary)
           );
 
-        await i.update({ embeds: [updatedEmbed] });
+          const ephemeralMessage = await i.reply({ embeds: [handEmbed], components: [handRow], ephemeral: true, fetchReply: true });
+
+          const ephemeralCollector = ephemeralMessage.createMessageComponentCollector({ filter: (buttonInteraction) => buttonInteraction.user.id === i.user.id, time: 60000, max: 1 });
+
+          ephemeralCollector.on('collect', async (buttonInteraction) => {
+            if (buttonInteraction.customId === 'hit_bj') {
+              userHand.hand.push(drawCard(deck));
+              const score = calculateScore(userHand.hand);
+              if (score > 21) {
+                userHand.busted = true;
+                userHand.stood = true;
+              }
+              await buttonInteraction.update({ embeds: [new EmbedBuilder().setTitle('Your Hand').setDescription(`Your hand is: ${formatHand(userHand.hand)}\nYour score is: ${calculateScore(userHand.hand)}`).setColor(userHand.busted ? 'Red' : 'Blue')], components: userHand.stood ? [] : [handRow] });
+            } else if (buttonInteraction.customId === 'stand_bj') {
+              userHand.stood = true;
+              await buttonInteraction.update({ embeds: [new EmbedBuilder().setTitle('Your Hand').setDescription(`Your hand is: ${formatHand(userHand.hand)}\nYour score is: ${calculateScore(userHand.hand)}`).setColor('Green')], components: [] });
+            }
+            checkWinCondition();
+          });
+        }
       });
 
       function checkWinCondition() {
-        if (
-          playerState[message.author.id].stood &&
-          playerState[target.id].stood
-        ) {
+        const player1State = hands[message.author.id];
+        const player2State = hands[target.id];
+
+        if (player1State.stood && player2State.stood) {
           gameCollector.stop();
-          const score1 = calculateScore(hands[message.author.id]);
-          const score2 = calculateScore(hands[target.id]);
+          const score1 = calculateScore(player1State.hand);
+          const score2 = calculateScore(player2State.hand);
 
           let winner = null;
           let reason = '';
@@ -223,7 +206,19 @@ module.exports = {
           const resultEmbed = new EmbedBuilder()
             .setTitle('Blackjack - Game Over')
             .setDescription(reason)
-            .setColor(winner ? 'Green' : 'Yellow');
+            .setColor(winner ? 'Green' : 'Yellow')
+            .addFields(
+              {
+                name: message.author.username,
+                value: `Hand: ${formatHand(player1State.hand)}\nScore: ${score1}`,
+                inline: true
+              },
+              {
+                name: target.username,
+                value: `Hand: ${formatHand(player2State.hand)}\nScore: ${score2}`,
+                inline: true
+              }
+            );
 
           if (winner) {
             addCoins(winner.id, bet * 2);
@@ -297,9 +292,11 @@ function calculateScore(cards) {
     if (card.value === 'A') {
       aceCount++;
       score += 11;
-    } else if (['J', 'Q', 'K'].includes(card.value)) {
+    }
+    else if (['J', 'Q', 'K'].includes(card.value)) {
       score += 10;
-    } else {
+    }
+    else {
       score += parseInt(card.value);
     }
   }
@@ -314,7 +311,7 @@ function formatHand(hand) {
   return hand
     .map(
       (card) =>
-        `[\`${card.suit}${card.value}\`](https://discord.com/invite/fight "nuh uh")`
+        `[\`${card.suit}${card.value}\`](https://discord.com/invite/fight \"nuh uh\")`
     )
     .join(' ');
 }
