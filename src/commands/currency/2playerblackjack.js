@@ -5,13 +5,13 @@ const {
   ActionRowBuilder,
   ButtonBuilder,
   ButtonStyle,
-  ComponentType,
-  InteractionResponseType
+  ComponentType
 } = require('discord.js');
+const Database = require('../../database/coins');
 
 module.exports = {
-  name: '2bj',
-  aliases: ['tpbj'],
+  name: '2playerblackjack',
+  aliases: ['2bj'],
   /**
    * @param {Message} message Discord Message
    * @param {String[]} args Command Arguments
@@ -24,269 +24,231 @@ module.exports = {
         'Either mention someone to play with or use `fh bj`'
       );
     }
+    if (target.id === message.author.id) {
+      return message.reply("You can't play against yourself!");
+    }
+    if (target.bot) {
+      return message.reply("You can't play against a bot!");
+    }
 
-    const deck = createDeck();
-    shuffleDeck(deck);
+    const bet = parseInt(args[1]);
+    if (isNaN(bet) || bet <= 0) {
+      return message.reply('Please provide a valid bet amount.');
+    }
 
-    const decks = [
-      {
-        type: 'player',
-        id: message.author.id,
-        deck: [drawCard(deck), drawCard(deck)]
-      },
-      {
-        type: 'target',
-        id: target.id,
-        deck: [drawCard(deck), drawCard(deck)]
-      }
-    ];
+    const player1 = await getUser(message.author.id);
+    const player2 = await getUser(target.id);
 
-    const embed = new EmbedBuilder()
-      .setTitle('<:bj:1260496579941503016> Blackjack')
-      .setColor('Yellow')
-      .setFooter({
-        text: 'Click on the button to see your hand.'
-      })
-      .addFields([
-        {
-          name: message.author.displayName,
-          value: `Hand: ${formatHand(
-            decks[0].deck,
-            true
-          )}\nScore: ${calculateScore(decks[0].deck, true)}`,
-          inline: true
-        },
-        {
-          name: target.displayName,
-          value: `Hand: ${formatHand(
-            decks[1].deck,
-            true
-          )}\nScore: ${calculateScore(decks[1].deck, true)}`,
-          inline: true
-        }
-      ]);
+    if (player1.coins < bet) {
+      return message.reply('You do not have enough coins!');
+    }
+    if (player2.coins < bet) {
+      return message.reply(`${target.username} does not have enough coins!`);
+    }
 
-    const row = new ActionRowBuilder().addComponents([
+    const acceptEmbed = new EmbedBuilder()
+      .setTitle('Blackjack Challenge')
+      .setDescription(
+        `${target.username}, ${message.author.username} has challenged you to a game of blackjack with a bet of ${bet} coins. Do you accept?`
+      )
+      .setColor('Yellow');
+
+    const acceptRow = new ActionRowBuilder().addComponents(
       new ButtonBuilder()
-        .setCustomId('show_hand_bj')
-        .setStyle(ButtonStyle.Success)
-        .setLabel('Show Hand')
-    ]);
+        .setCustomId('accept_bj')
+        .setLabel('Accept')
+        .setStyle(ButtonStyle.Success),
+      new ButtonBuilder()
+        .setCustomId('decline_bj')
+        .setLabel('Decline')
+        .setStyle(ButtonStyle.Danger)
+    );
 
-    const startMessage = await message.channel.send({
-      embeds: [embed],
-      components: [row]
+    const acceptMessage = await message.channel.send({
+      content: `${target.toString()}`,
+      embeds: [acceptEmbed],
+      components: [acceptRow]
     });
-    const collector = startMessage.createMessageComponentCollector({
-      filter: (m) => [message.author.id, target.id].includes(m.user.id)
+
+    const collector = acceptMessage.createMessageComponentCollector({
+      filter: (i) => i.user.id === target.id,
+      time: 60000,
+      max: 1
     });
-    const gameDat = {
-      player: {
-        busted: false,
-        stood: false,
-        five_charlie: false,
-        blackjack: false,
-        end: false
-      },
-      target: {
-        busted: false,
-        stood: false,
-        five_charlie: false,
-        blackjack: false,
-        end: false
-      }
-    };
-    collector.on('collect', async (btn) => {
-      const handEmbed = new EmbedBuilder()
-        .setTitle(`<:bj:1260496579941503016> Blackjack | Your Hand`)
-        .setColor('Yellow')
-        .setFooter({
-          text: 'This is your hand.'
+
+    collector.on('collect', async (interaction) => {
+      if (interaction.customId === 'decline_bj') {
+        return interaction.reply({
+          content: 'The challenge has been declined.',
+          embeds: [],
+          components: []
         });
-      const gameRow = new ActionRowBuilder().addComponents([
+      }
+
+      await removeCoins(message.author.id, bet);
+      await removeCoins(target.id, bet);
+
+      const deck = createDeck();
+      shuffleDeck(deck);
+
+      const hands = {
+        [message.author.id]: [drawCard(deck), drawCard(deck)],
+        [target.id]: [drawCard(deck), drawCard(deck)]
+      };
+
+      const gameEmbed = new EmbedBuilder()
+        .setTitle('Blackjack')
+        .setColor('Yellow')
+        .addFields(
+          {
+            name: message.author.username,
+            value: `Hand: ${formatHand(
+              hands[message.author.id]
+            )}\nScore: ${calculateScore(hands[message.author.id])}`,
+            inline: true
+          },
+          {
+            name: target.username,
+            value: `Hand: ${formatHand(
+              hands[target.id]
+            )}\nScore: ${calculateScore(hands[target.id])}`,
+            inline: true
+          }
+        );
+
+      const gameRow = new ActionRowBuilder().addComponents(
         new ButtonBuilder()
           .setCustomId('hit_bj')
           .setLabel('Hit')
-          .setStyle(ButtonStyle.Danger),
+          .setStyle(ButtonStyle.Primary),
         new ButtonBuilder()
           .setCustomId('stand_bj')
           .setLabel('Stand')
-          .setStyle(ButtonStyle.Success)
-      ]);
-      let show = true;
-      if (btn.user.id === message.author.id) {
-        handEmbed.addFields([
-          {
-            name: message.author.displayName,
-            value: `Hand: ${formatHand(
-              decks[0].deck,
-              false
-            )}\nScore: ${calculateScore(decks[0].deck, false)}`
-          }
-        ]);
-        if (gameDat.player.end) {
-          show = false;
+          .setStyle(ButtonStyle.Secondary)
+      );
+
+      await interaction.update({
+        embeds: [gameEmbed],
+        components: [gameRow]
+      });
+
+      const gameCollector = acceptMessage.createMessageComponentCollector({
+        filter: (i) => [message.author.id, target.id].includes(i.user.id),
+        time: 120000
+      });
+
+      const playerState = {
+        [message.author.id]: { stood: false },
+        [target.id]: { stood: false }
+      };
+
+      gameCollector.on('collect', async (i) => {
+        if (playerState[i.user.id].stood) {
+          return i.reply({
+            content: 'You have already stood.',
+            ephemeral: true
+          });
         }
-      } else {
-        handEmbed.addFields([
-          {
-            name: target.displayName,
-            value: `Hand: ${formatHand(
-              decks[1].deck,
-              false
-            )}\nScore: ${calculateScore(decks[1].deck, false)}`
+
+        if (i.customId === 'hit_bj') {
+          hands[i.user.id].push(drawCard(deck));
+          const score = calculateScore(hands[i.user.id]);
+
+          if (score > 21) {
+            playerState[i.user.id].stood = true;
+            checkWinCondition();
           }
-        ]);
-        if (gameDat.target.end) {
-          show = false;
+        } else if (i.customId === 'stand_bj') {
+          playerState[i.user.id].stood = true;
+          checkWinCondition();
+        }
+
+        const updatedEmbed = new EmbedBuilder()
+          .setTitle('Blackjack')
+          .setColor('Yellow')
+          .addFields(
+            {
+              name: message.author.username,
+              value: `Hand: ${formatHand(
+                hands[message.author.id]
+              )}\nScore: ${calculateScore(hands[message.author.id])}`,
+              inline: true
+            },
+            {
+              name: target.username,
+              value: `Hand: ${formatHand(
+                hands[target.id]
+              )}\nScore: ${calculateScore(hands[target.id])}`,
+              inline: true
+            }
+          );
+
+        await i.update({ embeds: [updatedEmbed] });
+      });
+
+      function checkWinCondition() {
+        if (
+          playerState[message.author.id].stood &&
+          playerState[target.id].stood
+        ) {
+          gameCollector.stop();
+          const score1 = calculateScore(hands[message.author.id]);
+          const score2 = calculateScore(hands[target.id]);
+
+          let winner = null;
+          let reason = '';
+
+          if (score1 > 21 && score2 > 21) {
+            reason = 'Both players busted! It a tie!';
+            addCoins(message.author.id, bet);
+            addCoins(target.id, bet);
+          } else if (score1 > 21) {
+            winner = target;
+            reason = `${message.author.username} busted!`;
+          } else if (score2 > 21) {
+            winner = message.author;
+            reason = `${target.username} busted!`;
+          } else if (score1 > score2) {
+            winner = message.author;
+            reason = `${message.author.username} has a higher score!`;
+          } else if (score2 > score1) {
+            winner = target;
+            reason = `${target.username} has a higher score!`;
+          } else {
+            reason = "It's a tie!";
+            addCoins(message.author.id, bet);
+            addCoins(target.id, bet);
+          }
+
+          const resultEmbed = new EmbedBuilder()
+            .setTitle('Blackjack - Game Over')
+            .setDescription(reason)
+            .setColor(winner ? 'Green' : 'Yellow');
+
+          if (winner) {
+            addCoins(winner.id, bet * 2);
+            resultEmbed.addFields({
+              name: 'Winner',
+              value: `${winner.username} won ${bet * 2} coins!`
+            });
+          }
+
+          acceptMessage.edit({
+            embeds: [resultEmbed],
+            components: []
+          });
         }
       }
-      if (!show) {
-        handEmbed.setFooter({
-          text: 'You are out of turns.'
+    });
+
+    collector.on('end', (collected) => {
+      if (collected.size === 0) {
+        acceptMessage.edit({
+          content: 'The challenge has expired.',
+          embeds: [],
+          components: []
         });
       }
-      const epmessage = await btn.reply({
-        embeds: [handEmbed],
-        components: show ? [gameRow] : [],
-        ephemeral: true,
-        fetchReply: true
-      });
-      const gameCol = epmessage.createMessageComponentCollector({
-        filter: (m) => [message.author.id, target.id].includes(m.user.id),
-        componentType: ComponentType.Button
-      });
-
-      gameCol.on('collect', async (button) => {
-        const getWinner = () => {
-          if (gameDat.player.end && gameDat.target.end) {
-            gameCol.stop();
-
-            if (gameDat.player.busted && gameDat.target.busted) {
-              // tie
-
-              return `<@${message.author.id}> and <@${target.id}> tied.`;
-            } else if (gameDat.player.busted) {
-              // target wins
-
-              return `<@${target.id}> won.`;
-            } else if (gameDat.target.busted) {
-              // player wins
-
-              return `<@${message.author.id}> won.`;
-            } else if (gameDat.player.blackjack && gameDat.target.blackjack) {
-              // tie
-
-              return `<@${message.author.id}> and <@${target.id}> tied.`;
-            } else if (gameDat.player.blackjack) {
-              // player wins
-
-              return `<@${message.author.id}> got a blackjack and won.`;
-            } else if (gameDat.target.blackjack) {
-              // target wins
-
-              return `<@${target.id}> got a blackjack and won.`;
-            } else if (
-              gameDat.player.five_charlie &&
-              gameDat.target.five_charlie
-            ) {
-              // tie
-
-              return `<@${message.author.id}> and <@${target.id}> tied.`;
-            } else if (gameDat.player.five_charlie) {
-              // player wins
-
-              return `<@${message.author.id}> got five cards without going over 21 and won.`;
-            } else if (gameDat.target.five_charlie) {
-              // target wins
-
-              return `<@${target.id}> got five cards without going over 21 and won.`;
-            } else {
-              if (
-                calculateScore(decks[0].deck) > calculateScore(decks[1].deck)
-              ) {
-                // player wins
-
-                return `<@${message.author.id}> had a higher score than <@${target.id}> and won.`;
-              } else if (
-                calculateScore(decks[0].deck) < calculateScore(decks[1].deck)
-              ) {
-                // target wins
-
-                return `<@${target.id}> had a higher score than <@${message.author.id}> and won.`;
-              } else {
-                // tie
-                if (
-                  ![gameDat.player.end, gameDat.target.end].every(
-                    (a) => a === true
-                  )
-                ) {
-                  return false;
-                }
-                return `<@${message.author.id}> and <@${target.id}> tied.`;
-              }
-            }
-          } else return false;
-        };
-
-        if (getWinner()) {
-          btn.editReply({
-            embeds: [handEmbed],
-            components: [],
-            ephemeral: true,
-            content: getWinner()
-          });
-          collector.stop();
-          return;
-        }
-
-        const DECK = decks.filter((a) => a.id == button.user.id)[0];
-        if (button.customId === 'hit_bj') {
-          DECK.deck.push(drawCard(deck));
-          if (calculateScore(DECK.deck) > 21) {
-            gameDat[DECK.type].busted = true;
-            gameDat[DECK.type].end = true;
-          } else if (calculateScore(DECK.deck) === 21) {
-            gameDat[DECK.type].stood = true;
-            gameDat[DECK.type].blackjack = true;
-            gameDat[DECK.type].end = true;
-          } else if (DECK.deck.length >= 4) {
-            gameDat[DECK.type].stood = true;
-            gameDat[DECK.type].five_charlie = true;
-            gameDat[DECK.type].end = true;
-          }
-
-          handEmbed.setFields([
-            {
-              name: button.user.displayName,
-              value: `Hand: ${formatHand(
-                DECK.deck,
-                false
-              )}\nScore: ${calculateScore(DECK.deck, false)}`
-            }
-          ]);
-
-          await button.deferUpdate();
-          await btn.editReply({
-            embeds: [handEmbed],
-            components: gameDat[DECK.type].end ? [] : [gameRow],
-            ephemeral: true
-          });
-        } else {
-          gameDat[DECK.type].end = true;
-          gameDat[DECK.type].stood = true;
-
-          await button.deferUpdate();
-          handEmbed.setFooter({
-            text: 'You stood! Waiting for opponent.'
-          });
-          await btn.editReply({
-            embeds: [handEmbed],
-            components: [],
-            ephemeral: true
-          });
-        }
-      });
     });
   }
 };
@@ -328,57 +290,48 @@ function drawCard(deck) {
   return deck.pop();
 }
 
-function calculateScore(cards, bot) {
-  if (bot) {
-    let score = 0;
-    const card = cards[0];
+function calculateScore(cards) {
+  let score = 0;
+  let aceCount = 0;
+  for (const card of cards) {
     if (card.value === 'A') {
+      aceCount++;
       score += 11;
     } else if (['J', 'Q', 'K'].includes(card.value)) {
       score += 10;
     } else {
       score += parseInt(card.value);
     }
-    return score;
-  } else {
-    let score = 0;
-    let ace = false;
-
-    for (const card of cards) {
-      if (card.value === 'A') {
-        ace = true;
-        score += 11;
-      } else if (['J', 'Q', 'K'].includes(card.value)) {
-        score += 10;
-      } else {
-        score += parseInt(card.value);
-      }
-    }
-
-    if (ace && score > 21) {
-      score -= 10;
-    }
-
-    return score;
   }
+  while (score > 21 && aceCount > 0) {
+    score -= 10;
+    aceCount--;
+  }
+  return score;
 }
 
-function formatHand(hand, bot) {
-  if (bot) {
-    return hand.map(
-      (a, ind) =>
-        `${
-          ind == 0
-            ? `[\`${a.suit}${a.value}\`](https://discord.com/invite/fight "nuh uh")`
-            : `[\`??\`](https://discord.com/invite/fight "nuh uh")`
-        }`
-    );
-  } else {
-    return hand
-      .map(
-        (a) =>
-          `[\`${a.suit}${a.value}\`](https://discord.com/invite/fight "nuh uh")`
-      )
-      .join(' ');
+function formatHand(hand) {
+  return hand
+    .map(
+      (card) =>
+        `[\`${card.suit}${card.value}\`](https://discord.com/invite/fight "nuh uh")`
+    )
+    .join(' ');
+}
+
+async function getUser(userId) {
+  let user = await Database.findOne({ userId });
+  if (!user) {
+    user = new Database({ userId, coins: 0 });
+    await user.save();
   }
+  return user;
+}
+
+async function addCoins(userId, amount) {
+  await Database.updateOne({ userId }, { $inc: { coins: amount } });
+}
+
+async function removeCoins(userId, amount) {
+  await Database.updateOne({ userId }, { $inc: { coins: -amount } });
 }
