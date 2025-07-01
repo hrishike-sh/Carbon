@@ -144,11 +144,6 @@ module.exports = {
         ]
       });
     } else if (subcommand == 'list') {
-      if (!isMod)
-        return message.reply(
-          'You must be a moderator to run this sub-command!'
-        );
-
       const all = await Database.find({}).sort({ created: 1 });
 
       let start = 1;
@@ -172,6 +167,45 @@ module.exports = {
             .setDescription(data.join('\n'))
             .setColor(Colors.Green)
         ]
+      });
+    } else if (subcommand == 'view') {
+      const dbUser =
+        (await Database.findOne({ userId: message.author.id })) || null;
+
+      if (!dbUser) {
+        await message.reply("You haven't joined this raffle!");
+      }
+
+      const allEntries = (
+        await Database.aggregate([
+          {
+            $group: {
+              _id: null,
+              totalAmount: {
+                $sum: '$amount'
+              }
+            }
+          },
+          {
+            $project: {
+              totalAmount: 1
+            }
+          }
+        ])
+      ).totalAmount;
+
+      const embed = new EmbedBuilder()
+        .setAuthor({
+          name: message.author.tag,
+          iconURL: message.author.displayAvatarURL()
+        })
+        .setColor(Colors.Green)
+        .setDescription(
+          `**Your entries:** ${dbUser.amount}\n**Total entries:** ${allEntries}`
+        )
+        .setTimestamp();
+      await message.reply({
+        embeds: [embed]
       });
     }
   }
