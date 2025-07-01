@@ -18,15 +18,47 @@ module.exports = {
       '824539655134773269',
       '1016728636365209631'
     );
-
     const subcommand = args.shift();
 
     if (!subcommand)
       return message.reply(
         `Please mention a subcommand!\n\n\`fh raffle help\` for more info.`
       );
-
+    const raffleLogsChannel = client.channels.cache.get('1389605274645561354');
     if (subcommand == 'help') {
+      const embed = new EmbedBuilder()
+        .setTitle('Raffle Command')
+        .setColor(Colors.Yellow)
+        .addFields([
+          {
+            name: 'fh raffle list',
+            value: 'View the complete list of raffle participants',
+            inline: true
+          },
+          {
+            name: 'fh raffle view',
+            value: 'View your raffle entries'
+          }
+        ]);
+
+      if (isMod) {
+        embed.addFields([
+          {
+            name: `fh raffle add <target> <entries>`,
+            value: 'Add entries to a user',
+            inline: true
+          },
+          {
+            name: `fh raffle remove <target> <entries>`,
+            value: 'Remove entries from a user',
+            inline: true
+          }
+        ]);
+      }
+
+      await message.reply({
+        embeds: []
+      });
     } else if (subcommand == 'add') {
       if (!isMod)
         return message.reply(
@@ -85,6 +117,21 @@ module.exports = {
             )
         ]
       });
+      raffleLogsChannel.send({
+        embeds: [
+          new EmbedBuilder()
+            .setTitle('Entries added')
+            .setDescription(
+              `${
+                message.author
+              } added ${amount} entries to ${target.toString()} [here](${
+                message.url
+              })`
+            )
+            .setColor(Colors.Green)
+            .setTimestamp()
+        ]
+      });
     } else if (subcommand == 'remove') {
       if (!isMod)
         return message.reply(
@@ -141,6 +188,21 @@ module.exports = {
             .setDescription(
               `${target.toString()} now has a total of **${p.amount}** entries!`
             )
+        ]
+      });
+      raffleLogsChannel.send({
+        embeds: [
+          new EmbedBuilder()
+            .setTitle('Removed entries')
+            .setDescription(
+              `${
+                message.author
+              } removed ${amount} entries from ${target.toString()} [here](${
+                message.url
+              })`
+            )
+            .setColor(Colors.Red)
+            .setTimestamp()
         ]
       });
     } else if (subcommand == 'list') {
