@@ -212,7 +212,7 @@ module.exports = {
   }
 };
 
-function chunkArray(array, chunkSize = 1) {
+function chunkArray(array, chunkSize = 30) {
   const result = [];
   for (let i = 0; i < array.length; i += chunkSize) {
     result.push(array.slice(i, i + chunkSize));
