@@ -160,14 +160,17 @@ module.exports = {
         start = end + 1;
       }
 
-      message.reply({
-        embeds: [
+      const chunked = chunkArray(data);
+      const embeds = [];
+      for (const data of chunked) {
+        embeds.push(
           new EmbedBuilder()
-            .setTitle('Raffle List')
             .setDescription(data.join('\n'))
             .setColor(Colors.Green)
-        ]
-      });
+        );
+      }
+      embeds[0].setTitle('Raffle list');
+      await message.reply({ embeds });
     } else if (subcommand == 'view') {
       const dbUser =
         (await Database.findOne({ userId: message.author.id })) || null;
@@ -199,7 +202,7 @@ module.exports = {
         })
         .setColor(Colors.Green)
         .setDescription(
-          `**Your entries:** ${dbUser.amount}\n**Total entries:** ${allEntries.totalAmount}`
+          `**Your entries:** ${dbUser.amount}\n**Total entries:** ${allEntries[0].totalAmount}`
         )
         .setTimestamp();
       await message.reply({
@@ -208,3 +211,11 @@ module.exports = {
     }
   }
 };
+
+function chunkArray(array, chunkSize = 1) {
+  const result = [];
+  for (let i = 0; i < array.length; i += chunkSize) {
+    result.push(array.slice(i, i + chunkSize));
+  }
+  return result;
+}
