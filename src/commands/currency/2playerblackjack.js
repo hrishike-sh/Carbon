@@ -92,23 +92,35 @@ module.exports = {
       shuffleDeck(deck);
 
       const hands = {
-        [message.author.id]: { hand: [drawCard(deck), drawCard(deck)], stood: false, busted: false },
-        [target.id]: { hand: [drawCard(deck), drawCard(deck)], stood: false, busted: false }
+        [message.author.id]: {
+          user: message.author,
+          hand: [drawCard(deck), drawCard(deck)],
+          stood: false,
+          busted: false
+        },
+        [target.id]: {
+          user: target,
+          hand: [drawCard(deck), drawCard(deck)],
+          stood: false,
+          busted: false
+        }
       };
 
       const gameEmbed = new EmbedBuilder()
         .setTitle('Blackjack')
         .setColor('Yellow')
-        .setDescription('The game has started! Click "Show Hand" to see your cards.')
+        .setDescription(
+          'The game has started! Click "Show Hand" to see your cards and play.'
+        )
         .addFields(
           {
             name: message.author.username,
-            value: 'Hand: [??] [??]\nScore: ?',
+            value: 'Status: Playing',
             inline: true
           },
           {
             name: target.username,
-            value: 'Hand: [??] [??]\nScore: ?',
+            value: 'Status: Playing',
             inline: true
           }
         );
@@ -132,42 +144,109 @@ module.exports = {
 
       gameCollector.on('collect', async (i) => {
         if (i.customId === 'show_hand_bj') {
-          const userHand = hands[i.user.id];
-          if (userHand.stood || userHand.busted) {
-            return i.reply({ content: 'You have already finished your turn.', ephemeral: true });
+          const userState = hands[i.user.id];
+          if (userState.stood || userState.busted) {
+            return i.reply({
+              content: 'You have already finished your turn.',
+              ephemeral: true
+            });
           }
 
           const handEmbed = new EmbedBuilder()
             .setTitle('Your Hand')
-            .setDescription(`Your hand is: ${formatHand(userHand.hand)}\nYour score is: ${calculateScore(userHand.hand)}`)
+            .setDescription(
+              `Your hand is: ${formatHand(
+                userState.hand
+              )}\nYour score is: ${calculateScore(userState.hand)}`
+            )
             .setColor('Blue');
 
           const handRow = new ActionRowBuilder().addComponents(
-            new ButtonBuilder().setCustomId('hit_bj').setLabel('Hit').setStyle(ButtonStyle.Primary),
-            new ButtonBuilder().setCustomId('stand_bj').setLabel('Stand').setStyle(ButtonStyle.Secondary)
+            new ButtonBuilder()
+              .setCustomId('hit_bj')
+              .setLabel('Hit')
+              .setStyle(ButtonStyle.Primary),
+            new ButtonBuilder()
+              .setCustomId('stand_bj')
+              .setLabel('Stand')
+              .setStyle(ButtonStyle.Secondary)
           );
 
-          const ephemeralMessage = await i.reply({ embeds: [handEmbed], components: [handRow], ephemeral: true, fetchReply: true });
+          const ephemeralMessage = await i.reply({
+            embeds: [handEmbed],
+            components: [handRow],
+            ephemeral: true,
+            fetchReply: true
+          });
 
-          const ephemeralCollector = ephemeralMessage.createMessageComponentCollector({ filter: (buttonInteraction) => buttonInteraction.user.id === i.user.id, time: 60000, max: 1 });
+          const ephemeralCollector =
+            ephemeralMessage.createMessageComponentCollector({
+              filter: (buttonInteraction) =>
+                buttonInteraction.user.id === i.user.id,
+              time: 60000
+            });
 
           ephemeralCollector.on('collect', async (buttonInteraction) => {
-            if (buttonInteraction.customId === 'hit_bj') {
-              userHand.hand.push(drawCard(deck));
-              const score = calculateScore(userHand.hand);
-              if (score > 21) {
-                userHand.busted = true;
-                userHand.stood = true;
-              }
-              await buttonInteraction.update({ embeds: [new EmbedBuilder().setTitle('Your Hand').setDescription(`Your hand is: ${formatHand(userHand.hand)}\nYour score is: ${calculateScore(userHand.hand)}`).setColor(userHand.busted ? 'Red' : 'Blue')], components: userHand.stood ? [] : [handRow] });
-            } else if (buttonInteraction.customId === 'stand_bj') {
-              userHand.stood = true;
-              await buttonInteraction.update({ embeds: [new EmbedBuilder().setTitle('Your Hand').setDescription(`Your hand is: ${formatHand(userHand.hand)}\nYour score is: ${calculateScore(userHand.hand)}`).setColor('Green')], components: [] });
+            if (userState.stood || userState.busted) {
+              await buttonInteraction.update({ components: [] });
+              return;
             }
+
+            if (buttonInteraction.customId === 'hit_bj') {
+              userState.hand.push(drawCard(deck));
+              const score = calculateScore(userState.hand);
+              if (score >= 21) {
+                userState.stood = true;
+                if (score > 21) userState.busted = true;
+              }
+            } else if (buttonInteraction.customId === 'stand_bj') {
+              userState.stood = true;
+            }
+
+            const updatedHandEmbed = new EmbedBuilder()
+              .setTitle('Your Hand')
+              .setDescription(
+                `Your hand is: ${formatHand(
+                  userState.hand
+                )}\nYour score is: ${calculateScore(userState.hand)}`
+              )
+              .setColor(userState.busted ? 'Red' : 'Blue');
+
+            await buttonInteraction.update({
+              embeds: [updatedHandEmbed],
+              components: userState.stood ? [] : [handRow]
+            });
+
+            if (userState.stood) {
+              ephemeralCollector.stop();
+            }
+
+            await updateMainEmbed();
             checkWinCondition();
           });
         }
       });
+
+      async function updateMainEmbed() {
+        const fields = Object.values(hands).map((playerState) => {
+          let status = 'Playing';
+          if (playerState.busted) status = 'Busted!';
+          else if (playerState.stood) status = 'Stood';
+          return {
+            name: playerState.user.username,
+            value: `Status: ${status}`,
+            inline: true
+          };
+        });
+
+        const updatedGameEmbed = new EmbedBuilder()
+          .setTitle('Blackjack')
+          .setColor('Yellow')
+          .setDescription('The game is in progress...')
+          .setFields(fields);
+
+        await acceptMessage.edit({ embeds: [updatedGameEmbed] });
+      }
 
       function checkWinCondition() {
         const player1State = hands[message.author.id];
@@ -209,13 +288,13 @@ module.exports = {
             .setColor(winner ? 'Green' : 'Yellow')
             .addFields(
               {
-                name: message.author.username,
-                value: `Hand: ${formatHand(player1State.hand)}\nScore: ${score1}`,
+                name: `${message.author.username}'s Hand`,
+                value: `${formatHand(player1State.hand)}\nScore: ${score1}`,
                 inline: true
               },
               {
-                name: target.username,
-                value: `Hand: ${formatHand(player2State.hand)}\nScore: ${score2}`,
+                name: `${target.username}'s Hand`,
+                value: `${formatHand(player2State.hand)}\nScore: ${score2}`,
                 inline: true
               }
             );
@@ -234,16 +313,16 @@ module.exports = {
           });
         }
       }
-    });
 
-    collector.on('end', (collected) => {
-      if (collected.size === 0) {
-        acceptMessage.edit({
-          content: 'The challenge has expired.',
-          embeds: [],
-          components: []
-        });
-      }
+      collector.on('end', (collected) => {
+        if (collected.size === 0) {
+          acceptMessage.edit({
+            content: 'The challenge has expired.',
+            embeds: [],
+            components: []
+          });
+        }
+      });
     });
   }
 };
@@ -292,11 +371,9 @@ function calculateScore(cards) {
     if (card.value === 'A') {
       aceCount++;
       score += 11;
-    }
-    else if (['J', 'Q', 'K'].includes(card.value)) {
+    } else if (['J', 'Q', 'K'].includes(card.value)) {
       score += 10;
-    }
-    else {
+    } else {
       score += parseInt(card.value);
     }
   }
@@ -311,7 +388,9 @@ function formatHand(hand) {
   return hand
     .map(
       (card) =>
-        `[\`${card.suit}${card.value}\`](https://discord.com/invite/fight \"nuh uh\")`
+        `[` +
+        `\`${card.suit}${card.value}\`` +
+        `](https://discord.com/invite/fight "nuh uh")`
     )
     .join(' ');
 }
