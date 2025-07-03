@@ -7,7 +7,6 @@ const {
   ButtonStyle,
   ComponentType
 } = require('discord.js');
-const Database = require('../../database/coins');
 
 module.exports = {
   name: '2playerblackjack',
@@ -31,25 +30,10 @@ module.exports = {
       return message.reply("You can't play against a bot!");
     }
 
-    const bet = parseInt(args[1]);
-    if (isNaN(bet) || bet <= 0) {
-      return message.reply('Please provide a valid bet amount.');
-    }
-
-    const player1 = await getUser(message.author.id);
-    const player2 = await getUser(target.id);
-
-    if (player1.coins < bet) {
-      return message.reply('You do not have enough coins!');
-    }
-    if (player2.coins < bet) {
-      return message.reply(`${target.username} does not have enough coins!`);
-    }
-
     const acceptEmbed = new EmbedBuilder()
       .setTitle('Blackjack Challenge')
       .setDescription(
-        `${target.username}, ${message.author.username} has challenged you to a game of blackjack with a bet of ${bet} coins. Do you accept?`
+        `${target.username}, ${message.author.username} has challenged you to a game of blackjack. Do you accept?`
       )
       .setColor('Yellow');
 
@@ -84,9 +68,6 @@ module.exports = {
           components: []
         });
       }
-
-      await removeCoins(message.author.id, bet);
-      await removeCoins(target.id, bet);
 
       const deck = createDeck();
       shuffleDeck(deck);
@@ -262,8 +243,6 @@ module.exports = {
 
           if (score1 > 21 && score2 > 21) {
             reason = 'Both players busted! It a tie!';
-            addCoins(message.author.id, bet);
-            addCoins(target.id, bet);
           } else if (score1 > 21) {
             winner = target;
             reason = `${message.author.username} busted!`;
@@ -278,8 +257,6 @@ module.exports = {
             reason = `${target.username} has a higher score!`;
           } else {
             reason = "It's a tie!";
-            addCoins(message.author.id, bet);
-            addCoins(target.id, bet);
           }
 
           const resultEmbed = new EmbedBuilder()
@@ -300,10 +277,9 @@ module.exports = {
             );
 
           if (winner) {
-            addCoins(winner.id, bet * 2);
             resultEmbed.addFields({
               name: 'Winner',
-              value: `${winner.username} won ${bet * 2} coins!`
+              value: `${winner.username} won!`
             });
           }
 
@@ -395,19 +371,3 @@ function formatHand(hand) {
     .join(' ');
 }
 
-async function getUser(userId) {
-  let user = await Database.findOne({ userId });
-  if (!user) {
-    user = new Database({ userId, coins: 0 });
-    await user.save();
-  }
-  return user;
-}
-
-async function addCoins(userId, amount) {
-  await Database.updateOne({ userId }, { $inc: { coins: amount } });
-}
-
-async function removeCoins(userId, amount) {
-  await Database.updateOne({ userId }, { $inc: { coins: -amount } });
-}
