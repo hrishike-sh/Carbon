@@ -224,17 +224,20 @@ module.exports = {
         start = end + 1;
       }
 
-      const chunked = chunkArray(data);
-      const embeds = [];
-      for (const data of chunked) {
-        embeds.push(
-          new EmbedBuilder()
-            .setDescription(data.join('\n'))
-            .setColor(Colors.Green)
-        );
+      const chunked = chunkArray(data, 25);
+      const messages = [];
+      for (let i = 0; i < chunked.length; i += 2) {
+        const embeds = [];
+        for (const data of chunked.slice(i, i + 2)) {
+          embeds.push(
+            new EmbedBuilder()
+              .setDescription(data.join('\n'))
+              .setColor(Colors.Green)
+          );
+        }
+        messages.push({ embeds });
       }
-      embeds[0].setTitle('Raffle list');
-      await message.reply({ embeds });
+      await message.channel.send(messages);
     } else if (subcommand == 'view') {
       const dbUser =
         (await Database.findOne({ userId: message.author.id })) || null;
