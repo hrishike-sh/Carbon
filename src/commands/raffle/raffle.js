@@ -237,7 +237,10 @@ module.exports = {
         }
         messages.push({ embeds });
       }
-      await message.channel.send(messages);
+
+      for (const msg of messages) {
+        await message.channel.send(msg);
+      }
     } else if (subcommand == 'view') {
       const dbUser =
         (await Database.findOne({ userId: message.author.id })) || null;
