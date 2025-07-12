@@ -9,7 +9,8 @@ import {
   TextInputStyle,
   ButtonStyle,
   ButtonInteraction,
-  ModalSubmitInteraction
+  ModalSubmitInteraction,
+  Interaction
 } from 'discord.js';
 
 module.exports = {
@@ -76,28 +77,32 @@ module.exports = {
       time: 30000
     });
 
-    SettingsCollector.on(
-      'collect',
-      async (i: ButtonInteraction | ModalSubmitInteraction) => {
-        console.log(i.customId);
-        if (i.customId === 'imposters_settings') {
-          await (i as ButtonInteraction).showModal(modal);
-        }
+    SettingsCollector.on('collect', async (i: ButtonInteraction) => {
+      if (i.customId == 'imposters_settings') {
+        await i.showModal(modal);
 
-        if (i.isModalSubmit()) {
-          IMPOSTERS = parseInt(i.fields.getTextInputValue('imposters_count'));
-          WORD = i.fields.getTextInputValue('word');
+        const submitted = await i.awaitModalSubmit({
+          time: 30_000,
+          filter: (i: ModalSubmitInteraction) => i.user.id === message.author.id
+        });
 
-          console.log(IMPOSTERS, WORD);
+        IMPOSTERS = parseInt(
+          submitted.fields.getTextInputValue('imposters_count')
+        );
+        WORD = submitted.fields.getTextInputValue('word');
 
-          (row.components[1] as ButtonBuilder).setDisabled(false);
-          askEmbed.setDescription(
-            `<:fh_bluedot:1128541545763717173> Imposters: ${IMPOSTERS}\n<:fh_bluedot:1128541545763717173> Word: :shush_face:\n\n*Click the Start button to start the game.*`
-          );
-          // @ts-expect-error
-          await SettingsMessage.edit({ embeds: [askEmbed], components: [row] });
-        }
+        askEmbed.setDescription(
+          `<:fh_bluedot:1128541545763717173> Imposters: ${IMPOSTERS}\n<:fh_bluedot:1128541545763717173> Word: :shush_face:\n\n*Click the Start button to start the game.*`
+        );
+        // @ts-ignore
+        row.components[1].setDisabled(false);
+
+        await SettingsMessage.edit({
+          embeds: [askEmbed],
+          // @ts-ignore
+          components: [row]
+        });
       }
-    );
+    });
   }
 };

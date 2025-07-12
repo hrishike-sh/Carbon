@@ -55,18 +55,22 @@ module.exports = {
             time: 30000
         });
         SettingsCollector.on('collect', async (i) => {
-            console.log(i.customId);
-            if (i.customId === 'imposters_settings') {
+            if (i.customId == 'imposters_settings') {
                 await i.showModal(modal);
-            }
-            if (i.isModalSubmit()) {
-                IMPOSTERS = parseInt(i.fields.getTextInputValue('imposters_count'));
-                WORD = i.fields.getTextInputValue('word');
-                console.log(IMPOSTERS, WORD);
-                row.components[1].setDisabled(false);
+                const submitted = await i.awaitModalSubmit({
+                    time: 30000,
+                    filter: (i) => i.user.id === message.author.id
+                });
+                IMPOSTERS = parseInt(submitted.fields.getTextInputValue('imposters_count'));
+                WORD = submitted.fields.getTextInputValue('word');
                 askEmbed.setDescription(`<:fh_bluedot:1128541545763717173> Imposters: ${IMPOSTERS}\n<:fh_bluedot:1128541545763717173> Word: :shush_face:\n\n*Click the Start button to start the game.*`);
-                // @ts-expect-error
-                await SettingsMessage.edit({ embeds: [askEmbed], components: [row] });
+                // @ts-ignore
+                row.components[1].setDisabled(false);
+                await SettingsMessage.edit({
+                    embeds: [askEmbed],
+                    // @ts-ignore
+                    components: [row]
+                });
             }
         });
     }
