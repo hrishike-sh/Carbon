@@ -10,7 +10,9 @@ import {
   ButtonStyle,
   ButtonInteraction,
   ModalSubmitInteraction,
-  Interaction
+  Interaction,
+  Collection,
+  User
 } from 'discord.js';
 
 module.exports = {
@@ -73,8 +75,7 @@ module.exports = {
     });
 
     const SettingsCollector = SettingsMessage.createMessageComponentCollector({
-      filter: (i) => i.user.id === message.author.id,
-      time: 30000
+      filter: (i) => i.user.id === message.author.id
     });
 
     SettingsCollector.on('collect', async (i: ButtonInteraction) => {
@@ -108,6 +109,122 @@ module.exports = {
           components: [row]
         });
       }
+
+      if (i.customId == 'imposters_start') {
+        await i.reply({
+          content: 'Game Started!',
+          ephemeral: true
+        });
+
+        SettingsCollector.stop();
+      }
+    });
+
+    SettingsCollector.on('end', async () => {
+      const GameEmbed = new EmbedBuilder()
+        .setTitle(`<:amongus_red:917726679214985246> Imposter Games`)
+        .setColor('Yellow')
+        .setDescription(
+          `Click the "Join" button to join the game\n\n<:fh_bluedot:1128541545763717173> **Imposters:** ${IMPOSTERS}`
+        )
+        .setFooter({
+          text: 'Game starts in 30 seconds.'
+        });
+
+      const GameRow = new ActionRowBuilder().addComponents([
+        new ButtonBuilder()
+          .setLabel('Join')
+          .setStyle(ButtonStyle.Success)
+          .setCustomId('imposters_join')
+      ]);
+
+      const GameJoinMessage = await message.reply({
+        embeds: [GameEmbed],
+        // @ts-ignore
+        components: [GameRow]
+      });
+
+      const JoinCollector = GameJoinMessage.createMessageComponentCollector({
+        time: 30_000
+      });
+
+      const PLAYERS: Map<string, { imposter: boolean; user: User }> = new Map();
+
+      JoinCollector.on('collect', async (joinButton: ButtonInteraction) => {
+        // if (joinButton.user.id == message.author.id) {
+        //   return joinButton.reply({
+        //     content: "You cannot join this game because you're hosting it!",
+        //     ephemeral: true
+        //   });
+        // }
+
+        if (PLAYERS.has(joinButton.user.id)) {
+          PLAYERS.delete(joinButton.user.id);
+
+          await joinButton.reply({
+            content: 'You left the game!',
+            ephemeral: true
+          });
+          // @ts-ignore
+          GameRow.components[0].setLabel(`Join [${PLAYERS.size}]`);
+
+          await GameJoinMessage.edit({
+            // @ts-ignore
+            components: [GameRow]
+          });
+        } else {
+          PLAYERS.set(joinButton.user.id, {
+            imposter: false,
+            user: joinButton.user
+          });
+
+          await joinButton.reply({
+            content: 'You joined the game!',
+            ephemeral: true
+          });
+
+          // @ts-ignore
+          GameRow.components[0].setLabel(`Join [${PLAYERS.size}]`);
+
+          await GameJoinMessage.edit({
+            // @ts-ignore
+            components: [GameRow]
+          });
+        }
+      });
+
+      JoinCollector.on('end', async () => {
+        for (let i = 0; i < IMPOSTERS; i++) {
+          const PLAYERS_ARRAY = Array.from(PLAYERS.values());
+
+          const imposter =
+            PLAYERS_ARRAY[Math.floor(Math.random() * PLAYERS_ARRAY.length)];
+          imposter.imposter = true;
+        }
+
+        for (const [id, player] of PLAYERS) {
+          if (player.imposter) {
+            const imposterEmbed = new EmbedBuilder()
+              .setTitle("You're an IMPOSTER!!")
+              .setDescription(
+                'Your role is to guess the word others are talking about. You get ONE try! If you guess the wrong word, lose the game!'
+              )
+              .setColor('Red');
+
+            await player.user.send({
+              embeds: [imposterEmbed]
+            });
+          } else {
+            const normalEmbed = new EmbedBuilder().setTitle(
+              'Your word is ' + WORD
+            );
+
+            await player.user.send({
+              embeds: [normalEmbed]
+            });
+          }
+        }
+      });
     });
   }
 };
