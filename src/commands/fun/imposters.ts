@@ -344,9 +344,7 @@ module.exports = {
             });
 
             await WriteMessage.edit({
-              embeds: [WriteEmbed],
-              // @ts-ignore
-              components: [new ActionRowBuilder().addComponents(modal)]
+              embeds: [WriteEmbed]
             });
           });
         }

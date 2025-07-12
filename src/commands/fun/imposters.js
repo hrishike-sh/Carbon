@@ -256,9 +256,7 @@ module.exports = {
                             ephemeral: true
                         });
                         await WriteMessage.edit({
-                            embeds: [WriteEmbed],
-                            // @ts-ignore
-                            components: [new discord_js_1.ActionRowBuilder().addComponents(modal)]
+                            embeds: [WriteEmbed]
                         });
                     });
                 }
