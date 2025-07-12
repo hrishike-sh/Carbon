@@ -12,7 +12,9 @@ import {
   ModalSubmitInteraction,
   Interaction,
   Collection,
-  User
+  User,
+  TextChannel,
+  Colors
 } from 'discord.js';
 
 module.exports = {
@@ -121,6 +123,7 @@ module.exports = {
     });
 
     SettingsCollector.on('end', async () => {
+      // lock channel
       const GameEmbed = new EmbedBuilder()
         .setTitle(`<:amongus_red:917726679214985246> Imposter Games`)
         .setColor('Yellow')
@@ -298,7 +301,7 @@ module.exports = {
           });
 
           const WordCollector = WriteMessage.createMessageComponentCollector({
-            time: 30_000
+            time: 30_000 // THIS
           });
 
           WordCollector.on('collect', async (wordButton: ButtonInteraction) => {
@@ -365,8 +368,36 @@ module.exports = {
           });
 
           WordCollector.on('end', () => {
-            running = true;
-            round++;
+            (message.channel as TextChannel).send({
+              embeds: [
+                {
+                  title: "Time's up!",
+                  color: Colors.Red
+                }
+              ]
+            });
+            const EveryonesEmbed = new EmbedBuilder()
+              .setTitle(`Round ${round} words`)
+              .setDescription(`The theme was (i havent added this yet xdd)`)
+              .addFields(
+                Words.map((a) => {
+                  return {
+                    name: `<@${a.id}>`,
+                    value: a.word || 'No word submitted',
+                    inline: true
+                  };
+                })
+              )
+              .setColor('Yellow')
+              .setFooter({
+                text: 'The channel will unlock in 10 seconds.'
+              });
+            // @ts-ignore
+            message.channel.send({
+              embeds: [EveryonesEmbed]
+            });
+
+            // Unlock channel
           });
         }
       });
