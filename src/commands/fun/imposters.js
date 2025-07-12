@@ -238,10 +238,22 @@ module.exports = {
                         }
                         await wordButton.showModal(modal);
                         const submitted = await wordButton.awaitModalSubmit({
-                            time: 15000
+                            time: 15000,
+                            filter: (modalInt) => modalInt.customId === 'imposters_submit_word' &&
+                                modalInt.user.id === wordButton.user.id
                         });
+                        if (!submitted) {
+                            return wordButton.followUp({
+                                content: 'You did not submit the modal in time.',
+                                ephemeral: true
+                            });
+                        }
                         const word = submitted.fields.getTextInputValue('word');
                         Words.find((a) => a.id == wordButton.user.id).word = word;
+                        await submitted.reply({
+                            content: 'Your word has been submitted!',
+                            ephemeral: true
+                        });
                         WriteEmbed.setFields([
                             {
                                 name: 'Waiting for..',
@@ -253,15 +265,11 @@ module.exports = {
                             {
                                 name: 'Submitted',
                                 value: `<:fh_dotgreen:1176188796249854052>${Words.filter((a) => a.word.length != 0)
-                                    .map((a) => `<@${a.id}>`)
+                                    .map((a) => `<@${a.id}>: ${a.word}`)
                                     .join('\n<:fh_dotgreen:1176188796249854052>')}`,
                                 inline: true
                             }
                         ]);
-                        await submitted.reply({
-                            content: 'Your word has been submitted!',
-                            ephemeral: true
-                        });
                         await WriteMessage.edit({
                             embeds: [WriteEmbed]
                         });
