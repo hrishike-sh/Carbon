@@ -41,12 +41,14 @@ var discord_js_1 = require("discord.js");
 module.exports = {
     name: 'imposters',
     execute: function (message, args, client) { return __awaiter(void 0, void 0, void 0, function () {
-        var EVENT_MANAGER, askEmbed, modal, row, SettingsMessage;
+        var EVENT_MANAGER, IMPOSTERS, WORD, askEmbed, modal, row, SettingsMessage, SettingsCollector;
         var _a;
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
                     EVENT_MANAGER = '858088054942203945';
+                    IMPOSTERS = 0;
+                    WORD = '';
                     if (!((_a = message.member) === null || _a === void 0 ? void 0 : _a.roles.cache.has(EVENT_MANAGER)))
                         return [2 /*return*/];
                     if (message.author.id !== '598918643727990784')
@@ -94,6 +96,37 @@ module.exports = {
                         })];
                 case 1:
                     SettingsMessage = _b.sent();
+                    SettingsCollector = SettingsMessage.createMessageComponentCollector({
+                        filter: function (i) { return i.user.id === message.author.id; },
+                        time: 30000
+                    });
+                    SettingsCollector.on('collect', function (i) { return __awaiter(void 0, void 0, void 0, function () {
+                        return __generator(this, function (_a) {
+                            switch (_a.label) {
+                                case 0:
+                                    if (!(i.customId === 'imposters_settings')) return [3 /*break*/, 2];
+                                    // @ts-expect-error
+                                    return [4 /*yield*/, i.showModal(modal)];
+                                case 1:
+                                    // @ts-expect-error
+                                    _a.sent();
+                                    _a.label = 2;
+                                case 2:
+                                    if (!i.isModalSubmit()) return [3 /*break*/, 4];
+                                    IMPOSTERS = parseInt(i.fields.getTextInputValue('imposters_count'));
+                                    WORD = i.fields.getTextInputValue('word');
+                                    row.components[1].setDisabled(false);
+                                    askEmbed.setDescription("<:fh_bluedot:1128541545763717173> Imposters: ".concat(IMPOSTERS, "\n<:fh_bluedot:1128541545763717173> Word: :shush_face:\n\n*Click the Start button to start the game.*"));
+                                    // @ts-expect-error
+                                    return [4 /*yield*/, i.update({ embeds: [askEmbed], components: [row] })];
+                                case 3:
+                                    // @ts-expect-error
+                                    _a.sent();
+                                    _a.label = 4;
+                                case 4: return [2 /*return*/];
+                            }
+                        });
+                    }); });
                     return [2 /*return*/];
             }
         });

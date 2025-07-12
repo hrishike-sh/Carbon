@@ -7,13 +7,17 @@ import {
   TextInputBuilder,
   ActionRowBuilder,
   TextInputStyle,
-  ButtonStyle
+  ButtonStyle,
+  ButtonInteraction,
+  ModalSubmitInteraction
 } from 'discord.js';
 
 module.exports = {
   name: 'imposters',
   execute: async (message: Message, args: String[], client: Client) => {
     const EVENT_MANAGER = '858088054942203945';
+    let IMPOSTERS = 0;
+    let WORD = '';
     if (!message.member?.roles.cache.has(EVENT_MANAGER)) return;
     if (message.author.id !== '598918643727990784') return;
     const askEmbed = new EmbedBuilder()
@@ -65,5 +69,31 @@ module.exports = {
       components: [row],
       fetchReply: true
     });
+
+    const SettingsCollector = SettingsMessage.createMessageComponentCollector({
+      filter: (i) => i.user.id === message.author.id,
+      time: 30000
+    });
+
+    SettingsCollector.on(
+      'collect',
+      async (i: ButtonInteraction | ModalSubmitInteraction) => {
+        if (i.customId === 'imposters_settings') {
+          // @ts-expect-error
+          await i.showModal(modal);
+        }
+
+        if (i.isModalSubmit()) {
+          IMPOSTERS = parseInt(i.fields.getTextInputValue('imposters_count'));
+          WORD = i.fields.getTextInputValue('word');
+          (row.components[1] as ButtonBuilder).setDisabled(false);
+          askEmbed.setDescription(
+            `<:fh_bluedot:1128541545763717173> Imposters: ${IMPOSTERS}\n<:fh_bluedot:1128541545763717173> Word: :shush_face:\n\n*Click the Start button to start the game.*`
+          );
+          // @ts-expect-error
+          await i.update({ embeds: [askEmbed], components: [row] });
+        }
+      }
+    );
   }
 };
