@@ -10,7 +10,7 @@ const {
   ButtonInteraction
 } = require('discord.js');
 
-const EVENTS = ['find_the_ball', 'emoji_memory'];
+const EVENTS = ['find_the_ball', 'emoji_memory', 'basketball', 'crab_race', 'higher_or_lower', 'unscramble', 'rock_paper_scissors'];
 
 module.exports = {
   name: 'events',
@@ -634,7 +634,7 @@ module.exports = {
         embeds: [embed]
       });
 
-      const messageCollector = await message.channel.createMessageCollector({
+      const messageCollector = await message.channel.createMessageComponentCollector({
         time: 30_000
       });
       const s = new Set();
@@ -656,6 +656,78 @@ module.exports = {
           msg.react('❌');
           s.add(msg.author.id);
         }
+      });
+    } else if (index == 6) {
+      const embed = new EmbedBuilder()
+        .setTitle('Rock, Paper, Scissors')
+        .setDescription('Choose your weapon!')
+        .setColor(Colors.Yellow);
+
+      const row = new ActionRowBuilder().addComponents([
+        new ButtonBuilder()
+          .setCustomId('rock')
+          .setLabel('Rock')
+          .setEmoji('🪨')
+          .setStyle(ButtonStyle.Primary),
+        new ButtonBuilder()
+          .setCustomId('paper')
+          .setLabel('Paper')
+          .setEmoji('📄')
+          .setStyle(ButtonStyle.Primary),
+        new ButtonBuilder()
+          .setCustomId('scissors')
+          .setLabel('Scissors')
+          .setEmoji('✂️')
+          .setStyle(ButtonStyle.Primary)
+      ]);
+
+      const mainMessage = await message.channel.send({
+        embeds: [embed],
+        components: [row]
+      });
+
+      const collector = mainMessage.createMessageComponentCollector({
+        idle: 30_000
+      });
+
+      const played = new Set();
+
+      collector.on('collect', async (button) => {
+        if (played.has(button.user.id)) {
+          return button.reply({
+            content: 'You have already played!',
+            ephemeral: true
+          });
+        }
+
+        played.add(button.user.id);
+
+        const userChoice = button.customId;
+        const botChoice = ['rock', 'paper', 'scissors'][Math.floor(Math.random() * 3)];
+
+        let result;
+        if (userChoice === botChoice) {
+          result = "It's a tie!";
+        } else if (
+          (userChoice === 'rock' && botChoice === 'scissors') ||
+          (userChoice === 'paper' && botChoice === 'rock') ||
+          (userChoice === 'scissors' && botChoice === 'paper')
+        ) {
+          result = 'You win!';
+        } else {
+          result = 'You lose!';
+        }
+
+        await button.reply({
+          content: `You chose ${userChoice}, I chose ${botChoice}. ${result}`,
+          ephemeral: true
+        });
+      });
+
+      collector.on('end', () => {
+        mainMessage.edit({
+          components: []
+        });
       });
     }
   }
