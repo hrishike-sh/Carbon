@@ -10,7 +10,7 @@ const {
   ButtonInteraction
 } = require('discord.js');
 
-const EVENTS = ['find_the_ball', 'emoji_memory', 'basketball', 'crab_race', 'higher_or_lower', 'unscramble', 'rock_paper_scissors'];
+const EVENTS = ['find_the_ball', 'emoji_memory', 'basketball', 'crab_race', 'higher_or_lower', 'unscramble', 'rock_paper_scissors', 'guess_the_number'];
 
 module.exports = {
   name: 'events',
@@ -373,7 +373,7 @@ module.exports = {
       const joinEmbed = new EmbedBuilder()
         .setTitle('Crab Race :crab:')
         .setDescription(
-          `Click the button to join the **Crab Race**!\n\nGame starts in **30 seconds**`
+          `Click the button to join the **Crab Race**!\n\nGame starts in **30 seconds`
         )
         .setColor('Yellow');
       const joinButton = new ButtonBuilder()
@@ -728,6 +728,39 @@ module.exports = {
         mainMessage.edit({
           components: []
         });
+      });
+    } else if (index == 7) {
+      const randomNumber = Math.floor(Math.random() * 10) + 1;
+
+      const embed = new EmbedBuilder()
+        .setTitle('Guess the Number!')
+        .setDescription('I have picked a number between 1 and 10. Try to guess it!')
+        .setColor(Colors.Yellow);
+
+      await message.channel.send({ embeds: [embed] });
+
+      const collector = message.channel.createMessageComponentCollector({
+        filter: (m) => !m.author.bot,
+        time: 30_000
+      });
+
+      collector.on('collect', async (msg) => {
+        const guess = parseInt(msg.content);
+
+        if (isNaN(guess)) return;
+
+        if (guess === randomNumber) {
+          collector.stop();
+          await msg.reply(`🎉 You guessed it! The number was ${randomNumber}.`);
+        } else {
+          await msg.react('❌');
+        }
+      });
+
+      collector.on('end', (collected, reason) => {
+        if (reason === 'time') {
+          message.channel.send(`The game is over! The number was ${randomNumber}.`);
+        }
       });
     }
   }
