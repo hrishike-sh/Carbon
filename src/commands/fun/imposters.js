@@ -56,7 +56,6 @@ module.exports = {
         });
         SettingsCollector.on('collect', async (i) => {
             if (i.customId === 'imposters_settings') {
-                // @ts-expect-error
                 await i.showModal(modal);
             }
             if (i.isModalSubmit()) {
@@ -65,7 +64,7 @@ module.exports = {
                 row.components[1].setDisabled(false);
                 askEmbed.setDescription(`<:fh_bluedot:1128541545763717173> Imposters: ${IMPOSTERS}\n<:fh_bluedot:1128541545763717173> Word: :shush_face:\n\n*Click the Start button to start the game.*`);
                 // @ts-expect-error
-                await i.update({ embeds: [askEmbed], components: [row] });
+                await SettingsMessage.edit({ embeds: [askEmbed], components: [row] });
             }
         });
     }
