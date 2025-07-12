@@ -79,6 +79,7 @@ module.exports = {
     SettingsCollector.on(
       'collect',
       async (i: ButtonInteraction | ModalSubmitInteraction) => {
+        console.log(i.customId);
         if (i.customId === 'imposters_settings') {
           await (i as ButtonInteraction).showModal(modal);
         }

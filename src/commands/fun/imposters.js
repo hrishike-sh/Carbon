@@ -55,6 +55,7 @@ module.exports = {
             time: 30000
         });
         SettingsCollector.on('collect', async (i) => {
+            console.log(i.customId);
             if (i.customId === 'imposters_settings') {
                 await i.showModal(modal);
             }
