@@ -30,8 +30,9 @@ module.exports = {
 
     const modal = new ModalBuilder()
       .setCustomId('imposters_setup')
+      .setTitle('Setup Imposters Game')
       .addComponents(
-        new ActionRowBuilder<TextInputBuilder>().addComponents([
+        new ActionRowBuilder<TextInputBuilder>().addComponents(
           new TextInputBuilder()
             .setCustomId('imposters_count')
             .setLabel('Imposters')
@@ -39,8 +40,8 @@ module.exports = {
             .setMinLength(1)
             .setMaxLength(2)
             .setRequired(true)
-        ]),
-        new ActionRowBuilder<TextInputBuilder>().addComponents([
+        ),
+        new ActionRowBuilder<TextInputBuilder>().addComponents(
           new TextInputBuilder()
             .setCustomId('word')
             .setLabel('Word')
@@ -48,7 +49,7 @@ module.exports = {
             .setMinLength(1)
             .setMaxLength(20)
             .setRequired(true)
-        ])
+        )
       );
 
     const row = new ActionRowBuilder().addComponents([

@@ -19,23 +19,20 @@ module.exports = {
             .setTimestamp();
         const modal = new discord_js_1.ModalBuilder()
             .setCustomId('imposters_setup')
-            .addComponents(new discord_js_1.ActionRowBuilder().addComponents([
-            new discord_js_1.TextInputBuilder()
-                .setCustomId('imposters_count')
-                .setLabel('Imposters')
-                .setStyle(discord_js_1.TextInputStyle.Short)
-                .setMinLength(1)
-                .setMaxLength(2)
-                .setRequired(true)
-        ]), new discord_js_1.ActionRowBuilder().addComponents([
-            new discord_js_1.TextInputBuilder()
-                .setCustomId('word')
-                .setLabel('Word')
-                .setStyle(discord_js_1.TextInputStyle.Short)
-                .setMinLength(1)
-                .setMaxLength(20)
-                .setRequired(true)
-        ]));
+            .setTitle('Setup Imposters Game')
+            .addComponents(new discord_js_1.ActionRowBuilder().addComponents(new discord_js_1.TextInputBuilder()
+            .setCustomId('imposters_count')
+            .setLabel('Imposters')
+            .setStyle(discord_js_1.TextInputStyle.Short)
+            .setMinLength(1)
+            .setMaxLength(2)
+            .setRequired(true)), new discord_js_1.ActionRowBuilder().addComponents(new discord_js_1.TextInputBuilder()
+            .setCustomId('word')
+            .setLabel('Word')
+            .setStyle(discord_js_1.TextInputStyle.Short)
+            .setMinLength(1)
+            .setMaxLength(20)
+            .setRequired(true)));
         const row = new discord_js_1.ActionRowBuilder().addComponents([
             new builders_1.ButtonBuilder()
                 .setLabel('Settings')
