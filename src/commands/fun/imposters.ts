@@ -87,6 +87,9 @@ module.exports = {
         if (i.isModalSubmit()) {
           IMPOSTERS = parseInt(i.fields.getTextInputValue('imposters_count'));
           WORD = i.fields.getTextInputValue('word');
+
+          console.log(IMPOSTERS, WORD);
+
           (row.components[1] as ButtonBuilder).setDisabled(false);
           askEmbed.setDescription(
             `<:fh_bluedot:1128541545763717173> Imposters: ${IMPOSTERS}\n<:fh_bluedot:1128541545763717173> Word: :shush_face:\n\n*Click the Start button to start the game.*`
