@@ -61,9 +61,13 @@ module.exports = {
                     time: 30000,
                     filter: (i) => i.user.id === message.author.id
                 });
+                await submitted.reply({
+                    content: 'Settings Saved!',
+                    ephemeral: true
+                });
                 IMPOSTERS = parseInt(submitted.fields.getTextInputValue('imposters_count'));
                 WORD = submitted.fields.getTextInputValue('word');
-                askEmbed.setDescription(`<:fh_bluedot:1128541545763717173> Imposters: ${IMPOSTERS}\n<:fh_bluedot:1128541545763717173> Word: :shush_face:\n\n*Click the Start button to start the game.*`);
+                askEmbed.setDescription(`<:fh_bluedot:1128541545763717173> Imposters: ${IMPOSTERS}\n<:fh_bluedot:1128541545763717173> Word: :shushing_face:\n\n*Click the Start button to start the game.*`);
                 // @ts-ignore
                 row.components[1].setDisabled(false);
                 await SettingsMessage.edit({
