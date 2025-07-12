@@ -283,10 +283,17 @@ module.exports = {
               )
             );
 
+          const WriteRow = new ActionRowBuilder().addComponents([
+            new ButtonBuilder()
+              .setLabel('Submit Word')
+              .setCustomId('imposters_submit_word')
+              .setStyle(ButtonStyle.Primary)
+          ]);
+
           const WriteMessage = await message.reply({
             embeds: [WriteEmbed],
             // @ts-ignore
-            components: [new ActionRowBuilder().addComponents(modal)]
+            components: [WriteRow]
           });
 
           const WordCollector = WriteMessage.createMessageComponentCollector({

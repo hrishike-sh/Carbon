@@ -208,10 +208,16 @@ module.exports = {
                         .setMinLength(3)
                         .setMaxLength(20)
                         .setRequired(true)));
+                    const WriteRow = new discord_js_1.ActionRowBuilder().addComponents([
+                        new builders_1.ButtonBuilder()
+                            .setLabel('Submit Word')
+                            .setCustomId('imposters_submit_word')
+                            .setStyle(discord_js_1.ButtonStyle.Primary)
+                    ]);
                     const WriteMessage = await message.reply({
                         embeds: [WriteEmbed],
                         // @ts-ignore
-                        components: [new discord_js_1.ActionRowBuilder().addComponents(modal)]
+                        components: [WriteRow]
                     });
                     const WordCollector = WriteMessage.createMessageComponentCollector({
                         time: 30000
