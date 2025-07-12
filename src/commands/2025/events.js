@@ -10,7 +10,16 @@ const {
   ButtonInteraction
 } = require('discord.js');
 
-const EVENTS = ['find_the_ball', 'emoji_memory', 'basketball', 'crab_race', 'higher_or_lower', 'unscramble', 'rock_paper_scissors', 'guess_the_number'];
+const EVENTS = [
+  'find_the_ball',
+  'emoji_memory',
+  'basketball',
+  'crab_race',
+  'higher_or_lower',
+  'unscramble',
+  'rock_paper_scissors',
+  'guess_the_number'
+];
 
 module.exports = {
   name: 'events',
@@ -634,9 +643,10 @@ module.exports = {
         embeds: [embed]
       });
 
-      const messageCollector = await message.channel.createMessageComponentCollector({
-        time: 30_000
-      });
+      const messageCollector =
+        await message.channel.createMessageComponentCollector({
+          time: 30_000
+        });
       const s = new Set();
       messageCollector.on('collect', async (msg) => {
         if (s.has(msg.author.id)) return;
@@ -703,7 +713,9 @@ module.exports = {
         played.add(button.user.id);
 
         const userChoice = button.customId;
-        const botChoice = ['rock', 'paper', 'scissors'][Math.floor(Math.random() * 3)];
+        const botChoice = ['rock', 'paper', 'scissors'][
+          Math.floor(Math.random() * 3)
+        ];
 
         let result;
         if (userChoice === botChoice) {
@@ -734,12 +746,14 @@ module.exports = {
 
       const embed = new EmbedBuilder()
         .setTitle('Guess the Number!')
-        .setDescription('I have picked a number between 1 and 10. Try to guess it!')
+        .setDescription(
+          'I have picked a number between 1 and 10. Try to guess it!'
+        )
         .setColor(Colors.Yellow);
 
       await message.channel.send({ embeds: [embed] });
 
-      const collector = message.channel.createMessageComponentCollector({
+      const collector = message.channel.createMessageCollector({
         filter: (m) => !m.author.bot,
         time: 30_000
       });
@@ -759,7 +773,9 @@ module.exports = {
 
       collector.on('end', (collected, reason) => {
         if (reason === 'time') {
-          message.channel.send(`The game is over! The number was ${randomNumber}.`);
+          message.channel.send(
+            `The game is over! The number was ${randomNumber}.`
+          );
         }
       });
     }
