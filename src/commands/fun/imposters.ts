@@ -233,6 +233,7 @@ module.exports = {
         let round = 1;
 
         while (running) {
+          running = false;
           const Words: { id: string; word: string }[] = [];
 
           for (const [id, player] of PLAYERS) {
@@ -353,6 +354,11 @@ module.exports = {
             await WriteMessage.edit({
               embeds: [WriteEmbed]
             });
+          });
+
+          WordCollector.on('end', () => {
+            running = true;
+            round++;
           });
         }
       });

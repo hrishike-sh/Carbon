@@ -170,6 +170,7 @@ module.exports = {
                 let running = true;
                 let round = 1;
                 while (running) {
+                    running = false;
                     const Words = [];
                     for (const [id, player] of PLAYERS) {
                         if (player.alive) {
@@ -264,6 +265,10 @@ module.exports = {
                         await WriteMessage.edit({
                             embeds: [WriteEmbed]
                         });
+                    });
+                    WordCollector.on('end', () => {
+                        running = true;
+                        round++;
                     });
                 }
             });
