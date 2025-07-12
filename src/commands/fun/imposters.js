@@ -129,6 +129,7 @@ module.exports = {
                 else {
                     PLAYERS.set(joinButton.user.id, {
                         imposter: false,
+                        alive: true,
                         user: joinButton.user
                     });
                     await joinButton.reply({
@@ -165,6 +166,101 @@ module.exports = {
                             embeds: [normalEmbed]
                         });
                     }
+                }
+                let running = true;
+                let round = 1;
+                while (running) {
+                    const Words = [];
+                    for (const [id, player] of PLAYERS) {
+                        if (player.alive) {
+                            Words.push({
+                                id,
+                                word: ''
+                            });
+                        }
+                    }
+                    const WriteEmbed = new discord_js_1.EmbedBuilder()
+                        .setTitle(`Round ${round}`)
+                        .setDescription(`Everyone (except the imposter) was sent a word in their DMs! You now have to type a word similar to the one you were given.`)
+                        .addFields([
+                        {
+                            name: 'Waiting for..',
+                            value: `<:fh_dotblack:922314907771363419>${Words.map((a) => `<@${a.id}>`).join('\n<:fh_dotblack:922314907771363419>')}`,
+                            inline: true
+                        },
+                        {
+                            name: 'Submitted',
+                            value: '',
+                            inline: true
+                        }
+                    ])
+                        .setColor('Yellow')
+                        .setFooter({
+                        text: 'Click the button below to submit your word! You have 30 seconds.'
+                    });
+                    const modal = new discord_js_1.ModalBuilder()
+                        .setTitle('Submit your word')
+                        .setCustomId('imposters_submit_word')
+                        .addComponents(new discord_js_1.ActionRowBuilder().addComponents(new discord_js_1.TextInputBuilder()
+                        .setCustomId('word')
+                        .setLabel('Word')
+                        .setStyle(discord_js_1.TextInputStyle.Short)
+                        .setMinLength(3)
+                        .setMaxLength(20)
+                        .setRequired(true)));
+                    const WriteMessage = await message.reply({
+                        embeds: [WriteEmbed],
+                        // @ts-ignore
+                        components: [new discord_js_1.ActionRowBuilder().addComponents(modal)]
+                    });
+                    const WordCollector = WriteMessage.createMessageComponentCollector({
+                        time: 30000
+                    });
+                    WordCollector.on('collect', async (wordButton) => {
+                        if (!PLAYERS.has(wordButton.user.id)) {
+                            return wordButton.reply({
+                                content: 'You are not in this game.',
+                                ephemeral: true
+                            });
+                        }
+                        if (!PLAYERS.get(wordButton.user.id)?.alive) {
+                            return wordButton.reply({
+                                content: "Dead users can't type!!",
+                                ephemeral: true
+                            });
+                        }
+                        await wordButton.showModal(modal);
+                        const submitted = await wordButton.awaitModalSubmit({
+                            time: 15000
+                        });
+                        const word = submitted.fields.getTextInputValue('word');
+                        Words.find((a) => a.id == wordButton.user.id).word = word;
+                        WriteEmbed.setFields([
+                            {
+                                name: 'Waiting for..',
+                                value: `<:fh_dotred:1182370172925915156>${Words.filter((a) => a.word.length == 0)
+                                    .map((a) => `<@${a.id}>`)
+                                    .join('\n<:fh_dotred:1182370172925915156>')}`,
+                                inline: true
+                            },
+                            {
+                                name: 'Submitted',
+                                value: `<:fh_dotgreen:1176188796249854052>${Words.filter((a) => a.word.length != 0)
+                                    .map((a) => `<@${a.id}>`)
+                                    .join('\n<:fh_dotgreen:1176188796249854052>')}`,
+                                inline: true
+                            }
+                        ]);
+                        await submitted.reply({
+                            content: 'Your word has been submitted!',
+                            ephemeral: true
+                        });
+                        await WriteMessage.edit({
+                            embeds: [WriteEmbed],
+                            // @ts-ignore
+                            components: [new discord_js_1.ActionRowBuilder().addComponents(modal)]
+                        });
+                    });
                 }
             });
         });
