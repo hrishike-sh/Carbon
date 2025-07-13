@@ -380,13 +380,17 @@ module.exports = {
                                 Votes.set(selected, []);
                             }
                             Votes.get(selected).push(i.user.id);
+                            const fifty = Math.floor(PLAYERS.size / 2);
                             const fields = [];
                             Votes.forEach((value, key) => {
                                 const user = client.users.cache.get(key);
                                 if (user) {
                                     fields.push({
-                                        name: user.username,
-                                        value: value.map((id) => `<@${id}>`).join(', ') || 'No votes',
+                                        name: `${user.username} ${value.length}/${fifty}`,
+                                        value: value
+                                            .map((id) => `<:amongus_red:917726679214985246><@${id}>`)
+                                            .join('\n<:amongus_red:917726679214985246>') ||
+                                            'No votes',
                                         inline: true
                                     });
                                 }
