@@ -177,7 +177,8 @@ module.exports = {
                         if (player.alive) {
                             Words.push({
                                 id,
-                                word: ''
+                                word: '',
+                                user: player.user
                             });
                         }
                     }
@@ -275,7 +276,7 @@ module.exports = {
                             embeds: [WriteEmbed]
                         });
                     });
-                    WordCollector.on('end', () => {
+                    WordCollector.on('end', async () => {
                         message.channel.send({
                             embeds: [
                                 {
@@ -289,7 +290,7 @@ module.exports = {
                             .setDescription(`The theme was (i havent added this yet xdd)`)
                             .addFields(Words.map((a) => {
                             return {
-                                name: `<@${a.id}>`,
+                                name: `<@${a.user.username}>`,
                                 value: a.word || 'No word submitted',
                                 inline: true
                             };
@@ -302,10 +303,70 @@ module.exports = {
                         message.channel.send({
                             embeds: [EveryonesEmbed]
                         });
+                        await sleep(9000);
+                        // @ts-ignore
+                        await message.channel.send({
+                            embeds: [
+                                {
+                                    title: 'You have 30 seconds to figure out who the imposter is!',
+                                    color: discord_js_1.Colors.Blue
+                                }
+                            ]
+                        });
+                        await sleep(1000);
                         // Unlock channel
+                        await message.channel.permissionOverwrites.edit(message.guild.roles.everyone, {
+                            SendMessages: true
+                        });
+                        await sleep(30000);
+                        // Lock channel again
+                        await message.channel.permissionOverwrites.edit(message.guild.roles.everyone, {
+                            SendMessages: false
+                        });
+                        // @ts-ignore
+                        await message.channel.send({
+                            embeds: [
+                                {
+                                    title: "Time's up!",
+                                    color: discord_js_1.Colors.Red
+                                }
+                            ]
+                        });
+                        await sleep(1000);
+                        const VoteEmbed = new discord_js_1.EmbedBuilder()
+                            .setTitle(`Round ${round} - Voting`)
+                            .setDescription(`Everyone, please vote for who you think the imposter is! You have 30 seconds to vote.`)
+                            .setColor('Yellow')
+                            .setFooter({
+                            text: 'Click the button below to vote!'
+                        });
+                        const selectmenu = new discord_js_1.StringSelectMenuBuilder()
+                            .setCustomId('imposters_vote')
+                            .setPlaceholder('Select a player to vote for!')
+                            .setMinValues(1)
+                            .setMaxValues(1)
+                            .addOptions(Words.map((a) => {
+                            return {
+                                label: a.user.username,
+                                value: a.id,
+                                description: a.word.length > 0
+                                    ? `Their word was: ${a.word}`
+                                    : 'No word submitted',
+                                emoji: a.user.displayAvatarURL({ size: 32 })
+                            };
+                        }));
+                        const VoteRow = new discord_js_1.ActionRowBuilder().addComponents([selectmenu]);
+                        await message.channel.send({
+                            embeds: [VoteEmbed],
+                            // @ts-ignore
+                            components: [VoteRow]
+                        });
                     });
                 }
             });
         });
     }
 };
+function sleep(ms) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+}

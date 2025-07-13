@@ -14,7 +14,8 @@ import {
   Collection,
   User,
   TextChannel,
-  Colors
+  Colors,
+  StringSelectMenuBuilder
 } from 'discord.js';
 
 module.exports = {
@@ -237,13 +238,14 @@ module.exports = {
 
         while (running) {
           running = false;
-          const Words: { id: string; word: string }[] = [];
+          const Words: { id: string; word: string; user: User }[] = [];
 
           for (const [id, player] of PLAYERS) {
             if (player.alive) {
               Words.push({
                 id,
-                word: ''
+                word: '',
+                user: player.user
               });
             }
           }
@@ -367,7 +369,7 @@ module.exports = {
             });
           });
 
-          WordCollector.on('end', () => {
+          WordCollector.on('end', async () => {
             (message.channel as TextChannel).send({
               embeds: [
                 {
@@ -382,7 +384,7 @@ module.exports = {
               .addFields(
                 Words.map((a) => {
                   return {
-                    name: `<@${a.id}>`,
+                    name: `<@${a.user.username}>`,
                     value: a.word || 'No word submitted',
                     inline: true
                   };
@@ -396,11 +398,92 @@ module.exports = {
             message.channel.send({
               embeds: [EveryonesEmbed]
             });
+            await sleep(9_000);
+            // @ts-ignore
+            await message.channel.send({
+              embeds: [
+                {
+                  title:
+                    'You have 30 seconds to figure out who the imposter is!',
+                  color: Colors.Blue
+                }
+              ]
+            });
+
+            await sleep(1_000);
 
             // Unlock channel
+            await (message.channel as TextChannel).permissionOverwrites.edit(
+              message.guild!.roles.everyone,
+              {
+                SendMessages: true
+              }
+            );
+
+            await sleep(30_000);
+
+            // Lock channel again
+            await (message.channel as TextChannel).permissionOverwrites.edit(
+              message.guild!.roles.everyone,
+              {
+                SendMessages: false
+              }
+            );
+            // @ts-ignore
+            await message.channel.send({
+              embeds: [
+                {
+                  title: "Time's up!",
+                  color: Colors.Red
+                }
+              ]
+            });
+
+            await sleep(1_000);
+
+            const VoteEmbed = new EmbedBuilder()
+              .setTitle(`Round ${round} - Voting`)
+              .setDescription(
+                `Everyone, please vote for who you think the imposter is! You have 30 seconds to vote.`
+              )
+              .setColor('Yellow')
+              .setFooter({
+                text: 'Click the button below to vote!'
+              });
+
+            const selectmenu = new StringSelectMenuBuilder()
+              .setCustomId('imposters_vote')
+              .setPlaceholder('Select a player to vote for!')
+              .setMinValues(1)
+              .setMaxValues(1)
+              .addOptions(
+                Words.map((a) => {
+                  return {
+                    label: a.user.username,
+                    value: a.id,
+                    description:
+                      a.word.length > 0
+                        ? `Their word was: ${a.word}`
+                        : 'No word submitted',
+                    emoji: a.user.displayAvatarURL({ size: 32 })
+                  };
+                })
+              );
+
+            const VoteRow = new ActionRowBuilder().addComponents([selectmenu]);
+
+            await (message.channel as TextChannel).send({
+              embeds: [VoteEmbed],
+              // @ts-ignore
+              components: [VoteRow]
+            });
           });
         }
       });
     });
   }
 };
+
+function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
