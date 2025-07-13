@@ -182,6 +182,9 @@ module.exports = {
                             });
                         }
                     }
+                    const queue = Array.from(PLAYERS.values())
+                        .filter((player) => player.alive)
+                        .sort(() => Math.random() - 0.5);
                     const WriteEmbed = new discord_js_1.EmbedBuilder()
                         .setTitle(`Round ${round}`)
                         .setDescription(`Everyone (except the imposter) was sent a word in their DMs! You now have to type a word similar to the one you were given.`)
@@ -220,11 +223,10 @@ module.exports = {
                     const WriteMessage = await message.reply({
                         embeds: [WriteEmbed],
                         // @ts-ignore
-                        components: [WriteRow]
+                        components: [WriteRow],
+                        content: `<@${queue[0].user.id}> its your turn!`
                     });
-                    const WordCollector = WriteMessage.createMessageComponentCollector({
-                        time: 30000 // THIS
-                    });
+                    const WordCollector = WriteMessage.createMessageComponentCollector({});
                     WordCollector.on('collect', async (wordButton) => {
                         if (!PLAYERS.has(wordButton.user.id)) {
                             return wordButton.reply({
@@ -238,6 +240,13 @@ module.exports = {
                                 ephemeral: true
                             });
                         }
+                        if (wordButton.user.id !== queue[0].user.id) {
+                            return wordButton.reply({
+                                content: "It's not your turn!",
+                                ephemeral: true
+                            });
+                        }
+                        queue.shift();
                         await wordButton.showModal(modal);
                         const submitted = await wordButton.awaitModalSubmit({
                             time: 15000,
@@ -273,7 +282,8 @@ module.exports = {
                             }
                         ]);
                         await WriteMessage.edit({
-                            embeds: [WriteEmbed]
+                            embeds: [WriteEmbed],
+                            content: `<@${queue[0].user.id}> its your turn!`
                         });
                     });
                     WordCollector.on('end', async () => {
@@ -364,10 +374,15 @@ module.exports = {
                             filter: (i) => i.customId === 'imposters_vote',
                             time: 30000
                         });
-                        const VotedEmbed = new discord_js_1.EmbedBuilder().setTitle('Voted Players');
                         const Votes = new Map();
                         const voted = [];
                         Collector.on('collect', async (i) => {
+                            if (!PLAYERS.has(i.user.id)) {
+                                return i.reply({
+                                    content: 'You are not in the game!',
+                                    ephemeral: true
+                                });
+                            }
                             if (voted.includes(i.user.id)) {
                                 return i.reply({
                                     content: 'You have already voted!',
@@ -389,21 +404,20 @@ module.exports = {
                                         name: `${user.username} ${value.length}/${fifty}`,
                                         value: value
                                             .map((id) => `<:amongus_red:917726679214985246><@${id}>`)
-                                            .join('\n<:amongus_red:917726679214985246>') ||
-                                            'No votes',
+                                            .join('\n') || 'No votes',
                                         inline: true
                                     });
                                 }
                             });
-                            VotedEmbed.setFields(fields);
+                            VoteEmbed.setFields(fields);
                             voteMessage.edit({
-                                embeds: [VotedEmbed]
+                                embeds: [VoteEmbed]
                             });
                         });
                         Collector.on('end', async () => {
                             // @ts-ignore
                             await message.channel.send({
-                                embeds: [VotedEmbed]
+                                embeds: [VoteEmbed]
                             });
                         });
                     });
