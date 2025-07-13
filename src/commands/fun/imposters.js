@@ -240,7 +240,7 @@ module.exports = {
                                 ephemeral: true
                             });
                         }
-                        const curr = queue.shift();
+                        const curr = queue[0];
                         if (wordButton.user.id !== curr.user.id) {
                             return wordButton.reply({
                                 content: "It's not your turn!",
@@ -275,6 +275,7 @@ module.exports = {
                         else {
                             Words.find((a) => a.id == wordButton.user.id).word = word;
                         }
+                        queue.shift();
                         await submitted.reply({
                             content: 'Your word has been submitted!',
                             ephemeral: true
