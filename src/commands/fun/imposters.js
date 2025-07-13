@@ -351,15 +351,56 @@ module.exports = {
                                 value: a.id,
                                 description: a.word.length > 0
                                     ? `Their word was: ${a.word}`
-                                    : 'No word submitted',
-                                emoji: a.user.displayAvatarURL({ size: 32 })
+                                    : 'No word submitted'
                             };
                         }));
                         const VoteRow = new discord_js_1.ActionRowBuilder().addComponents([selectmenu]);
-                        await message.channel.send({
+                        const voteMessage = await message.channel.send({
                             embeds: [VoteEmbed],
                             // @ts-ignore
                             components: [VoteRow]
+                        });
+                        const Collector = message.channel.createMessageComponentCollector({
+                            filter: (i) => i.customId === 'imposters_vote',
+                            time: 30000
+                        });
+                        const VotedEmbed = new discord_js_1.EmbedBuilder().setTitle('Voted Players');
+                        const Votes = new Map();
+                        const voted = [];
+                        Collector.on('collect', async (i) => {
+                            if (voted.includes(i.user.id)) {
+                                return i.reply({
+                                    content: 'You have already voted!',
+                                    ephemeral: true
+                                });
+                            }
+                            voted.push(i.user.id);
+                            const selected = i.values[0];
+                            if (!Votes.has(selected)) {
+                                Votes.set(selected, []);
+                            }
+                            Votes.get(selected).push(i.user.id);
+                            const fields = [];
+                            Votes.forEach((value, key) => {
+                                const user = client.users.cache.get(key);
+                                if (user) {
+                                    fields.push({
+                                        name: user.username,
+                                        value: value.map((id) => `<@${id}>`).join(', ') || 'No votes',
+                                        inline: true
+                                    });
+                                }
+                            });
+                            VotedEmbed.setFields(fields);
+                            voteMessage.edit({
+                                embeds: [VotedEmbed]
+                            });
+                        });
+                        Collector.on('end', async () => {
+                            // @ts-ignore
+                            await message.channel.send({
+                                embeds: [VotedEmbed]
+                            });
                         });
                     });
                 }
