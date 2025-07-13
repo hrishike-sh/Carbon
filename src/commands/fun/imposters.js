@@ -240,13 +240,13 @@ module.exports = {
                                 ephemeral: true
                             });
                         }
-                        if (wordButton.user.id !== queue[0].user.id) {
+                        const curr = queue.shift();
+                        if (wordButton.user.id !== curr.user.id) {
                             return wordButton.reply({
                                 content: "It's not your turn!",
                                 ephemeral: true
                             });
                         }
-                        queue.shift();
                         await wordButton.showModal(modal);
                         const submitted = await wordButton.awaitModalSubmit({
                             time: 15000,
@@ -259,8 +259,22 @@ module.exports = {
                                 ephemeral: true
                             });
                         }
-                        const word = submitted.fields.getTextInputValue('word');
-                        Words.find((a) => a.id == wordButton.user.id).word = word;
+                        const word = submitted?.fields?.getTextInputValue('word') || '';
+                        if (Words.find((a) => a.word == word)) {
+                            return submitted.reply({
+                                content: 'Someone else submitted that word! You lost your turn!',
+                                ephemeral: true
+                            });
+                        }
+                        else if (word == WORD) {
+                            return submitted.reply({
+                                content: `You cannot use that word!`,
+                                ephemeral: true
+                            });
+                        }
+                        else {
+                            Words.find((a) => a.id == wordButton.user.id).word = word;
+                        }
                         await submitted.reply({
                             content: 'Your word has been submitted!',
                             ephemeral: true
