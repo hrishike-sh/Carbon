@@ -344,8 +344,7 @@ module.exports = {
             });
 
             if (!submitted) {
-              queue.shift();
-
+              i++;
               return wordButton.followUp({
                 content: 'You did not submit the modal in time.',
                 ephemeral: true
@@ -354,7 +353,7 @@ module.exports = {
             const word = submitted?.fields?.getTextInputValue('word') || '';
 
             if (Words.find((a) => a.word == word)) {
-              queue.shift();
+              i++;
 
               return submitted.reply({
                 content:
@@ -362,7 +361,7 @@ module.exports = {
                 ephemeral: true
               });
             } else if (word == WORD) {
-              queue.shift();
+              i++;
 
               return submitted.reply({
                 content: `You cannot use that word!`,
@@ -397,10 +396,18 @@ module.exports = {
               }
             ]);
             console.log(queue);
-            await WriteMessage.edit({
-              embeds: [WriteEmbed],
-              content: `<@${queue[++i].user.id}> its your turn!`
-            });
+            if (i == queue.length - 1) {
+              WordCollector.stop();
+              await WriteMessage.edit({
+                embeds: [WriteEmbed],
+                content: null
+              });
+            } else {
+              await WriteMessage.edit({
+                embeds: [WriteEmbed],
+                content: `<@${queue[++i].user.id}> its your turn!`
+              });
+            }
           });
 
           WordCollector.on('end', async () => {

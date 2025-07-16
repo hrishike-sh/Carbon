@@ -257,7 +257,7 @@ module.exports = {
                                 modalInt.user.id === wordButton.user.id
                         });
                         if (!submitted) {
-                            queue.shift();
+                            i++;
                             return wordButton.followUp({
                                 content: 'You did not submit the modal in time.',
                                 ephemeral: true
@@ -265,14 +265,14 @@ module.exports = {
                         }
                         const word = submitted?.fields?.getTextInputValue('word') || '';
                         if (Words.find((a) => a.word == word)) {
-                            queue.shift();
+                            i++;
                             return submitted.reply({
                                 content: 'Someone else submitted that word! You lost your turn!',
                                 ephemeral: true
                             });
                         }
                         else if (word == WORD) {
-                            queue.shift();
+                            i++;
                             return submitted.reply({
                                 content: `You cannot use that word!`,
                                 ephemeral: true
@@ -302,10 +302,19 @@ module.exports = {
                             }
                         ]);
                         console.log(queue);
-                        await WriteMessage.edit({
-                            embeds: [WriteEmbed],
-                            content: `<@${queue[++i].user.id}> its your turn!`
-                        });
+                        if (i == queue.length - 1) {
+                            WordCollector.stop();
+                            await WriteMessage.edit({
+                                embeds: [WriteEmbed],
+                                content: null
+                            });
+                        }
+                        else {
+                            await WriteMessage.edit({
+                                embeds: [WriteEmbed],
+                                content: `<@${queue[++i].user.id}> its your turn!`
+                            });
+                        }
                     });
                     WordCollector.on('end', async () => {
                         message.channel.send({
