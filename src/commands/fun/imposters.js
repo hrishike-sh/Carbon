@@ -170,8 +170,11 @@ module.exports = {
                 }
                 let running = true;
                 let round = 1;
+                let go = true;
                 while (running) {
-                    running = false;
+                    if (!go)
+                        continue;
+                    go = false;
                     const Words = [];
                     for (const [id, player] of PLAYERS) {
                         if (player.alive) {
@@ -404,7 +407,7 @@ module.exports = {
                             filter: (i) => i.customId === 'imposters_vote',
                             time: 30000
                         });
-                        const Votes = new Map();
+                        const Votes = [];
                         const voted = [];
                         Collector.on('collect', async (i) => {
                             if (!PLAYERS.has(i.user.id)) {
@@ -421,18 +424,20 @@ module.exports = {
                             }
                             voted.push(i.user.id);
                             const selected = i.values[0];
-                            if (!Votes.has(selected)) {
-                                Votes.set(selected, []);
+                            let vote = Votes.find((v) => v.userId === selected);
+                            if (!vote) {
+                                vote = { userId: selected, voters: [] };
+                                Votes.push(vote);
                             }
-                            Votes.get(selected).push(i.user.id);
+                            vote.voters.push(i.user.id);
                             const fifty = Math.floor(PLAYERS.size / 2);
                             const fields = [];
-                            Votes.forEach((value, key) => {
-                                const user = client.users.cache.get(key);
+                            Votes.forEach((vote) => {
+                                const user = client.users.cache.get(vote.userId);
                                 if (user) {
                                     fields.push({
-                                        name: `${user.username} ${value.length}/${fifty}`,
-                                        value: value
+                                        name: `${user.username} ${vote.voters.length}/${fifty}`,
+                                        value: vote.voters
                                             .map((id) => `<:amongus_red:917726679214985246><@${id}>`)
                                             .join('\n') || 'No votes',
                                         inline: true
@@ -445,10 +450,27 @@ module.exports = {
                             });
                         });
                         Collector.on('end', async () => {
-                            // @ts-ignore
-                            await message.channel.send({
-                                embeds: [VoteEmbed]
-                            });
+                            const highest = Votes.sort((a, b) => b.voters.length - a.voters.length);
+                            if (highest[0] == highest[1]) {
+                                await message.channel.send({
+                                    embeds: [
+                                        {
+                                            title: 'Tie!',
+                                            description: 'There was a tie! No one was eliminated.',
+                                            color: discord_js_1.Colors.Yellow
+                                        }
+                                    ]
+                                });
+                                go = true;
+                                round++;
+                            }
+                            else {
+                                await message.channel.send({
+                                    content: `<@${highest[0].userId}> was eliminated!`
+                                });
+                                go = true;
+                                round++;
+                            }
                         });
                     });
                 }

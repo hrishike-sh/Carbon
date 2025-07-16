@@ -236,9 +236,10 @@ module.exports = {
 
         let running = true;
         let round = 1;
-
+        let go = true;
         while (running) {
-          running = false;
+          if (!go) continue;
+          go = false;
           const Words: { id: string; word: string; user: User }[] = [];
 
           for (const [id, player] of PLAYERS) {
@@ -523,7 +524,7 @@ module.exports = {
               time: 30_000
             });
 
-            const Votes: Map<string, String[]> = new Map();
+            const Votes: { userId: string; voters: string[] }[] = [];
             const voted: string[] = [];
             Collector.on('collect', async (i: StringSelectMenuInteraction) => {
               if (!PLAYERS.has(i.user.id)) {
@@ -543,21 +544,23 @@ module.exports = {
               voted.push(i.user.id);
 
               const selected = i.values[0];
-              if (!Votes.has(selected)) {
-                Votes.set(selected, []);
+              let vote = Votes.find((v) => v.userId === selected);
+              if (!vote) {
+                vote = { userId: selected, voters: [] };
+                Votes.push(vote);
               }
 
-              Votes.get(selected)!.push(i.user.id);
+              vote.voters.push(i.user.id);
               const fifty = Math.floor(PLAYERS.size / 2);
               const fields: { name: string; value: string; inline: boolean }[] =
                 [];
-              Votes.forEach((value, key) => {
-                const user = client.users.cache.get(key);
+              Votes.forEach((vote) => {
+                const user = client.users.cache.get(vote.userId);
                 if (user) {
                   fields.push({
-                    name: `${user.username} ${value.length}/${fifty}`,
+                    name: `${user.username} ${vote.voters.length}/${fifty}`,
                     value:
-                      value
+                      vote.voters
                         .map(
                           (id) => `<:amongus_red:917726679214985246><@${id}>`
                         )
@@ -575,10 +578,31 @@ module.exports = {
             });
 
             Collector.on('end', async () => {
-              // @ts-ignore
-              await message.channel.send({
-                embeds: [VoteEmbed]
-              });
+              const highest = Votes.sort(
+                (a, b) => b.voters.length - a.voters.length
+              );
+
+              if (highest[0] == highest[1]) {
+                await message.channel.send({
+                  embeds: [
+                    {
+                      title: 'Tie!',
+                      description: 'There was a tie! No one was eliminated.',
+                      color: Colors.Yellow
+                    }
+                  ]
+                });
+
+                go = true;
+                round++;
+              } else {
+                await message.channel.send({
+                  content: `<@${highest[0].userId}> was eliminated!`
+                });
+
+                go = true;
+                round++;
+              }
             });
           });
         }
