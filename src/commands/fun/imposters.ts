@@ -262,9 +262,9 @@ module.exports = {
             .addFields([
               {
                 name: 'Waiting for..',
-                value: `<:fh_dotblack:922314907771363419>${Words.map(
-                  (a) => `<@${a.id}>`
-                ).join('\n<:fh_dotblack:922314907771363419>')}`,
+                value: `<:fh_dotblack:922314907771363419>${queue
+                  .map((a) => `<@${a.user.id}>`)
+                  .join('\n<:fh_dotblack:922314907771363419>')}`,
                 inline: true
               },
               {
@@ -310,7 +310,7 @@ module.exports = {
           const WordCollector = WriteMessage.createMessageComponentCollector(
             {}
           );
-
+          let i = 0;
           WordCollector.on('collect', async (wordButton: ButtonInteraction) => {
             if (!PLAYERS.has(wordButton.user.id)) {
               return wordButton.reply({
@@ -326,7 +326,7 @@ module.exports = {
               });
             }
 
-            const curr = queue[0];
+            const curr = queue[i];
 
             if (wordButton.user.id !== curr!.user.id) {
               return wordButton.reply({
@@ -344,6 +344,8 @@ module.exports = {
             });
 
             if (!submitted) {
+              queue.shift();
+
               return wordButton.followUp({
                 content: 'You did not submit the modal in time.',
                 ephemeral: true
@@ -352,12 +354,16 @@ module.exports = {
             const word = submitted?.fields?.getTextInputValue('word') || '';
 
             if (Words.find((a) => a.word == word)) {
+              queue.shift();
+
               return submitted.reply({
                 content:
                   'Someone else submitted that word! You lost your turn!',
                 ephemeral: true
               });
             } else if (word == WORD) {
+              queue.shift();
+
               return submitted.reply({
                 content: `You cannot use that word!`,
                 ephemeral: true
@@ -365,7 +371,6 @@ module.exports = {
             } else {
               Words.find((a) => a.id == wordButton.user.id)!.word = word;
             }
-            queue.shift();
             await submitted.reply({
               content: 'Your word has been submitted!',
               ephemeral: true
@@ -391,9 +396,10 @@ module.exports = {
                 inline: true
               }
             ]);
+            console.log(queue);
             await WriteMessage.edit({
               embeds: [WriteEmbed],
-              content: `<@${queue[0].user.id}> its your turn!`
+              content: `<@${queue[++i].user.id}> its your turn!`
             });
           });
 
