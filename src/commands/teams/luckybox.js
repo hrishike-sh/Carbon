@@ -21,14 +21,14 @@ module.exports = {
 
     if (!Team) return message.reply('You are not in a team.');
 
-    // if (Team.lastLb + 86400000 > Date.now()) {
-    //   const nextDb = Team.lastLb + 86400000 - Date.now();
-    //   return message.reply(
-    //     `You can open the lucky box again in <t:${(nextDb / 1000).toFixed(
-    //       0
-    //     )}:R> seconds.`
-    //   );
-    // }
+    if (Team.lastLb + 86400000 > Date.now()) {
+      const nextDb = Team.lastLb + 86400000 - Date.now();
+      return message.reply(
+        `You can open the lucky box again in <t:${(nextDb / 1000).toFixed(
+          0
+        )}:R> seconds.`
+      );
+    }
 
     if (opening.includes(Team.id)) {
       return message.reply('The lucky box is already opening.');
@@ -149,7 +149,6 @@ module.exports = {
         ]
       });
     } else if (random <= 90) {
-      // nothing happens
       // +5 points & another lucky box
 
       Team.points += 5;
@@ -172,6 +171,28 @@ module.exports = {
             title: 'Lucky Box 📦📦',
             description: `You opened your lucky box and got 5 points!\n\nYou were lucky and found ANOTHER Lucky Box!! Open it now with \`fh lootbox\``,
             color: Colors.Green
+          }
+        ]
+      });
+    } else {
+      // Nothing happens
+
+      const unboxMessage = await message.reply({
+        embeds: [
+          {
+            description: `Opening your lucky box...`,
+            color: Colors.Yellow
+          }
+        ]
+      });
+      await sleep(5000);
+
+      await unboxMessage.edit({
+        embeds: [
+          {
+            title: 'Lucky Box 📦📦',
+            description: `You opened your lucky box and got nothing...`,
+            color: Colors.Red
           }
         ]
       });
