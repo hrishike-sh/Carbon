@@ -9,7 +9,15 @@ module.exports = {
    */
   async execute(message, args, client) {
     // fh create team name
-    if (message.author.id !== '598918643727990784') return;
+    if (
+      !message.member.roles.cache.hasAny(
+        '1016728636365209631',
+        '824348974449819658',
+        '1163857079300276254'
+      )
+    ) {
+      return;
+    }
     const teamName =
       args.join(' ') || 'Team ' + Math.floor(Math.random() * 100) + 1;
 
