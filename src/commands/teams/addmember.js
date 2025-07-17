@@ -1,8 +1,8 @@
 const { Message, Client } = require('discord.js');
 const TeamDB = require('../../database/teams');
 module.exports = {
-  name: 'addmember',
-  aliases: ['teamadd', 'ta'],
+  name: 'ta',
+  aliases: ['teamadd'],
   /**
    * @param {Message} message Discord Message
    * @param {String[]} args Command Arguments
@@ -19,16 +19,15 @@ module.exports = {
       return;
     }
 
-    const role =
-      message.mentions.roles?.first() || message.guild.roles.cache.get(args[0]);
-    if (!role) return message.reply('Mention the role dumbfuck.');
-
-    args.shift();
     const member =
       message.mentions.members?.first() ||
       message.guild.members.cache.get(args[0]);
-    if (!member) return message.reply('Mention the member dumbfuck.');
-    const team = await TeamDB.findOne({ roleId: role.id });
+    if (!member) return message.reply('Mention the user dumbfuck.');
+
+    const teamName = args.slice(1).join(' ');
+    if (!teamName) return message.reply('Provide the team name.');
+
+    const team = await TeamDB.findOne({ name: teamName });
     if (!team)
       return message.reply('The team does not exist! Create it first.');
 
