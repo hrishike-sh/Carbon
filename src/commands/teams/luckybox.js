@@ -25,8 +25,8 @@ module.exports = {
 
     if (!Team) return message.reply('You are not in a team.');
 
-    if (Date.now() - Team.lastLb < 86400000) {
-      const nextDb = 86400000 - (Date.now() - Team.lastLb);
+    if (Date.now() - Team.lastLb < 43200000) {
+      const nextDb = 43200000 - (Date.now() - Team.lastLb);
       const nextOpenTimestamp = Math.floor((Date.now() + nextDb) / 1000);
 
       return message.reply(
@@ -194,7 +194,7 @@ module.exports = {
       // +5 points & another lucky box
 
       Team.points += 5;
-      Team.lastLb = Date.now() - 86400000;
+      Team.lastLb = Date.now() - 43200000;
       await Team.save();
 
       const unboxMessage = await message.reply({
