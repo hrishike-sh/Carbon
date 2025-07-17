@@ -1,7 +1,11 @@
-const { Message } = require('discord.js');
+const {
+  Message,
+  Client,
+  Colors,
+  ActionRowBuilder,
+  StringSelectMenuBuilder
+} = require('discord.js');
 const TeamsDB = require('../../database/teams');
-const { Client } = require('discord.js');
-const { Colors } = require('discord.js');
 
 let opening = [];
 
@@ -21,8 +25,8 @@ module.exports = {
 
     if (!Team) return message.reply('You are not in a team.');
 
-    if (Team.lastLb + 86400000 > Date.now()) {
-      const nextDb = Team.lastLb + 86400000 - Date.now();
+    if (Date.now() - Team.lastLb < 86400000) {
+      const nextDb = 86400000 - (Date.now() - Team.lastLb);
       return message.reply(
         `You can open the lucky box again in <t:${(nextDb / 1000).toFixed(
           0
@@ -98,10 +102,6 @@ module.exports = {
       const otherTeams = allTeams.filter(
         (team) => !team.users.includes(userId)
       );
-      const randomTeam =
-        otherTeams[Math.floor(Math.random() * otherTeams.length)];
-      randomTeam.points -= 5;
-      await randomTeam.save();
 
       const unboxMessage = await message.reply({
         embeds: [
@@ -112,15 +112,57 @@ module.exports = {
         ]
       });
       await sleep(5000);
-
+      const row = new ActionRowBuilder().addComponents(
+        new StringSelectMenuBuilder()
+          .setCustomId('team-select')
+          .setPlaceholder('Select a team')
+          .addOptions(
+            otherTeams.map((name) => {
+              return {
+                label: name.name,
+                value: name.id
+              };
+            })
+          )
+      );
       await unboxMessage.edit({
         embeds: [
           {
             title: 'Lucky Box 📦📦',
-            description: `You opened your lucky box removed 5 points from **${randomTeam.name}**!`,
+            description: `You opened your Lucky Box and got the ability to **remove 5 points from any other team!!**\n\nSelect the team below`,
             color: Colors.Green
           }
-        ]
+        ],
+        components: [row]
+      });
+
+      const collector = unboxMessage.createMessageComponentCollector({
+        filter: (i) => i.user.id === message.author.id,
+        idle: 30_000,
+        max: 1
+      });
+
+      collector.on('collect', async (button) => {
+        const teamId = button.values[0];
+        const team = await TeamsDB.findById(teamId);
+        if (!team) return;
+
+        team.points -= 5;
+        await team.save();
+
+        await button.reply({
+          embeds: [
+            {
+              title: 'Lucky Box 📦📦',
+              description: `You removed 5 points from the team ${team.name}`,
+              color: Colors.Green
+            }
+          ]
+        });
+
+        await unboxMessage.edit({
+          components: null
+        });
       });
     } else if (random <= 85) {
       // 20%
