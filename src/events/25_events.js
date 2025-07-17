@@ -7,7 +7,7 @@ const {
   Collection,
   Colors
 } = require('discord.js');
-const Team = require('../models/teams');
+const Team = require('../database/teams');
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 const shuffle = (array) => {
