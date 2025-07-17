@@ -583,6 +583,7 @@ module.exports = {
               );
 
               if (highest[0] == highest[1]) {
+                // @ts-ignore
                 await message.channel.send({
                   embeds: [
                     {
@@ -596,6 +597,7 @@ module.exports = {
                 go = true;
                 round++;
               } else {
+                // @ts-ignore
                 await message.channel.send({
                   content: `<@${highest[0].userId}> was eliminated!`
                 });

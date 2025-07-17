@@ -452,6 +452,7 @@ module.exports = {
                         Collector.on('end', async () => {
                             const highest = Votes.sort((a, b) => b.voters.length - a.voters.length);
                             if (highest[0] == highest[1]) {
+                                // @ts-ignore
                                 await message.channel.send({
                                     embeds: [
                                         {
@@ -465,6 +466,7 @@ module.exports = {
                                 round++;
                             }
                             else {
+                                // @ts-ignore
                                 await message.channel.send({
                                     content: `<@${highest[0].userId}> was eliminated!`
                                 });
