@@ -10,14 +10,14 @@ module.exports = {
    * @param {Client} client Discord Client
    */
   async execute(message, args, client) {
-    const userId = message.author.id;
+    let userId;
+    if (args[0]) {
+      userId =
+        message.mentions?.users?.first()?.id ||
+        message.guild.members.cache.get(args[0])?.id;
+    }
     const team = await TeamDB.findOne({ users: userId });
     if (!team) return message.reply('You are not in a team.');
-
-    // let totalCoins = 0;
-    // for (let i = 0; i < 5; i++) {
-    //   totalCoins += (await database.findOne({ userId: team.users[i] })).points;
-    // }
 
     const embed = new EmbedBuilder()
       .setTitle(team.name)
