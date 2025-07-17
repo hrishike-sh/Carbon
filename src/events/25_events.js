@@ -107,7 +107,7 @@ module.exports = {
           if (button.customId === 'ball') {
             winner = button.user;
             await awardPoint(winner.id);
-            button.reply(`${button.user} found the ball and won!`);
+            button.reply({ content: `${button.user} found the ball and won!`, ephemeral: true });
             collector.stop();
           } else {
             button.reply('Incorrect!');
