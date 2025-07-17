@@ -16,7 +16,7 @@ module.exports = {
 
     let totalCoins = 0;
     for (let i = 0; i < 5; i++) {
-      totalCoins += (await database.findOne({ userId: team.users[i] })).coins;
+      totalCoins += (await database.findOne({ userId: team.users[i] })).points;
     }
 
     const embed = new EmbedBuilder()
