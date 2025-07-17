@@ -14,19 +14,17 @@ module.exports = {
     const team = await TeamDB.findOne({ users: userId });
     if (!team) return message.reply('You are not in a team.');
 
-    let totalCoins = 0;
-    for (let i = 0; i < 5; i++) {
-      totalCoins += (await database.findOne({ userId: team.users[i] })).points;
-    }
+    // let totalCoins = 0;
+    // for (let i = 0; i < 5; i++) {
+    //   totalCoins += (await database.findOne({ userId: team.users[i] })).points;
+    // }
 
     const embed = new EmbedBuilder()
       .setTitle(team.name)
       .addFields([
         {
           name: 'Wealth',
-          value: `Points: ${
-            team.points
-          }\nCoins: ${totalCoins.toLocaleString()}`,
+          value: `Points: ${team.points}`,
           inline: true
         },
         {
