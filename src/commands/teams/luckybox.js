@@ -25,14 +25,14 @@ module.exports = {
 
     if (!Team) return message.reply('You are not in a team.');
 
-    // if (Date.now() - Team.lastLb < 86400000) {
-    //   const nextDb = 86400000 - (Date.now() - Team.lastLb);
-    //   const nextOpenTimestamp = Math.floor((Date.now() + nextDb) / 1000);
+    if (Date.now() - Team.lastLb < 86400000) {
+      const nextDb = 86400000 - (Date.now() - Team.lastLb);
+      const nextOpenTimestamp = Math.floor((Date.now() + nextDb) / 1000);
 
-    //   return message.reply(
-    //     `You can open the lucky box again <t:${nextOpenTimestamp}:R>.`
-    //   );
-    // }
+      return message.reply(
+        `You can open the lucky box again <t:${nextOpenTimestamp}:R>.`
+      );
+    }
 
     if (opening.includes(Team.id)) {
       return message.reply('The lucky box is already opening.');
