@@ -11,21 +11,12 @@ module.exports = {
   async execute(message, args, client) {
     if (message.author.id !== '598918643727990784') return;
 
-    const role =
-      message.mentions.roles?.first() || message.guild.roles.cache.get(args[0]);
-    if (!role) return message.reply('Mention the role dumbfuck.');
-
-    args.shift();
     const member =
       message.mentions.members?.first() ||
       message.guild.members.cache.get(args[0]);
     if (!member) return message.reply('Mention the member dumbfuck.');
-    const team = await TeamDB.findOne({ roleId: role.id });
-    if (!team)
-      return message.reply('The team does not exist! Create it first.');
-
-    if (!team.users.includes(member.id))
-      return message.reply('The member is not in the team.');
+    const team = await TeamDB.findOne({ users: member.id });
+    if (!team) return message.reply('The member is not in a team.');
 
     team.users = team.users.filter((a) => a !== member.id);
     team.save();

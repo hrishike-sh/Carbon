@@ -8,20 +8,14 @@ module.exports = {
    * @param {Client} client Discord Client
    */
   async execute(message, args, client) {
-    // fh create <role_id> team name
+    // fh create team name
     if (message.author.id !== '598918643727990784') return;
-    const role =
-      message.mentions.roles?.first() || message.guild.roles.cache.get(args[0]);
-    if (!role) return message.reply('Mention the role dumbfuck.');
-
-    args.shift();
     const teamName =
       args.join(' ') || 'Team ' + Math.floor(Math.random() * 100) + 1;
 
-    let team = await TeamDB.findOne({ roleID: role.id });
+    let team = await TeamDB.findOne({ name: teamName });
     if (team) return message.reply('Team already exists!');
     team = new TeamDB({
-      roleId: role.id,
       name: teamName
     });
     team.save();
@@ -29,7 +23,7 @@ module.exports = {
       embeds: [
         {
           title: 'Team created',
-          description: `Name: ${teamName}\nRole: <@&${role.id}>\nDB ID: ${team._id}`
+          description: `Name: ${teamName}\nDB ID: ${team._id}`
         }
       ]
     });
