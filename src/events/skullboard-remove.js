@@ -1,4 +1,10 @@
-const { Message, Events, MessageReaction, User } = require('discord.js');
+const {
+  Message,
+  Events,
+  MessageReaction,
+  User,
+  Colors
+} = require('discord.js');
 const Database = require('../database/skullboard');
 module.exports = {
   name: Events.MessageReactionRemove,
