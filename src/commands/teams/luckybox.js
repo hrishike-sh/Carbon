@@ -3,7 +3,7 @@ const TeamsDB = require('../../database/teams');
 const { Client } = require('discord.js');
 const { Colors } = require('discord.js');
 
-const opening = [];
+let opening = [];
 
 module.exports = {
   name: 'luckybox',
@@ -176,6 +176,8 @@ module.exports = {
         ]
       });
     }
+
+    opening = opening.filter((id) => id !== Team.id);
   }
 };
 
