@@ -25,12 +25,30 @@ const awardPoint = async (userId) => {
       team.points += 1;
       await team.save();
       console.log(`Awarded 1 point to team ${team.name}`);
+      return team;
     } else {
       console.log(`User ${userId} not found in any team.`);
+      return null;
     }
   } catch (error) {
     console.error('Error awarding point:', error);
+    return null;
   }
+};
+
+const sendWinnerEmbed = async (channel, winner, eventName, team) => {
+  const winnerEmbed = new EmbedBuilder()
+    .setTitle('🎉 Event Winner! 🎉')
+    .setDescription(`${winner} won the **${eventName}** event!`)
+    .setColor(Colors.Gold)
+    .setThumbnail(winner.displayAvatarURL())
+    .addFields(
+      { name: 'Team', value: team ? `**${team.name}**` : 'No Team', inline: true },
+      { name: 'Team Points', value: team ? `**${team.points}**` : 'N/A', inline: true }
+    )
+    .setTimestamp();
+
+  await channel.send({ embeds: [winnerEmbed] });
 };
 
 const EVENTS = [
@@ -44,6 +62,17 @@ const EVENTS = [
   'guess_the_number'
 ];
 
+const EVENT_NAMES = {
+  find_the_ball: 'Find the Ball',
+  emoji_memory: 'Emoji Memory',
+  basketball: 'Basketball',
+  crab_race: 'Crab Race',
+  higher_or_lower: 'Higher or Lower',
+  unscramble: 'Unscramble',
+  rock_paper_scissors: 'Rock, Paper, Scissors',
+  guess_the_number: 'Guess the Number'
+};
+
 module.exports = {
   name: '25_events',
   /**
@@ -54,12 +83,14 @@ module.exports = {
     const channel = client.channels.cache.get('1394023960298913933');
 
     setInterval(async () => {
-      const index = Math.floor(Math.random() * EVENTS.length);
+      await channel.send('An event is spawning...');
+      await sleep(2000); // Short delay after announcement
+
+      const eventKey = EVENTS[Math.floor(Math.random() * EVENTS.length)];
+      const eventName = EVENT_NAMES[eventKey];
       let winner = null;
 
-      if (index == 0) {
-        // find the ball
-
+      if (eventKey === 'find_the_ball') {
         const ballEmbed = new EmbedBuilder()
           .setTitle('Guess where the ball is!')
           .setColor(Colors.Yellow)
@@ -106,14 +137,15 @@ module.exports = {
           }
           if (button.customId === 'ball') {
             winner = button.user;
-            await awardPoint(winner.id);
-            button.reply({ content: `${button.user} found the ball and won!`, ephemeral: true });
+            const team = await awardPoint(winner.id);
+            await sendWinnerEmbed(channel, winner, eventName, team);
+            button.reply({ content: `You found the ball and won!`, ephemeral: true });
             collector.stop();
           } else {
-            button.reply('Incorrect!');
+            button.reply({ content: 'Incorrect!', ephemeral: true });
           }
         });
-      } else if (index == 1) {
+      } else if (eventKey === 'emoji_memory') {
         const emojis = [
           '🏊',
           '👡',
@@ -238,7 +270,8 @@ module.exports = {
             if (user.correct == toShow.length) {
               user.won = true;
               winner = button.user;
-              await awardPoint(winner.id);
+              const team = await awardPoint(winner.id);
+              await sendWinnerEmbed(channel, winner, eventName, team);
               button.reply({
                 ephemeral: true,
                 embeds: [
@@ -248,7 +281,6 @@ module.exports = {
                   }
                 ]
               });
-              channel.send(`${button.user} won the emoji memory game!`);
               collector.stop();
             } else {
               button.reply({
@@ -274,7 +306,7 @@ module.exports = {
             });
           }
         });
-      } else if (index == 2) {
+      } else if (eventKey === 'basketball') {
         const arr = [
           [
             '<:canvas:1383477236291600525>',
@@ -377,16 +409,9 @@ module.exports = {
           if (arr[1][ind] != '<:lebron_james:1383477589670236301>') {
             user.won = true;
             winner = button.user;
-            await awardPoint(winner.id);
+            const team = await awardPoint(winner.id);
+            await sendWinnerEmbed(channel, winner, eventName, team);
             collector.stop();
-            channel.send({
-              embeds: [
-                {
-                  description: `${button.user} won!`,
-                  color: Colors.Green
-                }
-              ]
-            });
             button.reply({
               ephemeral: true,
               embeds: [
@@ -434,7 +459,7 @@ module.exports = {
             ]
           });
         });
-      } else if (index == 3) {
+      } else if (eventKey === 'crab_race') {
         const joinEmbed = new EmbedBuilder()
           .setTitle('Crab Race :crab:')
           .setDescription(
@@ -589,14 +614,14 @@ module.exports = {
               ]
             });
             if (description.includes(':crown:')) {
-              const winner = gamedata.tracks.find((t) => t.track.length == 0);
-              await awardPoint(winner.user.id);
-              channel.send(`${winner.user.toString()} has won! :tada:`);
+              winner = gamedata.tracks.find((t) => t.track.length == 0);
+              const team = await awardPoint(winner.user.id);
+              await sendWinnerEmbed(channel, winner.user, eventName, team);
               break;
             }
           }
         });
-      } else if (index == 4) {
+      } else if (eventKey === 'higher_or_lower') {
         const randomNumber = Math.floor(Math.random() * 100) + 1;
         let reference = Math.floor(Math.random() * 100) + 1;
         while (reference == randomNumber) {
@@ -656,10 +681,8 @@ module.exports = {
           const what = button.customId;
           if (what == 'hol_high' && randomNumber > reference) {
             winner = button.user;
-            await awardPoint(winner.id);
-            channel.send({
-              content: `${button.user} won "coins"`
-            });
+            const team = await awardPoint(winner.id);
+            await sendWinnerEmbed(channel, winner, eventName, team);
             button.reply({
               content: `You're correct! The number was ${randomNumber}`,
               ephemeral: true
@@ -667,13 +690,11 @@ module.exports = {
             collector.stop();
           } else if (what == 'hol_low' && randomNumber < reference) {
             winner = button.user;
-            await awardPoint(winner.id);
+            const team = await awardPoint(winner.id);
+            await sendWinnerEmbed(channel, winner, eventName, team);
             button.reply({
               content: `You're correct! The number was ${randomNumber}`,
               ephemeral: true
-            });
-            channel.send({
-              content: `${button.user} won "coins"`
             });
             collector.stop();
           } else {
@@ -687,7 +708,7 @@ module.exports = {
         collector.on('end', (a) => {
           //
         });
-      } else if (index == 5) {
+      } else if (eventKey === 'unscramble') {
         const req = await fetch(
           'https://random-word-api.vercel.app/api?words=1&length=4'
         );
@@ -728,14 +749,16 @@ module.exports = {
           if (msg.author.bot) return;
           if (msg.content.toLowerCase() == word) {
             winner = msg.author;
-            await awardPoint(winner.id);
+            const team = await awardPoint(winner.id);
+            await sendWinnerEmbed(channel, winner, eventName, team);
             await msg.reply({
               embeds: [
                 {
                   title: 'You got the word! It was ' + word,
                   color: Colors.Green
                 }
-              ]
+              ],
+              ephemeral: true
             });
             messageCollector.stop();
             s.add(msg.author.id);
@@ -744,7 +767,7 @@ module.exports = {
             s.add(msg.author.id);
           }
         });
-      } else if (index == 6) {
+      } else if (eventKey === 'rock_paper_scissors') {
         const embed = new EmbedBuilder()
           .setTitle('Rock, Paper, Scissors')
           .setDescription('Choose your weapon!')
@@ -810,8 +833,8 @@ module.exports = {
           ) {
             result = 'You win!';
             winner = button.user;
-            await awardPoint(winner.id);
-            channel.send(`${button.user} won the Rock, Paper, Scissors game!`);
+            const team = await awardPoint(winner.id);
+            await sendWinnerEmbed(channel, winner, eventName, team);
             collector.stop();
           } else {
             result = 'You lose!';
@@ -828,7 +851,7 @@ module.exports = {
             components: []
           });
         });
-      } else if (index == 7) {
+      } else if (eventKey === 'guess_the_number') {
         const randomNumber = Math.floor(Math.random() * 10) + 1;
 
         const embed = new EmbedBuilder()
@@ -855,11 +878,13 @@ module.exports = {
 
           if (guess === randomNumber) {
             winner = msg.author;
-            await awardPoint(winner.id);
+            const team = await awardPoint(winner.id);
+            await sendWinnerEmbed(channel, winner, eventName, team);
             collector.stop();
-            await msg.reply(
-              `🎉 You guessed it! The number was ${randomNumber}.`
-            );
+            await msg.reply({
+              content: `🎉 You guessed it! The number was ${randomNumber}.`,
+              ephemeral: true
+            });
           } else {
             await msg.react('❌');
           }
