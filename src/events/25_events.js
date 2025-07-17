@@ -5,7 +5,8 @@ const {
   ButtonBuilder,
   ButtonStyle,
   Collection,
-  Colors
+  Colors,
+  TextChannel
 } = require('discord.js');
 const Team = require('../database/teams');
 
@@ -43,12 +44,29 @@ const sendWinnerEmbed = async (channel, winner, eventName, team) => {
     .setColor(Colors.Gold)
     .setThumbnail(winner.displayAvatarURL())
     .addFields(
-      { name: 'Team', value: team ? `**${team.name}**` : 'No Team', inline: true },
-      { name: 'Team Points', value: team ? `**${team.points}**` : 'N/A', inline: true }
+      {
+        name: 'Team',
+        value: team ? `**${team.name}**` : 'No Team',
+        inline: true
+      },
+      {
+        name: 'Team Points',
+        value: team ? `**${team.points}**` : 'N/A',
+        inline: true
+      }
     )
     .setTimestamp();
 
   await channel.send({ embeds: [winnerEmbed] });
+
+  // 5% chance to reset lootbox cooldown
+  if (team && Math.random() < 0.05) {
+    team.lastLb = new Date(Date.now() - 12 * 60 * 60 * 1000);
+    await team.save();
+    channel.send(
+      `🎉 ${winner} got lucky! Their lootbox cooldown has been reset!`
+    );
+  }
 };
 
 const EVENTS = [
@@ -83,12 +101,18 @@ module.exports = {
     const channel = client.channels.cache.get('1394023960298913933');
 
     setInterval(async () => {
-      await channel.send('An event is spawning...');
-      await sleep(2000); // Short delay after announcement
+      await channel.send({
+        content: '<@&1394209491939098694> an event is spawning!',
+        allowedMentions: {
+          roles: ['1394209491939098694']
+        }
+      });
+      await sleep(3000);
 
       const eventKey = EVENTS[Math.floor(Math.random() * EVENTS.length)];
       const eventName = EVENT_NAMES[eventKey];
       let winner = null;
+      const playedUsers = new Set();
 
       if (eventKey === 'find_the_ball') {
         const ballEmbed = new EmbedBuilder()
@@ -135,11 +159,22 @@ module.exports = {
               ephemeral: true
             });
           }
+          if (playedUsers.has(button.user.id)) {
+            return button.reply({
+              content: 'You have already played in this event.',
+              ephemeral: true
+            });
+          }
+          playedUsers.add(button.user.id);
+
           if (button.customId === 'ball') {
             winner = button.user;
             const team = await awardPoint(winner.id);
             await sendWinnerEmbed(channel, winner, eventName, team);
-            button.reply({ content: `You found the ball and won!`, ephemeral: true });
+            button.reply({
+              content: `You found the ball and won!`,
+              ephemeral: true
+            });
             collector.stop();
           } else {
             button.reply({ content: 'Incorrect!', ephemeral: true });
@@ -234,7 +269,14 @@ module.exports = {
               ephemeral: true
             });
           }
+
           if (!gameData.has(button.user.id)) {
+            if (playedUsers.has(button.user.id)) {
+              return button.reply({
+                content: 'You have already played in this event.',
+                ephemeral: true
+              });
+            }
             gameData.set(button.user.id, {
               failed: false,
               correct: 0,
@@ -295,6 +337,7 @@ module.exports = {
             }
           } else {
             user.failed = true;
+            playedUsers.add(button.user.id);
             button.reply({
               ephemeral: true,
               embeds: [
@@ -365,7 +408,7 @@ module.exports = {
         const collector = mainMessage.createMessageComponentCollector({
           idle: 30_000
         });
-        const gamedat = new Collection();
+
         collector.on('collect', async (button) => {
           if (winner) {
             return button.reply({
@@ -373,41 +416,17 @@ module.exports = {
               ephemeral: true
             });
           }
-          if (!gamedat.has(button.user.id)) {
-            gamedat.set(button.user.id, {
-              failed: false,
-              won: false
-            });
-          }
-
-          const user = gamedat.get(button.user.id);
-          if (user.failed) {
+          if (playedUsers.has(button.user.id)) {
             return button.reply({
-              ephemeral: true,
-              embeds: [
-                {
-                  description: 'You have already failed this game!',
-                  color: Colors.Red
-                }
-              ]
+              content: 'You have already played in this event.',
+              ephemeral: true
             });
           }
-          if (user.won) {
-            return button.reply({
-              ephemeral: true,
-              embeds: [
-                {
-                  description: 'You have already won this game!',
-                  color: Colors.Green
-                }
-              ]
-            });
-          }
+          playedUsers.add(button.user.id);
 
           const ind = parseInt(button.customId);
 
           if (arr[1][ind] != '<:lebron_james:1383477589670236301>') {
-            user.won = true;
             winner = button.user;
             const team = await awardPoint(winner.id);
             await sendWinnerEmbed(channel, winner, eventName, team);
@@ -422,7 +441,6 @@ module.exports = {
               ]
             });
           } else {
-            user.failed = true;
             button.reply({
               ephemeral: true,
               embeds: [
@@ -656,8 +674,6 @@ module.exports = {
           idle: 30_000
         });
 
-        const data = new Set();
-
         collector.on('collect', async (button) => {
           if (winner) {
             return button.reply({
@@ -665,19 +681,14 @@ module.exports = {
               ephemeral: true
             });
           }
-          if (!data.has(button.user.id)) {
-            data.add(button.user.id);
-          } else {
+          if (playedUsers.has(button.user.id)) {
             return button.reply({
-              embeds: [
-                {
-                  title: ':x: You have already guessed!',
-                  color: Colors.Red
-                }
-              ],
+              content: 'You have already played in this event.',
               ephemeral: true
             });
           }
+          playedUsers.add(button.user.id);
+
           const what = button.customId;
           if (what == 'hol_high' && randomNumber > reference) {
             winner = button.user;
@@ -740,12 +751,15 @@ module.exports = {
         const messageCollector = await channel.createMessageCollector({
           time: 30_000
         });
-        const s = new Set();
+
         messageCollector.on('collect', async (msg) => {
           if (winner) {
             return;
           }
-          if (s.has(msg.author.id)) return;
+          if (playedUsers.has(msg.author.id)) {
+            return;
+          }
+
           if (msg.author.bot) return;
           if (msg.content.toLowerCase() == word) {
             winner = msg.author;
@@ -761,10 +775,10 @@ module.exports = {
               ephemeral: true
             });
             messageCollector.stop();
-            s.add(msg.author.id);
+            playedUsers.add(msg.author.id);
           } else {
             msg.react('❌');
-            s.add(msg.author.id);
+            playedUsers.add(msg.author.id);
           }
         });
       } else if (eventKey === 'rock_paper_scissors') {
@@ -800,8 +814,6 @@ module.exports = {
           idle: 30_000
         });
 
-        const played = new Set();
-
         collector.on('collect', async (button) => {
           if (winner) {
             return button.reply({
@@ -809,14 +821,13 @@ module.exports = {
               ephemeral: true
             });
           }
-          if (played.has(button.user.id)) {
+          if (playedUsers.has(button.user.id)) {
             return button.reply({
-              content: 'You have already played!',
+              content: 'You have already played in this event.',
               ephemeral: true
             });
           }
-
-          played.add(button.user.id);
+          playedUsers.add(button.user.id);
 
           const userChoice = button.customId;
           const botChoice = ['rock', 'paper', 'scissors'][
@@ -872,6 +883,10 @@ module.exports = {
           if (winner) {
             return;
           }
+          if (playedUsers.has(msg.author.id)) {
+            return;
+          }
+
           const guess = parseInt(msg.content);
 
           if (isNaN(guess)) return;
@@ -886,6 +901,7 @@ module.exports = {
               ephemeral: true
             });
           } else {
+            playedUsers.add(msg.author.id);
             await msg.react('❌');
           }
         });
