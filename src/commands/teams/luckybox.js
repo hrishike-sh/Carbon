@@ -20,6 +20,7 @@ module.exports = {
    * @returns
    */
   execute: async (message, args, client) => {
+    if (message.channel.id != '1395755156854804500') return;
     const userId = message.author.id;
     const Team = await TeamsDB.findOne({ users: userId });
 
