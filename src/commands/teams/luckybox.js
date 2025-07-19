@@ -165,6 +165,15 @@ module.exports = {
           components: null
         });
       });
+
+      collector.on('end', (collected, reason) => {
+        if (reason === 'idle') {
+          message.reply('You did not select a team in time.');
+          unboxMessage.edit({
+            components: null
+          });
+        }
+      });
     } else if (random <= 85) {
       // 20%
       // -5 points
