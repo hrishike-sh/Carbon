@@ -155,7 +155,7 @@ module.exports = {
           embeds: [
             {
               title: 'Lucky Box 📦📦',
-              description: `You removed 5 points from the team ${team.name}`,
+              description: `You removed 5 points from the team ${team.name}\n\nYou can open another lucky box right away!`,
               color: Colors.Green
             }
           ]
