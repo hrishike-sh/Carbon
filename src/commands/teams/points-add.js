@@ -35,7 +35,7 @@ module.exports = {
       return message.reply('That is NOT how you use this command!');
     }
 
-    await TeamDB.updateOne(
+    const updated = await TeamDB.updateOne(
       {
         users: user
       },
@@ -43,7 +43,13 @@ module.exports = {
         $inc: {
           points: parseInt(points)
         }
+      },
+      {
+        upsert: true,
+        new: true
       }
     );
+
+    return message.reply(`Added ${points} points to **<@${updated.name}>**!`);
   }
 };
