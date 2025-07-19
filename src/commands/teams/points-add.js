@@ -50,6 +50,6 @@ module.exports = {
       }
     );
 
-    return message.reply(`Added ${points} points to **<@${updated.name}>**!`);
+    return message.reply(`Added ${points} points to **<@${user}>**!`);
   }
 };
