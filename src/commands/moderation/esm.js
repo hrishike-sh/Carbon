@@ -10,7 +10,7 @@ module.exports = {
    * @param {Client} client
    */
   async execute(message, args, client) {
-    if (!message.member.roles.cache.has('925033181990756392')) return;
+    if (!message.member.roles.cache.has('858088054942203945')) return;
 
     const slowmode = args[0] || 0;
     message.channel.setRateLimitPerUser(slowmode);
