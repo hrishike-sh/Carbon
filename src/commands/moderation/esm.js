@@ -2,7 +2,7 @@ const { Message, Client } = require('discord.js');
 
 module.exports = {
   name: 'eslowmode',
-  aliases: 'esm',
+  aliases: ['esm'],
   /**
    *
    * @param {Message} message
