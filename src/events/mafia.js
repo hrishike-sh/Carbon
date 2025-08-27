@@ -132,7 +132,10 @@ module.exports = {
           } catch (error) {
             console.error('Error sending logs:', error);
           }
-        } else if (embed.footer?.text?.includes('Enjoyed')) {
+        } else if (
+          embed.footer?.text?.includes('Enjoyed') ||
+          embed.title.includes('Game Over')
+        ) {
           const messages = Messages.get(message.channel.id);
           const channel = message.channel;
 
