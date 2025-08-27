@@ -37,7 +37,7 @@ module.exports = {
     if (message.guild.id !== '824294231447044197') return;
     if (message.channel.name !== 'mafia') return;
 
-    const mafia = '511786918783090688';
+    const mafiaIds = ['511786918783090688', '758999095070687284'];
     const logChannelId = '1340975244122259506';
     const logChannel = client.channels.cache.get(logChannelId);
 
@@ -50,7 +50,7 @@ module.exports = {
         Messages.set(message.channel.id, [message]);
       }
 
-      if (message.author.id === mafia) {
+      if (mafiaIds.includes(message.author.id)) {
         const embed = message.embeds?.[0];
         if (embed?.title?.includes('Night')) {
           const currentNight = Number(embed.title.match(/\d+/)?.[0] || 1);
