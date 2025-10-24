@@ -30,6 +30,16 @@ module.exports = {
 
     reason = reason.replace(/(@(everyone|here|[!&]?[\d]+))/gi, '');
 
+    if (reason.toLowerCase() == 'remove') {
+      await DATABASE.deleteOne({
+        userId: message.author.id
+      });
+
+      client.db.afks.splice(client.db.afks.indexOf(message.author.id), 1);
+
+      return message.reply('You are no longer AFK!');
+    }
+
     const entry = new DATABASE({
       userId: message.author.id,
       reason,
