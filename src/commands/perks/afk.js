@@ -18,16 +18,7 @@ module.exports = {
   ],
 
   async execute(message, args, client) {
-    let dbUser = await DATABASE.findOne({
-      userId: message.author.id
-    });
-
-    if (dbUser) {
-      return message.reply("You're already AFK!");
-    }
-
     let reason = args.join(' ') || 'AFK';
-
     reason = reason.replace(/(@(everyone|here|[!&]?[\d]+))/gi, '');
 
     if (reason.toLowerCase() == 'remove') {
@@ -38,6 +29,14 @@ module.exports = {
       client.db.afks.splice(client.db.afks.indexOf(message.author.id), 1);
 
       return message.reply('You are no longer AFK!');
+    }
+
+    let dbUser = await DATABASE.findOne({
+      userId: message.author.id
+    });
+
+    if (dbUser) {
+      return message.reply("You're already AFK!");
     }
 
     const entry = new DATABASE({
