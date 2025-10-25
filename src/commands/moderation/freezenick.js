@@ -10,7 +10,7 @@ module.exports = {
    */
   async execute(message, args) {
     if (
-      message.member.roles.cache.hasAny(
+      !message.member.roles.cache.hasAny(
         '824539655134773269',
         '824348974449819658'
       )
