@@ -22,9 +22,9 @@ module.exports = {
     return message.reply({
       embeds: [
         {
-          title: 'Team Leaderboard',
+          title: ':ghost: Halloween Leaderboard',
           description: map.join('\n'),
-          color: Colors.DarkGreen,
+          color: Colors.DarkVividPink,
           timestamp: new Date()
         }
       ]
