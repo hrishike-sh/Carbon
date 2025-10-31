@@ -13,13 +13,12 @@ const ROLE_ID = '858088054942203945';
 const MIN_PLAYERS = 3;
 const MAX_PLAYERS = 25;
 const JOIN_TIME_MS = 30 * 1000;
-const UPGRADE_TIME_MS = 15 * 1000;
 const GAME_START_DELAY_MS = 5 * 1000;
 const BASE_DAMAGE = 3;
 const RANDOM_DAMAGE = 7;
 const WEAPON_BONUS_DAMAGE = 10;
-const SHIELD_BONUS_HEALTH = 50;
-const ROUND_TIME_MS = 3 * 1000;
+const BANDAID_HEAL_AMOUNT = 50;
+const ROUND_TIME_MS = 10 * 1000;
 
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -86,7 +85,7 @@ module.exports = {
       components: [conf_row]
     });
 
-    /** @type {Array<{id: string, name: string, health: number, weapon: boolean}>} */
+    /** @type {Array<{id: string, name: string, health: number, weapon: boolean, bandaids: number}>} */
     const players = [];
 
     const joinCollector = joinMessage.createMessageComponentCollector({
@@ -118,7 +117,8 @@ module.exports = {
         id: interaction.user.id,
         name: interaction.user.tag,
         health: 100,
-        weapon: false
+        weapon: false,
+        bandaids: 0
       });
 
       await interaction.reply({
@@ -141,37 +141,32 @@ module.exports = {
         );
       }
 
-      const upgradesEmbed = new EmbedBuilder()
-        .setTitle('Select your upgrades!')
-        .setColor(Colors.Green)
-        .setFooter({
-          text: `Game starts in ${UPGRADE_TIME_MS / 1000} seconds.`
-        })
+      let gameRows = [];
+      const game_embed = new EmbedBuilder()
+        .setTitle('Battle Royale')
+        .setColor(Colors.Gold)
+        .setFooter({ text: 'Last man standing wins!' })
         .setDescription(
-          `Players: ${players.map((a) => `<@${a.id}>`).join(' ')}\n\n` +
-            `**Weapon**: __+${WEAPON_BONUS_DAMAGE}__ Attack Damage\n` +
-            `**Shield**: __+${SHIELD_BONUS_HEALTH}__ Health`
+          `The game starts in **${GAME_START_DELAY_MS / 1000} seconds**.\n` +
+            `Wait for the round to begin!`
         );
 
-      const upgradesRow = new ActionRowBuilder().addComponents([
-        new ButtonBuilder()
-          .setLabel('Weapon')
-          .setStyle(ButtonStyle.Success)
-          .setEmoji('🗡')
-          .setCustomId('br_up_wp'),
-        new ButtonBuilder()
-          .setLabel('Shield')
-          .setStyle(ButtonStyle.Success)
-          .setEmoji('🛡')
-          .setCustomId('br_up_sh')
-      ]);
-
-      const upgradesMessage = await message.channel.send({
-        embeds: [upgradesEmbed],
-        components: [upgradesRow]
+      const gameMessage = await message.channel.send({
+        components: gameRows,
+        embeds: [game_embed]
       });
 
-      const upgradeCollector = upgradesMessage.createMessageComponentCollector({
+      await sleep(GAME_START_DELAY_MS);
+
+      let gameLog = [];
+      let winner = null;
+      let currentRoundPlayers = [];
+      let playersWhoActedThisRound = new Set();
+      let roundNumber = 0;
+      let roundTimer = null;
+      let playerChoosingTarget = null;
+
+      const mainCollector = gameMessage.createMessageComponentCollector({
         componentType: ComponentType.Button,
         filter: (interaction) => {
           const player = players.find((p) => p.id === interaction.user.id);
@@ -182,107 +177,26 @@ module.exports = {
             });
             return false;
           }
-          if (player.weapon || player.health > 100) {
+          if (player.health <= 0) {
             interaction.reply({
               ephemeral: true,
-              content: "You can't upgrade more than once!"
+              content: "You're already dead!"
             });
             return false;
           }
           return true;
-        },
-        time: UPGRADE_TIME_MS
-      });
-
-      upgradeCollector.on('collect', async (button) => {
-        const player = players.find((a) => a.id == button.user.id);
-
-        if (button.customId === 'br_up_sh') {
-          player.health += SHIELD_BONUS_HEALTH;
-          await button.reply({
-            ephemeral: true,
-            content: `You have upgraded your shield! You now have **${player.health}** Health!`
-          });
-        } else if (button.customId === 'br_up_wp') {
-          player.weapon = true;
-          await button.reply({
-            ephemeral: true,
-            content: `You have upgraded your weapon! You now deal **+${WEAPON_BONUS_DAMAGE}** damage!`
-          });
         }
       });
 
-      upgradeCollector.on('end', async () => {
-        upgradesRow.components.forEach((a) => a.setDisabled(true));
-        await upgradesMessage.edit({ components: [upgradesRow] });
+      function buildButtonRows() {
+        const newGameRows = [];
 
-        let gameRows = [];
-        for (let i = 0; i < players.length; i++) {
-          const rowIndex = Math.floor(i / 5);
-          if (!gameRows[rowIndex]) {
-            gameRows.push(new ActionRowBuilder());
-          }
-          const player = players[i];
-          const button = new ButtonBuilder()
-            .setLabel(`${player.name} (${player.health})`)
-            .setStyle(ButtonStyle.Secondary)
-            .setCustomId(`br_${player.id}`)
-            .setDisabled(true);
-          if (player.weapon) button.setEmoji('🗡');
-          else if (player.health > 100) button.setEmoji('🛡');
-          gameRows[rowIndex].addComponents(button);
-        }
-
-        const game_embed = new EmbedBuilder()
-          .setTitle('Battle Royale')
-          .setColor(Colors.Gold)
-          .setFooter({ text: 'Last man standing wins!' })
-          .setDescription(
-            `The game starts in **${GAME_START_DELAY_MS / 1000} seconds**.\n` +
-              `Wait for the round to begin!`
+        if (playerChoosingTarget) {
+          const alivePlayers = players.filter(
+            (p) => p.health > 0 && p.id !== playerChoosingTarget
           );
-
-        const gameMessage = await message.channel.send({
-          components: gameRows,
-          embeds: [game_embed]
-        });
-
-        await sleep(GAME_START_DELAY_MS);
-
-        let gameLog = [];
-        let winner = null;
-        let currentRoundPlayers = [];
-        let playersWhoAttackedThisRound = new Set();
-        let roundNumber = 0;
-        let roundTimer = null;
-
-        const mainCollector = gameMessage.createMessageComponentCollector({
-          componentType: ComponentType.Button,
-          filter: (interaction) => {
-            const player = players.find((p) => p.id === interaction.user.id);
-            if (!player) {
-              interaction.reply({
-                ephemeral: true,
-                content: "You're not in this game!"
-              });
-              return false;
-            }
-            if (player.health <= 0) {
-              interaction.reply({
-                ephemeral: true,
-                content: "You're already dead!"
-              });
-              return false;
-            }
-            return true;
-          }
-        });
-
-        function buildPlayerButtonRows() {
-          const alivePlayers = players.filter((p) => p.health > 0);
           const shuffledAlivePlayers = shuffleArray([...alivePlayers]);
 
-          const newGameRows = [];
           for (let i = 0; i < shuffledAlivePlayers.length; i++) {
             const player = shuffledAlivePlayers[i];
             const rowIndex = Math.floor(i / 5);
@@ -292,226 +206,329 @@ module.exports = {
 
             const button = new ButtonBuilder()
               .setLabel(`${player.name} (${player.health})`)
-              .setCustomId(`br_${player.id}`)
+              .setCustomId(`br_p_${player.id}`)
               .setStyle(ButtonStyle.Primary)
               .setDisabled(false);
 
-            if (player.weapon) button.setEmoji('🗡');
-            else if (player.health > 100) button.setEmoji('🛡');
-
             newGameRows[rowIndex].addComponents(button);
           }
-
-          gameRows.length = 0;
-          gameRows.push(...newGameRows);
-          return newGameRows;
-        }
-
-        function updateGameMessage() {
-          const alivePlayers = players.filter((p) => p.health > 0);
-
-          if (alivePlayers.length === 1) {
-            winner = alivePlayers[0];
-            mainCollector.stop('winner');
-            return;
-          }
-          if (alivePlayers.length === 0) {
-            mainCollector.stop('draw');
-            return;
-          }
-
-          const playersLeftToAttack = currentRoundPlayers.filter(
-            (p) => p.health > 0 && !playersWhoAttackedThisRound.has(p.id)
-          );
-
-          const updatedRows = buildPlayerButtonRows();
-
-          game_embed.setDescription(
-            gameLog.map((a) => `- ${a}`).join('\n') || 'The game is afoot!'
-          );
-
-          const leftToAttackNames = playersLeftToAttack
-            .map((p) => p.name)
-            .join(', ');
-          game_embed.setFields([
-            {
-              name: `Round ${roundNumber}`,
-              value: `Everyone can attack ONCE this round. You have ${
-                ROUND_TIME_MS / 1000
-              } seconds!`
-            },
-            {
-              name: 'Left to Attack',
-              value:
-                leftToAttackNames.length > 0
-                  ? leftToAttackNames
-                  : 'Everyone has attacked!'
-            }
-          ]);
-
-          updateMessage(gameMessage, updatedRows, game_embed);
-        }
-
-        function startNewRound() {
-          if (roundTimer) clearTimeout(roundTimer);
-
-          roundNumber++;
-
-          const alivePlayers = players.filter((p) => p.health > 0);
-
-          if (alivePlayers.length === 1) {
-            winner = alivePlayers[0];
-            mainCollector.stop('winner');
-            return;
-          }
-          if (alivePlayers.length === 0) {
-            mainCollector.stop('draw');
-            return;
-          }
-
-          currentRoundPlayers = [...alivePlayers];
-          playersWhoAttackedThisRound.clear();
-          updateGameMessage();
-
-          roundTimer = setTimeout(() => {
-            if (mainCollector.ended) return;
-
-            startNewRound();
-          }, ROUND_TIME_MS);
-        }
-
-        mainCollector.on('collect', async (interaction) => {
-          const attacker = players.find((p) => p.id === interaction.user.id);
-
-          if (playersWhoAttackedThisRound.has(attacker.id)) {
-            await interaction.reply({
-              ephemeral: true,
-              content: 'You have already attacked this round!'
-            });
-            return;
-          }
-
-          const victimId = interaction.customId.split('_')[1];
-          const victim = players.find((p) => p.id === victimId);
-
-          if (victim.id === attacker.id) {
-            await interaction.reply({
-              ephemeral: true,
-              content: "You can't attack yourself!"
-            });
-            return;
-          }
-
-          if (victim.health <= 0) {
-            await interaction.reply({
-              ephemeral: true,
-              content: 'That player is already dead!'
-            });
-            return;
-          }
-
-          let dmg = BASE_DAMAGE + Math.ceil(Math.random() * RANDOM_DAMAGE);
-          if (attacker.weapon) {
-            dmg += WEAPON_BONUS_DAMAGE;
-          }
-
-          victim.health -= dmg;
-          await interaction.deferUpdate();
-
-          if (victim.health <= 0) {
-            victim.health = 0;
-            gameLog.push(
-              randomActions[Math.floor(Math.random() * randomActions.length)]
-                .replace('{user}', attacker.name)
-                .replace('{target}', victim.name)
-            );
-          } else {
-            // Attack message removed from log
-          }
-
-          playersWhoAttackedThisRound.add(attacker.id);
-
-          const alivePlayers = players.filter((p) => p.health > 0);
-          if (alivePlayers.length === 1) {
-            winner = alivePlayers[0];
-            mainCollector.stop('winner');
-            return;
-          }
-          if (alivePlayers.length === 0) {
-            mainCollector.stop('draw');
-            return;
-          }
-
-          const playersLeftToAttack = currentRoundPlayers.filter(
-            (p) => p.health > 0 && !playersWhoAttackedThisRound.has(p.id)
-          );
-
-          if (playersLeftToAttack.length === 0) {
-            startNewRound();
-          } else {
-            updateGameMessage();
-          }
-        });
-
-        mainCollector.on('end', async (collected, reason) => {
-          if (roundTimer) clearTimeout(roundTimer);
-
-          const finalGameRows = [];
-          for (let i = 0; i < players.length; i++) {
-            const player = players[i];
-            const rowIndex = Math.floor(i / 5);
-            if (!finalGameRows[rowIndex]) {
-              finalGameRows.push(new ActionRowBuilder());
-            }
-
-            const button = new ButtonBuilder()
-              .setLabel(`${player.name} (${player.health})`)
-              .setCustomId(`br_${player.id}`)
-              .setDisabled(true);
-
-            if (player.health <= 0) {
-              button.setStyle(ButtonStyle.Secondary).setEmoji('💀');
-            } else {
-              button.setStyle(ButtonStyle.Success);
-              if (player.weapon) button.setEmoji('🗡');
-              else if (player.health > 100) button.setEmoji('🛡');
-            }
-            finalGameRows[rowIndex].addComponents(button);
-          }
-
-          const finalEmbed = new EmbedBuilder()
-            .setTitle('Battle Royale Over!')
-            .setColor(Colors.Gold)
-            .setDescription(
-              gameLog.map((a) => `- ${a}`).join('\n') || 'The game has ended.'
+          newGameRows.push(
+            new ActionRowBuilder().addComponents(
+              new ButtonBuilder()
+                .setLabel('Cancel Attack')
+                .setCustomId('br_cancel_attack')
+                .setStyle(ButtonStyle.Danger)
             )
-            .setFields([]);
+          );
+        } else {
+          newGameRows.push(
+            new ActionRowBuilder().addComponents(
+              new ButtonBuilder()
+                .setLabel('Attack')
+                .setCustomId('br_attack')
+                .setStyle(ButtonStyle.Primary)
+                .setEmoji('⚔️'),
+              new ButtonBuilder()
+                .setLabel('Search')
+                .setCustomId('br_search')
+                .setStyle(ButtonStyle.Secondary)
+                .setEmoji('🔍'),
+              new ButtonBuilder()
+                .setLabel('Use Bandaid')
+                .setCustomId('br_use_bandaid')
+                .setStyle(ButtonStyle.Success)
+                .setEmoji('🩹')
+            )
+          );
+        }
 
-          if (winner) {
-            finalEmbed
-              .addFields({
-                name: 'Winner!',
-                value: `Congratulations <@${winner.id}>!`
-              })
-              .setColor(Colors.Green);
-          } else if (reason === 'draw') {
-            finalEmbed
-              .addFields({
-                name: 'Result',
-                value: "It's a draw! Everyone is dead."
-              })
-              .setColor(Colors.Red);
+        gameRows.length = 0;
+        gameRows.push(...newGameRows);
+        return newGameRows;
+      }
+
+      function updateGameMessage() {
+        const alivePlayers = players.filter((p) => p.health > 0);
+
+        if (alivePlayers.length === 1) {
+          winner = alivePlayers[0];
+          mainCollector.stop('winner');
+          return;
+        }
+        if (alivePlayers.length === 0) {
+          mainCollector.stop('draw');
+          return;
+        }
+
+        const playersLeftToAttack = currentRoundPlayers.filter(
+          (p) => p.health > 0 && !playersWhoActedThisRound.has(p.id)
+        );
+
+        const updatedRows = buildButtonRows();
+
+        game_embed.setDescription(
+          gameLog.map((a) => `- ${a}`).join('\n') || 'The game is afoot!'
+        );
+
+        const leftToAttackNames = playersLeftToAttack
+          .map((p) => p.name)
+          .join(', ');
+        game_embed.setFields([
+          {
+            name: `Round ${roundNumber}`,
+            value: `Choose your action! You have ${
+              ROUND_TIME_MS / 1000
+            } seconds!`
+          },
+          {
+            name: 'Left to Act',
+            value:
+              leftToAttackNames.length > 0
+                ? leftToAttackNames
+                : 'Everyone has acted!'
+          }
+        ]);
+
+        updateMessage(gameMessage, updatedRows, game_embed);
+      }
+
+      function startNewRound() {
+        if (roundTimer) clearTimeout(roundTimer);
+
+        roundNumber++;
+
+        const alivePlayers = players.filter((p) => p.health > 0);
+
+        if (alivePlayers.length === 1) {
+          winner = alivePlayers[0];
+          mainCollector.stop('winner');
+          return;
+        }
+        if (alivePlayers.length === 0) {
+          mainCollector.stop('draw');
+          return;
+        }
+
+        currentRoundPlayers = [...alivePlayers];
+        playersWhoActedThisRound.clear();
+        playerChoosingTarget = null;
+        updateGameMessage();
+
+        roundTimer = setTimeout(() => {
+          if (mainCollector.ended) return;
+          const playersLeft = currentRoundPlayers.filter(
+            (p) => p.health > 0 && !playersWhoActedThisRound.has(p.id)
+          );
+          if (playersLeft.length > 0) {
+            gameLog.push(
+              `*Time's up! Missed moves: ${playersLeft
+                .map((p) => p.name)
+                .join(', ')}*`
+            );
+          }
+          startNewRound();
+        }, ROUND_TIME_MS);
+      }
+
+      mainCollector.on('collect', async (interaction) => {
+        const actor = players.find((p) => p.id === interaction.user.id);
+
+        if (playerChoosingTarget) {
+          if (actor.id !== playerChoosingTarget) {
+            await interaction.reply({
+              ephemeral: true,
+              content: `Wait your turn! ${
+                players.find((p) => p.id === playerChoosingTarget)?.name
+              } is choosing a target.`
+            });
+            return;
           }
 
-          await gameMessage.edit({
-            embeds: [finalEmbed],
-            components: finalGameRows
-          });
-          message.channel.send(`**The Battle Royale has concluded!**`);
-        });
+          if (interaction.customId === 'br_cancel_attack') {
+            playerChoosingTarget = null;
+            await interaction.deferUpdate();
+            updateGameMessage();
+            return;
+          }
 
-        startNewRound();
+          if (interaction.customId.startsWith('br_p_')) {
+            const victimId = interaction.customId.split('_')[2];
+            const victim = players.find((p) => p.id === victimId);
+
+            if (!victim) {
+              await interaction.reply({
+                ephemeral: true,
+                content: "That player doesn't exist!"
+              });
+              return;
+            }
+
+            if (victim.health <= 0) {
+              await interaction.reply({
+                ephemeral: true,
+                content: 'That player is already dead!'
+              });
+              return;
+            }
+
+            let dmg = BASE_DAMAGE + Math.ceil(Math.random() * RANDOM_DAMAGE);
+            if (actor.weapon) {
+              dmg += WEAPON_BONUS_DAMAGE;
+            }
+
+            victim.health -= dmg;
+            await interaction.deferUpdate();
+
+            if (victim.health <= 0) {
+              victim.health = 0;
+              gameLog.push(
+                randomActions[Math.floor(Math.random() * randomActions.length)]
+                  .replace('{user}', actor.name)
+                  .replace('{target}', victim.name)
+              );
+            }
+
+            playersWhoActedThisRound.add(actor.id);
+            playerChoosingTarget = null;
+          }
+        } else {
+          if (playersWhoActedThisRound.has(actor.id)) {
+            await interaction.reply({
+              ephemeral: true,
+              content: 'You have already acted this round!'
+            });
+            return;
+          }
+
+          switch (interaction.customId) {
+            case 'br_attack':
+              playerChoosingTarget = actor.id;
+              await interaction.deferUpdate();
+              break;
+
+            case 'br_search':
+              playersWhoActedThisRound.add(actor.id);
+              if (Math.random() > 0.5) {
+                if (!actor.weapon) {
+                  actor.weapon = true;
+                  await interaction.reply({
+                    ephemeral: true,
+                    content: 'You searched and found a Dagger! 🗡'
+                  });
+                } else {
+                  await interaction.reply({
+                    ephemeral: true,
+                    content:
+                      'You searched and found another Dagger, but you already have one.'
+                  });
+                }
+              } else {
+                actor.bandaids++;
+                await interaction.reply({
+                  ephemeral: true,
+                  content: 'You searched and found a Bandaid! 🩹'
+                });
+              }
+              break;
+
+            case 'br_use_bandaid':
+              if (actor.bandaids <= 0) {
+                await interaction.reply({
+                  ephemeral: true,
+                  content: "You don't have any bandaids to use!"
+                });
+                return;
+              }
+              playersWhoActedThisRound.add(actor.id);
+              actor.bandaids--;
+              actor.health += BANDAID_HEAL_AMOUNT;
+              await interaction.reply({
+                ephemeral: true,
+                content: `You used a Bandaid and healed for ${BANDAID_HEAL_AMOUNT} HP! You now have ${actor.health} HP.`
+              });
+              break;
+          }
+        }
+
+        const alivePlayers = players.filter((p) => p.health > 0);
+        if (alivePlayers.length === 1) {
+          winner = alivePlayers[0];
+          mainCollector.stop('winner');
+          return;
+        }
+        if (alivePlayers.length === 0) {
+          mainCollector.stop('draw');
+          return;
+        }
+
+        const playersLeftToAct = currentRoundPlayers.filter(
+          (p) => p.health > 0 && !playersWhoActedThisRound.has(p.id)
+        );
+
+        if (playersLeftToAct.length === 0) {
+          startNewRound();
+        } else {
+          updateGameMessage();
+        }
       });
+
+      mainCollector.on('end', async (collected, reason) => {
+        if (roundTimer) clearTimeout(roundTimer);
+
+        const finalGameRows = [];
+        for (let i = 0; i < players.length; i++) {
+          const player = players[i];
+          const rowIndex = Math.floor(i / 5);
+          if (!finalGameRows[rowIndex]) {
+            finalGameRows.push(new ActionRowBuilder());
+          }
+
+          const button = new ButtonBuilder()
+            .setLabel(`${player.name} (${player.health})`)
+            .setCustomId(`br_final_${player.id}`)
+            .setDisabled(true);
+
+          if (player.health <= 0) {
+            button.setStyle(ButtonStyle.Secondary).setEmoji('💀');
+          } else {
+            button.setStyle(ButtonStyle.Success);
+            if (player.weapon) button.setEmoji('🗡');
+          }
+          finalGameRows[rowIndex].addComponents(button);
+        }
+
+        const finalEmbed = new EmbedBuilder()
+          .setTitle('Battle Royale Over!')
+          .setColor(Colors.Gold)
+          .setDescription(
+            gameLog.map((a) => `- ${a}`).join('\n') || 'The game has ended.'
+          )
+          .setFields([]);
+
+        if (winner) {
+          finalEmbed
+            .addFields({
+              name: 'Winner!',
+              value: `Congratulations <@${winner.id}>!`
+            })
+            .setColor(Colors.Green);
+        } else if (reason === 'draw') {
+          finalEmbed
+            .addFields({
+              name: 'Result',
+              value: "It's a draw! Everyone is dead."
+            })
+            .setColor(Colors.Red);
+        }
+
+        await gameMessage.edit({
+          embeds: [finalEmbed],
+          components: finalGameRows
+        });
+        message.channel.send(`**The Battle Royale has concluded!**`);
+      });
+
+      startNewRound();
     });
   }
 };
