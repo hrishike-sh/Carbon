@@ -13,6 +13,8 @@ module.exports = {
 
     const halRole = '1301486755513372672';
 
+    console.log(message.components);
+
     if (
       message.embeds[0]?.title.includes('Trick') ||
       message.embeds[0].description.includes('trick or treated')
