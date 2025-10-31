@@ -13,11 +13,11 @@ module.exports = {
 
     if (
       message.content.toLowerCase() == 'pls tot' ||
-      message.content.toLowerCase() == 'trickortreat' ||
-      message.channel.id != '870240187198885888'
+      message.content.toLowerCase() == 'trickortreat'
     ) {
       const role = '1301486755513372672';
 
+      if (message.channel.id == '870240187198885888') return;
       if (message.member.roles.cache.has(role)) {
         return message.reply({
           content: `You already have the role 👻`
