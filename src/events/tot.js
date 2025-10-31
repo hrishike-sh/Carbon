@@ -12,13 +12,15 @@ module.exports = {
     if (!message.embeds.length) return;
 
     const halRole = '1301486755513372672';
+    const componentText = message.components
+      ?.flatMap((c1) => c1.components ?? [])
+      ?.flatMap((c2) => c2.components ?? [])
+      ?.map((c3) => c3.content)
+      ?.filter(Boolean);
 
-    console.log(message.components);
+    console.log(componentText);
 
-    if (
-      message.embeds[0]?.title.includes('Trick') ||
-      message.embeds[0].description.includes('trick or treated')
-    ) {
+    if (false) {
       const reference = message.reference;
       const msg = await message.channel.messages.fetch(reference.messageId);
 
