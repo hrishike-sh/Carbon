@@ -47,8 +47,7 @@ const randomActions = [
 ];
 
 module.exports = {
-  name: 'battleroyale',
-  aliases: ['br'],
+  name: 'nbr',
   async execute(message, args, client) {
     if (!message.member.roles.cache.has(ROLE_ID)) {
       return message.reply(
