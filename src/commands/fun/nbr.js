@@ -14,10 +14,10 @@ const MIN_PLAYERS = 3;
 const MAX_PLAYERS = 25;
 const JOIN_TIME_MS = 30 * 1000;
 const GAME_START_DELAY_MS = 5 * 1000;
-const BASE_DAMAGE = 3;
-const RANDOM_DAMAGE = 7;
-const WEAPON_BONUS_DAMAGE = 10;
-const BANDAID_HEAL_AMOUNT = 50;
+const BASE_DAMAGE = 5;
+const RANDOM_DAMAGE = 10;
+const WEAPON_BONUS_DAMAGE = 8;
+const BANDAID_HEAL_AMOUNT = 25;
 const ROUND_TIME_MS = 10 * 1000;
 
 function sleep(ms) {
@@ -164,7 +164,6 @@ module.exports = {
       let playersWhoActedThisRound = new Set();
       let roundNumber = 0;
       let roundTimer = null;
-      let playerChoosingTarget = null;
 
       const mainCollector = gameMessage.createMessageComponentCollector({
         componentType: ComponentType.Button,
@@ -190,57 +189,25 @@ module.exports = {
 
       function buildButtonRows() {
         const newGameRows = [];
-
-        if (playerChoosingTarget) {
-          const alivePlayers = players.filter(
-            (p) => p.health > 0 && p.id !== playerChoosingTarget
-          );
-          const shuffledAlivePlayers = shuffleArray([...alivePlayers]);
-
-          for (let i = 0; i < shuffledAlivePlayers.length; i++) {
-            const player = shuffledAlivePlayers[i];
-            const rowIndex = Math.floor(i / 5);
-            if (!newGameRows[rowIndex]) {
-              newGameRows.push(new ActionRowBuilder());
-            }
-
-            const button = new ButtonBuilder()
-              .setLabel(`${player.name} (${player.health})`)
-              .setCustomId(`br_p_${player.id}`)
+        newGameRows.push(
+          new ActionRowBuilder().addComponents(
+            new ButtonBuilder()
+              .setLabel('Attack')
+              .setCustomId('br_attack')
               .setStyle(ButtonStyle.Primary)
-              .setDisabled(false);
-
-            newGameRows[rowIndex].addComponents(button);
-          }
-          newGameRows.push(
-            new ActionRowBuilder().addComponents(
-              new ButtonBuilder()
-                .setLabel('Cancel Attack')
-                .setCustomId('br_cancel_attack')
-                .setStyle(ButtonStyle.Danger)
-            )
-          );
-        } else {
-          newGameRows.push(
-            new ActionRowBuilder().addComponents(
-              new ButtonBuilder()
-                .setLabel('Attack')
-                .setCustomId('br_attack')
-                .setStyle(ButtonStyle.Primary)
-                .setEmoji('⚔️'),
-              new ButtonBuilder()
-                .setLabel('Search')
-                .setCustomId('br_search')
-                .setStyle(ButtonStyle.Secondary)
-                .setEmoji('🔍'),
-              new ButtonBuilder()
-                .setLabel('Use Bandaid')
-                .setCustomId('br_use_bandaid')
-                .setStyle(ButtonStyle.Success)
-                .setEmoji('🩹')
-            )
-          );
-        }
+              .setEmoji('⚔️'),
+            new ButtonBuilder()
+              .setLabel('Search')
+              .setCustomId('br_search')
+              .setStyle(ButtonStyle.Secondary)
+              .setEmoji('🔍'),
+            new ButtonBuilder()
+              .setLabel('Use Bandaid')
+              .setCustomId('br_use_bandaid')
+              .setStyle(ButtonStyle.Success)
+              .setEmoji('🩹')
+          )
+        );
 
         gameRows.length = 0;
         gameRows.push(...newGameRows);
@@ -260,19 +227,34 @@ module.exports = {
           return;
         }
 
-        const playersLeftToAttack = currentRoundPlayers.filter(
+        const playersLeftToAct = currentRoundPlayers.filter(
           (p) => p.health > 0 && !playersWhoActedThisRound.has(p.id)
         );
 
         const updatedRows = buildButtonRows();
 
+        const alivePlayerList = alivePlayers
+          .map(
+            (p) =>
+              `${p.weapon ? '🗡️' : '✋'} ${p.name} (${p.health} HP, ${
+                p.bandaids
+              } 🩹)`
+          )
+          .join('\n');
+        const deadPlayerList = players
+          .filter((p) => p.health <= 0)
+          .map((p) => `💀 ${p.name}`)
+          .join('\n');
+        const logText =
+          gameLog.map((a) => `- ${a}`).join('\n') || 'The game is afoot!';
+
         game_embed.setDescription(
-          gameLog.map((a) => `- ${a}`).join('\n') || 'The game is afoot!'
+          `**Players**\n${alivePlayerList}\n${
+            deadPlayerList.length > 0 ? deadPlayerList : ''
+          }\n\n**Log**\n${logText}`
         );
 
-        const leftToAttackNames = playersLeftToAttack
-          .map((p) => p.name)
-          .join(', ');
+        const leftToActNames = playersLeftToAct.map((p) => p.name).join(', ');
         game_embed.setFields([
           {
             name: `Round ${roundNumber}`,
@@ -283,9 +265,7 @@ module.exports = {
           {
             name: 'Left to Act',
             value:
-              leftToAttackNames.length > 0
-                ? leftToAttackNames
-                : 'Everyone has acted!'
+              leftToActNames.length > 0 ? leftToActNames : 'Everyone has acted!'
           }
         ]);
 
@@ -311,7 +291,6 @@ module.exports = {
 
         currentRoundPlayers = [...alivePlayers];
         playersWhoActedThisRound.clear();
-        playerChoosingTarget = null;
         updateGameMessage();
 
         roundTimer = setTimeout(() => {
@@ -333,121 +312,192 @@ module.exports = {
       mainCollector.on('collect', async (interaction) => {
         const actor = players.find((p) => p.id === interaction.user.id);
 
-        if (playerChoosingTarget) {
-          if (actor.id !== playerChoosingTarget) {
-            await interaction.reply({
-              ephemeral: true,
-              content: `Wait your turn! ${
-                players.find((p) => p.id === playerChoosingTarget)?.name
-              } is choosing a target.`
-            });
-            return;
-          }
+        if (playersWhoActedThisRound.has(actor.id)) {
+          await interaction.reply({
+            ephemeral: true,
+            content: 'You have already acted this round!'
+          });
+          return;
+        }
 
-          if (interaction.customId === 'br_cancel_attack') {
-            playerChoosingTarget = null;
-            await interaction.deferUpdate();
-            updateGameMessage();
-            return;
-          }
+        switch (interaction.customId) {
+          case 'br_attack':
+            const targets = players.filter(
+              (p) => p.health > 0 && p.id !== actor.id
+            );
 
-          if (interaction.customId.startsWith('br_p_')) {
-            const victimId = interaction.customId.split('_')[2];
-            const victim = players.find((p) => p.id === victimId);
-
-            if (!victim) {
+            if (targets.length === 0) {
               await interaction.reply({
                 ephemeral: true,
-                content: "That player doesn't exist!"
+                content: 'There is no one left to attack!'
               });
               return;
             }
 
-            if (victim.health <= 0) {
-              await interaction.reply({
-                ephemeral: true,
-                content: 'That player is already dead!'
-              });
-              return;
-            }
-
-            let dmg = BASE_DAMAGE + Math.ceil(Math.random() * RANDOM_DAMAGE);
-            if (actor.weapon) {
-              dmg += WEAPON_BONUS_DAMAGE;
-            }
-
-            victim.health -= dmg;
-            await interaction.deferUpdate();
-
-            if (victim.health <= 0) {
-              victim.health = 0;
-              gameLog.push(
-                randomActions[Math.floor(Math.random() * randomActions.length)]
-                  .replace('{user}', actor.name)
-                  .replace('{target}', victim.name)
+            const targetRows = [];
+            for (let i = 0; i < targets.length; i++) {
+              const target = targets[i];
+              const rowIndex = Math.floor(i / 5);
+              if (!targetRows[rowIndex]) {
+                targetRows.push(new ActionRowBuilder());
+              }
+              targetRows[rowIndex].addComponents(
+                new ButtonBuilder()
+                  .setLabel(`${target.name} (${target.health})`)
+                  .setCustomId(`br_p_${target.id}`)
+                  .setStyle(ButtonStyle.Primary)
               );
             }
+            targetRows.push(
+              new ActionRowBuilder().addComponents(
+                new ButtonBuilder()
+                  .setLabel('Cancel')
+                  .setCustomId('br_cancel_attack')
+                  .setStyle(ButtonStyle.Danger)
+              )
+            );
 
-            playersWhoActedThisRound.add(actor.id);
-            playerChoosingTarget = null;
-          }
-        } else {
-          if (playersWhoActedThisRound.has(actor.id)) {
-            await interaction.reply({
+            const attackReply = await interaction.reply({
+              content: 'Who do you want to attack?',
+              components: targetRows,
               ephemeral: true,
-              content: 'You have already acted this round!'
+              fetchReply: true
             });
-            return;
-          }
 
-          switch (interaction.customId) {
-            case 'br_attack':
-              playerChoosingTarget = actor.id;
-              await interaction.deferUpdate();
-              break;
-
-            case 'br_search':
-              playersWhoActedThisRound.add(actor.id);
-              if (Math.random() > 0.5) {
-                if (!actor.weapon) {
-                  actor.weapon = true;
-                  await interaction.reply({
-                    ephemeral: true,
-                    content: 'You searched and found a Dagger! 🗡'
-                  });
-                } else {
-                  await interaction.reply({
-                    ephemeral: true,
-                    content:
-                      'You searched and found another Dagger, but you already have one.'
-                  });
-                }
-              } else {
-                actor.bandaids++;
-                await interaction.reply({
-                  ephemeral: true,
-                  content: 'You searched and found a Bandaid! 🩹'
-                });
+            const targetCollector = attackReply.createMessageComponentCollector(
+              {
+                componentType: ComponentType.Button,
+                time: 10000 // 10 seconds to choose a target
               }
-              break;
+            );
 
-            case 'br_use_bandaid':
-              if (actor.bandaids <= 0) {
-                await interaction.reply({
-                  ephemeral: true,
-                  content: "You don't have any bandaids to use!"
+            targetCollector.on('collect', async (targetInteraction) => {
+              if (targetInteraction.customId === 'br_cancel_attack') {
+                await targetInteraction.update({
+                  content: 'Attack cancelled.',
+                  components: []
                 });
+                targetCollector.stop();
                 return;
               }
-              playersWhoActedThisRound.add(actor.id);
-              actor.bandaids--;
-              actor.health += BANDAID_HEAL_AMOUNT;
+
+              if (targetInteraction.customId.startsWith('br_p_')) {
+                const victimId = targetInteraction.customId.split('_')[2];
+                const victim = players.find((p) => p.id === victimId);
+
+                if (!victim || victim.health <= 0) {
+                  await targetInteraction.update({
+                    content: 'That player is invalid or already dead.',
+                    components: []
+                  });
+                  targetCollector.stop();
+                  return;
+                }
+
+                let dmg =
+                  BASE_DAMAGE + Math.ceil(Math.random() * RANDOM_DAMAGE);
+                if (actor.weapon) {
+                  dmg += WEAPON_BONUS_DAMAGE;
+                }
+
+                victim.health -= dmg;
+
+                if (victim.health <= 0) {
+                  victim.health = 0;
+                  gameLog.push(
+                    randomActions[
+                      Math.floor(Math.random() * randomActions.length)
+                    ]
+                      .replace('{user}', actor.name)
+                      .replace('{target}', victim.name)
+                  );
+                }
+
+                playersWhoActedThisRound.add(actor.id);
+                await targetInteraction.update({
+                  content: `You attacked ${victim.name} for ${dmg} damage!`,
+                  components: []
+                });
+                targetCollector.stop();
+              }
+
+              const aliveCheck = players.filter((p) => p.health > 0);
+              if (aliveCheck.length === 1) {
+                winner = aliveCheck[0];
+                mainCollector.stop('winner');
+              } else if (aliveCheck.length === 0) {
+                mainCollector.stop('draw');
+              }
+
+              const playersLeftToAct = currentRoundPlayers.filter(
+                (p) => p.health > 0 && !playersWhoActedThisRound.has(p.id)
+              );
+
+              if (playersLeftToAct.length === 0) {
+                startNewRound();
+              } else {
+                updateGameMessage();
+              }
+            });
+
+            targetCollector.on('end', async (collected, reason) => {
+              if (reason === 'time') {
+                await attackReply
+                  .edit({
+                    content: 'Time ran out to choose a target.',
+                    components: []
+                  })
+                  .catch(() => {});
+              }
+            });
+
+            break;
+
+          case 'br_search':
+            playersWhoActedThisRound.add(actor.id);
+            if (Math.random() < 0.3) {
+              // 30% chance for Dagger
+              if (!actor.weapon) {
+                actor.weapon = true;
+                await interaction.reply({
+                  ephemeral: true,
+                  content: 'You searched and found a Dagger! 🗡'
+                });
+              } else {
+                await interaction.reply({
+                  ephemeral: true,
+                  content:
+                    'You searched and found another Dagger, but you already have one.'
+                });
+              }
+            } else {
+              // 70% chance for Bandaid
+              actor.bandaids++;
               await interaction.reply({
                 ephemeral: true,
-                content: `You used a Bandaid and healed for ${BANDAID_HEAL_AMOUNT} HP! You now have ${actor.health} HP.`
+                content: 'You searched and found a Bandaid! 🩹'
               });
-              break;
-          }
+            }
+            updateGameMessage();
+            break;
+
+          case 'br_use_bandaid':
+            if (actor.bandaids <= 0) {
+              await interaction.reply({
+                ephemeral: true,
+                content: "You don't have any bandaids to use!"
+              });
+              return;
+            }
+            playersWhoActedThisRound.add(actor.id);
+            actor.bandaids--;
+            actor.health += BANDAID_HEAL_AMOUNT;
+            await interaction.reply({
+              ephemeral: true,
+              content: `You used a Bandaid and healed for ${BANDAID_HEAL_AMOUNT} HP! You now have ${actor.health} HP.`
+            });
+            updateGameMessage();
+            break;
         }
 
         const alivePlayers = players.filter((p) => p.health > 0);
@@ -467,8 +517,6 @@ module.exports = {
 
         if (playersLeftToAct.length === 0) {
           startNewRound();
-        } else {
-          updateGameMessage();
         }
       });
 
