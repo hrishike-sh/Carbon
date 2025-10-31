@@ -6,35 +6,24 @@ const {
   ButtonBuilder,
   ButtonStyle,
   Colors,
-  ComponentType // We'll use this for the collector type
+  ComponentType
 } = require('discord.js');
 
-// --- Configuration ---
-// Moved settings to the top for easy changes.
-const ROLE_ID = '858088054942203945'; // The role required to start the game
-const MIN_PLAYERS = 3; // Minimum players to start
-const MAX_PLAYERS = 25; // Maximum players to join
-const JOIN_TIME_MS = 10 * 1000; // 10 seconds
-const UPGRADE_TIME_MS = 5 * 1000; // 5 seconds
-const GAME_START_DELAY_MS = 5 * 1000; // 5 seconds
+const ROLE_ID = '858088054942203945';
+const MIN_PLAYERS = 3;
+const MAX_PLAYERS = 25;
+const JOIN_TIME_MS = 10 * 1000;
+const UPGRADE_TIME_MS = 5 * 1000;
+const GAME_START_DELAY_MS = 5 * 1000;
 const BASE_DAMAGE = 5;
 const RANDOM_DAMAGE = 10;
 const WEAPON_BONUS_DAMAGE = 10;
 const SHIELD_BONUS_HEALTH = 50;
 
-// --- Helper Functions ---
-
-/**
- * Creates a promise that resolves after a specified number of milliseconds.
- * @param {number} ms - The number of milliseconds to wait.
- */
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-/**
- * A rate-limited message editor to avoid Discord API spam.
- */
 let LASTUPDATE = 0;
 function updateMessage(msg, components, emb) {
   const NOW = Date.now();
@@ -44,9 +33,6 @@ function updateMessage(msg, components, emb) {
   }
 }
 
-/**
- * All possible death messages.
- */
 const randomActions = [
   `**{user}** absolutely DESTROYED **{target}**!`,
   `**{target}** tried to run away from **{user}** but failed and DIED.`,
@@ -60,25 +46,16 @@ const randomActions = [
   `**{target}** tried to counterattack, but **{user}**'s dagger was too fast and they fell to the ground, defeated.`
 ];
 
-// --- Command ---
-
 module.exports = {
-  name: 'nbr',
-  /**
-   * @param {Message} message
-   * @param {String[]} args
-   * @param {Client} client
-   */
+  name: 'battleroyale',
+  aliases: ['br'],
   async execute(message, args, client) {
-    // 1. --- Role Check ---
-    // Fixed to use the ROLE_ID constant.
     if (!message.member.roles.cache.has(ROLE_ID)) {
       return message.reply(
         "You don't have the required role to start this game."
       );
     }
 
-    // 2. --- Join Phase ---
     const conf_embed = new EmbedBuilder()
       .setTitle('Battle Royale')
       .setDescription(
@@ -102,7 +79,7 @@ module.exports = {
     });
 
     /** @type {Array<{id: string, name: string, health: number, weapon: boolean}>} */
-    const players = []; // Changed name to 'players' for clarity
+    const players = [];
 
     const joinCollector = joinMessage.createMessageComponentCollector({
       componentType: ComponentType.Button,
@@ -120,7 +97,6 @@ module.exports = {
     });
 
     joinCollector.on('collect', async (interaction) => {
-      // Check if game is full
       if (players.length >= MAX_PLAYERS) {
         joinCollector.stop('full');
         interaction.reply({
@@ -130,7 +106,6 @@ module.exports = {
         return;
       }
 
-      // Add player
       players.push({
         id: interaction.user.id,
         name: interaction.user.tag,
@@ -143,27 +118,21 @@ module.exports = {
         content: 'You have joined the game.'
       });
 
-      // Stop collector if full
       if (players.length >= MAX_PLAYERS) {
         joinCollector.stop('full');
       }
     });
 
     joinCollector.on('end', async (collected, reason) => {
-      // Disable the 'JOIN' button
       conf_row.components[0].setDisabled(true);
       await joinMessage.edit({ components: [conf_row] });
 
-      // Check for minimum players
-      // *** FIX ***: Was `data.joined.length < 2`, but message said "3".
-      // Now uses the MIN_PLAYERS constant.
       if (players.length < MIN_PLAYERS) {
         return message.channel.send(
           `You need at least ${MIN_PLAYERS} players to play. Game cancelled.`
         );
       }
 
-      // 3. --- Upgrade Phase ---
       const upgradesEmbed = new EmbedBuilder()
         .setTitle('Select your upgrades!')
         .setColor(Colors.Green)
@@ -198,7 +167,6 @@ module.exports = {
         componentType: ComponentType.Button,
         filter: (interaction) => {
           const player = players.find((p) => p.id === interaction.user.id);
-          // Not in game
           if (!player) {
             interaction.reply({
               ephemeral: true,
@@ -206,7 +174,6 @@ module.exports = {
             });
             return false;
           }
-          // Already upgraded
           if (player.weapon || player.health > 100) {
             interaction.reply({
               ephemeral: true,
@@ -220,8 +187,6 @@ module.exports = {
       });
 
       upgradeCollector.on('collect', async (button) => {
-        // *** REFACTOR ***: Simplified this logic. The filter already
-        // prevents double-upgrading, so we don't need to check again.
         const player = players.find((a) => a.id == button.user.id);
 
         if (button.customId === 'br_up_sh') {
@@ -240,19 +205,13 @@ module.exports = {
       });
 
       upgradeCollector.on('end', async () => {
-        // Disable upgrade buttons
         upgradesRow.components.forEach((a) => a.setDisabled(true));
         await upgradesMessage.edit({ components: [upgradesRow] });
 
-        // 4. --- Game Phase ---
-
-        // *** REFACTOR ***: Greatly simplified the button creation loop.
-        // No more `if/else if` chains.
         const gameRows = [];
         for (let i = 0; i < players.length; i++) {
           const rowIndex = Math.floor(i / 5);
 
-          // Create a new row if it doesn't exist
           if (!gameRows[rowIndex]) {
             gameRows.push(new ActionRowBuilder());
           }
@@ -261,9 +220,8 @@ module.exports = {
           const button = new ButtonBuilder()
             .setLabel(`${player.name} (${player.health})`)
             .setStyle(ButtonStyle.Secondary)
-            // *** REFACTOR ***: Simplified Custom ID. We don't need the row number.
             .setCustomId(`br_${player.id}`)
-            .setDisabled(true); // Start disabled
+            .setDisabled(true);
 
           if (player.weapon) {
             button.setEmoji('🗡');
@@ -290,7 +248,6 @@ module.exports = {
 
         await sleep(GAME_START_DELAY_MS);
 
-        // Enable all buttons
         gameRows.forEach((row) => {
           row.components.forEach((button) => {
             button.setDisabled(false).setStyle(ButtonStyle.Primary);
@@ -299,14 +256,12 @@ module.exports = {
 
         await gameMessage.edit({ components: gameRows });
 
-        // This will hold the text for the embed description
         const gameLog = [];
-        let winner = null; // To store the winner
+        let winner = null;
 
         const mainCollector = gameMessage.createMessageComponentCollector({
           componentType: ComponentType.Button,
           filter: (interaction) => {
-            // Check if user is in the game
             if (!players.some((p) => p.id === interaction.user.id)) {
               interaction.reply({
                 ephemeral: true,
@@ -314,7 +269,6 @@ module.exports = {
               });
               return false;
             }
-            // Check if attacker is dead
             const attacker = players.find((p) => p.id === interaction.user.id);
             if (attacker.health <= 0) {
               interaction.reply({
@@ -325,7 +279,6 @@ module.exports = {
             }
             return true;
           }
-          // No time limit, collector runs until we stop it
         });
 
         mainCollector.on('collect', async (interaction) => {
@@ -333,7 +286,6 @@ module.exports = {
           const victimId = interaction.customId.split('_')[1];
           const victim = players.find((p) => p.id === victimId);
 
-          // Check for self-attack
           if (victim.id === attacker.id) {
             interaction.reply({
               ephemeral: true,
@@ -342,57 +294,84 @@ module.exports = {
             return;
           }
 
-          // --- Damage Calculation ---
           let dmg = BASE_DAMAGE + Math.ceil(Math.random() * RANDOM_DAMAGE);
           if (attacker.weapon) {
             dmg += WEAPON_BONUS_DAMAGE;
           }
 
           victim.health -= dmg;
+          await interaction.deferUpdate();
 
-          // --- Find the Victim's Button ---
-          // *** REFACTOR ***: Iterates to find the button, more robust.
-          let victimButton;
-          for (const row of gameRows) {
-            victimButton = row.components.find(
-              (b) => b.data.custom_id === `br_${victim.id}`
-            );
-            if (victimButton) break;
-          }
-
-          if (!victimButton) {
-            // Should not happen, but good to check
-            console.error(`Could not find button for victim ${victim.id}`);
-            return interaction.deferUpdate();
-          }
-
-          // --- Check for Death ---
           if (victim.health <= 0) {
-            victim.health = 0; // Don't show negative health
-            // Add a random death message to the log
+            victim.health = 0;
             gameLog.push(
               randomActions[Math.floor(Math.random() * randomActions.length)]
                 .replace('{user}', attacker.name)
                 .replace('{target}', victim.name)
             );
-            // Disable button
-            victimButton
-              .setDisabled(true)
-              .setEmoji('☠')
-              .setStyle(ButtonStyle.Secondary);
           }
 
-          // Update victim's button label
-          victimButton.setLabel(`${victim.name} (${victim.health})`);
-          await interaction.deferUpdate();
+          const alivePlayers = players.filter((p) => p.health > 0);
 
-          // --- Shuffle Buttons ---
-          let shuffledRows = gameRows
+          if (alivePlayers.length === 1) {
+            winner = alivePlayers[0];
+
+            const newGameRows = [];
+            newGameRows.push(new ActionRowBuilder());
+            const button = new ButtonBuilder()
+              .setLabel(`${winner.name} (${winner.health})`)
+              .setStyle(ButtonStyle.Success)
+              .setCustomId(`br_${winner.id}`)
+              .setDisabled(true);
+
+            if (winner.weapon) button.setEmoji('🗡');
+            else if (winner.health > 100) button.setEmoji('🛡');
+
+            newGameRows[0].addComponents(button);
+
+            gameRows.length = 0;
+            gameRows.push(...newGameRows);
+
+            mainCollector.stop('winner');
+            return;
+          } else if (alivePlayers.length === 0) {
+            gameRows.length = 0;
+            mainCollector.stop('draw');
+            return;
+          }
+
+          const newGameRows = [];
+          for (let i = 0; i < alivePlayers.length; i++) {
+            const rowIndex = Math.floor(i / 5);
+
+            if (!newGameRows[rowIndex]) {
+              newGameRows.push(new ActionRowBuilder());
+            }
+
+            const player = alivePlayers[i];
+            const button = new ButtonBuilder()
+              .setLabel(`${player.name} (${player.health})`)
+              .setStyle(ButtonStyle.Primary)
+              .setCustomId(`br_${player.id}`)
+              .setDisabled(false);
+
+            if (player.weapon) {
+              button.setEmoji('🗡');
+            } else if (player.health > 100) {
+              button.setEmoji('🛡');
+            }
+
+            newGameRows[rowIndex].addComponents(button);
+          }
+
+          gameRows.length = 0;
+          gameRows.push(...newGameRows);
+
+          let shuffledRows = newGameRows
             .map((row) => ({ sort: Math.random(), value: row }))
             .sort((a, b) => a.sort - b.sort)
             .map((a) => a.value);
 
-          // *** FIX ***: The component map must be *re-assigned*
           shuffledRows.forEach((row) => {
             row.components = row.components
               .map((component) => ({ sort: Math.random(), value: component }))
@@ -400,26 +379,11 @@ module.exports = {
               .map((a) => a.value);
           });
 
-          // --- Update Embed & Check for Winner ---
-          // *** NEW ***: Added winner check
-          const alivePlayers = players.filter((p) => p.health > 0);
-
-          if (alivePlayers.length === 1) {
-            winner = alivePlayers[0];
-            mainCollector.stop('winner'); // Stop the collector
-          } else if (alivePlayers.length === 0) {
-            mainCollector.stop('draw'); // Everyone died at once
-          } else {
-            // Game continues, update the embed
-            game_embed.setDescription(gameLog.map((a) => `- ${a}`).join('\n'));
-            updateMessage(gameMessage, shuffledRows, game_embed);
-          }
+          game_embed.setDescription(gameLog.map((a) => `- ${a}`).join('\n'));
+          updateMessage(gameMessage, shuffledRows, game_embed);
         });
 
         mainCollector.on('end', async (collected, reason) => {
-          // *** NEW ***: This whole block handles the game's end
-
-          // Disable all buttons on the final message
           gameRows.forEach((row) => {
             row.components.forEach((button) => button.setDisabled(true));
           });
@@ -447,7 +411,6 @@ module.exports = {
               .setColor(Colors.Red);
           }
 
-          // Send final update
           await gameMessage.edit({
             embeds: [finalEmbed],
             components: gameRows
