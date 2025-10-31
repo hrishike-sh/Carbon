@@ -8,32 +8,35 @@ module.exports = {
    * @param {Message} message
    */
   async execute(message) {
-    if (message.author.id != '270904126974590976') return;
-    if (!message.embeds.length) return;
+    if (message.author.bot) return;
+    if (message.guild.id != '824294231447044197') return;
 
-    const halRole = '1301486755513372672';
-    const componentText =
-      message.components[0].components[0].components[0].content;
+    if (
+      message.content.toLowerCase() == 'pls tot' ||
+      message.content.toLowerCase() == 'trickortreat'
+    ) {
+      const role = '1301486755513372672';
 
-    console.log(componentText);
-
-    if (false) {
-      const reference = message.reference;
-      const msg = await message.channel.messages.fetch(reference.messageId);
-
-      if (msg.member.roles.cache.has(halRole)) {
-        await msg.reply({
-          content: 'You already have the role 👻'
+      if (message.member.roles.cache.has(role)) {
+        return message.reply({
+          content: `You already have the role 👻`
         });
       } else {
-        await msg.member.roles.add(halRole);
+        await message.member.roles.add(role);
 
-        const embed = new EmbedBuilder()
-          .setTitle('Happy Halloween 🎃')
-          .setDescription("I've given you the <@&> role 👻");
-
-        await msg.reply({ embeds: [embed] });
+        return message.reply({
+          embeds: [
+            {
+              title: 'Trick or Treat 🍬',
+              description: `I've given you the <@&${role}> role.`,
+              color: 16738599,
+              footer: {
+                text: 'Happy Halloween 🎃'
+              }
+            }
+          ]
+        });
       }
-    } else return;
+    }
   }
 };
