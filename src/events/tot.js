@@ -12,11 +12,8 @@ module.exports = {
     if (!message.embeds.length) return;
 
     const halRole = '1301486755513372672';
-    const componentText = message.components
-      ?.flatMap((c1) => c1.components ?? [])
-      ?.flatMap((c2) => c2.components ?? [])
-      ?.map((c3) => c3.content)
-      ?.filter(Boolean);
+    const componentText =
+      message.components[0].components[0].components[0].content;
 
     console.log(componentText);
 
