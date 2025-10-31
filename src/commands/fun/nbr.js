@@ -19,6 +19,7 @@ const BASE_DAMAGE = 3;
 const RANDOM_DAMAGE = 7;
 const WEAPON_BONUS_DAMAGE = 10;
 const SHIELD_BONUS_HEALTH = 50;
+const ROUND_TIME_MS = 3 * 1000;
 
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -253,6 +254,7 @@ module.exports = {
         let currentRoundPlayers = [];
         let playersWhoAttackedThisRound = new Set();
         let roundNumber = 0;
+        let roundTimer = null;
 
         const mainCollector = gameMessage.createMessageComponentCollector({
           componentType: ComponentType.Button,
@@ -334,7 +336,9 @@ module.exports = {
           game_embed.setFields([
             {
               name: `Round ${roundNumber}`,
-              value: `Everyone can attack ONCE this round.`
+              value: `Everyone can attack ONCE this round. You have ${
+                ROUND_TIME_MS / 1000
+              } seconds!`
             },
             {
               name: 'Left to Attack',
@@ -349,6 +353,8 @@ module.exports = {
         }
 
         function startNewRound() {
+          if (roundTimer) clearTimeout(roundTimer);
+
           roundNumber++;
           gameLog.push(`--- **Round ${roundNumber} Begins!** ---`);
 
@@ -367,6 +373,23 @@ module.exports = {
           currentRoundPlayers = [...alivePlayers];
           playersWhoAttackedThisRound.clear();
           updateGameMessage();
+
+          roundTimer = setTimeout(() => {
+            if (mainCollector.ended) return;
+
+            const playersLeft = currentRoundPlayers.filter(
+              (p) => p.health > 0 && !playersWhoAttackedThisRound.has(p.id)
+            );
+
+            gameLog.push(`--- **Round ${roundNumber} Ends (Time's Up!)** ---`);
+            if (playersLeft.length > 0) {
+              gameLog.push(
+                `*Missed moves: ${playersLeft.map((p) => p.name).join(', ')}*`
+              );
+            }
+
+            startNewRound();
+          }, ROUND_TIME_MS);
         }
 
         mainCollector.on('collect', async (interaction) => {
@@ -446,6 +469,8 @@ module.exports = {
         });
 
         mainCollector.on('end', async (collected, reason) => {
+          if (roundTimer) clearTimeout(roundTimer);
+
           const finalGameRows = [];
           for (let i = 0; i < players.length; i++) {
             const player = players[i];
