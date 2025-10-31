@@ -14,7 +14,7 @@ const MIN_PLAYERS = 3;
 const MAX_PLAYERS = 25;
 const JOIN_TIME_MS = 30 * 1000;
 const UPGRADE_TIME_MS = 15 * 1000;
-const GAME_START_DELAY_MS = 10 * 1000;
+const GAME_START_DELAY_MS = 5 * 1000;
 const BASE_DAMAGE = 3;
 const RANDOM_DAMAGE = 7;
 const WEAPON_BONUS_DAMAGE = 10;
@@ -29,8 +29,16 @@ function updateMessage(msg, components, emb) {
   const NOW = Date.now();
   if (NOW - LASTUPDATE > 1000) {
     LASTUPDATE = NOW;
-    msg.edit({ components, embeds: [emb] });
+    msg.edit({ components, embeds: [emb] }).catch(console.error);
   }
+}
+
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
 }
 
 const randomActions = [
@@ -56,7 +64,7 @@ module.exports = {
     }
 
     const conf_embed = new EmbedBuilder()
-      .setTitle('Battle Royale')
+      .setTitle('Battle Royale (Round-Based)')
       .setDescription(
         `Click the \`JOIN\` button to join!\n\nMax Players: ${MAX_PLAYERS}`
       )
@@ -207,27 +215,20 @@ module.exports = {
         upgradesRow.components.forEach((a) => a.setDisabled(true));
         await upgradesMessage.edit({ components: [upgradesRow] });
 
-        const gameRows = [];
+        let gameRows = [];
         for (let i = 0; i < players.length; i++) {
           const rowIndex = Math.floor(i / 5);
-
           if (!gameRows[rowIndex]) {
             gameRows.push(new ActionRowBuilder());
           }
-
           const player = players[i];
           const button = new ButtonBuilder()
             .setLabel(`${player.name} (${player.health})`)
             .setStyle(ButtonStyle.Secondary)
             .setCustomId(`br_${player.id}`)
             .setDisabled(true);
-
-          if (player.weapon) {
-            button.setEmoji('🗡');
-          } else if (player.health > 100) {
-            button.setEmoji('🛡');
-          }
-
+          if (player.weapon) button.setEmoji('🗡');
+          else if (player.health > 100) button.setEmoji('🛡');
           gameRows[rowIndex].addComponents(button);
         }
 
@@ -237,7 +238,7 @@ module.exports = {
           .setFooter({ text: 'Last man standing wins!' })
           .setDescription(
             `The game starts in **${GAME_START_DELAY_MS / 1000} seconds**.\n` +
-              `Click on a button to attack that user. Good luck!`
+              `Wait for the round to begin!`
           );
 
         const gameMessage = await message.channel.send({
@@ -247,29 +248,24 @@ module.exports = {
 
         await sleep(GAME_START_DELAY_MS);
 
-        gameRows.forEach((row) => {
-          row.components.forEach((button) => {
-            button.setDisabled(false).setStyle(ButtonStyle.Primary);
-          });
-        });
-
-        await gameMessage.edit({ components: gameRows });
-
-        const gameLog = [];
+        let gameLog = [];
         let winner = null;
+        let currentRoundPlayers = [];
+        let playersWhoAttackedThisRound = new Set();
+        let roundNumber = 0;
 
         const mainCollector = gameMessage.createMessageComponentCollector({
           componentType: ComponentType.Button,
           filter: (interaction) => {
-            if (!players.some((p) => p.id === interaction.user.id)) {
+            const player = players.find((p) => p.id === interaction.user.id);
+            if (!player) {
               interaction.reply({
                 ephemeral: true,
                 content: "You're not in this game!"
               });
               return false;
             }
-            const attacker = players.find((p) => p.id === interaction.user.id);
-            if (attacker.health <= 0) {
+            if (player.health <= 0) {
               interaction.reply({
                 ephemeral: true,
                 content: "You're already dead!"
@@ -280,15 +276,125 @@ module.exports = {
           }
         });
 
+        function buildPlayerButtonRows() {
+          const alivePlayers = players.filter((p) => p.health > 0);
+          const shuffledAlivePlayers = shuffleArray([...alivePlayers]);
+
+          const newGameRows = [];
+          for (let i = 0; i < shuffledAlivePlayers.length; i++) {
+            const player = shuffledAlivePlayers[i];
+            const rowIndex = Math.floor(i / 5);
+            if (!newGameRows[rowIndex]) {
+              newGameRows.push(new ActionRowBuilder());
+            }
+
+            const button = new ButtonBuilder()
+              .setLabel(`${player.name} (${player.health})`)
+              .setCustomId(`br_${player.id}`)
+              .setStyle(ButtonStyle.Primary)
+              .setDisabled(false);
+
+            if (player.weapon) button.setEmoji('🗡');
+            else if (player.health > 100) button.setEmoji('🛡');
+
+            newGameRows[rowIndex].addComponents(button);
+          }
+
+          gameRows.length = 0;
+          gameRows.push(...newGameRows);
+          return newGameRows;
+        }
+
+        function updateGameMessage() {
+          const alivePlayers = players.filter((p) => p.health > 0);
+
+          if (alivePlayers.length === 1) {
+            winner = alivePlayers[0];
+            mainCollector.stop('winner');
+            return;
+          }
+          if (alivePlayers.length === 0) {
+            mainCollector.stop('draw');
+            return;
+          }
+
+          const playersLeftToAttack = currentRoundPlayers.filter(
+            (p) => p.health > 0 && !playersWhoAttackedThisRound.has(p.id)
+          );
+
+          const updatedRows = buildPlayerButtonRows();
+
+          game_embed.setDescription(
+            gameLog.map((a) => `- ${a}`).join('\n') || 'The game is afoot!'
+          );
+
+          const leftToAttackNames = playersLeftToAttack
+            .map((p) => p.name)
+            .join(', ');
+          game_embed.setFields([
+            {
+              name: `Round ${roundNumber}`,
+              value: `Everyone can attack ONCE this round.`
+            },
+            {
+              name: 'Left to Attack',
+              value:
+                leftToAttackNames.length > 0
+                  ? leftToAttackNames
+                  : 'Everyone has attacked!'
+            }
+          ]);
+
+          updateMessage(gameMessage, updatedRows, game_embed);
+        }
+
+        function startNewRound() {
+          roundNumber++;
+          gameLog.push(`--- **Round ${roundNumber} Begins!** ---`);
+
+          const alivePlayers = players.filter((p) => p.health > 0);
+
+          if (alivePlayers.length === 1) {
+            winner = alivePlayers[0];
+            mainCollector.stop('winner');
+            return;
+          }
+          if (alivePlayers.length === 0) {
+            mainCollector.stop('draw');
+            return;
+          }
+
+          currentRoundPlayers = [...alivePlayers];
+          playersWhoAttackedThisRound.clear();
+          updateGameMessage();
+        }
+
         mainCollector.on('collect', async (interaction) => {
           const attacker = players.find((p) => p.id === interaction.user.id);
+
+          if (playersWhoAttackedThisRound.has(attacker.id)) {
+            await interaction.reply({
+              ephemeral: true,
+              content: 'You have already attacked this round!'
+            });
+            return;
+          }
+
           const victimId = interaction.customId.split('_')[1];
           const victim = players.find((p) => p.id === victimId);
 
           if (victim.id === attacker.id) {
-            interaction.reply({
+            await interaction.reply({
               ephemeral: true,
               content: "You can't attack yourself!"
+            });
+            return;
+          }
+
+          if (victim.health <= 0) {
+            await interaction.reply({
+              ephemeral: true,
+              content: 'That player is already dead!'
             });
             return;
           }
@@ -308,91 +414,68 @@ module.exports = {
                 .replace('{user}', attacker.name)
                 .replace('{target}', victim.name)
             );
+          } else {
+            gameLog.push(
+              `**${attacker.name}** attacked **${victim.name}** for **${dmg}** damage! (${victim.health} HP remaining)`
+            );
           }
 
-          const alivePlayers = players.filter((p) => p.health > 0);
+          playersWhoAttackedThisRound.add(attacker.id);
 
+          const alivePlayers = players.filter((p) => p.health > 0);
           if (alivePlayers.length === 1) {
             winner = alivePlayers[0];
-
-            const newGameRows = [];
-            newGameRows.push(new ActionRowBuilder());
-            const button = new ButtonBuilder()
-              .setLabel(`${winner.name} (${winner.health})`)
-              .setStyle(ButtonStyle.Success)
-              .setCustomId(`br_${winner.id}`)
-              .setDisabled(true);
-
-            if (winner.weapon) button.setEmoji('🗡');
-            else if (winner.health > 100) button.setEmoji('🛡');
-
-            newGameRows[0].addComponents(button);
-
-            gameRows.length = 0;
-            gameRows.push(...newGameRows);
-
             mainCollector.stop('winner');
             return;
-          } else if (alivePlayers.length === 0) {
-            gameRows.length = 0;
+          }
+          if (alivePlayers.length === 0) {
             mainCollector.stop('draw');
             return;
           }
 
-          const newGameRows = [];
-          for (let i = 0; i < alivePlayers.length; i++) {
-            const rowIndex = Math.floor(i / 5);
+          const playersLeftToAttack = currentRoundPlayers.filter(
+            (p) => p.health > 0 && !playersWhoAttackedThisRound.has(p.id)
+          );
 
-            if (!newGameRows[rowIndex]) {
-              newGameRows.push(new ActionRowBuilder());
-            }
-
-            const player = alivePlayers[i];
-            const button = new ButtonBuilder()
-              .setLabel(`${player.name} (${player.health})`)
-              .setStyle(ButtonStyle.Primary)
-              .setCustomId(`br_${player.id}`)
-              .setDisabled(false);
-
-            if (player.weapon) {
-              button.setEmoji('🗡');
-            } else if (player.health > 100) {
-              button.setEmoji('🛡');
-            }
-
-            newGameRows[rowIndex].addComponents(button);
+          if (playersLeftToAttack.length === 0) {
+            gameLog.push(`--- **Round ${roundNumber} Ends!** ---`);
+            startNewRound();
+          } else {
+            updateGameMessage();
           }
-
-          gameRows.length = 0;
-          gameRows.push(...newGameRows);
-
-          let shuffledRows = newGameRows
-            .map((row) => ({ sort: Math.random(), value: row }))
-            .sort((a, b) => a.sort - b.sort)
-            .map((a) => a.value);
-
-          shuffledRows.forEach((row) => {
-            row.components = row.components
-              .map((component) => ({ sort: Math.random(), value: component }))
-              .sort((a, b) => a.sort - b.sort)
-              .map((a) => a.value);
-          });
-
-          game_embed.setDescription(gameLog.map((a) => `- ${a}`).join('\n'));
-          updateMessage(gameMessage, shuffledRows, game_embed);
         });
 
         mainCollector.on('end', async (collected, reason) => {
-          gameRows.forEach((row) => {
-            row.components.forEach((button) => button.setDisabled(true));
-          });
+          const finalGameRows = [];
+          for (let i = 0; i < players.length; i++) {
+            const player = players[i];
+            const rowIndex = Math.floor(i / 5);
+            if (!finalGameRows[rowIndex]) {
+              finalGameRows.push(new ActionRowBuilder());
+            }
+
+            const button = new ButtonBuilder()
+              .setLabel(`${player.name} (${player.health})`)
+              .setCustomId(`br_${player.id}`)
+              .setDisabled(true);
+
+            if (player.health <= 0) {
+              button.setStyle(ButtonStyle.Secondary).setEmoji('💀');
+            } else {
+              button.setStyle(ButtonStyle.Success);
+              if (player.weapon) button.setEmoji('🗡');
+              else if (player.health > 100) button.setEmoji('🛡');
+            }
+            finalGameRows[rowIndex].addComponents(button);
+          }
 
           const finalEmbed = new EmbedBuilder()
             .setTitle('Battle Royale Over!')
             .setColor(Colors.Gold)
             .setDescription(
               gameLog.map((a) => `- ${a}`).join('\n') || 'The game has ended.'
-            );
+            )
+            .setFields([]);
 
           if (winner) {
             finalEmbed
@@ -412,10 +495,12 @@ module.exports = {
 
           await gameMessage.edit({
             embeds: [finalEmbed],
-            components: gameRows
+            components: finalGameRows
           });
           message.channel.send(`**The Battle Royale has concluded!**`);
         });
+
+        startNewRound();
       });
     });
   }
