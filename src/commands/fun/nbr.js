@@ -356,7 +356,6 @@ module.exports = {
           if (roundTimer) clearTimeout(roundTimer);
 
           roundNumber++;
-          gameLog.push(`--- **Round ${roundNumber} Begins!** ---`);
 
           const alivePlayers = players.filter((p) => p.health > 0);
 
@@ -376,17 +375,6 @@ module.exports = {
 
           roundTimer = setTimeout(() => {
             if (mainCollector.ended) return;
-
-            const playersLeft = currentRoundPlayers.filter(
-              (p) => p.health > 0 && !playersWhoAttackedThisRound.has(p.id)
-            );
-
-            gameLog.push(`--- **Round ${roundNumber} Ends (Time's Up!)** ---`);
-            if (playersLeft.length > 0) {
-              gameLog.push(
-                `*Missed moves: ${playersLeft.map((p) => p.name).join(', ')}*`
-              );
-            }
 
             startNewRound();
           }, ROUND_TIME_MS);
@@ -438,9 +426,7 @@ module.exports = {
                 .replace('{target}', victim.name)
             );
           } else {
-            gameLog.push(
-              `**${attacker.name}** attacked **${victim.name}** for **${dmg}** damage! (${victim.health} HP remaining)`
-            );
+            // Attack message removed from log
           }
 
           playersWhoAttackedThisRound.add(attacker.id);
@@ -461,7 +447,6 @@ module.exports = {
           );
 
           if (playersLeftToAttack.length === 0) {
-            gameLog.push(`--- **Round ${roundNumber} Ends!** ---`);
             startNewRound();
           } else {
             updateGameMessage();
