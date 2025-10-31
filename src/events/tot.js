@@ -13,7 +13,8 @@ module.exports = {
 
     if (
       message.content.toLowerCase() == 'pls tot' ||
-      message.content.toLowerCase() == 'trickortreat'
+      message.content.toLowerCase() == 'trickortreat' ||
+      message.channel.id != '870240187198885888'
     ) {
       const role = '1301486755513372672';
 
