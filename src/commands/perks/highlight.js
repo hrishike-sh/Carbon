@@ -32,9 +32,9 @@ module.exports = {
         userId
       });
 
-      if (!highlights || !highlights?.highlights.length) {
+      if (!highlights || !highlights?.highlights?.length) {
         embed.setDescription(
-          'You do not have any highlights! Add them using fh hl add <item>'
+          'You do not have any highlights! Add them using `fh hl add <item>`'
         );
 
         return message.reply({
@@ -63,10 +63,10 @@ module.exports = {
         userId
       });
 
-      if (highlights.includes(toAdd))
+      if (highlights?.includes(toAdd))
         return message.reply(`You already have this word in your highlights.`);
 
-      if (highlights.length) {
+      if (highlights?.length) {
         highlights.push(toAdd);
       } else highlights = [toAdd];
 
@@ -82,7 +82,7 @@ module.exports = {
         userId
       });
 
-      if (!highlights.includes(toRemove)) {
+      if (!highlights?.includes(toRemove)) {
         return message.reply(
           `You dont have this word in your highlights. Check your highlights using \`fh hl list\``
         );
