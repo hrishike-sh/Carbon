@@ -28,7 +28,7 @@ module.exports = {
       .setColor(Colors.Green);
 
     if (subcommand == 'list') {
-      const highlights = await db.findOne({
+      let highlights = await db.findOne({
         userId
       });
 
@@ -59,7 +59,7 @@ module.exports = {
         );
       }
 
-      const highlights = await db.findOne({
+      let highlights = await db.findOne({
         userId
       });
 
@@ -78,7 +78,7 @@ module.exports = {
       const toRemove = args.shift();
       if (!toRemove) return message.reply(sample);
 
-      const highlights = await db.findOne({
+      let highlights = await db.findOne({
         userId
       });
 
