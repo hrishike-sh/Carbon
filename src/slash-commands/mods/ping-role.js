@@ -7,6 +7,8 @@ const {
 
 const cooldowns = new Map();
 
+const AllowedChannels = ['853280287777882142', '1272547714617446440'];
+
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('pingrole')
@@ -91,6 +93,13 @@ module.exports = {
       return interaction.reply("You can't use this!");
     }
 
+    if (!AllowedChannels.includes(interaction.channel.id)) {
+      return interaction.reply({
+        ephemeral: true,
+        content: 'You can only use this command in allowed channels.'
+      });
+    }
+
     const data = {
       sponsor: interaction.options.get('sponsor'),
       role: interaction.options.get('role'),
@@ -103,13 +112,6 @@ module.exports = {
 
     if (data.role.value == '824916330574118942') {
       // giveaway ping
-
-      if (interaction.channel.id !== '826065190973210634') {
-        return interaction.reply({
-          ephemeral: true,
-          content: 'You can only run this command in <#826065190973210634>'
-        });
-      }
 
       if (cooldowns.get('giveaway')) {
         const date = cooldowns.get('giveaway');
@@ -136,13 +138,6 @@ module.exports = {
       });
     } else if (data.role.value == '858088201451995137') {
       // event ping
-
-      if (interaction.channel.id !== '833727597057802240') {
-        return interaction.reply({
-          ephemeral: true,
-          content: 'You can only run this command in <#853280287777882142>'
-        });
-      }
 
       if (cooldowns.get('event')) {
         const date = cooldowns.get('event');
@@ -193,16 +188,6 @@ module.exports = {
     } else if (data.role.value == '837121985787592704') {
       // mini gaw and event ping
 
-      if (
-        interaction.channel.id !== '826065190973210634' &&
-        interaction.channel.id !== '853280287777882142'
-      ) {
-        return interaction.reply({
-          ephemeral: true,
-          content:
-            'You can only run this command in <#826065190973210634> and <#853280287777882142>'
-        });
-      }
       if (cooldowns.get('mgaw')) {
         const date = cooldowns.get('mgaw');
         if (Date.now() < date) {
