@@ -137,7 +137,7 @@ module.exports = {
     } else if (data.role.value == '858088201451995137') {
       // event ping
 
-      if (interaction.channel.id !== '853280287777882142') {
+      if (interaction.channel.id !== '833727597057802240') {
         return interaction.reply({
           ephemeral: true,
           content: 'You can only run this command in <#853280287777882142>'
