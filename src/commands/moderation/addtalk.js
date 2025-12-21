@@ -22,7 +22,7 @@ module.exports = {
     ];
     const talkRole = '880014639142936586';
 
-    if (message.member.roles.cache.hasAny(...allowedRoles)) {
+    if (!message.member.roles.cache.hasAny(...allowedRoles)) {
       return message.reply('You cannot use this command!');
     }
 
