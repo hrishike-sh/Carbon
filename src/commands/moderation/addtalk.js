@@ -83,7 +83,7 @@ module.exports = {
         }
 
         message.channel.send(
-          `Added <@${talkRole}> to ${mentions.size} members!`
+          `Added <@&${talkRole}> to ${mentions.size} members!`
         );
       } else {
         embed.setColor(Colors.Red);
