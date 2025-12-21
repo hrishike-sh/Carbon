@@ -30,7 +30,9 @@ module.exports = {
       return message.reply('Please reply to the target message!');
     }
 
-    const target = await message.fetchReference();
+    const target = await message.channel.messages.fetch(
+      message.reference.messageId
+    );
     if (target?.mentions?.members <= 1) {
       return message.reply(`No mentions found in the message!`);
     }
