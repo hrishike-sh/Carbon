@@ -23,7 +23,7 @@ module.exports = {
       '824687526396297226'
     ];
     const userId = message.author.id;
-    const sample = `Incorrect usage! Examples below\n\n\`fh hl add <hl>\`, \`fh hl remove <hl>\`, \`fh hl list\`, \`fh hl \``;
+    const sample = `Incorrect usage! Examples below\n\n\`fh hl add <hl>\`, \`fh hl remove <hl>\`, \`fh hl list\`;
 
     if (!message.member.roles.cache.hasAny(...allowedRoles)) {
       return message.reply(`You don't have the perks to use this command.`);
