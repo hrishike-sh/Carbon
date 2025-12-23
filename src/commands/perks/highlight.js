@@ -11,7 +11,16 @@ module.exports = {
    * @param {Client} client
    */
   async execute(message, args, client) {
-    const allowedRoles = ['826002228828700718'];
+    const allowedRoles = [
+      '826002228828700718',
+      '826197648927227944',
+      '825283097830096908',
+      '825283097830096908',
+      '999911429421408346',
+      '858088054942203945',
+      '825783847622934549',
+      '824539655134773269'
+    ];
     const userId = message.author.id;
     const sample = `Incorrect usage! Examples below\n\n\`fh hl add <hl>\`, \`fh hl remove <hl>\`, \`fh hl list\`, \`fh hl \``;
 
