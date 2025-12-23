@@ -35,11 +35,9 @@ async function onMessage(message, client) {
     before: message.id,
     limit: 4
   });
-  prevMessages = [...prevMessages.values()].reverse();
-  const context =
-    prevMessages
-      .map((m) => `**${m.author.tag}**: ${m.content}`)
-      .join('\n') || 'No previous messages found.';
+
+  const fullContextRaw = [...prevMessages.values()].reverse();
+  fullContextRaw.push(message);
 
   for (const [userId, keywords] of usersToNotify) {
     const user = await client.users.fetch(userId);
@@ -48,36 +46,45 @@ async function onMessage(message, client) {
     const lastPing = client.db.lastHighlightPing.get(userId) || 0;
     if (Date.now() - lastPing < 5 * 60 * 1000) continue;
 
-    let finalMessage = message.content;
     const regex = new RegExp(`\\b(${keywords.join('|')})\\b`, 'gi');
-    finalMessage = finalMessage.replace(regex, '**$&**');
+
+    const contextLog = fullContextRaw
+      .map((msg) => {
+        const unixTime = Math.floor(msg.createdTimestamp / 1000);
+
+        let content = msg.content.replace(regex, '**$&**');
+
+        return `<t:${unixTime}:T> **${msg.author.username}**: ${content}`;
+      })
+      .join('\n');
 
     const embed = new EmbedBuilder()
-      .setTitle('New Highlight!')
-      .setDescription(
-        `You were mentioned in ${message.channel.toString()} by ${
-          message.author.tag
-        }`
-      )
+      .setTitle(keywords[0])
+      .setDescription(contextLog)
+      .setColor('#FFD700')
       .addFields([
         {
-          name: 'Context',
-          value: context
-        },
-        {
-          name: 'Message',
-          value: `[${finalMessage}](${message.url})`
+          name: 'Source message',
+          value: `[Jump to](${message.url})`
         }
       ])
-      .setTimestamp()
-      .setColor('Green');
+      .setFooter({ text: 'Triggered' })
+      .setTimestamp();
+
+    const notificationText = `In **${
+      message.guild.name
+    }** ${message.channel.toString()}, you were mentioned with highlight word "${
+      keywords[0]
+    }"`;
+
     try {
-      await user.send({ embeds: [embed] });
+      await user.send({ content: notificationText, embeds: [embed] });
       client.db.lastHighlightPing.set(userId, Date.now());
     } catch (error) {
       if (error.code === 50007) {
-        // Cannot send messages to this user
-        // Maybe disable highlights for them?
+        console.warn(`Could not DM user ${userId}`);
+      } else {
+        console.error(error);
       }
     }
   }
