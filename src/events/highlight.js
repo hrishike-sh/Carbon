@@ -52,9 +52,9 @@ async function onMessage(message, client) {
       .map((msg) => {
         const unixTime = Math.floor(msg.createdTimestamp / 1000);
 
-        let content = msg.content.replace(regex, '**$&**');
+        let content = msg.content.replace(regex, '**__$&__**');
 
-        return `<t:${unixTime}:T> **${msg.author.username}**: ${content}`;
+        return `[<t:${unixTime}:T>] ${msg.author.username}: ${content}`;
       })
       .join('\n');
 
