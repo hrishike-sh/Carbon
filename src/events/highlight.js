@@ -13,14 +13,18 @@ async function onMessage(message, client) {
   if (!highlightMap || highlightMap.size === 0) return;
 
   const messageWords = message.content.toLowerCase().split(' ');
-  const usersToNotify = new Set();
+  const usersToNotify = new Map();
 
   for (const word of messageWords) {
     if (highlightMap.has(word)) {
       const users = highlightMap.get(word);
       for (const userId of users) {
         if (userId === message.author.id) continue;
-        usersToNotify.add(userId);
+        if (usersToNotify.has(userId)) {
+          usersToNotify.get(userId).push(word);
+        } else {
+          usersToNotify.set(userId, [word]);
+        }
       }
     }
   }
@@ -37,12 +41,16 @@ async function onMessage(message, client) {
       .map((m) => `**${m.author.tag}**: ${m.content}`)
       .join('\n') || 'No previous messages found.';
 
-  for (const userId of usersToNotify) {
+  for (const [userId, keywords] of usersToNotify) {
     const user = await client.users.fetch(userId);
     if (!user) continue;
 
     const lastPing = client.db.lastHighlightPing.get(userId) || 0;
     if (Date.now() - lastPing < 5 * 60 * 1000) continue;
+
+    let finalMessage = message.content;
+    const regex = new RegExp(`\\b(${keywords.join('|')})\\b`, 'gi');
+    finalMessage = finalMessage.replace(regex, '**$&**');
 
     const embed = new EmbedBuilder()
       .setTitle('New Highlight!')
@@ -58,7 +66,7 @@ async function onMessage(message, client) {
         },
         {
           name: 'Message',
-          value: `[${message.content}](${message.url})`
+          value: `[${finalMessage}](${message.url})`
         }
       ])
       .setTimestamp()

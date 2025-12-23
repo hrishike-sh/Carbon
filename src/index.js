@@ -281,7 +281,6 @@ client.on(Events.MessageCreate, async (message) => {
   client.counts.messagesRead++;
   if (message.author.bot) return;
   if (!message.guild) return;
-  highlight.execute(message, client);
   if (!message.content.toLowerCase().startsWith(prefix)) return;
 
   const args = message.content.slice(prefix.length).trim().split(/ +/g);
