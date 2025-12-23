@@ -34,6 +34,7 @@ const client = new Client({
  * Client Ready
  */
 
+const highlight = require('./events/highlight');
 client.on(Events.ClientReady, async () => {
   console.log(
     `[BOT]: Client is online!\n  Server Count: ${client.guilds.cache.size}`
@@ -54,6 +55,7 @@ client.on(Events.ClientReady, async () => {
       })
     ).afkIgnore
   };
+  highlight.load(client);
   client.snipes = {
     snipes: new Collection(),
     esnipes: new Collection()
@@ -275,10 +277,12 @@ client.on(Events.InteractionCreate, async (interaction) => {
   }
 });
 
+const highlight = require('./events/highlight');
 client.on(Events.MessageCreate, async (message) => {
   client.counts.messagesRead++;
   if (message.author.bot) return;
   if (!message.guild) return;
+  highlight.execute(message, client);
   if (!message.content.toLowerCase().startsWith(prefix)) return;
 
   const args = message.content.slice(prefix.length).trim().split(/ +/g);

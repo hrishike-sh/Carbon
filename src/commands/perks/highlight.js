@@ -73,6 +73,12 @@ module.exports = {
         highlights = await db.create({ userId, highlights: [toAdd] });
       }
 
+      if (client.db.highlights.has(toAdd)) {
+        client.db.highlights.get(toAdd).push(userId);
+      } else {
+        client.db.highlights.set(toAdd, [userId]);
+      }
+
       embed.setDescription(`Added \`${toAdd}\` to your highlights.`);
 
       return message.reply({ embeds: [embed] });
@@ -95,6 +101,17 @@ module.exports = {
       );
 
       await highlights.save();
+
+      if (client.db.highlights.has(toRemove)) {
+        const users = client.db.highlights.get(toRemove);
+        const index = users.indexOf(userId);
+        if (index > -1) {
+          users.splice(index, 1);
+        }
+        if (users.length === 0) {
+          client.db.highlights.delete(toRemove);
+        }
+      }
 
       embed.setDescription(`Removed \`${toRemove}\` from your highlights.`);
       return message.reply({ embeds: [embed] });
