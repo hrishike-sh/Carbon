@@ -277,7 +277,6 @@ client.on(Events.InteractionCreate, async (interaction) => {
   }
 });
 
-const highlight = require('./events/highlight');
 client.on(Events.MessageCreate, async (message) => {
   client.counts.messagesRead++;
   if (message.author.bot) return;
