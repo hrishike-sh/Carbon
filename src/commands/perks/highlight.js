@@ -63,14 +63,16 @@ module.exports = {
         userId
       });
 
-      if (highlights?.includes(toAdd))
+      if (highlights?.highlights.includes(toAdd))
         return message.reply(`You already have this word in your highlights.`);
 
-      if (highlights?.length) {
-        highlights.push(toAdd);
-      } else highlights = [toAdd];
+      if (highlights) {
+        highlights.highlights.push(toAdd);
+        await highlights.save();
+      } else {
+        highlights = await db.create({ userId, highlights: [toAdd] });
+      }
 
-      await highlights.save();
       embed.setDescription(`Added \`${toAdd}\` to your highlights.`);
 
       return message.reply({ embeds: [embed] });
@@ -82,7 +84,7 @@ module.exports = {
         userId
       });
 
-      if (!highlights?.includes(toRemove)) {
+      if (!highlights?.highlights.includes(toRemove)) {
         return message.reply(
           `You dont have this word in your highlights. Check your highlights using \`fh hl list\``
         );
