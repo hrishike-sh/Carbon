@@ -19,7 +19,8 @@ module.exports = {
       '999911429421408346',
       '858088054942203945',
       '825783847622934549',
-      '824539655134773269'
+      '824539655134773269',
+      '824687526396297226'
     ];
     const userId = message.author.id;
     const sample = `Incorrect usage! Examples below\n\n\`fh hl add <hl>\`, \`fh hl remove <hl>\`, \`fh hl list\`, \`fh hl \``;
