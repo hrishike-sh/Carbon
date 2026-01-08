@@ -1,4 +1,10 @@
-const { Message, Client, EmbedBuilder } = require('discord.js');
+const {
+  Message,
+  Client,
+  EmbedBuilder,
+  TextChannel,
+  PermissionFlagsBits
+} = require('discord.js');
 const db = require('../database/highlight');
 
 /**
@@ -23,7 +29,13 @@ async function onMessage(message, client) {
         if (usersToNotify.has(userId)) {
           usersToNotify.get(userId).push(word);
         } else {
-          usersToNotify.set(userId, [word]);
+          if (
+            message.channel
+              .permissionsFor(userId)
+              .has(PermissionFlagsBits.ViewChannel)
+          ) {
+            usersToNotify.set(userId, [word]);
+          } else continue;
         }
       }
     }
