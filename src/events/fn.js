@@ -8,6 +8,8 @@ module.exports = {
    * @param {GuildMember} newMember
    */
   async execute(oldMember, newMember) {
+    if (oldMember.guild.id != '824294231447044197') return;
+
     if (oldMember.nickname != newMember.nickname) {
       const data = await DB.findOne({ userId: newMember.id });
       if (data) {

@@ -77,7 +77,7 @@ module.exports = {
                   )
                 : d[0],
             footer: {
-              text: 'Only 10 pings are stored.'
+              text: `Showing 10/${user.pings.length}.`
             }
           }
         ],
