@@ -40,6 +40,11 @@ module.exports = {
           msg?.delete();
         });
     }
+
+    if (message.channel.id == '870240187198885888') {
+      return message.reply("You can't run this command here");
+    }
+
     const userId = message.author.id;
     const user = await Database.findOne({ userId });
     const d = [];
