@@ -22,7 +22,7 @@ module.exports = {
     return message.reply({
       embeds: [
         {
-          title: ':ghost: Halloween Leaderboard',
+          title: 'Anniversary Leaderboard',
           description: map.join('\n'),
           color: Colors.DarkVividPink,
           timestamp: new Date()
