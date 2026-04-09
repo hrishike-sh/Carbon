@@ -15,7 +15,7 @@ module.exports = {
    * @param {String[]} args
    */
   execute: async (message, args) => {
-    const perms = message.member.roles.cache.hasAny([]);
+    const perms = message.member.roles.cache.hasAny(['826002228828700718']);
     if (!perms) {
       return message.reply(
         'You do not have the right permissions to run this command!'
