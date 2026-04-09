@@ -39,5 +39,35 @@ module.exports = {
       embeds: [joinEmbed],
       components: [row]
     });
+
+    const gamedata = [];
+
+    const collector = joinMessage.createMessageComponentCollector({
+      maxUsers: 10
+    });
+
+    collector.on('collect', async (button) => {
+      const user = button.user;
+
+      if (gamedata.find((a) => a.userId == user.userId)) {
+        return button.reply({
+          ephemeral: true,
+          content: 'You have already joined this game you moneky'
+        });
+      } else {
+        gamedata.push({
+          userId: user.id,
+          words: 0,
+          out: false
+        });
+
+        button.reply({
+          content: 'You have joined the game!',
+          ephemeral: true
+        });
+      }
+    });
+
+    collector.on('end', () => {});
   }
 };
