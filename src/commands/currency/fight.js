@@ -2,13 +2,13 @@ const {
   ActionRowBuilder,
   ButtonBuilder,
   ButtonStyle,
-  EmbedBuilder,
-  Colors
+  EmbedBuilder
 } = require('discord.js');
 const config = require('../../config');
 const { CoinService } = require('../../database/services/coinService');
 const cooldowns = require('../../command/cooldowns');
 const { parseAmount } = require('../../utils/validators');
+const { Theme } = require('../../utils/embeds');
 
 module.exports = {
   name: 'fight',
@@ -58,7 +58,6 @@ module.exports = {
         return message.reply(`${target.user.username} does not want to fight you.`);
       }
 
-      // Re-verify balances before starting
       const freshUserBal = await CoinService.getBalance(message.author.id);
       const freshTargetBal = await CoinService.getBalance(target.id);
       if (amount > freshUserBal || amount > freshTargetBal) {
@@ -78,8 +77,8 @@ module.exports = {
 
       const embed = new EmbedBuilder()
         .setTitle(`${message.author.username} vs ${target.user.username}`)
-        .setColor(Colors.Yellow)
-        .setFooter({ text: `Winner gets: ${amount.toLocaleString()} coins` })
+        .setColor(Theme.warning)
+        .setFooter({ text: `Carbon • Winner gets: ${amount.toLocaleString()} coins` })
         .setDescription(
           `**${message.author.tag}** (__100__) vs (__100__) **${target.user.tag}**`
         );
@@ -135,14 +134,14 @@ module.exports = {
             winner = target.user;
             fightCollector.stop();
             embed.setDescription(
-              `~~${embed.data.description}~~\n\n:trophy: | **${target.user.toString()} has won the fight!**`
+              `~~${embed.data.description}~~\n\n${target.user.toString()} has won the fight!`
             );
             await CoinService.addCoins(target.user.id, amount * 2);
           } else if (hp.target <= 0) {
             winner = message.author;
             fightCollector.stop();
             embed.setDescription(
-              `~~${embed.data.description}~~\n\n:trophy: | **${message.author.toString()} has won the fight!**`
+              `~~${embed.data.description}~~\n\n${message.author.toString()} has won the fight!`
             );
             await CoinService.addCoins(message.author.id, amount * 2);
           }
@@ -182,12 +181,12 @@ module.exports = {
           );
           fightMessage.edit({ embeds: [embed] });
           message.channel.send({
-            content: `:trophy: | ${other.toString()} has won the fight because their opponent abandoned the game.`
+            content: `${other.toString()} has won the fight because their opponent abandoned the game.`
           });
           await CoinService.addCoins(other.id, amount * 2);
         } else {
           message.channel.send({
-            content: `:trophy: | **${winner.toString()} has won the fight!**`
+            content: `**${winner.toString()} has won the fight!**`
           });
         }
         fightRow.components.forEach((c) => c.setDisabled());

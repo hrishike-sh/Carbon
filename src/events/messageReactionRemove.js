@@ -1,6 +1,7 @@
-const { ActionRowBuilder, ButtonBuilder, ButtonStyle, Colors } = require('discord.js');
+const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 const config = require('../config');
 const Database = require('../database/models/skullboard');
+const { Theme } = require('../utils/embeds');
 
 module.exports = {
   name: 'messageReactionRemove',
@@ -22,7 +23,7 @@ module.exports = {
       title: `${fetched.count.toLocaleString()} :skull:`,
       description: message.content || '_ _',
       image: { url: message.attachments?.first()?.url || null },
-      color: Colors.Gold
+      color: Theme.warning
     };
 
     const linkRow = new ActionRowBuilder().addComponents([

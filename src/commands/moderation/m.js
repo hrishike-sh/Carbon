@@ -1,13 +1,10 @@
 const {
-  Message,
-  Client,
   ButtonStyle,
-  EmbedBuilder,
   ActionRowBuilder,
-  ButtonBuilder,
-  Colors
+  ButtonBuilder
 } = require('discord.js');
 const config = require('../../config');
+const { infoEmbed } = require('../../utils/embeds');
 
 module.exports = {
   name: 'm',
@@ -43,13 +40,11 @@ module.exports = {
             (user) => user.username === args[0] || user.tag === args[0]
           ) ||
           message.author;
-        if (user.bot) return message.reply(`Only humans can be wi'd.`);
+        if (user.bot) return message.reply('Only humans can be wi\'d.');
         const Mutuals = [];
         const mess = await message.reply({
           embeds: [
-            {
-              description: `Fetching guilds...`
-            }
+            infoEmbed({ description: 'Fetching guilds...' })
           ]
         });
         for await (const guild of client.guilds.cache.values()) {
@@ -66,21 +61,19 @@ module.exports = {
             continue;
           }
         }
-        const embed = new EmbedBuilder()
-          .setAuthor({
+        const embed = infoEmbed({
+          author: {
             name: `${user.tag} - ${user.id}`,
             iconURL: user.displayAvatarURL({ dynamic: true })
-          })
-          .setThumbnail(user.displayAvatarURL({ dynamic: true }))
-          .setDescription(
-            `Account was created ${formatTime(
-              user.createdAt
-            )}(which is ${formatTime(
-              user.createdAt,
-              'D'
-            )})\n\n**__Mutual Servers__**\n${Mutuals.join('\n')}`
-          )
-          .setColor(Colors.Blurple);
+          },
+          thumbnail: user.displayAvatarURL({ dynamic: true }),
+          description: `Account was created ${formatTime(
+            user.createdAt
+          )}(which is ${formatTime(
+            user.createdAt,
+            'D'
+          )})\n\n**__Mutual Servers__**\n${Mutuals.join('\n')}`
+        });
 
         return mess.edit({
           embeds: [embed]

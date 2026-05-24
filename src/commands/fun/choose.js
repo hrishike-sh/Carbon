@@ -1,9 +1,4 @@
-const {
-  Message,
-  EmbedBuilder,
-  ActionRowBuilder,
-  Colors
-} = require('discord.js');
+const { warningEmbed } = require('../../utils/embeds');
 
 module.exports = {
   name: 'choose',
@@ -14,23 +9,20 @@ module.exports = {
    * @param {Client} client
    */
   async execute(message, args, client) {
-    const embed = new EmbedBuilder()
-      .setAuthor({
-        name: message.author.username,
-        iconURL: message.author.displayAvatarURL()
-      })
-      .setColor(Colors.Orange);
     const clean = args.join(' ');
-    if (clean.includes(',')) {
-      const choices = clean.split(',');
-      const choice = choices[Math.floor(Math.random() * choices.length)];
-      embed.setDescription(`You chose ${choice}`);
-      message.reply({ embeds: [embed] });
-    } else {
-      const choices = clean.split(' ');
-      const choice = choices[Math.floor(Math.random() * choices.length)];
-      embed.setDescription(`You chose ${choice}`);
-      message.reply({ embeds: [embed] });
-    }
+    const choices = clean.includes(',') ? clean.split(',') : clean.split(' ');
+    const choice = choices[Math.floor(Math.random() * choices.length)];
+
+    message.reply({
+      embeds: [
+        warningEmbed({
+          author: {
+            name: message.author.username,
+            iconURL: message.author.displayAvatarURL()
+          },
+          description: `You chose ${choice}`
+        })
+      ]
+    });
   }
 };

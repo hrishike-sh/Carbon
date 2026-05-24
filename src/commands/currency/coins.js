@@ -1,4 +1,5 @@
 const { CoinService } = require('../../database/services/coinService');
+const { infoEmbed } = require('../../utils/embeds');
 
 module.exports = {
   name: 'coins',
@@ -15,14 +16,14 @@ module.exports = {
 
     return message.reply({
       embeds: [
-        {
+        infoEmbed({
           author: {
-            icon_url: user.user.displayAvatarURL(),
-            name: user.user.username
+            name: user.user.username,
+            iconURL: user.user.displayAvatarURL()
           },
-          timestamp: new Date(),
-          description: `**Balance:** <:token:1003272629286883450> ${balance}`
-        }
+          description: `**Balance:** <:token:1003272629286883450> ${balance}`,
+          timestamp: true
+        })
       ]
     });
   }

@@ -1,5 +1,6 @@
-const { EmbedBuilder, PermissionFlagsBits } = require('discord.js');
+const { PermissionFlagsBits } = require('discord.js');
 const config = require('../../config');
+const { warningEmbed, errorEmbed, successEmbed } = require('../../utils/embeds');
 
 module.exports = {
   name: 'lockdown',
@@ -12,13 +13,16 @@ module.exports = {
     const channelList = ['833727597057802240'];
 
     const filter = (m) => m.author.id === message.author.id;
-    const embed = new EmbedBuilder()
-      .setTitle('Lockdown Confirm')
-      .setDescription('Are you sure you want to lock down the server?')
-      .setFooter({ text: 'Type `yes` or `no`' })
-      .setColor('Yellow');
 
-    message.reply({ embeds: [embed] });
+    message.reply({
+      embeds: [
+        warningEmbed({
+          title: 'Lockdown Confirm',
+          description: 'Are you sure you want to lock down the server?',
+          footer: 'Type `yes` or `no`'
+        })
+      ]
+    });
 
     try {
       const collected = await message.channel.awaitMessages({
@@ -39,31 +43,29 @@ module.exports = {
             );
             await channel.send({
               embeds: [
-                new EmbedBuilder()
-                  .setTitle('Server is under lockdown')
-                  .setColor('Red')
+                errorEmbed({ title: 'Server is under lockdown' })
               ]
             });
           }
         }
         message.reply({
           embeds: [
-            new EmbedBuilder().setTitle('Lockdown Initiated').setColor('Green')
+            successEmbed({ title: 'Lockdown Initiated' })
           ]
         });
       } else {
         message.reply({
           embeds: [
-            new EmbedBuilder().setTitle('Lockdown Cancelled').setColor('Yellow')
+            warningEmbed({ title: 'Lockdown Cancelled' })
           ]
         });
       }
     } catch (error) {
       message.reply({
         embeds: [
-          new EmbedBuilder()
-            .setTitle('No response received. Lockdown cancelled.')
-            .setColor('Yellow')
+          warningEmbed({
+            title: 'No response received. Lockdown cancelled.'
+          })
         ]
       });
     }

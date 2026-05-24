@@ -1,6 +1,8 @@
-const { Message, Client, Colors } = require('discord.js');
 const TeamDB = require('../../database/models/teams');
+const { infoEmbed } = require('../../utils/embeds');
+
 const arr = ['🥇', '🥈', '🥉'];
+
 module.exports = {
   name: 'teamleaderboard',
   aliases: ['eventleaderboard', 'tlb'],
@@ -21,12 +23,11 @@ module.exports = {
 
     return message.reply({
       embeds: [
-        {
+        infoEmbed({
           title: 'Anniversary Leaderboard',
           description: map.join('\n'),
-          color: Colors.DarkVividPink,
-          timestamp: new Date()
-        }
+          timestamp: true
+        })
       ]
     });
   }

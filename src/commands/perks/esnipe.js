@@ -1,10 +1,23 @@
 const {
   ButtonStyle,
   ButtonBuilder,
-  ActionRowBuilder,
-  EmbedBuilder
+  ActionRowBuilder
 } = require('discord.js');
 const config = require('../../config');
+const { createEmbed } = require('../../utils/embeds');
+
+function buildESnipeEmbed(target, index, total) {
+  const { msg, oldContent, newContent } = target;
+  return createEmbed({
+    color: 'Random',
+    author: { name: msg.author.tag, iconURL: msg.author.displayAvatarURL() || null },
+    fields: [
+      { name: 'Old Message', value: oldContent, inline: true },
+      { name: 'New Message', value: newContent, inline: true }
+    ],
+    footer: `${index + 1}/${total}`
+  });
+}
 
 module.exports = {
   name: 'esnipe',
@@ -19,18 +32,7 @@ module.exports = {
     }
 
     let snipe = +args[0] - 1 || 0;
-    let target = sniped[snipe];
-    let { msg, oldContent, newContent } = target;
-
-    let snipeBed = new EmbedBuilder()
-      .setAuthor({
-        name: msg.author.tag,
-        iconURL: msg.author.displayAvatarURL() || null
-      })
-      .addFields([{ name: 'Old Message', value: oldContent, inline: true }])
-      .addFields([{ name: 'New Message', value: newContent, inline: true }])
-      .setColor('Random')
-      .setFooter({ text: `${snipe + 1}/${sniped.length}` });
+    let snipeBed = buildESnipeEmbed(sniped[snipe], snipe, sniped.length);
 
     const prevBut = new ButtonBuilder()
       .setEmoji('911971090954326017')
@@ -63,26 +65,12 @@ module.exports = {
       if (id === 'prev-snipe') {
         snipe--;
         if (snipe < 0) snipe = sniped.length - 1;
-        target = sniped[snipe];
-        ({ msg, oldContent, newContent } = target);
-        snipeBed = new EmbedBuilder()
-          .setAuthor({ name: msg.author.tag, iconURL: msg.author.displayAvatarURL() || null })
-          .addFields([{ name: 'Old Message', value: oldContent, inline: true }])
-          .addFields([{ name: 'New Message', value: newContent, inline: true }])
-          .setColor('Random')
-          .setFooter({ text: `${snipe + 1}/${sniped.length}` });
+        snipeBed = buildESnipeEmbed(sniped[snipe], snipe, sniped.length);
         return mainMessage.edit({ content: 'Use the buttons to navigate.', embeds: [snipeBed], components: [row] });
       } else if (id === 'next-snipe') {
         snipe++;
         if (snipe >= sniped.length) snipe = 0;
-        target = sniped[snipe];
-        ({ msg, oldContent, newContent } = target);
-        snipeBed = new EmbedBuilder()
-          .setAuthor({ name: msg.author.tag, iconURL: msg.author.displayAvatarURL() || null })
-          .addFields([{ name: 'Old Message', value: oldContent, inline: true }])
-          .addFields([{ name: 'New Message', value: newContent, inline: true }])
-          .setColor('Random')
-          .setFooter({ text: `${snipe + 1}/${sniped.length}` });
+        snipeBed = buildESnipeEmbed(sniped[snipe], snipe, sniped.length);
         return mainMessage.edit({ content: 'Use the buttons to navigate.', embeds: [snipeBed], components: [row] });
       } else {
         mainMessage.delete();

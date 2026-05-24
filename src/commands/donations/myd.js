@@ -9,6 +9,7 @@ const {
 const PRIMARY = require('../../database/models/main_dono');
 const GRINDER = require('../../database/models/grinder_dono');
 const TICKETS = require('../../database/models/tickets');
+const { Theme } = require('../../utils/embeds');
 module.exports = {
   name: 'myd',
   aliases: ['mydono', 'mydonation', 'mydonations'],
@@ -43,7 +44,7 @@ module.exports = {
             : 0
         }`
       )
-      .setColor('Random')
+      .setColor(Theme.info)
       .setTimestamp();
     const GrinderEmbed = new EmbedBuilder()
       .setAuthor({ name: target.tag, iconURL: target.displayAvatarURL() })
@@ -55,7 +56,7 @@ module.exports = {
             : 0
         }`
       )
-      .setColor('Random')
+      .setColor(Theme.info)
       .setTimestamp();
     const TicketEmbed = new EmbedBuilder()
       .setAuthor({ name: target.tag, iconURL: target.displayAvatarURL() })
@@ -67,7 +68,7 @@ module.exports = {
             : 0
         }`
       )
-      .setColor('Random')
+      .setColor(Theme.info)
       .setTimestamp();
     const TotalEmbed = new EmbedBuilder()
       .setAuthor({
@@ -82,7 +83,7 @@ module.exports = {
           TicketDonations?.amount || 0
         }`
       )
-      .setColor('Random')
+      .setColor(Theme.info)
       .setTimestamp();
 
     const PrimaryButton = new ButtonBuilder()

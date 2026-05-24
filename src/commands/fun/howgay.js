@@ -1,4 +1,4 @@
-const { Message, Client, Colors } = require('discord.js');
+const { createEmbed } = require('../../utils/embeds');
 
 module.exports = {
   name: 'howgay',
@@ -18,11 +18,11 @@ module.exports = {
     const gay = Math.floor(Math.random() * 100) + 1;
     message.channel.send({
       embeds: [
-        {
+        createEmbed({
           title: 'Gay Rate',
-          description: `${what} is ${gay}% gay! :rainbow_flag:`,
+          description: `${what} is ${gay}% gay`,
           color: Math.floor(Math.random() * 0xffffff)
-        }
+        })
       ]
     });
   }

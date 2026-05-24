@@ -11,7 +11,13 @@ const afkModel = require('./database/models/afk');
 const cooldowns = require('./command/cooldowns');
 const antiBot = require('./client/AntiBot');
 const logger = require('./utils/logger');
-const { Events, Collection, EmbedBuilder } = require('discord.js');
+const {
+  warningEmbed,
+  neutralEmbed,
+  errorEmbed,
+  replyError
+} = require('./utils/embeds');
+const { Events, Collection } = require('discord.js');
 
 async function main() {
   const client = createClient();
@@ -75,9 +81,11 @@ async function main() {
     const cooldownResult = cooldowns.check(message.author.id, command.name, command.cooldown);
     if (!cooldownResult.allowed) {
       return message.reply({
-        embeds: [{
-          description: `**:x: You must wait ${cooldownResult.remaining}s before running that command again.**`
-        }]
+        embeds: [
+          warningEmbed({
+            description: `Please wait ${cooldownResult.remaining}s before using that command again.`
+          })
+        ]
       });
     }
 
@@ -97,22 +105,24 @@ async function main() {
       const logChannel = client.channels.cache.get(config.ids.channels.commandLog);
       if (logChannel) {
         logChannel.send({
-          embeds: [{
-            author: {
-              name: message.author.tag,
-              iconURL: message.author.displayAvatarURL()
-            },
-            title: command.name,
-            fields: [
-              { name: 'Total Commands Ran', value: client.state.counts.commandsRan.toLocaleString() },
-              { name: 'Server', value: message.guild.name, inline: true }
-            ]
-          }]
+          embeds: [
+            neutralEmbed({
+              author: {
+                name: message.author.tag,
+                iconURL: message.author.displayAvatarURL()
+              },
+              title: command.name,
+              fields: [
+                { name: 'Commands Ran', value: client.state.counts.commandsRan.toLocaleString(), inline: true },
+                { name: 'Server', value: message.guild.name, inline: true }
+              ]
+            })
+          ]
         }).catch(() => {});
       }
     } catch (err) {
       logger.error(`Command "${command.name}" error`, err);
-      message.reply({ content: 'There was an error running this command.' }).catch(() => {});
+      replyError(message, 'There was an error running this command.');
     }
   });
 
@@ -130,8 +140,9 @@ async function main() {
       await command.execute(interaction, client);
     } catch (err) {
       logger.error(`Slash command "${interaction.commandName}" error`, err);
+      const embed = errorEmbed({ description: 'There was an error while executing this command!' });
       const reply = interaction.replied || interaction.deferred ? 'followUp' : 'reply';
-      interaction[reply]({ content: 'There was an error while executing this command!', ephemeral: true }).catch(() => {});
+      interaction[reply]({ embeds: [embed], ephemeral: true }).catch(() => {});
     }
   });
 
@@ -140,7 +151,14 @@ async function main() {
     logger.error('Uncaught exception', err);
     const errorChannel = client.channels.cache.get(config.ids.channels.errorLog);
     if (errorChannel) {
-      errorChannel.send({ content: `Uncaught exception:\n\`${err.message}\`` }).catch(() => {});
+      errorChannel.send({
+        embeds: [
+          errorEmbed({
+            title: 'Uncaught Exception',
+            description: `\`${err.message}\``
+          })
+        ]
+      }).catch(() => {});
     }
   });
 

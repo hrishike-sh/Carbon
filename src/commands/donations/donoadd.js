@@ -1,7 +1,7 @@
-const { Colors } = require('discord.js');
 const DATABASE = require('../../database/models/main_dono');
 const config = require('../../config');
 const { parseAmount } = require('../../utils/validators');
+const { Theme } = require('../../utils/embeds');
 
 module.exports = {
   name: 'donoadd',
@@ -37,7 +37,7 @@ module.exports = {
         embeds: [
           {
             title: 'Amount Added',
-            color: Colors.Green,
+            color: Theme.success,
             description: `**Amount Added:** ⏣ ${amount.toLocaleString()}\n**Total Donated by User:** ${dbUser.messages.toLocaleString()}`,
             timestamp: new Date()
           }
@@ -50,7 +50,7 @@ module.exports = {
         embeds: [
           {
             title: 'Amount Removed',
-            color: Colors.Red,
+            color: Theme.error,
             description: `**Amount Removed:** ⏣ ${amount.toLocaleString()}\n**Total Donated by User:** ${dbUser.messages.toLocaleString()}`,
             timestamp: new Date()
           }

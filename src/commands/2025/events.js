@@ -1,12 +1,12 @@
 const {
   EmbedBuilder,
-  Colors,
   ActionRowBuilder,
   ButtonBuilder,
   ButtonStyle,
   Collection
 } = require('discord.js');
 const { sleep, shuffle } = require('../../utils/helpers');
+const { Theme } = require('../../utils/embeds');
 
 const EVENTS = [
   'find_the_ball',
@@ -35,7 +35,7 @@ module.exports = {
 
       const ballEmbed = new EmbedBuilder()
         .setTitle('Guess where the ball is!')
-        .setColor(Colors.Yellow)
+        .setColor(Theme.warning)
         .setFooter({
           text: 'You get one try! Click the button to guess!'
         });
@@ -119,7 +119,7 @@ module.exports = {
       const mainEmbed = new EmbedBuilder()
         .setTitle('Memorize')
         .setDescription('Now click the emojis in order to win!')
-        .setColor(Colors.Yellow)
+        .setColor(Theme.warning)
         .setFooter({
           text: 'You get one try only!'
         });
@@ -171,7 +171,7 @@ module.exports = {
             embeds: [
               {
                 description: 'You have already failed this game!',
-                color: Colors.Red
+                color: Theme.error
               }
             ]
           });
@@ -182,7 +182,7 @@ module.exports = {
             embeds: [
               {
                 description: 'You have already won this game!',
-                color: Colors.Green
+                color: Theme.success
               }
             ]
           });
@@ -196,7 +196,7 @@ module.exports = {
               embeds: [
                 {
                   description: 'You won!',
-                  color: Colors.Green
+                  color: Theme.success
                 }
               ]
             });
@@ -206,7 +206,7 @@ module.exports = {
               embeds: [
                 {
                   description: 'Correct! Guess the next emoji',
-                  color: Colors.Green
+                  color: Theme.success
                 }
               ]
             });
@@ -218,7 +218,7 @@ module.exports = {
             embeds: [
               {
                 description: 'Incorrect! You lost!',
-                color: Colors.Red
+                color: Theme.error
               }
             ]
           });
@@ -299,7 +299,7 @@ module.exports = {
             embeds: [
               {
                 description: 'You have already failed this game!',
-                color: Colors.Red
+                color: Theme.error
               }
             ]
           });
@@ -310,7 +310,7 @@ module.exports = {
             embeds: [
               {
                 description: 'You have already won this game!',
-                color: Colors.Green
+                color: Theme.success
               }
             ]
           });
@@ -325,7 +325,7 @@ module.exports = {
             embeds: [
               {
                 description: `${message.author} won!`,
-                color: Colors.Green
+                color: Theme.success
               }
             ]
           });
@@ -334,7 +334,7 @@ module.exports = {
             embeds: [
               {
                 description: 'You won!',
-                color: Colors.Green
+                color: Theme.success
               }
             ]
           });
@@ -345,7 +345,7 @@ module.exports = {
             embeds: [
               {
                 description: 'Incorrect! You lost!',
-                color: Colors.Red
+                color: Theme.error
               }
             ]
           });
@@ -382,7 +382,7 @@ module.exports = {
         .setDescription(
           `Click the button to join the **Crab Race**!\n\nGame starts in **30 seconds`
         )
-        .setColor('Yellow');
+        .setColor(Theme.warning);
       const joinButton = new ButtonBuilder()
         .setLabel('Join')
         .setCustomId('join;tr')
@@ -485,7 +485,7 @@ module.exports = {
             {
               description,
               title: 'Crab Race',
-              color: Colors.Green,
+              color: Theme.success,
               timestamp: new Date()
             }
           ]
@@ -523,7 +523,7 @@ module.exports = {
               {
                 description,
                 title: 'Crab Race',
-                color: Colors.Green,
+                color: Theme.success,
                 timestamp: new Date()
               }
             ]
@@ -550,7 +550,7 @@ module.exports = {
         .setFooter({
           text: 'Summer Event'
         })
-        .setColor(Colors.Yellow);
+        .setColor(Theme.warning);
       const row = new ActionRowBuilder().addComponents([
         new ButtonBuilder()
           .setLabel('Higher')
@@ -581,7 +581,7 @@ module.exports = {
             embeds: [
               {
                 title: ':x: You have already guessed!',
-                color: Colors.Red
+                color: Theme.error
               }
             ],
             ephemeral: true
@@ -631,7 +631,7 @@ module.exports = {
 
       const embed = new EmbedBuilder()
         .setTitle('Guess the word!')
-        .setColor(Colors.Yellow)
+        .setColor(Theme.warning)
         .setFooter({
           text: 'You get one try only!'
         })
@@ -654,7 +654,7 @@ module.exports = {
             embeds: [
               {
                 title: 'You got the word! It was ' + word,
-                color: Colors.Green
+                color: Theme.success
               }
             ]
           });
@@ -669,7 +669,7 @@ module.exports = {
       const embed = new EmbedBuilder()
         .setTitle('Rock, Paper, Scissors')
         .setDescription('Choose your weapon!')
-        .setColor(Colors.Yellow);
+        .setColor(Theme.warning);
 
       const row = new ActionRowBuilder().addComponents([
         new ButtonBuilder()
@@ -747,7 +747,7 @@ module.exports = {
         .setDescription(
           'I have picked a number between 1 and 10. Try to guess it!'
         )
-        .setColor(Colors.Yellow);
+        .setColor(Theme.warning);
 
       await message.channel.send({ embeds: [embed] });
 

@@ -1,11 +1,10 @@
 const {
-  Message,
-  Client,
   ButtonBuilder,
   ButtonStyle,
   ActionRowBuilder
 } = require('discord.js');
 const config = require('../../config');
+const { neutralEmbed } = require('../../utils/embeds');
 
 module.exports = {
   name: 'proles',
@@ -72,8 +71,8 @@ module.exports = {
 
     message.channel.send({
       embeds: [
-        {
-          title: '**SERVER PINGS**',
+        neutralEmbed({
+          title: 'Server Pings',
           description:
             '<a:fh_announcement:824918261086945280> • <@&824916329848111114>\n' +
             '<a:fh_Nitroboostrgb:825302229853405184> • <@&832066859653398549>\n' +
@@ -84,7 +83,7 @@ module.exports = {
             '<a:fh_bugcatfight:855684995779264542> • <@&858088201451995137>\n' +
             '<:fh_rumble:1174342793716580442> • <@&1174333433984589875>\n' +
             '🗡️ • <@&1154432845318721607>'
-        }
+        })
       ],
       components: [row1, row2, row3]
     });

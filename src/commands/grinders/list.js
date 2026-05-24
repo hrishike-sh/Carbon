@@ -1,6 +1,7 @@
-const { Message, Client } = require('discord.js');
 const Database = require('../../database/models/grinder_dono');
 const config = require('../../config');
+const { neutralEmbed } = require('../../utils/embeds');
+
 module.exports = {
   name: 'grinderslist',
   aliases: ['glist'],
@@ -26,17 +27,8 @@ module.exports = {
     }
     return message.reply({
       embeds: [
-        {
-          description: map.join('\n')
-        }
+        neutralEmbed({ description: map.join('\n') })
       ]
     });
   }
-};
-const breakArray = (array) => {
-  const chunks = [];
-  for (let i = 0; i < array.length; i += 5) {
-    chunks.push(array.slice(i, i + 5));
-  }
-  return chunks;
 };

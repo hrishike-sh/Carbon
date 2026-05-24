@@ -3,6 +3,7 @@ const config = require('../../config');
 const { CoinService } = require('../../database/services/coinService');
 const cooldowns = require('../../command/cooldowns');
 const { parseAmount } = require('../../utils/validators');
+const { Theme } = require('../../utils/embeds');
 
 module.exports = {
   name: 'dicegame',
@@ -45,7 +46,7 @@ module.exports = {
     if (carbonRoll > playerRoll) {
       await CoinService.removeCoins(userId, amount);
       const newBalance = await CoinService.getBalance(userId);
-      embed.setColor('Red');
+      embed.setColor(Theme.error);
       embed.setDescription(
         `You lost: <:token:${config.ids.emojis.token}> **${amount.toLocaleString()}**\n\nNew balance: <:token:${config.ids.emojis.token}> ${newBalance.toLocaleString()}`
       );
@@ -54,13 +55,13 @@ module.exports = {
       const toAdd = Math.round(amount * (winPercent / 100));
       await CoinService.addCoins(userId, toAdd);
       const newBalance = await CoinService.getBalance(userId);
-      embed.setColor('Green');
+      embed.setColor(Theme.success);
       embed.setDescription(
         `You won: <:token:${config.ids.emojis.token}> **${toAdd.toLocaleString()}**\nWin percent: ${winPercent}%\n\nNew balance: <:token:${config.ids.emojis.token}> ${newBalance.toLocaleString()}`
       );
       message.reply({ embeds: [embed] });
     } else {
-      embed.setColor('Yellow');
+      embed.setColor(Theme.warning);
       embed.setDescription(
         `You tied!\n\nNew balance: <:token:${config.ids.emojis.token}> ${balance.toLocaleString()}`
       );

@@ -1,11 +1,11 @@
 const {
-  Colors,
   ActionRowBuilder,
   StringSelectMenuBuilder
 } = require('discord.js');
 const TeamsDB = require('../../database/models/teams');
 const config = require('../../config');
 const { sleep } = require('../../utils/helpers');
+const { Theme } = require('../../utils/embeds');
 
 let opening = [];
 
@@ -38,27 +38,27 @@ module.exports = {
       Team.points += 5;
       await Team.save();
       const unboxMessage = await message.reply({
-        embeds: [{ description: 'Opening your lucky box...', color: Colors.Yellow }]
+        embeds: [{ description: 'Opening your lucky box...', color: Theme.warning }]
       });
       await sleep(5000);
       await unboxMessage.edit({
-        embeds: [{ title: 'Lucky Box 📦📦', description: 'You opened your lucky box and got 5 points!', color: Colors.Green }]
+        embeds: [{ title: 'Lucky Box 📦📦', description: 'You opened your lucky box and got 5 points!', color: Theme.success }]
       });
     } else if (random <= 50) {
       Team.points += 10;
       await Team.save();
       const unboxMessage = await message.reply({
-        embeds: [{ description: 'Opening your lucky box...', color: Colors.Yellow }]
+        embeds: [{ description: 'Opening your lucky box...', color: Theme.warning }]
       });
       await sleep(5000);
       await unboxMessage.edit({
-        embeds: [{ title: 'Lucky Box 📦📦', description: 'You opened your lucky box and got 10 points!', color: Colors.Green }]
+        embeds: [{ title: 'Lucky Box 📦📦', description: 'You opened your lucky box and got 10 points!', color: Theme.success }]
       });
     } else if (random <= 65) {
       const allTeams = await TeamsDB.find();
       const otherTeams = allTeams.filter((team) => !team.users.includes(userId));
       const unboxMessage = await message.reply({
-        embeds: [{ description: 'Opening your lucky box...', color: Colors.Yellow }]
+        embeds: [{ description: 'Opening your lucky box...', color: Theme.warning }]
       });
       await sleep(5000);
       const row = new ActionRowBuilder().addComponents(
@@ -68,7 +68,7 @@ module.exports = {
           .addOptions(otherTeams.map((name) => ({ label: name.name, value: name.id })))
       );
       await unboxMessage.edit({
-        embeds: [{ title: 'Lucky Box 📦📦', description: 'You opened your Lucky Box and got the ability to **remove 5 points from any other team!!**\n\nSelect the team below', color: Colors.Green }],
+        embeds: [{ title: 'Lucky Box 📦📦', description: 'You opened your Lucky Box and got the ability to **remove 5 points from any other team!!**\n\nSelect the team below', color: Theme.success }],
         components: [row]
       });
       const collector = unboxMessage.createMessageComponentCollector({
@@ -83,7 +83,7 @@ module.exports = {
         team.points -= 5;
         await team.save();
         await button.reply({
-          embeds: [{ title: 'Lucky Box 📦📦', description: `You removed 5 points from the team ${team.name}\n\nYou can open another lucky box right away!`, color: Colors.Green }]
+          embeds: [{ title: 'Lucky Box 📦📦', description: `You removed 5 points from the team ${team.name}\n\nYou can open another lucky box right away!`, color: Theme.success }]
         });
         await unboxMessage.edit({ components: null });
       });
@@ -97,30 +97,30 @@ module.exports = {
       Team.points -= 5;
       await Team.save();
       const unboxMessage = await message.reply({
-        embeds: [{ description: 'Opening your lucky box...', color: Colors.Yellow }]
+        embeds: [{ description: 'Opening your lucky box...', color: Theme.warning }]
       });
       await sleep(5000);
       await unboxMessage.edit({
-        embeds: [{ title: 'Lucky Box 📦📦', description: 'You opened your lucky box and **lost** 5 points!', color: Colors.Red }]
+        embeds: [{ title: 'Lucky Box 📦📦', description: 'You opened your lucky box and **lost** 5 points!', color: Theme.error }]
       });
     } else if (random <= 90) {
       Team.points += 5;
       Team.lastLb = Date.now() - 43200000;
       await Team.save();
       const unboxMessage = await message.reply({
-        embeds: [{ description: 'Opening your lucky box...', color: Colors.Yellow }]
+        embeds: [{ description: 'Opening your lucky box...', color: Theme.warning }]
       });
       await sleep(5000);
       await unboxMessage.edit({
-        embeds: [{ title: 'Lucky Box 📦📦', description: 'You opened your lucky box and got 5 points!\n\nYou were lucky and found ANOTHER Lucky Box!! Open it now with `fh lootbox`', color: Colors.Green }]
+        embeds: [{ title: 'Lucky Box 📦📦', description: 'You opened your lucky box and got 5 points!\n\nYou were lucky and found ANOTHER Lucky Box!! Open it now with `fh lootbox`', color: Theme.success }]
       });
     } else {
       const unboxMessage = await message.reply({
-        embeds: [{ description: 'Opening your lucky box...', color: Colors.Yellow }]
+        embeds: [{ description: 'Opening your lucky box...', color: Theme.warning }]
       });
       await sleep(5000);
       await unboxMessage.edit({
-        embeds: [{ title: 'Lucky Box 📦📦', description: 'You opened your lucky box and got nothing...', color: Colors.Red }]
+        embeds: [{ title: 'Lucky Box 📦📦', description: 'You opened your lucky box and got nothing...', color: Theme.error }]
       });
     }
 

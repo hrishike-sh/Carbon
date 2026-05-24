@@ -1,5 +1,4 @@
 const {
-  Colors,
   ActionRowBuilder,
   ButtonBuilder,
   ButtonStyle
@@ -7,6 +6,7 @@ const {
 const Database = require('../../database/models/lastping');
 const config = require('../../config');
 const { sleep } = require('../../utils/helpers');
+const { errorEmbed, infoEmbed } = require('../../utils/embeds');
 
 module.exports = {
   name: 'lastping',
@@ -18,10 +18,9 @@ module.exports = {
       return message
         .reply({
           embeds: [
-            {
-              color: Colors.Red,
-              description: `You need to have any one of these roles to use this command:\n${allowedRoles.map((a) => `<@&${a}>`).join(' ')}`
-            }
+            errorEmbed({
+              description: `You need one of these roles to use this command:\n${allowedRoles.map((a) => `<@&${a}>`).join(' ')}`
+            })
           ]
         })
         .then(async (msg) => {
@@ -59,17 +58,16 @@ module.exports = {
     message
       .reply({
         embeds: [
-          {
+          infoEmbed({
             title: 'Last Pings',
-            color: Colors.Aqua,
             description:
               d.length > 1
                 ? d.join(
                     '\n<:yes:931435927061020712><:yes:931435927061020712><:yes:931435927061020712><:yes:931435927061020712><:yes:931435927061020712>\n'
                   )
                 : d[0],
-            footer: { text: `Showing ${Math.min(10, user?.pings?.length || 0)}/${user?.pings?.length || 0}.` }
-          }
+            footer: `Showing ${Math.min(10, user?.pings?.length || 0)}/${user?.pings?.length || 0}.`
+          })
         ],
         components: [
           new ActionRowBuilder().addComponents([
@@ -88,12 +86,11 @@ module.exports = {
           await user.save();
           await c.message.edit({
             embeds: [
-              {
+              infoEmbed({
                 title: 'Last Pings',
-                color: Colors.Aqua,
                 description: 'Your pings have been cleared!',
-                footer: { text: 'Only 10 pings are stored.' }
-              }
+                footer: 'Only 10 pings are stored.'
+              })
             ],
             components: []
           });

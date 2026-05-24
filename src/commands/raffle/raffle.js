@@ -1,8 +1,9 @@
-const { Message, Client, Colors } = require('discord.js');
+const { Message, Client } = require('discord.js');
 
 const Database = require('../../database/models/raffle');
 const { EmbedBuilder } = require('@discordjs/builders');
 const config = require('../../config');
+const { Theme } = require('../../utils/embeds');
 
 module.exports = {
   name: 'raffle',
@@ -31,7 +32,7 @@ module.exports = {
     if (subcommand == 'help') {
       const embed = new EmbedBuilder()
         .setTitle('Raffle Command')
-        .setColor(Colors.Yellow)
+        .setColor(Theme.warning)
         .addFields([
           {
             name: 'fh raffle list',
@@ -131,7 +132,7 @@ module.exports = {
                 message.url
               })`
             )
-            .setColor(Colors.Green)
+            .setColor(Theme.success)
             .setTimestamp()
         ]
       });
@@ -204,7 +205,7 @@ module.exports = {
                 message.url
               })`
             )
-            .setColor(Colors.Red)
+            .setColor(Theme.error)
             .setTimestamp()
         ]
       });
@@ -233,7 +234,7 @@ module.exports = {
           embeds.push(
             new EmbedBuilder()
               .setDescription(data.join('\n'))
-              .setColor(Colors.Green)
+              .setColor(Theme.success)
           );
         }
         messages.push({ embeds });
@@ -271,7 +272,7 @@ module.exports = {
           name: message.author.tag,
           iconURL: message.author.displayAvatarURL()
         })
-        .setColor(Colors.Green)
+        .setColor(Theme.success)
         .setDescription(
           `**Your entries:** ${dbUser.amount}\n**Total entries:** ${allEntries[0].totalAmount}`
         )

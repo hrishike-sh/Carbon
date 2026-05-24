@@ -1,6 +1,7 @@
-const { Collection, EmbedBuilder, ChannelType, Colors } = require('discord.js');
+const { Collection, ChannelType } = require('discord.js');
 const config = require('../../config');
 const logger = require('../../utils/logger');
+const { warningEmbed, errorEmbed, successEmbed } = require('../../utils/embeds');
 const path = require('path');
 const os = require('os');
 const fs = require('fs');
@@ -86,17 +87,17 @@ async function handleNightEmbed(message, embed, currentGame, logChannel) {
   }
 
   try {
-    const aliveDeadEmbed = new EmbedBuilder()
-      .setTitle(`Night ${currentNight - 1}`)
-      .addFields([
+    const aliveDeadEmbed = warningEmbed({
+      title: `Night ${currentNight - 1}`,
+      fields: [
         { name: 'Alive', value: alive.map((id) => `<@${id}>`).join('\n') || 'None', inline: true },
         { name: 'Dead', value: dead.map((id) => `<@${id}>`).join('\n') || 'None', inline: true }
-      ])
-      .setColor(Colors.Yellow);
+      ]
+    });
 
-    const messageEmbed = new EmbedBuilder()
-      .setTitle(`Night ${currentNight - 1} messages`)
-      .setDescription(
+    const messageEmbed = warningEmbed({
+      title: `Night ${currentNight - 1} messages`,
+      description:
         currentGame.players
           .filter((p) => p.alive)
           .map((p) => {
@@ -108,8 +109,7 @@ async function handleNightEmbed(message, embed, currentGame, logChannel) {
             }`;
           })
           .join('\n') || 'No messages yet.'
-      )
-      .setColor(Colors.Yellow);
+    });
 
     const ch = message.client.channels.cache.get(config.ids.channels.mafiaLog);
     if (ch?.isTextBased()) {
@@ -128,9 +128,9 @@ async function handleGameOver(message, client, currentGame, logChannelId, logCha
 
   const currentNight = currentGame.night;
 
-  const messageEmbed = new EmbedBuilder()
-    .setTitle(`Night ${currentNight - 1} messages`)
-    .setDescription(
+  const messageEmbed = warningEmbed({
+    title: `Night ${currentNight - 1} messages`,
+    description:
       currentGame.players
         .filter((p) => p.alive)
         .map((p) => {
@@ -142,18 +142,16 @@ async function handleGameOver(message, client, currentGame, logChannelId, logCha
           }`;
         })
         .join('\n') || 'No messages yet.'
-    )
-    .setColor(Colors.Yellow);
+  });
 
   const logCh = message.client.channels.cache.get(config.ids.channels.mafiaLog);
   if (logCh?.isTextBased()) {
     await logCh.send({
       embeds: [
         messageEmbed,
-        new EmbedBuilder()
-          .setTitle('Final Summary')
-          .setColor(Colors.Yellow)
-          .setDescription(
+        warningEmbed({
+          title: 'Final Summary',
+          description:
             currentGame.players
               .map((p) => {
                 const status = p.alive
@@ -163,12 +161,12 @@ async function handleGameOver(message, client, currentGame, logChannelId, logCha
                 return `${status} <@${p.id}> ${p.alive ? '' : `Died N${p.deadAt}`}\n<:dot:${config.ids.emojis.dot}>Total messages: ${totalMsgs}`;
               })
               .join('\n')
-          )
+        })
       ]
     });
 
     await logCh.send({
-      embeds: [new EmbedBuilder().setTitle('Game over').setColor(Colors.Red)]
+      embeds: [errorEmbed({ title: 'Game over' })]
     });
   }
 
@@ -214,10 +212,10 @@ async function startNewGame(message, logChannel) {
   if (lc?.isTextBased()) {
     await lc.send({
       embeds: [
-        new EmbedBuilder()
-          .setTitle('New game')
-          .setDescription(message.mentions.users.map((u) => `<@${u.id}>`).join('\n'))
-          .setColor(Colors.Green)
+        successEmbed({
+          title: 'New game',
+          description: message.mentions.users.map((u) => `<@${u.id}>`).join('\n')
+        })
       ]
     });
   }

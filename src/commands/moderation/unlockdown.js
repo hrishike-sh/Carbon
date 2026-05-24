@@ -1,4 +1,5 @@
-const { Message, Client, Permissions, EmbedBuilder } = require('discord.js');
+const { Permissions } = require('discord.js');
+const { errorEmbed, successEmbed } = require('../../utils/embeds');
 
 module.exports = {
   name: 'unlockdown',
@@ -12,9 +13,7 @@ module.exports = {
     if (!message.member.permissions.has(Permissions.FLAGS.ADMINISTRATOR)) {
       return message.reply({
         embeds: [
-          new EmbedBuilder()
-            .setDescription('You must be an administrator to use this command.')
-            .setColor('RED')
+          errorEmbed({ description: 'You must be an administrator to use this command.' })
         ]
       });
     }
@@ -29,9 +28,7 @@ module.exports = {
         });
         await channel.send({
           embeds: [
-            new EmbedBuilder()
-              .setDescription('**Lockdown has been lifted.**')
-              .setColor('GREEN')
+            successEmbed({ description: 'Lockdown has been lifted.' })
           ]
         });
       }
@@ -39,9 +36,7 @@ module.exports = {
 
     message.reply({
       embeds: [
-        new EmbedBuilder()
-          .setDescription('Unlockdown initiated.')
-          .setColor('GREEN')
+        successEmbed({ description: 'Unlockdown initiated.' })
       ]
     });
   }

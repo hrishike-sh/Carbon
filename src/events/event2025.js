@@ -3,11 +3,11 @@ const {
   ActionRowBuilder,
   ButtonBuilder,
   ButtonStyle,
-  Collection,
-  Colors
+  Collection
 } = require('discord.js');
 const config = require('../config');
 const { sleep, shuffle } = require('../utils/helpers');
+const { Theme } = require('../utils/embeds');
 const Team = require('../database/models/teams');
 
 const awardPoint = async (userId) => {
@@ -29,7 +29,7 @@ const sendWinnerEmbed = async (channel, winner, eventName, team) => {
   const embed = new EmbedBuilder()
     .setTitle('🎉 Event Winner! 🎉')
     .setDescription(`${winner} won the **${eventName}** event!`)
-    .setColor(Colors.Gold)
+    .setColor(Theme.warning)
     .setThumbnail(winner.displayAvatarURL())
     .addFields(
       { name: 'Team', value: team ? `**${team.name}**` : 'No Team', inline: true },
@@ -109,7 +109,7 @@ module.exports = {
 async function runFindTheBall(channel, winner, playedUsers, eventName, awardPoint, sendWinnerEmbed) {
   const ballEmbed = new EmbedBuilder()
     .setTitle('Guess where the ball is!')
-    .setColor(Colors.Yellow)
+    .setColor(Theme.warning)
     .setFooter({ text: 'You get one try! Click the button to guess!' });
 
   const row = new ActionRowBuilder().addComponents(
@@ -161,7 +161,7 @@ async function runEmojiMemory(channel, winner, playedUsers, eventName, awardPoin
   const mainEmbed = new EmbedBuilder()
     .setTitle('Memorize')
     .setDescription('Click the emojis in order to win!')
-    .setColor(Colors.Yellow)
+    .setColor(Theme.warning)
     .setFooter({ text: 'You get one try only!' });
 
   const p = emojis.slice(0, 10).sort(() => Math.random() - 0.5);
@@ -186,8 +186,8 @@ async function runEmojiMemory(channel, winner, playedUsers, eventName, awardPoin
       gameData.set(button.user.id, { failed: false, correct: 0, won: false });
     }
     const user = gameData.get(button.user.id);
-    if (user.failed) return button.reply({ ephemeral: true, embeds: [{ description: 'Already failed!', color: Colors.Red }] });
-    if (user.won) return button.reply({ ephemeral: true, embeds: [{ description: 'Already won!', color: Colors.Green }] });
+    if (user.failed) return button.reply({ ephemeral: true, embeds: [{ description: 'Already failed!', color: Theme.error }] });
+    if (user.won) return button.reply({ ephemeral: true, embeds: [{ description: 'Already won!', color: Theme.success }] });
 
     if (toShow[user.correct] === button.customId) {
       user.correct++;
@@ -196,15 +196,15 @@ async function runEmojiMemory(channel, winner, playedUsers, eventName, awardPoin
         winner = button.user;
         const team = await awardPoint(winner.id);
         await sendWinnerEmbed(channel, winner, eventName, team);
-        button.reply({ ephemeral: true, embeds: [{ description: 'You won!', color: Colors.Green }] });
+        button.reply({ ephemeral: true, embeds: [{ description: 'You won!', color: Theme.success }] });
         collector.stop();
       } else {
-        button.reply({ ephemeral: true, embeds: [{ description: 'Correct! Next...', color: Colors.Green }] });
+        button.reply({ ephemeral: true, embeds: [{ description: 'Correct! Next...', color: Theme.success }] });
       }
     } else {
       user.failed = true;
       playedUsers.add(button.user.id);
-      button.reply({ ephemeral: true, embeds: [{ description: 'Incorrect! You lost!', color: Colors.Red }] });
+      button.reply({ ephemeral: true, embeds: [{ description: 'Incorrect! You lost!', color: Theme.error }] });
     }
   });
 }
@@ -248,9 +248,9 @@ async function runBasketball(channel, winner, playedUsers, eventName, awardPoint
       const team = await awardPoint(winner.id);
       await sendWinnerEmbed(channel, winner, eventName, team);
       collector.stop();
-      button.reply({ ephemeral: true, embeds: [{ description: 'You won!', color: Colors.Green }] });
+      button.reply({ ephemeral: true, embeds: [{ description: 'You won!', color: Theme.success }] });
     } else {
-      button.reply({ ephemeral: true, embeds: [{ description: 'You hit LeBron! Lost!', color: Colors.Red }] });
+      button.reply({ ephemeral: true, embeds: [{ description: 'You hit LeBron! Lost!', color: Theme.error }] });
     }
   });
 
@@ -268,7 +268,7 @@ async function runCrabRace(client, channel, eventName, awardPoint, sendWinnerEmb
   const joinEmbed = new EmbedBuilder()
     .setTitle('Crab Race :crab:')
     .setDescription('Click to join! Game starts in 30s')
-    .setColor(Colors.Yellow);
+    .setColor(Theme.warning);
 
   const joinRow = new ActionRowBuilder().addComponents([
     new ButtonBuilder().setLabel('Join').setCustomId('join;tr').setStyle(ButtonStyle.Success)
@@ -305,7 +305,7 @@ async function runCrabRace(client, channel, eventName, awardPoint, sendWinnerEmb
 
     let description = gamedata.tracks.map((t) => `**${t.user.tag}**:\n:squid:${t.track.join(' ')} :crab:`).join('\n');
     const mainMessage = await channel.send({
-      embeds: [{ description, title: 'Crab Race', color: Colors.Green, timestamp: new Date() }]
+      embeds: [{ description, title: 'Crab Race', color: Theme.success, timestamp: new Date() }]
     });
 
     let end = false;
@@ -327,7 +327,7 @@ async function runCrabRace(client, channel, eventName, awardPoint, sendWinnerEmb
         `**${t.user.tag}**:\n${t.track.length < 1 ? ':crown:' : ':squid:'}${t.track.join(' ')} :crab:`
       ).join('\n');
       mainMessage.edit({
-        embeds: [{ description, title: 'Crab Race', color: Colors.Green, timestamp: new Date() }]
+        embeds: [{ description, title: 'Crab Race', color: Theme.success, timestamp: new Date() }]
       }).catch(() => {});
     }
 
@@ -346,7 +346,7 @@ async function runHigherOrLower(channel, winner, playedUsers, eventName, awardPo
   const embed = new EmbedBuilder()
     .setTitle('Higher or Lower')
     .setDescription(`Is it Higher or Lower than **${reference}**?`)
-    .setColor(Colors.Yellow);
+    .setColor(Theme.warning);
 
   const row = new ActionRowBuilder().addComponents([
     new ButtonBuilder().setLabel('Higher').setCustomId('hol_high').setStyle(ButtonStyle.Success),
@@ -382,7 +382,7 @@ async function runUnscramble(channel, winner, playedUsers, eventName, awardPoint
 
   const embed = new EmbedBuilder()
     .setTitle('Guess the word!')
-    .setColor(Colors.Yellow)
+    .setColor(Theme.warning)
     .setDescription(`Scrambled: **\`${scrambled}\`**`);
 
   await channel.send({ embeds: [embed] });
@@ -396,7 +396,7 @@ async function runUnscramble(channel, winner, playedUsers, eventName, awardPoint
       winner = msg.author;
       const team = await awardPoint(winner.id);
       await sendWinnerEmbed(channel, winner, eventName, team);
-      msg.reply({ embeds: [{ title: 'Correct! Word: ' + word, color: Colors.Green }] });
+      msg.reply({ embeds: [{ title: 'Correct! Word: ' + word, color: Theme.success }] });
       collector.stop();
     } else {
       msg.react('❌');
@@ -406,7 +406,7 @@ async function runUnscramble(channel, winner, playedUsers, eventName, awardPoint
 }
 
 async function runRPS(channel, winner, playedUsers, eventName, awardPoint, sendWinnerEmbed) {
-  const embed = new EmbedBuilder().setTitle('Rock, Paper, Scissors').setDescription('Choose your weapon!').setColor(Colors.Yellow);
+  const embed = new EmbedBuilder().setTitle('Rock, Paper, Scissors').setDescription('Choose your weapon!').setColor(Theme.warning);
 
   const row = new ActionRowBuilder().addComponents([
     new ButtonBuilder().setCustomId('rock').setLabel('Rock').setEmoji('🪨').setStyle(ButtonStyle.Primary),
@@ -449,7 +449,7 @@ async function runGuessTheNumber(channel, winner, playedUsers, eventName, awardP
   const embed = new EmbedBuilder()
     .setTitle('Guess the Number!')
     .setDescription('I picked a number between 1 and 10.')
-    .setColor(Colors.Yellow);
+    .setColor(Theme.warning);
 
   await channel.send({ embeds: [embed] });
 

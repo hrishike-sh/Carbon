@@ -1,5 +1,5 @@
-const { Message, Client, Colors } = require('discord.js');
 const config = require('../../config');
+const { errorEmbed } = require('../../utils/embeds');
 
 module.exports = {
   name: 'checkban',
@@ -21,13 +21,12 @@ module.exports = {
 
     await message.channel.send({
       embeds: [
-        {
+        errorEmbed({
           title: 'Ban Check',
           description: `UserID: ${target}\nBanned reason: ${
             bannedUser.reason || 'No reason provided.'
-          }`,
-          color: Colors.Red
-        }
+          }`
+        })
       ]
     });
   }

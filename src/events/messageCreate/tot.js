@@ -1,5 +1,5 @@
 const config = require('../../config');
-const { sleep } = require('../../utils/helpers');
+const { warningEmbed } = require('../../utils/embeds');
 
 module.exports = {
   name: 'tot',
@@ -10,7 +10,7 @@ module.exports = {
     const content = message.content.toLowerCase();
     if (content !== 'pls tot' && content !== 'trickortreat') return;
 
-    if (message.channel.id === config.ids.channels.restrictedCurrencyChannels[4]) return; // giveaway channel
+    if (message.channel.id === config.ids.channels.restrictedCurrencyChannels[4]) return;
 
     const role = config.roles.totRole;
     if (message.member.roles.cache.has(role)) {
@@ -20,12 +20,11 @@ module.exports = {
     await message.member.roles.add(role);
     return message.reply({
       embeds: [
-        {
-          title: 'Trick or Treat 🍬',
+        warningEmbed({
+          title: 'Trick or Treat',
           description: `I've given you the <@&${role}> role.`,
-          color: 0xFF6F61,
-          footer: { text: 'Happy Halloween 🎃' }
-        }
+          footer: 'Happy Halloween!'
+        })
       ]
     });
   }

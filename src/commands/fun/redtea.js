@@ -1,11 +1,11 @@
 const {
-  Message,
   EmbedBuilder,
   ActionRowBuilder,
   ButtonBuilder,
   ButtonStyle,
   ChannelType
 } = require('discord.js');
+const { createEmbed } = require('../../utils/embeds');
 
 module.exports = {
   name: 'redtea',
@@ -15,17 +15,11 @@ module.exports = {
    * @param {String[]} args
    */
   execute: async (message, args) => {
-    // const perms = message.member.roles.cache.hasAny(['826002228828700718']);
-    // if (!perms) {
-    //   return message.reply(
-    //     'You do not have the right permissions to run this command!'
-    //   );
-    // }
-
     if (message.channel.type != ChannelType.GuildText) return;
 
-    const joinEmbed = new EmbedBuilder().setTitle('☕ Red Tea').setFooter({
-      text: 'Click the button to join.'
+    const joinEmbed = createEmbed({
+      title: 'Red Tea',
+      footer: 'Click the button to join.'
     });
 
     const row = new ActionRowBuilder().addComponents([
@@ -72,13 +66,11 @@ module.exports = {
     collector.on('end', async () => {
       await message.channel.send({
         embeds: [
-          {
-            title: 'Redtea game is now starting!'
-          }
+          createEmbed({ title: 'Redtea game is now starting!' })
         ]
       });
 
-      
+
     });
   }
 };

@@ -1,14 +1,12 @@
 const apikey = process.env.CATAPITOKEN;
 const {
-  Message,
-  Client,
-  Colors,
   ButtonBuilder,
   ActionRowBuilder,
   ButtonStyle
 } = require('discord.js');
 const querystring = require('node:querystring');
 const r2 = require('r2');
+const { infoEmbed } = require('../../utils/embeds');
 
 module.exports = {
   name: 'pussy',
@@ -26,16 +24,11 @@ module.exports = {
     const row = new ActionRowBuilder().addComponents(generateButton);
     const mainMessage = await message.channel.send({
       embeds: [
-        {
+        infoEmbed({
           title: 'SFW Pussy',
-          image: {
-            url: images[0].url
-          },
-          color: Colors.Blurple,
-          footer: {
-            text: "Some say there's a chance you can get NSFW Pussy."
-          }
-        }
+          image: images[0].url,
+          footer: "Some say there's a chance you can get NSFW Pussy."
+        })
       ],
       components: [row]
     });
@@ -54,14 +47,11 @@ module.exports = {
       const newImage = await getImage(button.user.id);
       return mainMessage.edit({
         embeds: [
-          {
+          infoEmbed({
             title: 'SFW Pussy',
-            image: { url: newImage[0].url },
-            color: Colors.Blurple,
-            footer: {
-              text: "Some say there's a chance you can get NSFW Pussy."
-            }
-          }
+            image: newImage[0].url,
+            footer: "Some say there's a chance you can get NSFW Pussy."
+          })
         ],
         components: [row]
       });

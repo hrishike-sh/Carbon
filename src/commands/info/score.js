@@ -1,4 +1,5 @@
-const { EmbedBuilder } = require('discord.js');
+const { infoEmbed } = require('../../utils/embeds');
+
 const API_KEY = process.env.SCORE_API;
 
 module.exports = {
@@ -8,7 +9,7 @@ module.exports = {
 
   async execute(message, args) {
     const msg = await message.channel.send({
-      embeds: [{ title: 'Fetching data...' }]
+      embeds: [infoEmbed({ title: 'Fetching data...' })]
     });
 
     try {
@@ -19,15 +20,13 @@ module.exports = {
 
       const data = await req.json();
       const match = data.data[0];
-      const embed = new EmbedBuilder()
-        .setTitle(match.name)
-        .setColor(1652874)
-        .setDescription(match.status)
-        .setThumbnail(
-          'https://www.jagranimages.com/images/newimg/21082020/21_08_2020-ipl_logo_20650553.jpg'
-        )
-        .setFooter({ text: match.venue })
-        .setTimestamp();
+      const embed = infoEmbed({
+        title: match.name,
+        description: match.status,
+        thumbnail: 'https://www.jagranimages.com/images/newimg/21082020/21_08_2020-ipl_logo_20650553.jpg',
+        footer: match.venue,
+        timestamp: true
+      });
 
       for (let i = 0; i < 2; i++) {
         embed.addFields({
@@ -39,7 +38,7 @@ module.exports = {
 
       await msg.edit({ embeds: [embed] });
     } catch (error) {
-      msg.edit({ embeds: [{ title: 'Failed to fetch score data.' }] });
+      msg.edit({ embeds: [infoEmbed({ title: 'Failed to fetch score data.' })] });
     }
   }
 };

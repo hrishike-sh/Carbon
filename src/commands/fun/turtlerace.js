@@ -2,11 +2,11 @@ const {
   EmbedBuilder,
   ButtonBuilder,
   ButtonStyle,
-  ActionRowBuilder,
-  Colors
+  ActionRowBuilder
 } = require('discord.js');
 const config = require('../../config');
 const { sleep } = require('../../utils/helpers');
+const { Theme } = require('../../utils/embeds');
 
 module.exports = {
   name: 'turtlerace',
@@ -19,7 +19,7 @@ module.exports = {
       .setDescription(
         'Click the button to join the **Turtle Race**!\n\nGame starts in **30 seconds**'
       )
-      .setColor('Yellow');
+      .setColor(Theme.warning);
     const joinButton = new ButtonBuilder()
       .setLabel('Join')
       .setCustomId('join;tr')
@@ -86,7 +86,7 @@ module.exports = {
           {
             description,
             title: 'Turtle Race',
-            color: Colors.Green,
+            color: Theme.success,
             timestamp: new Date()
           }
         ]
@@ -123,7 +123,7 @@ module.exports = {
             {
               description,
               title: 'Turtle Race',
-              color: Colors.Green,
+              color: Theme.success,
               timestamp: new Date()
             }
           ]

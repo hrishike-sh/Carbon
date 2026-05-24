@@ -1,7 +1,7 @@
-const { Colors } = require('discord.js');
 const config = require('../../config');
 const { sleep } = require('../../utils/helpers');
 const { parseTime } = require('../../utils/formatters');
+const { successEmbed, infoEmbed } = require('../../utils/embeds');
 
 const formatDiscordTime = (time, format) => {
   return `<t:${(time / 1000).toFixed(0)}:${format || 'R'}>`;
@@ -21,10 +21,10 @@ module.exports = {
 
       const reply = await message.reply({
         embeds: [
-          {
-            title: 'Welcome back ' + message.author.tag,
-            description: `You were pinged ${dUser?.dms?.length || 0} times, check your dms!`
-          }
+          successEmbed({
+            title: `Welcome back ${message.author.tag}`,
+            description: `You were pinged ${dUser?.dms?.length || 0} times, check your DMs!`
+          })
         ]
       });
       setTimeout(() => reply.delete().catch(() => {}), 2500);
@@ -45,12 +45,11 @@ module.exports = {
         const dm = await message.author.createDM();
         await dm.send({
           embeds: [
-            {
+            successEmbed({
               title: 'Your pings:',
               description: pingList || 'You have no friends LMAO',
-              color: Colors.Green,
-              timestamp: new Date()
-            }
+              timestamp: true
+            })
           ]
         });
       } catch {}
@@ -73,14 +72,11 @@ module.exports = {
 
           const reply = await message.reply({
             embeds: [
-              {
+              infoEmbed({
                 title: `${mention.user.tag} is AFK!`,
-                color: Colors.Blurple,
                 description: `Reason: ${db.reason}\nLast seen ${formatDiscordTime(db.time)}`,
-                footer: {
-                  text: "They will receive a DM about this when they're back!"
-                }
-              }
+                footer: "They'll receive a DM about this when they're back!"
+              })
             ],
             allowedMentions: { users: [], roles: [] }
           });

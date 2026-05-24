@@ -3,11 +3,11 @@ const {
   ActionRowBuilder,
   ButtonBuilder,
   ButtonStyle,
-  Colors,
   ComponentType
 } = require('discord.js');
 const config = require('../../config');
 const { sleep, shuffle } = require('../../utils/helpers');
+const { Theme } = require('../../utils/embeds');
 
 const MIN_PLAYERS = 3;
 const MAX_PLAYERS = 25;
@@ -54,7 +54,7 @@ module.exports = {
         `Click the \`JOIN\` button to join!\n\nMax Players: ${MAX_PLAYERS}`
       )
       .setFooter({ text: `Game starts in ${JOIN_TIME_MS / 1000} seconds.` })
-      .setColor(Colors.Gold);
+      .setColor(Theme.warning);
 
     const conf_row = new ActionRowBuilder().addComponents([
       new ButtonBuilder()
@@ -127,7 +127,7 @@ module.exports = {
       let gameRows = [];
       const game_embed = new EmbedBuilder()
         .setTitle('Battle Royale')
-        .setColor(Colors.Gold)
+        .setColor(Theme.warning)
         .setFooter({ text: 'Last man standing wins!' })
         .setDescription(
           `The game starts in **${GAME_START_DELAY_MS / 1000} seconds**.\n` +
@@ -529,7 +529,7 @@ module.exports = {
 
         const finalEmbed = new EmbedBuilder()
           .setTitle('Battle Royale Over!')
-          .setColor(Colors.Gold)
+          .setColor(Theme.warning)
           .setDescription(
             gameLog.map((a) => `- ${a}`).join('\n') || 'The game has ended.'
           )
@@ -541,14 +541,14 @@ module.exports = {
               name: 'Winner!',
               value: `Congratulations <@${winner.id}>!`
             })
-            .setColor(Colors.Green);
+            .setColor(Theme.success);
         } else if (reason === 'draw') {
           finalEmbed
             .addFields({
               name: 'Result',
               value: "It's a draw! Everyone is dead."
             })
-            .setColor(Colors.Red);
+            .setColor(Theme.error);
         }
 
         await gameMessage.edit({

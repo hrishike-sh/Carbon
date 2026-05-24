@@ -3,10 +3,10 @@ const {
   ButtonBuilder,
   ButtonStyle,
   StringSelectMenuBuilder,
-  StringSelectMenuOptionBuilder,
-  EmbedBuilder
+  StringSelectMenuOptionBuilder
 } = require('discord.js');
 const { breakArray } = require('../../utils/helpers');
+const { successEmbed } = require('../../utils/embeds');
 
 const getAction = (str) => {
   const lower = str.toLowerCase();
@@ -54,9 +54,9 @@ module.exports = {
     let index = 0;
     let filter = 'none';
 
-    const embed = new EmbedBuilder()
-      .setColor('Green')
-      .setFooter({ text: `Total ${data.length.toLocaleString()} cases` });
+    const embed = successEmbed({
+      footer: `Total ${data.length.toLocaleString()} cases`
+    });
 
     if (embedData.length > 1) {
       embed.setFields(embedData[0]);

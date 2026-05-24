@@ -1,6 +1,6 @@
-const { Message, Client, EmbedBuilder, Colors } = require('discord.js');
 const TeamDB = require('../../database/models/teams');
-const database = require('../../database/models/coins');
+const { infoEmbed } = require('../../utils/embeds');
+
 module.exports = {
   name: 'myteam',
   aliases: ['team'],
@@ -14,25 +14,25 @@ module.exports = {
     const team = await TeamDB.findOne({ users: userId });
     if (!team) return message.reply('You are not in a team.');
 
-    const embed = new EmbedBuilder()
-      .setTitle(team.name)
-      .addFields([
-        {
-          name: 'Wealth',
-          value: `Points: ${team.points}`,
-          inline: true
-        },
-        {
-          name: 'Members',
-          value: team.users.map((a) => `<@${a}>`).join(' '),
-          inline: true
-        }
-      ])
-      .setColor(Colors.Gold)
-      .setTimestamp();
-
     return message.reply({
-      embeds: [embed]
+      embeds: [
+        infoEmbed({
+          title: team.name,
+          fields: [
+            {
+              name: 'Wealth',
+              value: `Points: ${team.points}`,
+              inline: true
+            },
+            {
+              name: 'Members',
+              value: team.users.map((a) => `<@${a}>`).join(' '),
+              inline: true
+            }
+          ],
+          timestamp: true
+        })
+      ]
     });
   }
 };

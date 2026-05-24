@@ -1,13 +1,11 @@
 const {
-  Message,
-  Client,
-  EmbedBuilder,
-  Colors,
   ActionRowBuilder,
   ButtonBuilder,
   ButtonStyle
 } = require('discord.js');
 const Database = require('../../database/models/presents-dec-24');
+const { successEmbed } = require('../../utils/embeds');
+
 module.exports = {
   name: 'presents',
   /**
@@ -26,22 +24,16 @@ module.exports = {
       userId: user.id
     });
 
-    const PresentsEmbed = new EmbedBuilder()
-      .setAuthor({
+    const PresentsEmbed = successEmbed({
+      author: {
         name: user.user.username,
-        iconURL: user.user.displayAvatarURL({
-          forceStatic: true
-        })
-      })
-      .setDescription(
-        `Presents: <:p24emj:1317523800946114652> **${
-          db?.amount?.toLocaleString() || 0
-        }**`
-      )
-      .setColor(Colors.Green)
-      .setFooter({
-        text: 'You pick up presents when you chat!'
-      });
+        iconURL: user.user.displayAvatarURL({ forceStatic: true })
+      },
+      description: `Presents: <:p24emj:1317523800946114652> **${
+        db?.amount?.toLocaleString() || 0
+      }**`,
+      footer: 'You pick up presents when you chat!'
+    });
 
     const Row = new ActionRowBuilder().addComponents([
       new ButtonBuilder()
@@ -94,11 +86,11 @@ module.exports = {
         value.userId
       }> - **${value.amount.toLocaleString()}**\n`;
     });
-    const LeaderboardEmbed = new EmbedBuilder()
-      .setColor(Colors.Green)
-      .setDescription(description)
-      .setTitle('<:p24emj:1317523800946114652> Leaderboard')
-      .setTimestamp();
+    const LeaderboardEmbed = successEmbed({
+      description,
+      title: '<:p24emj:1317523800946114652> Leaderboard',
+      timestamp: true
+    });
 
     coll.on('collect', async (i) => {
       if (i.customId === 'p24-l') {

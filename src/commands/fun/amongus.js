@@ -1,7 +1,6 @@
 const {
   Message,
   Client,
-  Colors,
   EmbedBuilder,
   ActionRow,
   ButtonBuilder,
@@ -9,6 +8,7 @@ const {
   ActionRowBuilder,
   Collection
 } = require('discord.js');
+const { Theme } = require('../../utils/embeds');
 
 module.exports = {
   name: 'amongus',
@@ -48,7 +48,7 @@ module.exports = {
             client.emojis.cache.get('917726679214985246').toString(),
           description:
             'Click the **Join** button to enter the game!\n\nMax players: **10**',
-          color: Colors.Green
+          color: Theme.success
         }
       ],
       components: [

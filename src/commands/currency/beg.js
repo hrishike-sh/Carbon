@@ -1,15 +1,13 @@
 const {
-  Message,
-  Client,
   ActionRowBuilder,
   ButtonBuilder,
-  ButtonStyle,
-  Colors
+  ButtonStyle
 } = require('discord.js');
 const config = require('../../config');
 const { CoinService } = require('../../database/services/coinService');
 const cooldowns = require('../../command/cooldowns');
 const antiBot = require('../../client/AntiBot');
+const { successEmbed, errorEmbed } = require('../../utils/embeds');
 
 const map = [
   'Hrish gave you {coins} coins for your left kidney!',
@@ -61,17 +59,17 @@ module.exports = {
 
     message.reply({
       embeds: [
-        {
+        successEmbed({
           author: {
-            icon_url: message.author.displayAvatarURL(),
-            name: message.author.username
+            name: message.author.username,
+            iconURL: message.author.displayAvatarURL()
           },
-          footer: { text: 'Get a job' },
           description: map[Math.floor(Math.random() * map.length)].replace(
             '{coins}',
-            randomAmount
-          )
-        }
+            randomAmount.toString()
+          ),
+          footer: 'Get a job'
+        })
       ]
     });
 
@@ -91,14 +89,14 @@ module.exports = {
 
       const msg = await message.reply({
         embeds: [
-          {
+          successEmbed({
             description: `Hello ${message.author.tag}... Have you tried gambling?\n\nDo you want to coinflip **${balance}** coins?`,
-            footer: { text: '5% Chance of event spawning. You have 5 SECONDS.' },
+            footer: '5% Chance of event spawning. You have 5 SECONDS.',
             author: {
-              icon_url: 'https://imgcdn.stablediffusionweb.com/2024/4/11/e3ee8859-cd4e-450a-a6b0-13ea78be5f4e.jpg',
-              name: 'Casino Owner'
+              name: 'Casino Owner',
+              iconURL: 'https://imgcdn.stablediffusionweb.com/2024/4/11/e3ee8859-cd4e-450a-a6b0-13ea78be5f4e.jpg'
             }
-          }
+          })
         ],
         components: [row]
       });
@@ -120,12 +118,11 @@ module.exports = {
             message.channel.send({
               content: message.author.toString(),
               embeds: [
-                {
+                successEmbed({
                   title: 'Coinflip!',
-                  color: Colors.Green,
                   description: `You won **${currentBalance.toLocaleString()}** coins!`,
-                  footer: { text: 'This is why you should gamble!' }
-                }
+                  footer: 'This is why you should gamble!'
+                })
               ]
             });
           } else {
@@ -135,12 +132,11 @@ module.exports = {
             message.channel.send({
               content: message.author.toString(),
               embeds: [
-                {
+                errorEmbed({
                   title: 'Coinflip!',
-                  color: Colors.Red,
                   description: `You lost **${currentBalance.toLocaleString()}** coins.`,
-                  footer: { text: "This is why you shouldn't gamble." }
-                }
+                  footer: "This is why you shouldn't gamble."
+                })
               ]
             });
           }

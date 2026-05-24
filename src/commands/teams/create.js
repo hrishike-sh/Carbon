@@ -1,6 +1,7 @@
-const { Message, Client } = require('discord.js');
 const TeamDB = require('../../database/models/teams');
 const config = require('../../config');
+const { successEmbed } = require('../../utils/embeds');
+
 module.exports = {
   name: 'create',
   /**
@@ -9,7 +10,6 @@ module.exports = {
    * @param {Client} client Discord Client
    */
   async execute(message, args, client) {
-    // fh create team name
     if (
       !message.member.roles.cache.hasAny(
         config.roles.staff.cman,
@@ -30,10 +30,10 @@ module.exports = {
     team.save();
     message.reply({
       embeds: [
-        {
+        successEmbed({
           title: 'Team created',
           description: `Name: ${teamName}\nDB ID: ${team._id}`
-        }
+        })
       ]
     });
   }

@@ -2,6 +2,7 @@ const config = require('../../config');
 const { CoinService } = require('../../database/services/coinService');
 const cooldowns = require('../../command/cooldowns');
 const antiBot = require('../../client/AntiBot');
+const { successEmbed } = require('../../utils/embeds');
 
 const animalEmojis = [
   { name: 'Monkey', emoji: '🐒' },
@@ -142,14 +143,13 @@ module.exports = {
     const randomAnimal = animalEmojis[Math.floor(Math.random() * animalEmojis.length)];
     message.reply({
       embeds: [
-        {
+        successEmbed({
           author: {
-            icon_url: message.author.displayAvatarURL(),
-            name: message.author.username
+            name: message.author.username,
+            iconURL: message.author.displayAvatarURL()
           },
-          footer: { text: '👩‍🌾' },
           description: `You found ${randomAnimal.emoji} ${randomAnimal.name}! You sold it for <:token:${config.ids.emojis.token}> ${random.toLocaleString()} coins.`
-        }
+        })
       ]
     });
   }

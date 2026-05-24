@@ -7,6 +7,7 @@ const {
 } = require('discord.js');
 const Database = require('../../database/timed');
 const ms = require('ms');
+const { Theme } = require('../../utils/embeds');
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('t-viewlock')
@@ -68,7 +69,7 @@ module.exports = {
           interaction.user
         }\n**Duration:** ~${ms(time, { long: true })}`
       )
-      .setColor('Green');
+      .setColor(Theme.success);
 
     await interaction.reply({ embeds: [embed] });
   }

@@ -1,12 +1,11 @@
 const {
-  Message,
-  Client,
   EmbedBuilder,
   ActionRowBuilder,
   ButtonBuilder,
   ButtonStyle,
   ComponentType
 } = require('discord.js');
+const { Theme } = require('../../utils/embeds');
 
 module.exports = {
   name: '2playerblackjack',
@@ -35,7 +34,7 @@ module.exports = {
       .setDescription(
         `${target.username}, ${message.author.username} has challenged you to a game of blackjack. Do you accept?`
       )
-      .setColor('Yellow');
+      .setColor(Theme.warning);
 
     const acceptRow = new ActionRowBuilder().addComponents(
       new ButtonBuilder()
@@ -89,7 +88,7 @@ module.exports = {
 
       const gameEmbed = new EmbedBuilder()
         .setTitle('Blackjack')
-        .setColor('Yellow')
+        .setColor(Theme.warning)
         .setDescription(
           'The game has started! Click "Show Hand" to see your cards and play.'
         )
@@ -140,7 +139,7 @@ module.exports = {
                 userState.hand
               )}\nYour score is: ${calculateScore(userState.hand)}`
             )
-            .setColor('Blue');
+            .setColor(Theme.info);
 
           const handRow = new ActionRowBuilder().addComponents(
             new ButtonBuilder()
@@ -191,7 +190,7 @@ module.exports = {
                   userState.hand
                 )}\nYour score is: ${calculateScore(userState.hand)}`
               )
-              .setColor(userState.busted ? 'Red' : 'Blue');
+              .setColor(userState.busted ? Theme.error : Theme.info);
 
             await buttonInteraction.update({
               embeds: [updatedHandEmbed],
@@ -222,7 +221,7 @@ module.exports = {
 
         const updatedGameEmbed = new EmbedBuilder()
           .setTitle('Blackjack')
-          .setColor('Yellow')
+          .setColor(Theme.warning)
           .setDescription('The game is in progress...')
           .setFields(fields);
 
@@ -240,21 +239,26 @@ module.exports = {
 
           let winner = null;
           let reason = '';
+          let color = Theme.warning;
 
           if (score1 > 21 && score2 > 21) {
             reason = 'Both players busted! It a tie!';
           } else if (score1 > 21) {
             winner = target;
             reason = `${message.author.username} busted!`;
+            color = Theme.error;
           } else if (score2 > 21) {
             winner = message.author;
             reason = `${target.username} busted!`;
+            color = Theme.success;
           } else if (score1 > score2) {
             winner = message.author;
             reason = `${message.author.username} has a higher score!`;
+            color = Theme.success;
           } else if (score2 > score1) {
             winner = target;
             reason = `${target.username} has a higher score!`;
+            color = Theme.error;
           } else {
             reason = "It's a tie!";
           }
@@ -262,7 +266,7 @@ module.exports = {
           const resultEmbed = new EmbedBuilder()
             .setTitle('Blackjack - Game Over')
             .setDescription(reason)
-            .setColor(winner ? 'Green' : 'Yellow')
+            .setColor(color)
             .addFields(
               {
                 name: `${message.author.username}'s Hand`,
@@ -370,4 +374,3 @@ function formatHand(hand) {
     )
     .join(' ');
 }
-

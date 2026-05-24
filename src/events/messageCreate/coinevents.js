@@ -1,7 +1,8 @@
-const { ActionRowBuilder, ButtonBuilder, ButtonStyle, Colors } = require('discord.js');
+const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 const config = require('../../config');
 const { CoinService } = require('../../database/services/coinService');
 const { sleep } = require('../../utils/helpers');
+const { warningEmbed, successEmbed, errorEmbed } = require('../../utils/embeds');
 
 const channelCooldowns = [];
 
@@ -42,12 +43,11 @@ async function runHeist(message) {
 
   const mm = await message.channel.send({
     embeds: [
-      {
-        title: "WE'RE HEISTING DAUNTLESS' BANK",
-        description: 'Click the `JOIN HEIST` button to join!\n\nAt your own risk tho, you may lose coins.',
-        color: Colors.Yellow,
-        footer: { text: '25% chance to lose.' }
-      }
+      warningEmbed({
+        title: "We're Heisting Dauntless' Bank",
+        description: 'Click the `JOIN HEIST` button to join!\n\nAt your own risk — you may lose coins.',
+        footer: '25% chance to lose.'
+      })
     ],
     components: [row]
   });
@@ -103,21 +103,19 @@ async function runHeist(message) {
 
     const m = await message.channel.send({
       embeds: [
-        {
+        successEmbed({
           title: 'Heist Winners',
-          color: Colors.Green,
           description:
             won.map((a) => `<@${a}>`).join(' ') +
             ` have won <:token:${tokenEmoji}> **${winAmount.toLocaleString()}** coins each!`
-        },
-        {
+        }),
+        errorEmbed({
           title: 'Heist Losers',
-          color: Colors.Red,
           description:
             failed.map((a) => `<@${a}>`).join(' ') +
-            ' have lost **10% of their coins** :joy_cat:',
-          timestamp: new Date()
-        }
+            ' have lost **10% of their coins**',
+          timestamp: true
+        })
       ]
     });
 
@@ -134,12 +132,11 @@ async function runMathEvent(message) {
 
   const m = await message.channel.send({
     embeds: [
-      {
-        title: 'Math Test :nerd:',
-        color: Colors.Yellow,
+      warningEmbed({
+        title: 'Math Test',
         description: `What's **${num1}+${num2}**?`,
-        footer: { text: 'First to answer gets a random amount of coins!' }
-      }
+        footer: 'First to answer gets a random amount of coins!'
+      })
     ]
   });
 
@@ -157,7 +154,7 @@ async function runMathEvent(message) {
     col.stop();
 
     const reply = await message.channel.send(
-      `:nerd: ${msg.author.toString()} :nerd: was the first to answer! They got <:token:${tokenEmoji}> **${coins}** coins!`
+      `${msg.author.toString()} was the first to answer! They got <:token:${tokenEmoji}> **${coins}** coins!`
     );
     await sleep(2500);
     m.delete().catch(() => {});

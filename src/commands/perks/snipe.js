@@ -1,10 +1,22 @@
 const {
-  EmbedBuilder,
   ButtonBuilder,
   ActionRowBuilder,
   ButtonStyle
 } = require('discord.js');
 const config = require('../../config');
+const { createEmbed } = require('../../utils/embeds');
+
+function buildSnipeEmbed(target, index, total) {
+  const { msg, time, image } = target;
+  return createEmbed({
+    color: 'Random',
+    author: { name: msg.author.tag || 'Unknown', iconURL: msg.author.displayAvatarURL() },
+    description: msg.content,
+    footer: `${index + 1}/${total}`,
+    timestamp: time,
+    image
+  });
+}
 
 module.exports = {
   name: 'snipe',
@@ -32,16 +44,7 @@ module.exports = {
     }
 
     let index = +args[0] - 1 || 0;
-    let target = snipes[index];
-    let { msg, time, image } = target;
-
-    let snipeEmbed = new EmbedBuilder()
-      .setAuthor({ name: msg.author.tag || 'Unknown', iconURL: msg.author.displayAvatarURL() })
-      .setDescription(msg.content)
-      .setColor('Random')
-      .setImage(image)
-      .setFooter({ text: `${index + 1}/${snipes.length}` })
-      .setTimestamp(time);
+    let snipeEmbed = buildSnipeEmbed(snipes[index], index, snipes.length);
 
     const prevBut = new ButtonBuilder()
       .setEmoji('911971090954326017')
@@ -69,29 +72,13 @@ module.exports = {
       if (id === 'prev-snipe') {
         index--;
         if (index < 0) index = snipes.length - 1;
-        target = snipes[index];
-        ({ msg, time, image } = target);
-        snipeEmbed = new EmbedBuilder()
-          .setAuthor({ name: msg.author.tag, iconURL: msg.author.displayAvatarURL() || null })
-          .setDescription(msg.content)
-          .setColor('Random')
-          .setFooter({ text: `${index + 1}/${snipes.length}` })
-          .setImage(image)
-          .setTimestamp(time);
+        snipeEmbed = buildSnipeEmbed(snipes[index], index, snipes.length);
         button.deferUpdate();
         return mainMessage.edit({ embeds: [snipeEmbed], components: [row] });
       } else if (id === 'next-snipe') {
         index++;
         if (index === snipes.length) index = 0;
-        target = snipes[index];
-        ({ msg, time, image } = target);
-        snipeEmbed = new EmbedBuilder()
-          .setAuthor({ name: msg.author.tag, iconURL: msg.author.displayAvatarURL() || null })
-          .setDescription(msg.content)
-          .setColor('Random')
-          .setFooter({ text: `${index + 1}/${snipes.length}` })
-          .setImage(image)
-          .setTimestamp(time);
+        snipeEmbed = buildSnipeEmbed(snipes[index], index, snipes.length);
         button.deferUpdate();
         return mainMessage.edit({ embeds: [snipeEmbed], components: [row] });
       } else {

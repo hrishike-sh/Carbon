@@ -9,6 +9,7 @@ const {
 const Main = require('../../database/models/main_dono');
 const Grinder = require('../../database/models/grinder_dono');
 const Karuta = require('../../database/models/tickets');
+const { Theme } = require('../../utils/embeds');
 
 module.exports = {
   name: 'leaderboard',
@@ -85,7 +86,7 @@ module.exports = {
     waitMessage.delete();
 
     const MainEmbed = new EmbedBuilder()
-      .setColor('Blurple')
+      .setColor(Theme.info)
       .setTitle('Main Donations Leaderboard')
       .setTimestamp()
       .setDescription(
@@ -103,7 +104,7 @@ module.exports = {
           }`
       );
     const GrinderEmbed = new EmbedBuilder()
-      .setColor(8666532)
+      .setColor(Theme.success)
       .setTitle('Grinder Donations Leaderboard')
       .setTimestamp()
       .setDescription(
@@ -121,7 +122,7 @@ module.exports = {
           }`
       );
     const KarutaEmbed = new EmbedBuilder()
-      .setColor('LuminousVividPink')
+      .setColor(Theme.info)
       .setTitle('Karuta Donations Leaderboard')
       .setTimestamp()
       .setDescription(

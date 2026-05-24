@@ -1,6 +1,7 @@
-const { EmbedBuilder, Colors } = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 const db = require('../../database/models/highlight');
 const config = require('../../config');
+const { Theme } = require('../../utils/embeds');
 
 module.exports = {
   name: 'highlight',
@@ -25,7 +26,7 @@ module.exports = {
     const embed = new EmbedBuilder()
       .setTitle('Highlight')
       .setTimestamp()
-      .setColor(Colors.Green);
+      .setColor(Theme.success);
 
     if (subcommand === 'list') {
       const highlights = await db.findOne({ userId });

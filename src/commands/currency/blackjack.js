@@ -9,6 +9,7 @@ const { CoinService, InsufficientFundsError } = require('../../database/services
 const cooldowns = require('../../command/cooldowns');
 const antiBot = require('../../client/AntiBot');
 const { parseAmount } = require('../../utils/validators');
+const { Theme } = require('../../utils/embeds');
 
 module.exports = {
   name: 'blackjack',
@@ -52,8 +53,8 @@ module.exports = {
 
     const embed = new EmbedBuilder()
       .setTitle('Blackjack')
-      .setColor('Yellow')
-      .setFooter({ text: 'Gambling is good for your health!' })
+      .setColor(Theme.warning)
+      .setFooter({ text: 'Carbon • Good luck!' })
       .addFields([
         {
           name: message.member.displayName,
@@ -113,7 +114,7 @@ module.exports = {
                 inline: true
               }
             ])
-            .setColor('Red');
+            .setColor(Theme.error);
           row.components.forEach((c) => c.setDisabled(true));
           button.deferUpdate();
           await msg.edit({
@@ -146,7 +147,7 @@ module.exports = {
                 inline: true
               }
             ])
-            .setColor('Green');
+            .setColor(Theme.success);
           row.components.forEach((c) => c.setDisabled(true));
           button.deferUpdate();
           await msg.edit({
@@ -172,7 +173,7 @@ module.exports = {
               inline: true
             }
           ])
-          .setColor('Yellow');
+          .setColor(Theme.warning);
         await msg.edit({ embeds: [embed], components: [row] });
       } else {
         collector.stop();
@@ -189,20 +190,20 @@ module.exports = {
 
         let winMsg;
         if (botsc > 21) {
-          winMsg = { msg: `The dealer busted! You won ${bet.toLocaleString()} coins!`, color: 'Green' };
+          winMsg = { msg: `The dealer busted! You won ${bet.toLocaleString()} coins!`, color: Theme.success };
         } else if (botsc === 21 && playersc === 21) {
-          winMsg = { msg: "It's a tie!", color: 'Yellow' };
+          winMsg = { msg: "It's a tie!", color: Theme.warning };
           await CoinService.addCoins(message.author.id, bet);
         } else if (botsc === 21) {
-          winMsg = { msg: `The dealer had a Blackjack, you lost ${bet.toLocaleString()} coins!`, color: 'Red' };
+          winMsg = { msg: `The dealer had a Blackjack, you lost ${bet.toLocaleString()} coins!`, color: Theme.error };
         } else if (playersc === 21) {
-          winMsg = { msg: `You had a Blackjack, you won ${bet.toLocaleString()} coins!`, color: 'Green' };
+          winMsg = { msg: `You had a Blackjack, you won ${bet.toLocaleString()} coins!`, color: Theme.success };
         } else if (playersc > botsc) {
-          winMsg = { msg: `You won ${bet.toLocaleString()} coins!`, color: 'Green' };
+          winMsg = { msg: `You won ${bet.toLocaleString()} coins!`, color: Theme.success };
         } else if (botsc > playersc) {
-          winMsg = { msg: `You lost ${bet.toLocaleString()} coins!`, color: 'Red' };
+          winMsg = { msg: `You lost ${bet.toLocaleString()} coins!`, color: Theme.error };
         } else {
-          winMsg = { msg: "It's a tie!", color: 'Yellow' };
+          winMsg = { msg: "It's a tie!", color: Theme.warning };
           await CoinService.addCoins(message.author.id, bet);
         }
 
@@ -221,7 +222,7 @@ module.exports = {
           ])
           .setColor(winMsg.color);
 
-        if (winMsg.color === 'Green') {
+        if (winMsg.color === Theme.success) {
           await CoinService.addCoins(message.author.id, bet * 2);
         }
         row.components.forEach((c) => c.setDisabled(true));

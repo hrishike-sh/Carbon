@@ -2,12 +2,12 @@ const {
   ActionRowBuilder,
   ButtonBuilder,
   ButtonStyle,
-  Colors,
   EmbedBuilder,
   ChannelType
 } = require('discord.js');
 const config = require('../config');
 const Database = require('../database/models/skullboard');
+const { Theme } = require('../utils/embeds');
 
 const processing = new Set();
 
@@ -41,7 +41,7 @@ module.exports = {
         title: `${fetched.count.toLocaleString()} :skull:`,
         description: message.content || '_ _',
         image: { url: message.attachments?.first()?.url || null },
-        color: Colors.Gold
+        color: Theme.warning
       };
 
       const linkRow = new ActionRowBuilder().addComponents([

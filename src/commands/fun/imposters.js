@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const builders_1 = require("@discordjs/builders");
 const discord_js_1 = require("discord.js");
+const { Theme } = require('../../utils/embeds');
 module.exports = {
     name: 'imposters',
     execute: async (message, args, client) => {
@@ -14,7 +15,7 @@ module.exports = {
             return;
         const askEmbed = new discord_js_1.EmbedBuilder()
             .setTitle('<:amongus_red:917726679214985246> Imposter Game')
-            .setColor('Red')
+            .setColor(Theme.error)
             .setDescription(`<:fh_bluedot:1128541545763717173> Imposters: Please select\n<:fh_bluedot:1128541545763717173> Word: Please select\n\n*Click the Start button to start the game.*`)
             .setTimestamp();
         const modal = new discord_js_1.ModalBuilder()
@@ -87,7 +88,7 @@ module.exports = {
             // lock channel
             const GameEmbed = new discord_js_1.EmbedBuilder()
                 .setTitle(`<:amongus_red:917726679214985246> Imposter Games`)
-                .setColor('Yellow')
+                .setColor(Theme.warning)
                 .setDescription(`Click the "Join" button to join the game\n\n<:fh_bluedot:1128541545763717173> **Imposters:** ${IMPOSTERS}`)
                 .setFooter({
                 text: 'Game starts in 30 seconds.'
@@ -156,7 +157,7 @@ module.exports = {
                         const imposterEmbed = new discord_js_1.EmbedBuilder()
                             .setTitle("You're an IMPOSTER!!")
                             .setDescription('Your role is to guess the word others are talking about. You get ONE try! If you guess the wrong word, lose the game!')
-                            .setColor('Red');
+                            .setColor(Theme.error);
                         await player.user.send({
                             embeds: [imposterEmbed]
                         });
@@ -205,7 +206,7 @@ module.exports = {
                             inline: true
                         }
                     ])
-                        .setColor('Yellow')
+                        .setColor(Theme.warning)
                         .setFooter({
                         text: 'Click the button below to submit your word! You have 30 seconds.'
                     });
@@ -324,7 +325,7 @@ module.exports = {
                             embeds: [
                                 {
                                     title: "Time's up!",
-                                    color: discord_js_1.Colors.Red
+                                    color: Theme.error
                                 }
                             ]
                         });
@@ -338,7 +339,7 @@ module.exports = {
                                 inline: true
                             };
                         }))
-                            .setColor('Yellow')
+                            .setColor(Theme.warning)
                             .setFooter({
                             text: 'The channel will unlock in 10 seconds.'
                         });
@@ -352,7 +353,7 @@ module.exports = {
                             embeds: [
                                 {
                                     title: 'You have 30 seconds to figure out who the imposter is!',
-                                    color: discord_js_1.Colors.Blue
+                                    color: Theme.info
                                 }
                             ]
                         });
@@ -371,7 +372,7 @@ module.exports = {
                             embeds: [
                                 {
                                     title: "Time's up!",
-                                    color: discord_js_1.Colors.Red
+                                    color: Theme.error
                                 }
                             ]
                         });
@@ -379,7 +380,7 @@ module.exports = {
                         const VoteEmbed = new discord_js_1.EmbedBuilder()
                             .setTitle(`Round ${round} - Voting`)
                             .setDescription(`Everyone, please vote for who you think the imposter is! You have 30 seconds to vote.`)
-                            .setColor('Yellow')
+                            .setColor(Theme.warning)
                             .setFooter({
                             text: 'Click the button below to vote!'
                         });
@@ -458,7 +459,7 @@ module.exports = {
                                         {
                                             title: 'Tie!',
                                             description: 'There was a tie! No one was eliminated.',
-                                            color: discord_js_1.Colors.Yellow
+                                            color: Theme.warning
                                         }
                                     ]
                                 });

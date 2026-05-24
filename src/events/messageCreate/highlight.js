@@ -1,5 +1,6 @@
-const { EmbedBuilder, PermissionFlagsBits } = require('discord.js');
+const { PermissionFlagsBits } = require('discord.js');
 const db = require('../../database/models/highlight');
+const { warningEmbed } = require('../../utils/embeds');
 
 async function onMessage(message, client) {
   const highlightMap = client.state.highlights;
@@ -51,13 +52,13 @@ async function onMessage(message, client) {
       })
       .join('\n');
 
-    const embed = new EmbedBuilder()
-      .setTitle(keywords[0])
-      .setDescription(contextLog)
-      .setColor('#FFD700')
-      .addFields([{ name: 'Source message', value: `[Jump to](${message.url})` }])
-      .setFooter({ text: 'Triggered' })
-      .setTimestamp();
+    const embed = warningEmbed({
+      title: keywords[0],
+      description: contextLog,
+      fields: [{ name: 'Source message', value: `[Jump to](${message.url})` }],
+      footer: 'Triggered',
+      timestamp: true
+    });
 
     const notificationText = `In **${message.guild.name}** ${message.channel.toString()}, you were mentioned with highlight word "${keywords[0]}"`;
 

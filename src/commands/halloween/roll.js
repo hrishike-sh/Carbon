@@ -1,15 +1,14 @@
 const {
-  Message,
-  Client,
-  EmbedBuilder,
   ButtonBuilder,
   ButtonStyle,
-  ActionRowBuilder,
-  Colors
+  ActionRowBuilder
 } = require('discord.js');
 const roll = require('../../database/models/roll');
 const config = require('../../config');
+const { successEmbed } = require('../../utils/embeds');
+
 const Cooldown = new Set();
+
 module.exports = {
   name: 'roll',
   /**
@@ -36,23 +35,19 @@ module.exports = {
         })
       )?.amount || 0;
     const lb = await roll.find({}).sort({ amount: -1 }).limit(5);
-    const embed = new EmbedBuilder()
-      .setTitle('Carbon TopRoll')
-      .setDescription(
-        `**Leaderboard**\n${lb
-          .map((a, ind) => `${ind + 1}. <@${a.userId}>: ${a.amount}`)
-          .join('\n')}`
-      )
-      .addFields([
+    const embed = successEmbed({
+      title: 'Carbon TopRoll',
+      description: `**Leaderboard**\n${lb
+        .map((a, ind) => `${ind + 1}. <@${a.userId}>: ${a.amount}`)
+        .join('\n')}`,
+      fields: [
         {
           name: 'Your game',
           value: "Click on 'Start' to play!"
         }
-      ])
-      .setFooter({
-        text: `Previous score: ${userScore}`
-      })
-      .setColor(Colors.Green);
+      ],
+      footer: `Previous score: ${userScore}`
+    });
 
     const row = new ActionRowBuilder().addComponents([
       new ButtonBuilder()

@@ -1,6 +1,7 @@
-const { Message, Client, Colors } = require('discord.js');
+const { Message, Client } = require('discord.js');
 const Database = require('../../database/models/grinder_dono');
 const config = require('../../config');
+const { Theme } = require('../../utils/embeds');
 module.exports = {
   name: 'grinderremind',
   aliases: ['gremind'],
@@ -32,7 +33,7 @@ module.exports = {
             ).toFixed(
               0
             )}:R>**!\n\nPlease ping <@738797748026867822> to make your payment!`,
-            color: Colors.Red,
+            color: Theme.error,
             timestamp: new Date()
           }
         ],

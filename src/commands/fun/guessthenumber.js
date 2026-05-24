@@ -2,10 +2,10 @@ const {
   EmbedBuilder,
   ActionRowBuilder,
   ButtonBuilder,
-  ButtonStyle,
-  Colors
+  ButtonStyle
 } = require('discord.js');
 const config = require('../../config');
+const { Theme } = require('../../utils/embeds');
 
 module.exports = {
   name: 'guessthenumber',
@@ -18,7 +18,7 @@ module.exports = {
       return message.reply({
         embeds: [
           {
-            color: 'Red',
+            color: Theme.error,
             description:
               'Please provide an upper-limit for the GTN.\n\nExample: fh gtn 2500'
           }
@@ -38,7 +38,7 @@ module.exports = {
         {
           title: 'Guess the Number!',
           description: `I have chosen a random number between 0-${args[0].toLocaleString()}!\n\nThe channel will unlock when ${message.author.toString()} clicks the button. Goodluck!`,
-          color: Colors.Red
+          color: Theme.error
         }
       ],
       components: [

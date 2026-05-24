@@ -2,11 +2,11 @@ const {
   EmbedBuilder,
   ActionRowBuilder,
   ButtonBuilder,
-  ButtonStyle,
-  Colors
+  ButtonStyle
 } = require('discord.js');
 const config = require('../../config');
 const { sleep, breakArray } = require('../../utils/helpers');
+const { Theme } = require('../../utils/embeds');
 
 const randomActions = [
   '**{user}** absolutely DESTROYED **{target}**!',
@@ -40,7 +40,7 @@ module.exports = {
       .setTitle('Battle Royale')
       .setDescription('Click the `JOIN` button to join!\n\nMax Players: 25')
       .setFooter({ text: 'Game starts in 10 seconds.' })
-      .setColor(Colors.Gold);
+      .setColor(Theme.warning);
     const conf_row = new ActionRowBuilder().addComponents([
       new ButtonBuilder()
         .setLabel('JOIN')
@@ -83,7 +83,7 @@ module.exports = {
 
       const upgradesEmbed = new EmbedBuilder()
         .setTitle('Select your upgrades!')
-        .setColor('Green')
+        .setColor(Theme.success)
         .setFooter({ text: 'Game starts in 5 seconds.' })
         .setDescription(
           `<:dot:${config.ids.emojis.dot}> Players: ${data.joined
@@ -153,7 +153,7 @@ module.exports = {
 
         const game_embed = new EmbedBuilder()
           .setTitle('Battle Royale')
-          .setColor(Colors.Gold)
+          .setColor(Theme.warning)
           .setFooter({ text: 'Last man standing wins!' })
           .setDescription(
             'The game starts in **5 seconds**. Click on the button to attack that particular user.\n\nYour goal is to damage others and be the last one standing, good luck!'

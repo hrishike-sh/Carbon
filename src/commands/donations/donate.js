@@ -7,6 +7,7 @@ const {
   ActionRowBuilder
 } = require('discord.js');
 const config = require('../../config');
+const { Theme } = require('../../utils/embeds');
 
 module.exports = {
   name: 'donate',
@@ -47,7 +48,7 @@ module.exports = {
 
       const EventDonateEmbed = new EmbedBuilder()
         .setTitle('Event Donation')
-        .setColor('Blurple')
+        .setColor(Theme.info)
         .setTimestamp()
         .setFooter({
           text: 'Please be patient, you will receive a DM when an event manager accepts your donation.'
@@ -139,7 +140,7 @@ module.exports = {
           name: message.author.tag,
           iconURL: message.author.displayAvatarURL()
         })
-        .setColor('Blurple')
+        .setColor(Theme.info)
         .setTimestamp()
         .setFooter({
           text: 'You will receive a DM when a manager accepts your donation. Please be patient!'

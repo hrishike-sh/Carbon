@@ -4,6 +4,7 @@ const {
   CommandInteraction,
   EmbedBuilder
 } = require('discord.js');
+const { Theme } = require('../../utils/embeds');
 
 const cooldowns = new Map();
 
@@ -164,7 +165,7 @@ module.exports = {
         .setThumbnail(
           'https://media.discordapp.net/attachments/841358137398788096/894574822699434014/image0.png?ex=66bab4fa&is=66b9637a&hm=4a05904925b15517a7cc27de29118209f7147b95debe11a511208cace67f1528&'
         )
-        .setColor('#9BFA8D');
+        .setColor(Theme.success);
 
       if (data.message) {
         embed.setDescription(
@@ -209,7 +210,7 @@ module.exports = {
       if (data.event.value) {
         const embed = new EmbedBuilder()
           .setTitle('Fighthub Event!')
-          .setColor('#9BFA8D')
+          .setColor(Theme.success)
           .setDescription(
             `\n\n⦿ **Event**: ${
               data.eventType?.value || 'Not mentioned'

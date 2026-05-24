@@ -1,4 +1,4 @@
-const { Colors } = require('discord.js');
+const { infoEmbed } = require('../../utils/embeds');
 
 module.exports = {
   name: 'calc',
@@ -26,10 +26,7 @@ module.exports = {
         const result = math.evaluate(message.content);
         await message.reply({
           embeds: [
-            {
-              description: `Calculated: **${result.toLocaleString()}**`,
-              color: Colors.Blurple
-            }
+            infoEmbed({ description: `Calculated: **${result.toLocaleString()}**` })
           ]
         });
       }

@@ -1,12 +1,12 @@
 const {
   Message,
   EmbedBuilder,
-  Colors,
   ActionRowBuilder,
   ButtonBuilder,
   ButtonStyle
 } = require('discord.js');
 const config = require('../../config');
+const { Theme } = require('../../utils/embeds');
 
 module.exports = {
   name: 'addtalk',
@@ -43,7 +43,7 @@ module.exports = {
       .setFooter({
         text: `Requested by: ${message.author.tag}`
       })
-      .setColor(Colors.Yellow);
+      .setColor(Theme.warning);
 
     const mentions = target.mentions.members;
     embed.setDescription(
@@ -76,7 +76,7 @@ module.exports = {
 
     collector.on('collect', async (button) => {
       if (button.customId == 'yes') {
-        embed.setColor(Colors.Green);
+        embed.setColor(Theme.success);
         embed.setDescription('Adding roles...');
 
         for await (const [_, member] of mentions) {
@@ -87,7 +87,7 @@ module.exports = {
           `Added <@&${talkRole}> to ${mentions.size} members!`
         );
       } else {
-        embed.setColor(Colors.Red);
+        embed.setColor(Theme.error);
         embed.setDescription(
           `~~${embed.data.description}~~\n\n**Action cancelled**`
         );

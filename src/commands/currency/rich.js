@@ -1,5 +1,5 @@
-const { Colors } = require('discord.js');
 const { CoinService } = require('../../database/services/coinService');
+const { infoEmbed } = require('../../utils/embeds');
 
 module.exports = {
   name: 'rich',
@@ -7,7 +7,7 @@ module.exports = {
   async execute(message, args, client) {
     const all = await CoinService.getLeaderboard(10);
     const msg = await message.channel.send({
-      embeds: [{ description: 'Loading...' }]
+      embeds: [infoEmbed({ description: 'Loading...' })]
     });
 
     let description = '';
@@ -25,12 +25,11 @@ module.exports = {
 
     msg.edit({
       embeds: [
-        {
+        infoEmbed({
           title: '<:token:1003272629286883450> Coins Leaderboard',
           description,
-          color: Colors.DarkAqua,
-          footer: { text: 'Gamble your way to the top!' }
-        }
+          footer: 'Gamble your way to the top!'
+        })
       ]
     });
   }

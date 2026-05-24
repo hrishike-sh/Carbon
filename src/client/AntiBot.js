@@ -1,6 +1,7 @@
-const { ActionRowBuilder, ButtonBuilder, ButtonStyle, Colors, EmbedBuilder } = require('discord.js');
+const { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder } = require('discord.js');
 const Coin = require('../database/models/coins');
 const config = require('../config');
+const { Theme } = require('../utils/embeds');
 
 class AntiBot {
   constructor() {
@@ -40,7 +41,7 @@ class AntiBot {
       embeds: [
         new EmbedBuilder()
           .setTitle('Anti-Bot')
-          .setColor(Colors.Red)
+          .setColor(Theme.error)
           .setDescription('Click the **RED** button to continue!')
           .setFooter({ text: 'Failing the captcha will get you banned. You have 10 seconds.' })
       ],

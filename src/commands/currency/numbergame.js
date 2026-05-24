@@ -1,7 +1,7 @@
-const { EmbedBuilder, Colors } = require('discord.js');
 const { CoinService } = require('../../database/services/coinService');
 const cooldowns = require('../../command/cooldowns');
 const { parseAmount } = require('../../utils/validators');
+const { warningEmbed } = require('../../utils/embeds');
 
 module.exports = {
   name: 'numbergame',
@@ -26,20 +26,18 @@ module.exports = {
       max_win: amount * 10
     };
 
-    const infoEmbed = new EmbedBuilder()
-      .setTitle('Guess the Number [1-100]')
-      .setDescription(
-        `**Current Win Amount: ${data.max_win.toLocaleString()}**\nAmount bet: ${data.def.toLocaleString()}`
-      )
-      .addFields([
+    const infoEmbed = warningEmbed({
+      title: 'Guess the Number [1-100]',
+      description: `**Current Win Amount: ${data.max_win.toLocaleString()}**\nAmount bet: ${data.def.toLocaleString()}`,
+      fields: [
         {
           inline: true,
           name: 'Rules',
           value: '- You start with __10x__ your bet amount (1,000 => 10,000)\n- Every wrong guess reduces your Win Amount by __50%__!\n- When you guess the correct number, you win/lose the __Current Win Amount__ above.\n- The bot tells you if the number is higher or lower than your guess.'
         }
-      ])
-      .setColor(Colors.Gold)
-      .setFooter({ text: 'Gambling is good for your health!' });
+      ],
+      footer: 'Good luck!'
+    });
 
     message.reply({
       content: 'Guess the number between 1 and 100',
