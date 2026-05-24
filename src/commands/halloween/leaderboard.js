@@ -1,5 +1,5 @@
 // const { Message, Client, Colors, EmbedBuilder } = require('discord.js');
-// const halloween = require('../../database/halloween');
+// const halloween = require('../../database/models/halloween');
 
 // module.exports = {
 //   name: 'halloween-leaderboard',

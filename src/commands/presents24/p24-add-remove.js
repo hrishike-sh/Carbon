@@ -1,5 +1,5 @@
 // const { Message, Client } = require('discord.js');
-// const Database = require('../../database/presents-dec-24');
+// const Database = require('../../database/models/presents-dec-24');
 // module.exports = {
 //   name: 'padd',
 //   /**
@@ -9,7 +9,7 @@
 //    * @param {Client} client
 //    */
 //   async execute(message, args, client) {
-//     const mod = '824539655134773269';
+//     const mod = config.roles.staff.mod;
 
 //     if (!message.member.roles.cache.has(mod)) return;
 

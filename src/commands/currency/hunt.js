@@ -1,113 +1,8 @@
-const {
-  Message,
-  Client,
-  ActionRowBuilder,
-  ButtonBuilder,
-  ButtonStyle
-} = require('discord.js');
-let cd = [];
-const Database = require('../../database/coins');
-module.exports = {
-  name: 'hunt',
-  cooldown: 5,
-  /**
-   *
-   * @param {Message} message Discord Message
-   * @param {String[]} args Command Arguments
-   * @param {Client} client Discord Client
-   */
-  async execute(message, args, client) {
-    if (message.channel.parentId == '824313026248179782') {
-      return message.react('❌');
-    }
-    // if (message.guildId !== '824294231447044197') return;
-    if (
-      [
-        '824313259976556544',
-        '824313275750547456',
-        '824313288967192597',
-        '824313306633863278',
-        '824318942511890452',
-        '828201384910258186',
-        '828201396334755860',
-        '832893535509676093',
-        '870240187198885888',
-        '848939463404552222',
-        '857629233152786442',
-        '858295915428315136'
-      ].includes(message.channel.id)
-    ) {
-      return message.react('❌');
-    }
-    if (!(await client.antiBot(message))) return;
+const config = require('../../config');
+const { CoinService } = require('../../database/services/coinService');
+const cooldowns = require('../../command/cooldowns');
+const antiBot = require('../../client/AntiBot');
 
-    const userId = message.author.id;
-    if (cd.includes(userId)) {
-      return message.reply({
-        embeds: [
-          {
-            author: {
-              icon_url: message.author.displayAvatarURL(),
-              name: message.author.username
-            },
-            footer: {
-              text: 'Get a job'
-            },
-            description: 'You can hunt every 10 seconds.'
-          }
-        ]
-      });
-    }
-    addCd(userId);
-
-    const random = Math.floor(Math.random() * 75) + 50;
-    await addCoins(userId, random);
-    const randomAnimal =
-      animalEmojis[Math.floor(Math.random() * animalEmojis.length)];
-    message.reply({
-      embeds: [
-        {
-          author: {
-            icon_url: message.author.displayAvatarURL(),
-            name: message.author.username
-          },
-          footer: {
-            text: '👩‍🌾'
-          },
-          description: `You found ${randomAnimal.emoji} ${
-            randomAnimal.name
-          }! You sold it for <:token:1003272629286883450> ${random.toLocaleString()} coins.`
-        }
-      ]
-    });
-  }
-};
-const addCd = async (userId) => {
-  cd.push(userId);
-  await sleep(10000);
-  cd = cd.filter((a) => a != userId);
-};
-const addCoins = async (userId, amount) => {
-  const user = await getUser(userId);
-  user.coins += amount;
-  await user.save();
-};
-
-const getUser = async (userId) => {
-  let dbu = await Database.findOne({
-    userId
-  });
-  if (!dbu) {
-    dbu = new Database({
-      userId,
-      coins: 0
-    });
-  }
-  return dbu;
-};
-const sleep = (milliseconds) => {
-  return new Promise((resolve) => setTimeout(resolve, milliseconds));
-};
 const animalEmojis = [
   { name: 'Monkey', emoji: '🐒' },
   { name: 'Gorilla', emoji: '🦍' },
@@ -227,3 +122,35 @@ const animalEmojis = [
   { name: 'Worm', emoji: '🪱' },
   { name: 'Microbe', emoji: '🦠' }
 ];
+
+module.exports = {
+  name: 'hunt',
+  cooldown: 10,
+
+  async execute(message, args, client) {
+    if (message.channel.parentId === config.ids.restrictedCategory) {
+      return message.react('❌');
+    }
+    if (config.ids.restrictedCurrencyChannels.includes(message.channel.id)) {
+      return message.react('❌');
+    }
+    if (!(await antiBot.check(message))) return;
+
+    const userId = message.author.id;
+    const random = Math.floor(Math.random() * 75) + 50;
+    await CoinService.addCoins(userId, random);
+    const randomAnimal = animalEmojis[Math.floor(Math.random() * animalEmojis.length)];
+    message.reply({
+      embeds: [
+        {
+          author: {
+            icon_url: message.author.displayAvatarURL(),
+            name: message.author.username
+          },
+          footer: { text: '👩‍🌾' },
+          description: `You found ${randomAnimal.emoji} ${randomAnimal.name}! You sold it for <:token:${config.ids.emojis.token}> ${random.toLocaleString()} coins.`
+        }
+      ]
+    });
+  }
+};

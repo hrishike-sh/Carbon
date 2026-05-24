@@ -1,5 +1,6 @@
 const { Message, Client, Colors } = require('discord.js');
-const Database = require('../../database/grinder_dono');
+const Database = require('../../database/models/grinder_dono');
+const config = require('../../config');
 module.exports = {
   name: 'grinderremind',
   aliases: ['gremind'],
@@ -9,7 +10,7 @@ module.exports = {
    * @param {Client} client Discord Client
    */
   async execute(message, args, client) {
-    if (!message.member.roles.cache.has('1016728636365209631')) return;
+    if (!message.member.roles.cache.has(config.roles.staff.cman)) return;
     const list = await Database.find({
       'dynamic.grinder': true,
       'dynamic.expires': {

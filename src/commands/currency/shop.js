@@ -6,8 +6,8 @@ const {
   ActionRowBuilder,
   Colors
 } = require('discord.js');
-const Database = require('../../database/coins');
-const Teams = require('../../database/teams');
+const Database = require('../../database/models/coins');
+const Teams = require('../../database/models/teams');
 const SHOP = [
   // {
   //   name: 'Sabotage',

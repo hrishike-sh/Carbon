@@ -91,7 +91,7 @@ const getImage = async (id) => {
     let _url = `https://api.thecatapi.com/v1/images/search?${queryString}`;
     var response = await r2.get(_url, { headers }).json;
   } catch (e) {
-    console.log(e);
+    // ignore fetch errors
   }
   return response;
 };

@@ -1,5 +1,6 @@
 const { Message, Client } = require('discord.js');
-const Database = require('../../database/grinder_dono');
+const Database = require('../../database/models/grinder_dono');
+const config = require('../../config');
 module.exports = {
   name: 'grinderremove',
   aliases: ['gremove'],
@@ -9,7 +10,7 @@ module.exports = {
    * @param {Client} client Discord Client
    */
   async execute(message, args, client) {
-    if (!message.member.roles.cache.has('1016728636365209631')) {
+    if (!message.member.roles.cache.has(config.roles.staff.cman)) {
       return message.reply(
         'You must be a community manager to run this command!'
       );

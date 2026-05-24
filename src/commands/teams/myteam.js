@@ -1,6 +1,6 @@
 const { Message, Client, EmbedBuilder, Colors } = require('discord.js');
-const TeamDB = require('../../database/teams');
-const database = require('../../database/coins');
+const TeamDB = require('../../database/models/teams');
+const database = require('../../database/models/coins');
 module.exports = {
   name: 'myteam',
   aliases: ['team'],

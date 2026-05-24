@@ -1,4 +1,5 @@
 const { Message, Client } = require('discord.js');
+const config = require('../../config');
 module.exports = {
   name: 'heist',
   /**
@@ -8,7 +9,7 @@ module.exports = {
    * @param {Client} client
    */
   async execute(message, args, client) {
-    if (!message.member.roles.cache.has('824348974449819658')) return;
+    if (!message.member.roles.cache.has(config.roles.staff.admin)) return;
     const channelList = [
       '870240187198885888',
       '824313123728261150',

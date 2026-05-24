@@ -1,26 +1,20 @@
 const {
-  Message,
-  MessageEmbed,
-  Client,
-  Colors,
+  EmbedBuilder,
   ActionRowBuilder,
   ButtonBuilder,
-  ButtonStyle
+  ButtonStyle,
+  Colors
 } = require('discord.js');
+const config = require('../../config');
 
 module.exports = {
   name: 'guessthenumber',
   aliases: ['gtn'],
   cooldown: 60,
-  roles: ['858088054942203945', '824539655134773269', '824348974449819658'],
-  /**
-   *
-   * @param {Message} message
-   * @param {[String]} args
-   * @param {Client} client
-   */
+  roles: [config.roles.giveawayManager, config.roles.staff.mod, config.roles.staff.admin],
+
   async execute(message, args, client) {
-    if (!args) {
+    if (!args[0]) {
       return message.reply({
         embeds: [
           {
@@ -85,9 +79,7 @@ module.exports = {
 
         message.channel.permissionOverwrites.edit(
           message.guild.roles.everyone,
-          {
-            SendMessages: false
-          }
+          { SendMessages: false }
         );
         mainCollector.stop();
         return msg.reply({
@@ -103,10 +95,7 @@ module.exports = {
     });
 
     collector.on('end', () => {
-      startEmbed.edit({
-        components: []
-      });
-
+      startEmbed.edit({ components: [] });
       message.channel.permissionOverwrites.edit(message.guild.roles.everyone, {
         SendMessages: null
       });

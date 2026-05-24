@@ -1,10 +1,11 @@
 const { Message, Client } = require('discord.js');
-const DATABASE = require('../../database/afk');
-const SERVER = require('../../database/settingsSchema');
+const DATABASE = require('../../database/models/afk');
+const SERVER = require('../../database/models/settingsSchema');
+const config = require('../../config');
 module.exports = {
   name: 'afkset',
   cooldown: 3,
-  roles: ['824539655134773269', '824348974449819658'],
+  roles: [config.roles.staff.mod, config.roles.staff.admin],
   /**
    *
    * @param {Message} message

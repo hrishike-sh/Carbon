@@ -5,7 +5,7 @@ const discord_js_1 = require("discord.js");
 module.exports = {
     name: 'imposters',
     execute: async (message, args, client) => {
-        const EVENT_MANAGER = '858088054942203945';
+        const EVENT_MANAGER = config.roles.giveawayManager;
         let IMPOSTERS = 0;
         let WORD = '';
         if (!message.member?.roles.cache.has(EVENT_MANAGER))

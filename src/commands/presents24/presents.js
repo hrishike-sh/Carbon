@@ -7,7 +7,7 @@ const {
   ButtonBuilder,
   ButtonStyle
 } = require('discord.js');
-const Database = require('../../database/presents-dec-24');
+const Database = require('../../database/models/presents-dec-24');
 module.exports = {
   name: 'presents',
   /**

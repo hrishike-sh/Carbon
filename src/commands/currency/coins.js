@@ -1,20 +1,18 @@
-const { Message, Client } = require('discord.js');
-const Database = require('../../database/coins');
+const { CoinService } = require('../../database/services/coinService');
+
 module.exports = {
   name: 'coins',
   aliases: ['coin', 'bal', 'balance', 'cash'],
   description: 'Check your coin balance.',
-  /**
-   *
-   * @param {Message} message
-   * @param {String[]} args
-   * @param {Client} client
-   */
-  async execute(message, args, client) {
+
+  async execute(message, args) {
     const user =
       message.mentions.members?.first() ||
       message.guild.members.cache.get(args[0]) ||
       message.member;
+
+    const balance = (await CoinService.getBalance(user.id)).toLocaleString().split('.')[0] || 0;
+
     return message.reply({
       embeds: [
         {
@@ -23,24 +21,9 @@ module.exports = {
             name: user.user.username
           },
           timestamp: new Date(),
-          description:
-            '**Balance:** <:token:1003272629286883450> ' +
-              (await getUser(user.id)).coins.toLocaleString().split('.')[0] || 0
+          description: `**Balance:** <:token:1003272629286883450> ${balance}`
         }
       ]
     });
   }
-};
-
-const getUser = async (userId) => {
-  let dbu = await Database.findOne({
-    userId
-  });
-  if (!dbu) {
-    dbu = new Database({
-      userId,
-      coins: 0
-    });
-  }
-  return dbu;
 };

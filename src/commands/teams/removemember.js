@@ -1,5 +1,6 @@
 const { Message, Client } = require('discord.js');
-const TeamDB = require('../../database/teams');
+const TeamDB = require('../../database/models/teams');
+const config = require('../../config');
 module.exports = {
   name: 'removemember',
   aliases: ['teamremove', 'tr'],
@@ -11,8 +12,8 @@ module.exports = {
   async execute(message, args, client) {
     if (
       !message.member.roles.cache.hasAny(
-        '1016728636365209631',
-        '824348974449819658',
+        config.roles.staff.cman,
+        config.roles.staff.admin,
         '1163857079300276254'
       )
     ) {

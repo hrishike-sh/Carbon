@@ -1,25 +1,23 @@
 const {
-  Message,
   EmbedBuilder,
   ButtonBuilder,
   ButtonStyle,
   ActionRowBuilder,
   Colors
 } = require('discord.js');
+const config = require('../../config');
+const { sleep } = require('../../utils/helpers');
 
 module.exports = {
   name: 'turtlerace',
-  roles: ['858088054942203945'],
+  roles: [config.roles.giveawayManager],
   cooldown: 120,
-  /**
-   *
-   * @param {Message} message
-   */
+
   async execute(message, args, client) {
     const joinEmbed = new EmbedBuilder()
       .setTitle('Turtle Race :turtle:')
       .setDescription(
-        `Click the button to join the **Turtle Race**!\n\nGame starts in **30 seconds**`
+        'Click the button to join the **Turtle Race**!\n\nGame starts in **30 seconds**'
       )
       .setColor('Yellow');
     const joinButton = new ButtonBuilder()
@@ -70,45 +68,7 @@ module.exports = {
       for (const userId of gamedata.joined) {
         gamedata.tracks.push({
           user: client.users.cache.get(userId),
-          track: [
-            '●',
-            '●',
-            '●',
-            '●',
-            '●',
-            '●',
-            '●',
-            '●',
-            '●',
-            '●',
-            '●',
-            '●',
-            '●',
-            '●',
-            '●',
-            '●',
-            '●',
-            '●',
-            '●',
-            '●',
-            '●',
-            '●',
-            '●',
-            '●',
-            '●',
-            '●',
-            '●',
-            '●',
-            '●',
-            '●',
-            '●',
-            '●',
-            '●',
-            '●',
-            '●',
-            '●',
-            '●'
-          ]
+          track: Array(36).fill('●')
         });
       }
 
@@ -133,17 +93,16 @@ module.exports = {
       });
       let end = false;
       for (let i = 0; i < 50; i++) {
-        if (end == true) continue;
+        if (end) continue;
         for (const track of gamedata.tracks) {
-          console.log(track);
           const rand = Math.ceil(Math.random() * 10);
           let blocks = 0;
           if (rand < 6) blocks = 2;
           if (rand > 5 && rand < 10) blocks = 3;
           if (rand > 9) blocks = 5;
 
-          if (track.length < blocks) {
-            blocks = track.length;
+          if (track.track.length < blocks) {
+            blocks = track.track.length;
             end = true;
             track.track.splice(0, blocks);
           } else {
@@ -178,8 +137,4 @@ module.exports = {
       }
     });
   }
-};
-
-const sleep = (milliseconds) => {
-  return new Promise((resolve) => setTimeout(resolve, milliseconds));
 };

@@ -5,6 +5,7 @@ const {
   ButtonStyle,
   ActionRowBuilder
 } = require('discord.js');
+const config = require('../../config');
 
 module.exports = {
   name: 'proles',
@@ -16,7 +17,7 @@ module.exports = {
    * @param {Client} client
    */
   async execute(message) {
-    if (!message.member.roles.cache.has('824539655134773269')) {
+    if (!message.member.roles.cache.has(config.roles.staff.mod)) {
       return message.reply('you need to be a moderator');
     }
 

@@ -1,14 +1,12 @@
 const {
-  Message,
-  Client,
   EmbedBuilder,
   Colors,
   ActionRowBuilder,
   ButtonBuilder,
   ButtonStyle,
-  Collection,
-  ButtonInteraction
+  Collection
 } = require('discord.js');
+const { sleep, shuffle } = require('../../utils/helpers');
 
 const EVENTS = [
   'find_the_ball',
@@ -782,14 +780,3 @@ module.exports = {
   }
 };
 
-const sleep = (milliseconds) => {
-  return new Promise((resolve) => setTimeout(resolve, milliseconds));
-};
-
-const shuffle = (array) => {
-  for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
-  }
-  return array;
-};

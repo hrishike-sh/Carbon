@@ -6,6 +6,7 @@ const {
   ButtonStyle,
   ActionRowBuilder
 } = require('discord.js');
+const config = require('../../config');
 
 module.exports = {
   name: 'donate',
@@ -20,7 +21,7 @@ module.exports = {
     const consts = {
       eventChannelId: '857223712193511434',
       giveawayChannelId: '824319140763795457',
-      eventManagerRoleId: '858088054942203945',
+      eventManagerRoleId: config.roles.giveawayManager,
       giveawayManagerRoleId: '825783847622934549'
     };
     if (

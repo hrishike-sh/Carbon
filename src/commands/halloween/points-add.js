@@ -1,5 +1,5 @@
 // const { Message, Client } = require('discord.js');
-// const halloween = require('../../database/halloween');
+// const halloween = require('../../database/models/halloween');
 
 // module.exports = {
 //   name: 'points-add',
@@ -11,7 +11,7 @@
 //    * @param {Client} client
 //    */
 //   async execute(message, args, client) {
-//     if (!message.member.roles.cache.has('1016728636365209631')) return;
+//     if (!message.member.roles.cache.has(config.roles.staff.cman)) return;
 
 //     const team = args.shift();
 //     const points = args.shift();

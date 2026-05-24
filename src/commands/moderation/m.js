@@ -7,11 +7,12 @@ const {
   ButtonBuilder,
   Colors
 } = require('discord.js');
+const config = require('../../config');
 
 module.exports = {
   name: 'm',
   aliases: ['mod'],
-  roles: ['824539655134773269'],
+  roles: [config.roles.staff.mod],
   cooldown: 3,
   /**
    *

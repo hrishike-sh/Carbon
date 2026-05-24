@@ -1,7 +1,8 @@
 const { Message, Client, Colors } = require('discord.js');
 
-const Database = require('../../database/raffle');
+const Database = require('../../database/models/raffle');
 const { EmbedBuilder } = require('@discordjs/builders');
+const config = require('../../config');
 
 module.exports = {
   name: 'raffle',
@@ -13,11 +14,11 @@ module.exports = {
    */
   execute: async (message, args, client) => {
     const isMod = message.member.roles.cache.hasAny(
-      '824348974449819658',
+      config.roles.staff.admin,
       '1163857079300276254',
-      '824539655134773269',
-      '1016728636365209631',
-      '858088054942203945',
+      config.roles.staff.mod,
+      config.roles.staff.cman,
+      config.roles.giveawayManager,
       '825783847622934549'
     );
     const subcommand = args.shift();

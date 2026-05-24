@@ -1,63 +1,49 @@
 const {
-  Message,
   Colors,
   ActionRowBuilder,
   ButtonBuilder,
   ButtonStyle
 } = require('discord.js');
-const Database = require('../../database/lastping');
+const Database = require('../../database/models/lastping');
+const config = require('../../config');
+const { sleep } = require('../../utils/helpers');
+
 module.exports = {
   name: 'lastping',
   aliases: ['lp'],
-  /**
-   *
-   * @param {Message} message
-   */
+
   async execute(message) {
-    const allowedRoles = [
-      '826002228828700718',
-      '824539655134773269',
-      '999911967319924817',
-      '825283097830096908',
-      '828048225096826890',
-      '876460154705555487',
-      '824687526396297226'
-    ];
+    const allowedRoles = config.roles.lastPingAllowed;
     if (!message.member.roles.cache.hasAny(...allowedRoles)) {
       return message
         .reply({
           embeds: [
             {
               color: Colors.Red,
-              description: `You need to have any one of these roles to use this command:\n${allowedRoles
-                .map((a) => `<@&${a}>`)
-                .join(' ')}`
+              description: `You need to have any one of these roles to use this command:\n${allowedRoles.map((a) => `<@&${a}>`).join(' ')}`
             }
           ]
         })
         .then(async (msg) => {
           await sleep(2500);
-          msg?.delete();
+          msg?.delete().catch(() => {});
         });
     }
 
-    if (message.channel.id == '870240187198885888') {
+    if (message.channel.id === '870240187198885888') {
       return message.reply("You can't run this command here");
     }
 
     const userId = message.author.id;
     const user = await Database.findOne({ userId });
     const d = [];
-    if (user?.pings) {
+    if (user?.pings?.length) {
       user.pings = user.pings.sort((a, b) => b.msg.when - a.msg.when);
       for (let i = 0; i < user.pings.length; i++) {
         if (i > 9) break;
         const s =
-          (
-            await message.client.users
-              .fetch(user.pings[i].pingerId)
-              .catch(() => null)
-          )?.tag || 'Unknown#0000';
+          (await message.client.users.fetch(user.pings[i].pingerId).catch(() => null))?.tag ||
+          'Unknown#0000';
         const cc =
           (user.pings[i].msg.content.length > 99
             ? user.pings[i].msg.content.slice(0, 200) + '...'
@@ -69,6 +55,7 @@ module.exports = {
     } else {
       d.push('You have no recent pings.');
     }
+
     message
       .reply({
         embeds: [
@@ -81,9 +68,7 @@ module.exports = {
                     '\n<:yes:931435927061020712><:yes:931435927061020712><:yes:931435927061020712><:yes:931435927061020712><:yes:931435927061020712>\n'
                   )
                 : d[0],
-            footer: {
-              text: `Showing 10/${user.pings.length}.`
-            }
+            footer: { text: `Showing ${Math.min(10, user?.pings?.length || 0)}/${user?.pings?.length || 0}.` }
           }
         ],
         components: [
@@ -97,33 +82,27 @@ module.exports = {
       })
       .then((p) => {
         p.awaitMessageComponent({
-          filter: (m) => m.user.id == message.author.id
+          filter: (m) => m.user.id === message.author.id
         }).then(async (c) => {
           user.pings = [];
-          user.save();
+          await user.save();
           await c.message.edit({
             embeds: [
               {
                 title: 'Last Pings',
                 color: Colors.Aqua,
                 description: 'Your pings have been cleared!',
-                footer: {
-                  text: 'Only 10 pings are stored.'
-                }
+                footer: { text: 'Only 10 pings are stored.' }
               }
             ],
             components: []
           });
-          return;
         });
       });
-    if (user.pings.length > 10) {
-      const newPings = user.pings.slice(0, 10);
-      user.pings = newPings;
-      user.save();
+
+    if (user?.pings?.length > 10) {
+      user.pings = user.pings.slice(0, 10);
+      await user.save();
     }
   }
-};
-const sleep = (milliseconds) => {
-  return new Promise((resolve) => setTimeout(resolve, milliseconds));
 };

@@ -1,5 +1,6 @@
 const { EmbedBuilder, Message, Client } = require('discord.js');
-const fh = '824294231447044197';
+const config = require('../../config');
+const fh = config.ids.guildId;
 const prefix = 'fh';
 
 module.exports = {
@@ -15,7 +16,7 @@ module.exports = {
     if (message.guild.id !== fh) {
       return message.reply('');
     }
-    if (!message.member.roles.cache.has('1016728636365209631')) {
+    if (!message.member.roles.cache.has(config.roles.staff.cman)) {
       return message.reply('Only CMs+ L bozo');
     }
 

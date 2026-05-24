@@ -1,0 +1,5 @@
+module.exports = {
+  prefix: 'fh ',
+  clientId: '855652438919872552',
+  guildId: '824294231447044197'
+};

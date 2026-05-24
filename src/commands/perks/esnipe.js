@@ -1,45 +1,26 @@
 const {
-  Message,
-  Client,
   ButtonStyle,
   ButtonBuilder,
   ActionRowBuilder,
   EmbedBuilder
 } = require('discord.js');
+const config = require('../../config');
 
 module.exports = {
   name: 'esnipe',
   cooldown: 5,
-  roles: [
-    '826196972167757875',
-    '969870378811916408',
-    '825283097830096908',
-    '839803117646512128',
-    '824687393868742696',
-    '999911429421408346',
-    '828048225096826890',
-    '826002228828700718',
-    '999911166673428521'
-  ],
-  /**
-   *
-   * @param {Message} message
-   * @param {String[]} args
-   * @param {Client} client
-   */
-  async execute(message, args, client) {
-    const sniped = client.snipes.esnipes.get(message.channel.id);
+  roles: [config.roles.staff.mod, config.roles.staff.admin, config.roles.giveawayManager],
 
-    if (!sniped || sniped == undefined) {
-      message.channel.send('There is nothing to snipe!');
-      return;
+  async execute(message, args, client) {
+    const sniped = client.state.snipes.esnipes.get(message.channel.id);
+
+    if (!sniped) {
+      return message.channel.send('There is nothing to snipe!');
     }
 
     let snipe = +args[0] - 1 || 0;
-
     let target = sniped[snipe];
-
-    let { msg, editedIn, oldContent, newContent } = target;
+    let { msg, oldContent, newContent } = target;
 
     let snipeBed = new EmbedBuilder()
       .setAuthor({
@@ -50,24 +31,20 @@ module.exports = {
       .addFields([{ name: 'New Message', value: newContent, inline: true }])
       .setColor('Random')
       .setFooter({ text: `${snipe + 1}/${sniped.length}` });
-    let prevBut = new ButtonBuilder()
+
+    const prevBut = new ButtonBuilder()
       .setEmoji('911971090954326017')
       .setCustomId('prev-snipe')
-      .setStyle(ButtonStyle.Success)
       .setStyle(ButtonStyle.Success);
-    let deleteBut = new ButtonBuilder()
+    const deleteBut = new ButtonBuilder()
       .setEmoji('🗑️')
       .setCustomId('delete-snipe')
       .setStyle(ButtonStyle.Success);
-    let nextBut = new ButtonBuilder()
+    const nextBut = new ButtonBuilder()
       .setEmoji('911971202048864267')
       .setCustomId('next-snipe')
       .setStyle(ButtonStyle.Success);
-    let row = new ActionRowBuilder().addComponents([
-      prevBut,
-      deleteBut,
-      nextBut
-    ]);
+    const row = new ActionRowBuilder().addComponents([prevBut, deleteBut, nextBut]);
 
     const mainMessage = await message.channel.send({
       content: 'Use the buttons to navigate.',
@@ -75,103 +52,54 @@ module.exports = {
       components: [row]
     });
 
-    const collector = mainMessage.createMessageComponentCollector({
-      idle: 30000
-    });
+    const collector = mainMessage.createMessageComponentCollector({ idle: 30000 });
 
     collector.on('collect', async (button) => {
       if (button.user.id !== message.author.id) {
-        return button.reply({
-          ephemeral: true,
-          content: 'This is not for you'
-        });
+        return button.reply({ ephemeral: true, content: 'This is not for you' });
       }
       const id = button.customId;
       button.deferUpdate();
       if (id === 'prev-snipe') {
         snipe--;
-        if (snipe < 0) {
-          snipe = snipe.length - 1;
-        }
+        if (snipe < 0) snipe = sniped.length - 1;
         target = sniped[snipe];
-        let { msg, editedIn, oldContent, newContent } = target;
+        ({ msg, oldContent, newContent } = target);
         snipeBed = new EmbedBuilder()
-          .setAuthor({
-            name: msg.author.tag,
-            iconURL: msg.author.displayAvatarURL() || null
-          })
-          .addFields([
-            {
-              name: 'Old Message',
-              value: oldContent,
-              inline: true
-            }
-          ])
+          .setAuthor({ name: msg.author.tag, iconURL: msg.author.displayAvatarURL() || null })
+          .addFields([{ name: 'Old Message', value: oldContent, inline: true }])
           .addFields([{ name: 'New Message', value: newContent, inline: true }])
           .setColor('Random')
           .setFooter({ text: `${snipe + 1}/${sniped.length}` });
-
-        return mainMessage.edit({
-          content: 'Use the buttons to navigate.',
-          embeds: [snipeBed],
-          components: [row]
-        });
-      } else if (id == 'next-snipe') {
+        return mainMessage.edit({ content: 'Use the buttons to navigate.', embeds: [snipeBed], components: [row] });
+      } else if (id === 'next-snipe') {
         snipe++;
-        if (snipe > sniped.length || snipe == sniped.length) {
-          snipe = 0;
-        }
+        if (snipe >= sniped.length) snipe = 0;
         target = sniped[snipe];
-        let { msg, editedIn, oldContent, newContent } = target;
+        ({ msg, oldContent, newContent } = target);
         snipeBed = new EmbedBuilder()
-          .setAuthor({
-            name: msg.author.tag,
-            iconURL: msg.author.displayAvatarURL() || null
-          })
-          .addFields([
-            {
-              name: 'Old Message',
-              value: oldContent,
-              inline: true
-            }
-          ])
+          .setAuthor({ name: msg.author.tag, iconURL: msg.author.displayAvatarURL() || null })
+          .addFields([{ name: 'Old Message', value: oldContent, inline: true }])
           .addFields([{ name: 'New Message', value: newContent, inline: true }])
           .setColor('Random')
           .setFooter({ text: `${snipe + 1}/${sniped.length}` });
-
-        return mainMessage.edit({
-          content: 'Use the buttons to navigate.',
-          embeds: [snipeBed],
-          components: [row]
-        });
+        return mainMessage.edit({ content: 'Use the buttons to navigate.', embeds: [snipeBed], components: [row] });
       } else {
         mainMessage.delete();
       }
     });
 
     collector.on('end', () => {
-      prevBut = prevBut.setDisabled();
-      nextBut = nextBut.setDisabled();
-      deleteBut = deleteBut.setDisabled();
-      row = new ActionRowBuilder().addComponents([prevBut, deleteBut, nextBut]);
-      target = sniped[snipe];
-      let { msg, editedIn, oldContent, newContent } = target;
-      snipeBed = new EmbedBuilder()
-        .setAuthor({
-          name: msg.author.tag,
-          iconURL: msg.author.displayAvatarURL() || null
-        })
-        .addFields([{ name: 'Old Message', value: oldContent, inline: true }])
-        .addFields([{ name: 'New Message', value: newContent, inline: true }])
-        .setColor('Random')
-        .setFooter({ text: `${snipe + 1}/${sniped.length}` });
+      prevBut.setDisabled();
+      nextBut.setDisabled();
+      deleteBut.setDisabled();
       try {
         mainMessage.edit({
           content: 'Use the buttons to navigate.',
           embeds: [snipeBed],
-          components: [row]
+          components: [new ActionRowBuilder().addComponents([prevBut, deleteBut, nextBut])]
         });
-      } catch (e) {}
+      } catch {}
     });
   }
 };

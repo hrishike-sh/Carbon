@@ -1,6 +1,4 @@
 const {
-  Message,
-  Client,
   EmbedBuilder,
   ActionRowBuilder,
   ButtonBuilder,
@@ -8,8 +6,9 @@ const {
   Colors,
   ComponentType
 } = require('discord.js');
+const config = require('../../config');
+const { sleep, shuffle } = require('../../utils/helpers');
 
-const ROLE_ID = '858088054942203945';
 const MIN_PLAYERS = 3;
 const MAX_PLAYERS = 25;
 const JOIN_TIME_MS = 30 * 1000;
@@ -20,47 +19,33 @@ const WEAPON_BONUS_DAMAGE = 8;
 const BANDAID_HEAL_AMOUNT = 25;
 const ROUND_TIME_MS = 10 * 1000;
 
-function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
 let LASTUPDATE = 0;
 function updateMessage(msg, components, emb) {
   const NOW = Date.now();
   if (NOW - LASTUPDATE > 1000) {
     LASTUPDATE = NOW;
-    msg.edit({ components, embeds: [emb] }).catch(console.error);
+    msg.edit({ components, embeds: [emb] }).catch(() => {});
   }
-}
-
-function shuffleArray(array) {
-  for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
-  }
-  return array;
 }
 
 const randomActions = [
-  `**{user}** absolutely DESTROYED **{target}**!`,
-  `**{target}** tried to run away from **{user}** but failed and DIED.`,
-  `**{user}** used a dagger to kill **{target}**!`,
-  `**{target}** was no match for **{user}**'s dagger and DIED.`,
-  `**{user}** sneakily stabbed **{target}** to death.`,
-  `**{target}** tried to dodge, but **{user}** was too quick and plunged their dagger into their heart.`,
-  `**{user}** quickly disarmed **{target}**, then struck them with a fatal blow.`,
-  `**{target}** tried to defend, but **{user}** was too quick and managed to evade their defense.`,
-  `**{user}**'s dagger was too quick for **{target}**, and they fell to the ground, defeated.`,
-  `**{target}** tried to counterattack, but **{user}**'s dagger was too fast and they fell to the ground, defeated.`
+  '**{user}** absolutely DESTROYED **{target}**!',
+  '**{target}** tried to run away from **{user}** but failed and DIED.',
+  '**{user}** used a dagger to kill **{target}**!',
+  '**{target}** was no match for **{user}**\'s dagger and DIED.',
+  '**{user}** sneakily stabbed **{target}** to death.',
+  '**{target}** tried to dodge, but **{user}** was too quick and plunged their dagger into their heart.',
+  '**{user}** quickly disarmed **{target}**, then struck them with a fatal blow.',
+  '**{target}** tried to defend, but **{user}** was too quick and managed to evade their defense.',
+  '**{user}**\'s dagger was too quick for **{target}**, and they fell to the ground, defeated.',
+  '**{target}** tried to counterattack, but **{user}**\'s dagger was too fast and they fell to the ground, defeated.'
 ];
 
 module.exports = {
   name: 'nbr',
   async execute(message, args, client) {
-    if (!message.member.roles.cache.has(ROLE_ID)) {
-      return message.reply(
-        "You don't have the required role to start this game."
-      );
+    if (!message.member.roles.cache.has(config.roles.giveawayManager)) {
+      return message.reply("You don't have the required role to start this game.");
     }
 
     const conf_embed = new EmbedBuilder()
@@ -68,9 +53,7 @@ module.exports = {
       .setDescription(
         `Click the \`JOIN\` button to join!\n\nMax Players: ${MAX_PLAYERS}`
       )
-      .setFooter({
-        text: `Game starts in ${JOIN_TIME_MS / 1000} seconds.`
-      })
+      .setFooter({ text: `Game starts in ${JOIN_TIME_MS / 1000} seconds.` })
       .setColor(Colors.Gold);
 
     const conf_row = new ActionRowBuilder().addComponents([
@@ -148,7 +131,7 @@ module.exports = {
         .setFooter({ text: 'Last man standing wins!' })
         .setDescription(
           `The game starts in **${GAME_START_DELAY_MS / 1000} seconds**.\n` +
-            `Wait for the round to begin!`
+            'Wait for the round to begin!'
         );
 
       const gameMessage = await message.channel.send({
@@ -227,10 +210,6 @@ module.exports = {
           return;
         }
 
-        const playersLeftToAct = currentRoundPlayers.filter(
-          (p) => p.health > 0 && !playersWhoActedThisRound.has(p.id)
-        );
-
         const updatedRows = buildButtonRows();
 
         const alivePlayerList = alivePlayers
@@ -254,7 +233,11 @@ module.exports = {
           }\n\n**Log**\n${logText}`
         );
 
-        const leftToActNames = playersLeftToAct.map((p) => p.name).join(', ');
+        const leftToActNames = players
+          .filter((p) => p.health > 0 && !playersWhoActedThisRound.has(p.id))
+          .map((p) => p.name)
+          .join(', ');
+
         game_embed.setFields([
           {
             name: `Round ${roundNumber}`,
@@ -321,7 +304,7 @@ module.exports = {
         }
 
         switch (interaction.customId) {
-          case 'br_attack':
+          case 'br_attack': {
             const targets = players.filter(
               (p) => p.health > 0 && p.id !== actor.id
             );
@@ -367,7 +350,7 @@ module.exports = {
             const targetCollector = attackReply.createMessageComponentCollector(
               {
                 componentType: ComponentType.Button,
-                time: 10000 // 10 seconds to choose a target
+                time: 10000
               }
             );
 
@@ -452,11 +435,11 @@ module.exports = {
             });
 
             break;
+          }
 
           case 'br_search':
             playersWhoActedThisRound.add(actor.id);
             if (Math.random() < 0.3) {
-              // 30% chance for Dagger
               if (!actor.weapon) {
                 actor.weapon = true;
                 await interaction.reply({
@@ -471,7 +454,6 @@ module.exports = {
                 });
               }
             } else {
-              // 70% chance for Bandaid
               actor.bandaids++;
               await interaction.reply({
                 ephemeral: true,
@@ -573,7 +555,7 @@ module.exports = {
           embeds: [finalEmbed],
           components: finalGameRows
         });
-        message.channel.send(`**The Battle Royale has concluded!**`);
+        message.channel.send('**The Battle Royale has concluded!**');
       });
 
       startNewRound();

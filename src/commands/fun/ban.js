@@ -1,14 +1,11 @@
-const { Message, Client } = require('discord.js');
+const { sleep } = require('../../utils/helpers');
+
 let banned = [];
+
 module.exports = {
   name: 'ban',
   cooldown: 5,
-  /**
-   *
-   * @param {Message} message
-   * @param {String[]} args
-   * @param {Client} client
-   */
+
   async execute(message, args, client) {
     if (message.guildId !== '1243193733223022823') return;
 
@@ -23,8 +20,6 @@ module.exports = {
     }
 
     if (chance < 0.05) {
-      // ban yourself
-
       message.member.ban();
       message.reply(
         [
@@ -33,21 +28,16 @@ module.exports = {
         ][Math.floor(Math.random() * 2)]
       );
       message.author.send({
-        content: `You were unlucky and banned yourself.`
+        content: 'You were unlucky and banned yourself.'
       });
     } else if (chance < 0.1) {
-      // delete message + ban
-
       message.channel.send(
         `Someone has stealthily banned ${target.toString()}... :shushing_face:`
       );
       target.ban();
     } else if (chance > 0.1 && chance < 0.2) {
-      // muted for a minute
       message.reply('Your command failed :joy_cat:');
     } else if (chance < 0.4) {
-      // command fails
-
       message.reply(
         [
           `${target.user.username} is too fast for you... you FAILED!`,
@@ -56,7 +46,6 @@ module.exports = {
         ][Math.floor(Math.random() * 3)]
       );
     } else {
-      // ban
       target.ban();
       message.reply(
         [
@@ -73,13 +62,4 @@ module.exports = {
     }
     message.delete();
   }
-};
-
-const addBan = async (userId) => {
-  banned.push(userId);
-  await sleep(60000);
-  banned = banned.filter((a) => a !== userId);
-};
-const sleep = (milliseconds) => {
-  return new Promise((resolve) => setTimeout(resolve, milliseconds));
 };

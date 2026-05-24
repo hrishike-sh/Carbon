@@ -1,4 +1,5 @@
 const { Message, Client, Colors } = require('discord.js');
+const config = require('../../config');
 
 module.exports = {
   name: 'checkban',
@@ -11,7 +12,7 @@ module.exports = {
    * @param {Client} client
    */
   async execute(message, args, client) {
-    const FH = client.guilds.cache.get('824294231447044197');
+    const FH = client.guilds.cache.get(config.ids.guildId);
     const target = args[0]?.replace(/[^0-9]/g, '');
     if (!target) return message.reply('Please provide a user argument.');
 

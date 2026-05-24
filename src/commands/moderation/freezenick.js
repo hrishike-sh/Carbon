@@ -1,5 +1,6 @@
 const { Message } = require('discord.js');
-const DB = require('../../database/freezenick');
+const DB = require('../../database/models/freezenick');
+const config = require('../../config');
 
 module.exports = {
   name: 'freezenick',
@@ -11,8 +12,8 @@ module.exports = {
   async execute(message, args) {
     if (
       !message.member.roles.cache.hasAny(
-        '824539655134773269',
-        '824348974449819658'
+        config.roles.staff.mod,
+        config.roles.staff.admin
       )
     ) {
       return message.reply('You cannot run this command!');

@@ -1,421 +1,161 @@
-// define everything
-const {
-  Client,
-  Events,
-  Collection,
-  GatewayIntentBits,
-  Message,
-  Partials,
-  Colors,
-  ActionRowBuilder,
-  ButtonBuilder,
-  ButtonStyle,
-  EmbedBuilder
-} = require('discord.js');
-const fs = require('fs');
-const path = require('node:path');
-const { prefix } = require('./config.json');
-const mongoose = require('mongoose');
 require('dotenv').config();
 
-const client = new Client({
-  intents: [
-    GatewayIntentBits.Guilds,
-    GatewayIntentBits.GuildMessages,
-    GatewayIntentBits.MessageContent,
-    GatewayIntentBits.GuildMembers,
-    GatewayIntentBits.GuildMessageReactions
-  ],
-  partials: [Partials.Reaction, Partials.Message]
-});
-// define everything
+const config = require('./config');
+const { createClient } = require('./client/Client');
+const { connectDatabase } = require('./database');
+const { loadCommands } = require('./command/registry');
+const { loadEvents } = require('./event/registry');
+const highlightModule = require('./events/messageCreate/highlight');
+const settingsService = require('./database/services/settingsService');
+const afkModel = require('./database/models/afk');
+const cooldowns = require('./command/cooldowns');
+const antiBot = require('./client/AntiBot');
+const logger = require('./utils/logger');
+const { Events, Collection, EmbedBuilder } = require('discord.js');
 
-/**
- * Client Ready
- */
+async function main() {
+  const client = createClient();
 
-const highlight = require('./events/highlight');
-client.on(Events.ClientReady, async () => {
-  console.log(
-    `[BOT]: Client is online!\n  Server Count: ${client.guilds.cache.size}`
-  );
-  client.user.setPresence({
-    status: 'dnd'
-  });
-  client.counts = {
-    commandsRan: 0,
-    messagesRead: 0
-  };
-  client.emit('tick');
-  client.db = {
-    afks: [],
-    afkIgnore: (
-      await require('./database/settingsSchema').findOne({
-        guildID: '824294231447044197'
-      })
-    ).afkIgnore
-  };
-  highlight.load(client);
-  client.snipes = {
-    snipes: new Collection(),
-    esnipes: new Collection()
-  };
-  client.cd = new Set();
-  for (const afkUser of await require('./database/afk').find()) {
-    client.db.afks.push(afkUser.userId);
-  }
+  client.once(Events.ClientReady, async () => {
+    console.log(`[BOT]: Client is online!\n  Server Count: ${client.guilds.cache.size}`);
 
-  client.shard.broadcastEval((c) => {
-    c.guilds.cache.forEach(async (guild) => {
-      if (guild.id == '856111404322258956') {
-        console.log('Carbon Server Found');
-      } else {
-        if (guild.memberCount < 10) {
-          const sleep = (milliseconds) => {
-            return new Promise((resolve) => setTimeout(resolve, milliseconds));
-          };
-          await guild.leave();
-          await sleep(1000);
-          console.log(`Left: ${guild.name}`);
-        }
-      }
-    });
-  });
-});
+    client.user.setPresence({ status: 'dnd' });
 
-/**
- * Client Ready
- */
+    // Load settings cache
+    const settings = await settingsService.load();
+    client.state.afkIgnore = settings.afkIgnore || [];
 
-/**
- * Database Handling
- */
+    // Load highlights into memory
+    await highlightModule.load(client);
 
-mongoose.connect(process.env.mongopath);
+    // Load AFK users into memory
+    const afkUsers = await afkModel.find();
+    for (const afkUser of afkUsers) {
+      client.state.afks.push(afkUser.userId);
+    }
 
-/**
- * Database Handling
- */
+    // Trigger 2025 event scheduler
+    client.emit('tick');
 
-/**
- * COMMAND HANDLING
- */
-
-client.cmd = {
-  commands: new Collection(),
-  slashCommands: new Collection(),
-  cooldowns: new Collection()
-};
-const MAP = new Collection();
-const CoinDB = require('./database/coins');
-const { deserialize } = require('v8');
-const processing = new Set();
-/**
- *
- * @param {Message} message
- * @returns
- */
-client.antiBot = async (message) => {
-  if (!message.guild) return true;
-
-  if (!MAP.has(message.author.id)) {
-    MAP.set(message.author.id, 0);
-  }
-  if (processing.has(message.author.id)) {
-    message.react('❌');
-    return false;
-  }
-  const count = MAP.get(message.author.id);
-  MAP.set(message.author.id, count + 1);
-  if (count >= 25) {
-    processing.add(message.author.id);
-    const msg = await message.channel.send({
-      content: message.author.toString(),
-      embeds: [
-        {
-          title: 'Anti-Bot',
-          color: Colors.Red,
-          description: `Click the **RED** button to continue!`,
-          footer: {
-            text: 'Failing the captcha will get you banned. You have 10 seconds.'
+    // Leave small guilds (keep Carbon server and main guild)
+    if (client.shard) {
+      client.shard.broadcastEval((c) => {
+        c.guilds.cache.forEach(async (guild) => {
+          if (guild.id !== '856111404322258956' && guild.memberCount < 10) {
+            await guild.leave().catch(() => {});
+            console.log(`Left: ${guild.name}`);
           }
-        }
-      ],
-      components: [
-        new ActionRowBuilder().addComponents(
-          [
-            new ButtonBuilder()
-              .setCustomId(`${Math.random()}`)
-              .setStyle(ButtonStyle.Danger)
-              .setLabel('Click'),
-            new ButtonBuilder()
-              .setCustomId(`${Math.random()}`)
-              .setStyle(ButtonStyle.Success)
-              .setLabel('Click'),
-            new ButtonBuilder()
-              .setCustomId(`${Math.random()}`)
-              .setStyle(ButtonStyle.Success)
-              .setLabel('Click'),
-            new ButtonBuilder()
-              .setCustomId(`${Math.random()}`)
-              .setStyle(ButtonStyle.Success)
-              .setLabel('Click'),
-            new ButtonBuilder()
-              .setCustomId(`${Math.random()}`)
-              .setStyle(ButtonStyle.Success)
-              .setLabel('Click')
-          ].sort(() => Math.random() - 0.5)
-        )
-      ]
-    });
-    const collector = msg.createMessageComponentCollector({
-      filter: (m) => m.user.id == message.author.id,
-      time: 10_000,
-      max: 1
-    });
-    let captcha = false;
-    collector.on('collect', async (button) => {
-      button.deferUpdate();
-      if (button.component.style !== ButtonStyle.Danger) {
-      } else {
-        captcha = true;
-      }
-    });
-    collector.on('end', async () => {
-      if (!captcha) {
-        const temp = await CoinDB.findOne({ userId: message.author.id });
-        const u = await CoinDB.deleteOne({ userId: message.author.id });
-        client.users.cache.get('598918643727990784').send({
-          content: `${message.author.toString()} failed the captcha [Jump](${
-            message.url
-          })`,
-          embeds: [
-            {
-              description: `Coins: ${temp.coins}`
-            }
-          ]
         });
-        message.channel.send({
-          content: `${message.author.toString()} you failed the captcha! All your coins are wiped.`
-        });
-        MAP.set(message.author.id, 0);
-        processing.delete(message.author.id);
-
-        return false;
-      } else {
-        MAP.set(message.author.id, 0);
-        processing.delete(message.author.id);
-
-        message.channel.send(
-          `${message.author.toString()} you can continue using the bot!`
-        );
-        return true;
-      }
-    });
-  } else return true;
-};
-const commandFolders = fs.readdirSync('./commands');
-for (const folder of commandFolders) {
-  const commandFiles = fs
-    .readdirSync(`./commands/${folder}`)
-    .filter((s) => s.endsWith('.js'));
-
-  for (const file of commandFiles) {
-    const command = require(`./commands/${folder}/${file}`);
-    client.cmd.commands.set(command.name, command);
-  }
-}
-
-const foldersPath = path.join(__dirname, 'slash-commands');
-const commandFolder = fs.readdirSync(foldersPath);
-
-for (const folder of commandFolder) {
-  const commandsPath = path.join(foldersPath, folder);
-  const commandFiles = fs
-    .readdirSync(commandsPath)
-    .filter((file) => file.endsWith('.js'));
-  for (const file of commandFiles) {
-    const filePath = path.join(commandsPath, file);
-    const command = require(filePath);
-
-    if ('data' in command && 'execute' in command) {
-      client.cmd.slashCommands.set(command.data.name, command);
-    } else {
-      console.log(
-        `[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`
-      );
-    }
-  }
-}
-
-client.on(Events.InteractionCreate, async (interaction) => {
-  if (!interaction.isChatInputCommand()) return;
-
-  const command = interaction.client.cmd.slashCommands.get(
-    interaction.commandName
-  );
-  if (!command) {
-    console.error('No matching command name for ' + interaction.commandName);
-    return;
-  }
-
-  try {
-    await command.execute(interaction, client);
-  } catch (error) {
-    console.error(error);
-    if (interaction.replied || interaction.deferred) {
-      await interaction.followUp({
-        content: 'There was an error while executing this command!',
-        ephemeral: true
-      });
-    } else {
-      await interaction.reply({
-        content: 'There was an error while executing this command!',
-        ephemeral: true
       });
     }
-  }
-});
+  });
 
-client.on(Events.MessageCreate, async (message) => {
-  client.counts.messagesRead++;
-  if (message.author.bot) return;
-  if (!message.guild) return;
-  if (!message.content.toLowerCase().startsWith(prefix)) return;
+  await connectDatabase(process.env.mongopath);
 
-  const args = message.content.slice(prefix.length).trim().split(/ +/g);
-  const commandName = args.shift().toLowerCase();
+  loadCommands(client);
+  loadEvents(client);
 
-  const command =
-    client.cmd.commands.get(commandName) ||
-    client.cmd.commands.find(
-      (cmd) => cmd.aliases && cmd.aliases.includes(commandName.toLowerCase())
-    ) ||
-    null;
+  // Prefix command handler
+  client.on(Events.MessageCreate, async (message) => {
+    client.state.counts.messagesRead++;
 
-  if (!command) return;
-  if (!client.cmd.cooldowns.has(command.name)) {
-    client.cmd.cooldowns.set(command.name, new Collection());
-  }
+    if (message.author.bot) return;
+    if (!message.guild) return;
 
-  const now = new Date();
-  const timestamps = client.cmd.cooldowns.get(command.name);
-  const cooldownAmt = (command.cooldown || 0) * 1000;
+    const content = message.content;
+    if (!content.toLowerCase().startsWith(config.prefix)) return;
 
-  if (timestamps.has(message.author.id)) {
-    const expTime = timestamps.get(message.author.id) + cooldownAmt;
+    const args = content.slice(config.prefix.length).trim().split(/ +/g);
+    const commandName = args.shift().toLowerCase();
 
-    if (now < expTime) {
-      const timeLeft = (expTime - now) / 1000;
+    const command = client.state.commands.get(commandName);
+    if (!command) return;
 
+    // Cooldown check
+    const cooldownResult = cooldowns.check(message.author.id, command.name, command.cooldown);
+    if (!cooldownResult.allowed) {
       return message.reply({
-        embeds: [
-          {
-            description: `**:x: You must wait ${Math.ceil(
-              timeLeft
-            )}s before running that command again.**`
-          }
-        ]
+        embeds: [{
+          description: `**:x: You must wait ${cooldownResult.remaining}s before running that command again.**`
+        }]
       });
     }
-  }
 
-  timestamps.set(message.author.id, now);
-  setTimeout(() => timestamps.delete(message.author.id), cooldownAmt);
+    // Role check
+    if (command.requiredRoles?.length &&
+        !message.member.roles.cache.hasAny(...command.requiredRoles)) {
+      return message.reply({
+        content: `You need one of these roles:\n${command.requiredRoles.map((r) => `<@&${r}>`).join(' ')}`,
+        allowedMentions: { roles: [], users: [] }
+      });
+    }
 
-  // requirements
-  if (command?.roles && !message.member.roles.cache.hasAny(...command.roles)) {
-    return message.reply({
-      content: `You need one of these roles to run this command:\n${command.roles
-        .map((role) => `<@&${role}>`)
-        .join(' ')}`,
-      allowedMentions: {
-        roles: [],
-        users: []
-      }
-    });
-  }
+    try {
+      await command.execute(message, args, client);
+      client.state.counts.commandsRan++;
 
-  try {
-    command.execute(message, args, client);
-    client.channels.cache.get('913359587317522432').send({
-      embeds: [
-        {
-          author: {
-            name: message.author.tag,
-            iconURL: message.author.displayAvatarURL()
-          },
-          title: command.name,
-          fields: [
-            {
-              name: 'Total Commands Ran',
-              value: client.counts.commandsRan.toLocaleString()
+      const logChannel = client.channels.cache.get(config.ids.channels.commandLog);
+      if (logChannel) {
+        logChannel.send({
+          embeds: [{
+            author: {
+              name: message.author.tag,
+              iconURL: message.author.displayAvatarURL()
             },
-            {
-              name: 'Server',
-              value: message.guild.name,
-              inline: true
-            }
-          ]
-        }
-      ]
-    });
-    client.counts.commandsRan++;
-  } catch (e) {
-    // console.log(e);
-    return message.reply({
-      content: 'There was an error running this command.'
-    });
-  }
-});
-/**
- * COMMAND HANDLING
- */
+            title: command.name,
+            fields: [
+              { name: 'Total Commands Ran', value: client.state.counts.commandsRan.toLocaleString() },
+              { name: 'Server', value: message.guild.name, inline: true }
+            ]
+          }]
+        }).catch(() => {});
+      }
+    } catch (err) {
+      logger.error(`Command "${command.name}" error`, err);
+      message.reply({ content: 'There was an error running this command.' }).catch(() => {});
+    }
+  });
 
-client.log = async (data) => {
-  if (!data) return;
+  // Slash command handler
+  client.on(Events.InteractionCreate, async (interaction) => {
+    if (!interaction.isChatInputCommand()) return;
 
-  const embed = new EmbedBuilder()
-    .setColor(0x00ffff)
-    .setTimestamp()
-    .setDescription(data.description || null)
-    .setTitle(data.title)
-    .setFields(fields);
+    const command = client.state.slashCommands.get(interaction.commandName);
+    if (!command) {
+      logger.warn(`No matching slash command: ${interaction.commandName}`);
+      return;
+    }
 
-  client.channels.cache.get('913359587317522432').send({ embeds: [embed] });
-};
+    try {
+      await command.execute(interaction, client);
+    } catch (err) {
+      logger.error(`Slash command "${interaction.commandName}" error`, err);
+      const reply = interaction.replied || interaction.deferred ? 'followUp' : 'reply';
+      interaction[reply]({ content: 'There was an error while executing this command!', ephemeral: true }).catch(() => {});
+    }
+  });
 
-/**
- * EVENT HANDLING
- */
+  // Global error handlers
+  process.on('uncaughtException', (err) => {
+    logger.error('Uncaught exception', err);
+    const errorChannel = client.channels.cache.get(config.ids.channels.errorLog);
+    if (errorChannel) {
+      errorChannel.send({ content: `Uncaught exception:\n\`${err.message}\`` }).catch(() => {});
+    }
+  });
 
-const eventsPath = path.join(__dirname, 'events');
-const eventFiles = fs
-  .readdirSync(eventsPath)
-  .filter((file) => file.endsWith('.js'));
+  process.on('unhandledRejection', (reason) => {
+    logger.error('Unhandled rejection', reason);
+  });
 
-for (const file of eventFiles) {
-  const filePath = path.join(eventsPath, file);
-  const event = require(filePath);
-  if (event.once) {
-    client.once(event.name, (...args) => event.execute(...args, client));
-  } else {
-    client.on(event.name, (...args) => event.execute(...args, client));
-  }
+  client.on(Events.Error, (err) => {
+    logger.error('Discord client error', err);
+  });
+
+  await client.login(process.env.token);
 }
 
-/**
- * EVENT HANDLING
- */
-process.on('uncaughtException', (e) => {
-  return;
-  console.error(e);
-  if (!e.message.includes('Unknown Message')) {
-    client.channels.cache
-      .get('1176219409149341817')
-      .send('Error:\n' + e.message || 'a');
-  }
-  console.log('Bot didnt die.');
+main().catch((err) => {
+  console.error('Fatal startup error:', err);
+  process.exit(1);
 });
-client.on(Events.Error, () => {});
-client.login(process.env.token);

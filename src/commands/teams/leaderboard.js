@@ -1,5 +1,5 @@
 const { Message, Client, Colors } = require('discord.js');
-const TeamDB = require('../../database/teams');
+const TeamDB = require('../../database/models/teams');
 const arr = ['🥇', '🥈', '🥉'];
 module.exports = {
   name: 'teamleaderboard',

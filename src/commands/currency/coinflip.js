@@ -1,5 +1,5 @@
 // const { Message, Client } = require('discord.js');
-// const Database = require('../../database/coins');
+// const Database = require('../../database/models/coins');
 // let cd = [];
 // module.exports = {
 //   name: 'coinflip',

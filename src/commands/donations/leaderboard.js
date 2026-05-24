@@ -6,9 +6,9 @@ const {
   ButtonStyle,
   ActionRowBuilder
 } = require('discord.js');
-const Main = require('../../database/main_dono');
-const Grinder = require('../../database/grinder_dono');
-const Karuta = require('../../database/tickets');
+const Main = require('../../database/models/main_dono');
+const Grinder = require('../../database/models/grinder_dono');
+const Karuta = require('../../database/models/tickets');
 
 module.exports = {
   name: 'leaderboard',

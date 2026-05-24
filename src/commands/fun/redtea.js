@@ -43,13 +43,14 @@ module.exports = {
     const gamedata = [];
 
     const collector = joinMessage.createMessageComponentCollector({
-      maxUsers: 10
+      maxUsers: 10,
+      time: 5
     });
 
     collector.on('collect', async (button) => {
       const user = button.user;
-
-      if (gamedata.find((a) => a.userId == user.userId)) {
+      const gameUser = gamedata.find((a) => a.userId == user.userId)[0];
+      if (gameUser) {
         return button.reply({
           ephemeral: true,
           content: 'You have already joined this game you moneky'
@@ -68,6 +69,16 @@ module.exports = {
       }
     });
 
-    collector.on('end', () => {});
+    collector.on('end', async () => {
+      await message.channel.send({
+        embeds: [
+          {
+            title: 'Redtea game is now starting!'
+          }
+        ]
+      });
+
+      
+    });
   }
 };

@@ -1,4 +1,5 @@
 const { Message, Client } = require('discord.js');
+const config = require('../../config');
 
 module.exports = {
   name: 'eslowmode',
@@ -10,7 +11,7 @@ module.exports = {
    * @param {Client} client
    */
   async execute(message, args, client) {
-    if (!message.member.roles.cache.has('858088054942203945')) return;
+    if (!message.member.roles.cache.has(config.roles.giveawayManager)) return;
 
     const slowmode = args[0] || 0;
     message.channel.setRateLimitPerUser(slowmode);

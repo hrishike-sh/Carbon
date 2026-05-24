@@ -6,9 +6,9 @@ const {
   ButtonStyle,
   ActionRowBuilder
 } = require('discord.js');
-const PRIMARY = require('../../database/main_dono');
-const GRINDER = require('../../database/grinder_dono');
-const TICKETS = require('../../database/tickets');
+const PRIMARY = require('../../database/models/main_dono');
+const GRINDER = require('../../database/models/grinder_dono');
+const TICKETS = require('../../database/models/tickets');
 module.exports = {
   name: 'myd',
   aliases: ['mydono', 'mydonation', 'mydonations'],

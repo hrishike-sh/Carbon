@@ -1,11 +1,12 @@
 const { Permissions } = require('discord.js');
+const config = require('../../config');
 
 module.exports = {
   name: 'addmulti',
   aliases: ['addrolemulti'],
   async execute(message, args) {
     if (
-      !message.member.roles.cache.has('824539655134773269') &&
+      !message.member.roles.cache.has(config.roles.staff.mod) &&
       !message.member.permissions.has(Permissions.FLAGS.ADMINISTRATOR)
     ) {
       return message.reply('You do not have permission to use this command.');

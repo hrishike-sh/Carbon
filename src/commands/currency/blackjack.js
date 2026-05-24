@@ -1,49 +1,51 @@
 const {
-  Message,
-  Client,
   EmbedBuilder,
-  Colors,
   ActionRowBuilder,
   ButtonBuilder,
   ButtonStyle
 } = require('discord.js');
-const Database = require('../../database/coins');
-let cd = [];
+const config = require('../../config');
+const { CoinService, InsufficientFundsError } = require('../../database/services/coinService');
+const cooldowns = require('../../command/cooldowns');
+const antiBot = require('../../client/AntiBot');
+const { parseAmount } = require('../../utils/validators');
+
 module.exports = {
   name: 'blackjack',
   aliases: ['bj'],
-  /**
-   * @param {Message} message Discord Message
-   * @param {String[]} args Command Arguments
-   * @param {Client} client Discord Client
-   */
-  async execute(message, args, client) {
-    if (!(await client.antiBot(message))) return;
+  cooldown: 5,
 
-    if (message.channel.parentId == '824313026248179782') {
+  async execute(message, args, client) {
+    if (!(await antiBot.check(message))) return;
+
+    if (message.channel.parentId === config.ids.restrictedCategory) {
       return message.react('❌');
     }
-    if (cd.includes(message.author.id)) {
-      return message.reply(
-        'Please wait 5 seconds before using this command again'
-      );
-    }
+
+    const cdCheck = cooldowns.check(message.author.id, 'blackjack', 5);
+    if (!cdCheck.allowed) return;
+
     let bet = parseAmount(args[0]);
     if (!bet) bet = 1;
-    const dbUser = await getUser(message.author.id);
-    if (dbUser.coins < bet) {
-      return message.reply('You do not have enough coins!');
-    } else if (bet > 25000) {
+    if (bet > 25000) {
       return message.reply('You cannot bet more than 25,000 coins!');
     }
-    if (client.cd.has(message.author.id))
-      return message.reply("You're already running a command");
-    await removeCoins(message.author.id, bet);
-    client.cd.add(message.author.id);
-    addCd(message.author.id);
+
+    const balance = await CoinService.getBalance(message.author.id);
+    if (balance < bet) {
+      return message.reply('You do not have enough coins!');
+    }
+
+    try {
+      await CoinService.removeCoins(message.author.id, bet);
+    } catch {
+      return message.reply('You do not have enough coins!');
+    }
+
+    cooldowns.lock(message.author.id);
+
     const deck = createDeck();
     shuffleDeck(deck);
-    let d;
 
     let playerHand = [drawCard(deck), drawCard(deck)];
     let botHand = [drawCard(deck), drawCard(deck)];
@@ -51,36 +53,23 @@ module.exports = {
     const embed = new EmbedBuilder()
       .setTitle('Blackjack')
       .setColor('Yellow')
-      .setFooter({
-        text: 'Gambling is good for your health!'
-      })
+      .setFooter({ text: 'Gambling is good for your health!' })
       .addFields([
         {
           name: message.member.displayName,
-          value: `Hand: ${formatHand(playerHand)}\nScore: ${calculateScore(
-            playerHand
-          )}`,
+          value: `Hand: ${formatHand(playerHand)}\nScore: ${calculateScore(playerHand)}`,
           inline: true
         },
         {
           name: 'Carbon',
-          value: `Hand: ${formatHand(botHand, true)}\nScore: ${calculateScore(
-            botHand,
-            true
-          )}+`,
+          value: `Hand: ${formatHand(botHand, true)}\nScore: ${calculateScore(botHand, true)}+`,
           inline: true
         }
       ]);
 
     const row = new ActionRowBuilder().addComponents([
-      new ButtonBuilder()
-        .setStyle(ButtonStyle.Primary)
-        .setCustomId('hit')
-        .setLabel('Hit'),
-      new ButtonBuilder()
-        .setStyle(ButtonStyle.Primary)
-        .setCustomId('stand')
-        .setLabel('Stand')
+      new ButtonBuilder().setStyle(ButtonStyle.Primary).setCustomId('hit').setLabel('Hit'),
+      new ButtonBuilder().setStyle(ButtonStyle.Primary).setCustomId('stand').setLabel('Stand')
     ]);
 
     const msg = await message.reply({ embeds: [embed], components: [row] });
@@ -89,26 +78,23 @@ module.exports = {
         if (button.user.id !== message.author.id) {
           button.reply({
             ephemeral: true,
-            embeds: [
-              {
-                description: `Start your own game using \`fh blackjack\``
-              }
-            ]
+            embeds: [{ description: 'Start your own game using `fh blackjack`' }]
           });
           return false;
-        } else return true;
+        }
+        return true;
       },
       idle: 30_000
     });
 
-    collector.on('end', async () => {
-      client.cd.delete(message.author.id);
+    collector.on('end', () => {
+      cooldowns.unlock(message.author.id);
     });
 
     collector.on('collect', async (button) => {
       const what = button.customId;
 
-      if (what == 'hit') {
+      if (what === 'hit') {
         playerHand.push(drawCard(deck));
         const playerScore = calculateScore(playerHand);
 
@@ -123,22 +109,19 @@ module.exports = {
               },
               {
                 name: 'Carbon',
-                value: `Hand: ${formatHand(botHand)}\nScore: ${calculateScore(
-                  botHand
-                )}`,
+                value: `Hand: ${formatHand(botHand)}\nScore: ${calculateScore(botHand)}`,
                 inline: true
               }
             ])
             .setColor('Red');
-          row.components[0].setDisabled(true);
-          row.components[1].setDisabled(true);
+          row.components.forEach((c) => c.setDisabled(true));
           button.deferUpdate();
           await msg.edit({
             embeds: [embed],
             components: [row],
             content: `You busted! You lost **${bet.toLocaleString()}** coins!`
           });
-          client.cd.delete(message.author.id);
+          cooldowns.unlock(message.author.id);
           return;
         }
 
@@ -159,28 +142,20 @@ module.exports = {
               },
               {
                 name: 'Carbon',
-                value: `Hand: ${formatHand(botHand)}\nScore: ${calculateScore(
-                  botHand
-                )}`,
+                value: `Hand: ${formatHand(botHand)}\nScore: ${calculateScore(botHand)}`,
                 inline: true
               }
             ])
             .setColor('Green');
-          row.components[0].setDisabled(true);
-          row.components[1].setDisabled(true);
+          row.components.forEach((c) => c.setDisabled(true));
           button.deferUpdate();
           await msg.edit({
             embeds: [embed],
             components: [row],
-            content:
-              'The dealer busted, you won **' +
-              bet.toLocaleString() +
-              '** coins!'
+            content: `The dealer busted, you won **${bet.toLocaleString()}** coins!`
           });
-
-          await addCoins(message.author.id, bet * 2);
-          client.cd.delete(message.author.id);
-
+          await CoinService.addCoins(message.author.id, bet * 2);
+          cooldowns.unlock(message.author.id);
           return;
         }
         button.deferUpdate();
@@ -188,31 +163,22 @@ module.exports = {
           .setFields([
             {
               name: message.member.displayName,
-              value: `Hand: ${formatHand(playerHand)}\nScore: ${calculateScore(
-                playerHand
-              )}`,
+              value: `Hand: ${formatHand(playerHand)}\nScore: ${calculateScore(playerHand)}`,
               inline: true
             },
             {
               name: 'Carbon',
-              value: `Hand: ${formatHand(
-                botHand,
-                true
-              )}\nScore: ${calculateScore(botHand, true)}+`,
+              value: `Hand: ${formatHand(botHand, true)}\nScore: ${calculateScore(botHand, true)}+`,
               inline: true
             }
           ])
           .setColor('Yellow');
-        await msg.edit({
-          embeds: [embed],
-          components: [row]
-        });
+        await msg.edit({ embeds: [embed], components: [row] });
       } else {
         collector.stop();
         button.deferUpdate();
-        client.cd.delete(message.author.id);
+        cooldowns.unlock(message.author.id);
 
-        let winMsg = null;
         const playersc = calculateScore(playerHand);
         let botsc = calculateScore(botHand);
 
@@ -221,75 +187,49 @@ module.exports = {
           botsc = calculateScore(botHand);
         }
 
+        let winMsg;
         if (botsc > 21) {
-          winMsg = {
-            msg: `The dealer busted! You won ${bet.toLocaleString()} coins!`,
-            color: 'Green'
-          };
-        } else if (botsc == 21 && playersc == 21) {
-          winMsg = {
-            msg: 'Its a tie!',
-            color: 'Yellow'
-          };
-          await addCoins(message.author.id, bet);
-        } else if (botsc == 21) {
-          winMsg = {
-            msg: `The dealer had a Blackjack, you lost ${bet.toLocaleString()} coins!`,
-            color: 'Red'
-          };
-        } else if (playersc == 21) {
-          winMsg = {
-            msg: `You had a Blackjack, you won ${bet.toLocaleString()} coins!`,
-            color: 'Green'
-          };
+          winMsg = { msg: `The dealer busted! You won ${bet.toLocaleString()} coins!`, color: 'Green' };
+        } else if (botsc === 21 && playersc === 21) {
+          winMsg = { msg: "It's a tie!", color: 'Yellow' };
+          await CoinService.addCoins(message.author.id, bet);
+        } else if (botsc === 21) {
+          winMsg = { msg: `The dealer had a Blackjack, you lost ${bet.toLocaleString()} coins!`, color: 'Red' };
+        } else if (playersc === 21) {
+          winMsg = { msg: `You had a Blackjack, you won ${bet.toLocaleString()} coins!`, color: 'Green' };
         } else if (playersc > botsc) {
-          winMsg = {
-            msg: `You won ${bet.toLocaleString()} coins!`,
-            color: 'Green'
-          };
+          winMsg = { msg: `You won ${bet.toLocaleString()} coins!`, color: 'Green' };
         } else if (botsc > playersc) {
-          winMsg = {
-            msg: `You lost ${bet.toLocaleString()} coins!`,
-            color: 'Red'
-          };
+          winMsg = { msg: `You lost ${bet.toLocaleString()} coins!`, color: 'Red' };
         } else {
-          winMsg = {
-            msg: 'Its a tie!',
-            color: 'Yellow'
-          };
-
-          await addCoins(message.author.id, bet);
+          winMsg = { msg: "It's a tie!", color: 'Yellow' };
+          await CoinService.addCoins(message.author.id, bet);
         }
 
         embed
           .setFields([
             {
               name: message.member.displayName,
-              value: `Hand: ${formatHand(playerHand)}\nScore: ${calculateScore(
-                playerHand
-              )}`,
+              value: `Hand: ${formatHand(playerHand)}\nScore: ${calculateScore(playerHand)}`,
               inline: true
             },
             {
               name: 'Carbon',
-              value: `Hand: ${formatHand(botHand)}\nScore: ${calculateScore(
-                botHand
-              )}`,
+              value: `Hand: ${formatHand(botHand)}\nScore: ${calculateScore(botHand)}`,
               inline: true
             }
           ])
           .setColor(winMsg.color);
-        if (winMsg.color == 'Green') {
-          await addCoins(message.author.id, bet * 2);
+
+        if (winMsg.color === 'Green') {
+          await CoinService.addCoins(message.author.id, bet * 2);
         }
-        row.components[0].setDisabled(true);
-        row.components[1].setDisabled(true);
+        row.components.forEach((c) => c.setDisabled(true));
         await msg.edit({
           embeds: [embed],
           content: winMsg.msg,
           components: [row]
         });
-        return;
       }
     });
   }
@@ -298,21 +238,7 @@ module.exports = {
 const createDeck = () => {
   const deck = [];
   const suits = ['♥', '♦', '♣', '♠'];
-  const values = [
-    '2',
-    '3',
-    '4',
-    '5',
-    '6',
-    '7',
-    '8',
-    '9',
-    '10',
-    'J',
-    'Q',
-    'K',
-    'A'
-  ];
+  const values = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
   for (const suit of suits) {
     for (const value of values) {
       deck.push({ suit, value });
@@ -336,111 +262,29 @@ function calculateScore(cards, bot) {
   if (bot) {
     let score = 0;
     const card = cards[0];
-    if (card.value === 'A') {
-      score += 11;
-    } else if (['J', 'Q', 'K'].includes(card.value)) {
-      score += 10;
-    } else {
-      score += parseInt(card.value);
-    }
-    return score;
-  } else {
-    let score = 0;
-    let ace = false;
-
-    for (const card of cards) {
-      if (card.value === 'A') {
-        ace = true;
-        score += 11;
-      } else if (['J', 'Q', 'K'].includes(card.value)) {
-        score += 10;
-      } else {
-        score += parseInt(card.value);
-      }
-    }
-
-    if (ace && score > 21) {
-      score -= 10;
-    }
-
+    if (card.value === 'A') score += 11;
+    else if (['J', 'Q', 'K'].includes(card.value)) score += 10;
+    else score += parseInt(card.value);
     return score;
   }
+  let score = 0;
+  let ace = false;
+  for (const card of cards) {
+    if (card.value === 'A') { ace = true; score += 11; }
+    else if (['J', 'Q', 'K'].includes(card.value)) score += 10;
+    else score += parseInt(card.value);
+  }
+  if (ace && score > 21) score -= 10;
+  return score;
 }
 
 function formatHand(hand, bot) {
   if (bot) {
-    return hand.map(
-      (a, ind) =>
-        `${
-          ind == 0
-            ? `[\`${a.suit}${a.value}\`](https://discord.com/invite/fight "nuh uh")`
-            : `[\`??\`](https://discord.com/invite/fight "nuh uh")`
-        }`
+    return hand.map((a, ind) =>
+      ind === 0
+        ? `[\`${a.suit}${a.value}\`](https://discord.com/invite/fight "nuh uh")`
+        : `[\`??\`](https://discord.com/invite/fight "nuh uh")`
     );
-  } else {
-    return hand
-      .map(
-        (a) =>
-          `[\`${a.suit}${a.value}\`](https://discord.com/invite/fight "nuh uh")`
-      )
-      .join(' ');
   }
+  return hand.map((a) => `[\`${a.suit}${a.value}\`](https://discord.com/invite/fight "nuh uh")`).join(' ');
 }
-const addCd = async (userId) => {
-  cd.push(userId);
-  await sleep(5_000);
-  cd = cd.filter((a) => a != userId);
-};
-
-const sleep = (milliseconds) => {
-  return new Promise((resolve) => setTimeout(resolve, milliseconds));
-};
-const parseAmount = (string) => {
-  // Checks if first digit is valid number
-  if (isNaN(string[0])) return null;
-
-  // Return if number is like "5e4" etc.
-  if (!isNaN(Number(string))) return Number(string);
-
-  // Check for "m", "k" etc. and return value
-  if (!string.endsWith('m') && !string.endsWith('k') && !string.endsWith('b'))
-    return null;
-
-  // Add values of m, k and b
-  const val = string[string.length - 1];
-  const rawString = string.replace(string[string.length - 1], '');
-  const calculated = parseInt(rawString) * StringValues[val];
-
-  // Invalid number
-  if (isNaN(calculated)) return null;
-  else return calculated;
-};
-
-const StringValues = {
-  m: 1e6,
-  k: 1e3,
-  b: 1e9
-};
-const removeCoins = async (userId, amount) => {
-  const user = await getUser(userId);
-  user.coins -= Number(amount);
-  user.save();
-};
-const addCoins = async (userId, amount) => {
-  const user = await getUser(userId);
-  user.coins += amount;
-  user.save();
-};
-
-const getUser = async (userId) => {
-  let dbu = await Database.findOne({
-    userId
-  });
-  if (!dbu) {
-    dbu = new Database({
-      userId,
-      coins: 0
-    });
-  }
-  return dbu;
-};

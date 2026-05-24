@@ -7,7 +7,8 @@ const {
   ActionRowBuilder,
   Colors
 } = require('discord.js');
-const roll = require('../../database/roll');
+const roll = require('../../database/models/roll');
+const config = require('../../config');
 const Cooldown = new Set();
 module.exports = {
   name: 'roll',
@@ -19,7 +20,7 @@ module.exports = {
    */
   async execute(message, args, client) {
     if (args[0] == 'reset') {
-      if (message.member.roles.cache.has('1016728636365209631')) {
+      if (message.member.roles.cache.has(config.roles.staff.cman)) {
         await roll.deleteMany({});
         return message.reply('All rolls have been reset.');
       }

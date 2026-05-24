@@ -1,6 +1,6 @@
 // const { Message, Client, EmbedBuilder, Colors } = require('discord.js');
 // let cd = [];
-// const Database = require('../../database/coins');
+// const Database = require('../../database/models/coins');
 // module.exports = {
 //   name: 'slots',
 //   aliases: ['sl'],
@@ -11,7 +11,7 @@
 //    */
 //   async execute(message, args, client) {
 //     return message.reply('Temporarily disabled!');
-//     if (message.guildId !== '824294231447044197') return;
+//     if (message.guildId !== config.ids.guildId) return;
 //     const userId = message.author.id;
 //     const user = await getUser(userId);
 //     let amount = args.shift();

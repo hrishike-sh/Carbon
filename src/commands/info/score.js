@@ -1,39 +1,24 @@
-const { Client, Message, EmbedBuilder } = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 const API_KEY = process.env.SCORE_API;
 
 module.exports = {
   name: 'score',
   aliases: ['ipl'],
   cooldown: 3,
-  /**
-   *
-   * @param {Message} message
-   * @param {String[]} args
-   */
+
   async execute(message, args) {
-    console.log('Command executed: score');
     const msg = await message.channel.send({
-      embeds: [
-        {
-          title: 'Fetching data...'
-        }
-      ]
+      embeds: [{ title: 'Fetching data...' }]
     });
 
     try {
-      console.log('Fetching data from API...');
       const req = await fetch(
         `https://api.cricapi.com/v1/currentMatches?apikey=${API_KEY}&offset=0`
       );
-      if (!req.ok) {
-        console.error('Error fetching data:', req.status);
-        throw new Error(req.status);
-      }
+      if (!req.ok) throw new Error(req.status);
 
       const data = await req.json();
-      console.log('Data fetched successfully');
       const match = data.data[0];
-      console.log(match);
       const embed = new EmbedBuilder()
         .setTitle(match.name)
         .setColor(1652874)
@@ -41,10 +26,9 @@ module.exports = {
         .setThumbnail(
           'https://www.jagranimages.com/images/newimg/21082020/21_08_2020-ipl_logo_20650553.jpg'
         )
-        .setFooter({
-          text: match.venue
-        })
+        .setFooter({ text: match.venue })
         .setTimestamp();
+
       for (let i = 0; i < 2; i++) {
         embed.addFields({
           name: match.score[i].inning.split('Inning')[0],
@@ -54,9 +38,8 @@ module.exports = {
       }
 
       await msg.edit({ embeds: [embed] });
-      console.log('Message edited with match data');
     } catch (error) {
-      console.error('An error occurred:', error);
+      msg.edit({ embeds: [{ title: 'Failed to fetch score data.' }] });
     }
   }
 };

@@ -6,6 +6,7 @@ const {
   ButtonBuilder,
   ButtonStyle
 } = require('discord.js');
+const config = require('../../config');
 
 module.exports = {
   name: 'addtalk',
@@ -16,9 +17,9 @@ module.exports = {
    */
   async execute(message, args) {
     const allowedRoles = [
-      '858088054942203945',
-      '824348974449819658',
-      '824539655134773269'
+      config.roles.giveawayManager,
+      config.roles.staff.admin,
+      config.roles.staff.mod
     ];
     const talkRole = '880014639142936586';
 
