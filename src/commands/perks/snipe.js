@@ -8,10 +8,11 @@ const { createEmbed } = require('../../utils/embeds');
 
 function buildSnipeEmbed(target, index, total) {
   const { msg, time, image } = target;
+  const author = msg.author;
   return createEmbed({
     color: 'Random',
-    author: { name: msg.author.tag || 'Unknown', iconURL: msg.author.displayAvatarURL() },
-    description: msg.content,
+    author: author ? { name: author.tag, iconURL: author.displayAvatarURL() } : { name: 'Unknown' },
+    description: msg.content || '*[no content]*',
     footer: `${index + 1}/${total}`,
     timestamp: time,
     image
@@ -88,12 +89,12 @@ module.exports = {
     });
 
     collector.on('end', () => {
-      if (mainMessage.editable) {
+      try {
         prevBut.setDisabled();
         delBut.setDisabled();
         nextBut.setDisabled();
         mainMessage.edit({ components: [row] });
-      }
+      } catch {}
     });
   }
 };

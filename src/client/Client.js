@@ -31,7 +31,12 @@ function createClient() {
     lastHighlightPing: null,
     counts: {
       commandsRan: 0,
-      messagesRead: 0
+      messagesRead: 0,
+      slashCommandsRan: 0,
+      coinEventsTriggered: 0,
+      heistsTriggered: 0,
+      mathEventsTriggered: 0,
+      activeUsers: new Set()
     }
   };
 

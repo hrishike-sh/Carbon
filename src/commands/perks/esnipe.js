@@ -7,13 +7,13 @@ const config = require('../../config');
 const { createEmbed } = require('../../utils/embeds');
 
 function buildESnipeEmbed(target, index, total) {
-  const { msg, oldContent, newContent } = target;
+  const { author, oldContent, newContent } = target;
   return createEmbed({
     color: 'Random',
-    author: { name: msg.author.tag, iconURL: msg.author.displayAvatarURL() || null },
+    author: author ? { name: author.tag, iconURL: author.displayAvatarURL() || null } : { name: 'Unknown' },
     fields: [
-      { name: 'Old Message', value: oldContent, inline: true },
-      { name: 'New Message', value: newContent, inline: true }
+      { name: 'Old Message', value: oldContent || '*[no content]*', inline: true },
+      { name: 'New Message', value: newContent || '*[no content]*', inline: true }
     ],
     footer: `${index + 1}/${total}`
   });

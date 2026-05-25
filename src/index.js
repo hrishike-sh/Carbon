@@ -43,6 +43,9 @@ async function main() {
     // Trigger 2025 event scheduler
     client.emit('tick');
 
+    // Start hourly stats reporter
+    client.emit('hourlyStats');
+
     // Leave small guilds (keep Carbon server and main guild)
     if (client.shard) {
       client.shard.broadcastEval((c) => {
@@ -64,6 +67,7 @@ async function main() {
   // Prefix command handler
   client.on(Events.MessageCreate, async (message) => {
     client.state.counts.messagesRead++;
+    client.state.counts.activeUsers.add(message.author.id);
 
     if (message.author.bot) return;
     if (!message.guild) return;
@@ -138,6 +142,7 @@ async function main() {
 
     try {
       await command.execute(interaction, client);
+      client.state.counts.slashCommandsRan++;
     } catch (err) {
       logger.error(`Slash command "${interaction.commandName}" error`, err);
       const embed = errorEmbed({ description: 'There was an error while executing this command!' });

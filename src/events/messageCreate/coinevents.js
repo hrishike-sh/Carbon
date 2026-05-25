@@ -9,7 +9,7 @@ const channelCooldowns = [];
 module.exports = {
   name: 'coinevents',
 
-  async execute(message) {
+  async execute(message, client) {
     if (message.guild.id !== config.ids.guildId) return;
 
     const restrictedChannels = [config.ids.channels.modChat, config.ids.channels.fightAds];
@@ -22,11 +22,15 @@ module.exports = {
       channelCooldowns.splice(channelCooldowns.indexOf(message.channel.id), 1);
     }, 1000 * 60 * 10);
 
+    client.state.counts.coinEventsTriggered++;
+
     const randomEvent = ['heist', 'math'][Math.floor(Math.random() * 2)];
 
     if (randomEvent === 'heist') {
+      client.state.counts.heistsTriggered++;
       await runHeist(message);
     } else {
+      client.state.counts.mathEventsTriggered++;
       await runMathEvent(message);
     }
   }

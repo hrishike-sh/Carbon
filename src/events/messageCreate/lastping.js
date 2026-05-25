@@ -14,21 +14,22 @@ module.exports = {
       if (!member.roles.cache.hasAny(...config.roles.lastPingAllowed)) continue;
       if (!message.channel.permissionsFor(member.id).has('ViewChannel')) continue;
 
-      const userId = member.id;
-      let dbUser = await Database.findOne({ userId });
-      if (!dbUser) {
-        dbUser = new Database({ userId, pings: [] });
-      }
-
-      dbUser.pings.push({
-        pingerId: message.author.id,
-        msg: {
-          url: `https://discord.com/channels/${message.guild.id}/${message.channel.id}/${message.id}`,
-          content: message.content,
-          when: (message.createdTimestamp / 1000).toFixed(0)
-        }
-      });
-      await dbUser.save();
+      await Database.findOneAndUpdate(
+        { userId: member.id },
+        {
+          $push: {
+            pings: {
+              pingerId: message.author.id,
+              msg: {
+                url: `https://discord.com/channels/${message.guild.id}/${message.channel.id}/${message.id}`,
+                content: message.content,
+                when: (message.createdTimestamp / 1000).toFixed(0)
+              }
+            }
+          }
+        },
+        { upsert: true, new: true }
+      );
     }
   }
 };
