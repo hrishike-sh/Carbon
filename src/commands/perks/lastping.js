@@ -9,17 +9,12 @@ const { sleep } = require('../../utils/helpers');
 const { errorEmbed, infoEmbed } = require('../../utils/embeds');
 
 const MAX_DISPLAYED_PINGS = 10;
-const MAX_PREVIEW_LENGTH = 160;
+const MAX_PREVIEW_LENGTH = 90;
 const HIDDEN_CHANNEL_ID = '870240187198885888';
 
 function truncate(text, maxLength) {
   if (text.length <= maxLength) return text;
   return `${text.slice(0, maxLength - 3).trim()}...`;
-}
-
-function getChannelMention(url) {
-  const channelId = url?.match(/\/channels\/\d+\/(\d+)\//)?.[1];
-  return channelId ? `<#${channelId}>` : 'Unknown channel';
 }
 
 function formatPreview(content) {
@@ -66,13 +61,9 @@ module.exports = {
               (await message.client.users.fetch(ping.pingerId).catch(() => null))?.tag ||
               'Unknown user';
 
-            return [
-              `**${index + 1}.** <t:${ping.msg.when}:R> in ${getChannelMention(ping.msg.url)}`,
-              `From **${pinger}** - [Jump](${ping.msg.url})`,
-              `> ${formatPreview(ping.msg.content)}`
-            ].join('\n');
+            return `\`${index + 1}.\` <t:${ping.msg.when}:R> **${pinger}**: ${formatPreview(ping.msg.content)} [jump](${ping.msg.url})`;
           })
-        )).join('\n\n')
+        )).join('\n')
       : 'You have no recent pings.';
 
     const components = pings.length
@@ -80,8 +71,8 @@ module.exports = {
           new ActionRowBuilder().addComponents([
             new ButtonBuilder()
               .setCustomId(`lastping_clear_${message.id}`)
-              .setLabel('Clear')
-              .setStyle(ButtonStyle.Danger)
+              .setEmoji('🗑')
+              .setStyle(ButtonStyle.Secondary)
           ])
         ]
       : [];
