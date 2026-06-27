@@ -1,15 +1,20 @@
 const {
   ActionRowBuilder,
   ButtonBuilder,
-  ButtonStyle
+  ButtonStyle,
+  ContainerBuilder,
+  MessageFlags,
+  SeparatorBuilder,
+  SeparatorSpacingSize,
+  TextDisplayBuilder
 } = require('discord.js');
 const Database = require('../../database/models/lastping');
 const config = require('../../config');
 const { sleep } = require('../../utils/helpers');
-const { errorEmbed, infoEmbed } = require('../../utils/embeds');
+const { errorEmbed } = require('../../utils/embeds');
 
-const MAX_DISPLAYED_PINGS = 10;
-const MAX_PREVIEW_LENGTH = 90;
+const PAGE_SIZE = 5;
+const MAX_PREVIEW_LENGTH = 120;
 const HIDDEN_CHANNEL_ID = '870240187198885888';
 
 function truncate(text, maxLength) {
@@ -20,6 +25,69 @@ function truncate(text, maxLength) {
 function formatPreview(content) {
   const cleaned = content?.replace(/\s+/g, ' ').trim();
   return truncate(cleaned || '[no content]', MAX_PREVIEW_LENGTH);
+}
+
+function createNavRow(messageId, totalPages, disabled = false) {
+  return new ActionRowBuilder().addComponents([
+    new ButtonBuilder()
+      .setEmoji('911971090954326017')
+      .setCustomId(`lastping_prev_${messageId}`)
+      .setStyle(ButtonStyle.Success)
+      .setDisabled(disabled || totalPages <= 1),
+    new ButtonBuilder()
+      .setLabel('Delete')
+      .setCustomId(`lastping_delete_${messageId}`)
+      .setStyle(ButtonStyle.Primary)
+      .setDisabled(disabled),
+    new ButtonBuilder()
+      .setEmoji('911971202048864267')
+      .setCustomId(`lastping_next_${messageId}`)
+      .setStyle(ButtonStyle.Success)
+      .setDisabled(disabled || totalPages <= 1)
+  ]);
+}
+
+async function createLastPingContainer(message, pings, page, disabled = false) {
+  const totalPages = Math.max(1, Math.ceil(pings.length / PAGE_SIZE));
+  const start = page * PAGE_SIZE;
+  const pagePings = pings.slice(start, start + PAGE_SIZE);
+
+  const description = pagePings.length
+    ? (await Promise.all(
+        pagePings.map(async (ping, index) => {
+          const pinger =
+            (await message.client.users.fetch(ping.pingerId).catch(() => null))?.tag ||
+            'Unknown user';
+          const number = String(start + index + 1).padStart(2, '0');
+
+          return `\`${number}.\` **${pinger}** - <t:${ping.msg.when}:R>\n${formatPreview(ping.msg.content)} [jump](${ping.msg.url})`;
+        })
+      )).join('\n\n')
+    : 'You have no recent pings.';
+
+  const footer = pagePings.length
+    ? `Page ${page + 1}/${totalPages} - ${pings.length} ping${pings.length === 1 ? '' : 's'}`
+    : 'No pings stored.';
+
+  const container = new ContainerBuilder()
+    .setAccentColor(0x5865f2)
+    .addTextDisplayComponents(
+      new TextDisplayBuilder().setContent('### Last Pings'),
+      new TextDisplayBuilder().setContent(description),
+      new TextDisplayBuilder().setContent(`-# ${footer}`)
+    );
+
+  if (pings.length) {
+    container
+      .addSeparatorComponents(
+        new SeparatorBuilder()
+          .setDivider(false)
+          .setSpacing(SeparatorSpacingSize.Small)
+      )
+      .addActionRowComponents(createNavRow(message.id, totalPages, disabled));
+  }
+
+  return container;
 }
 
 module.exports = {
@@ -49,76 +117,52 @@ module.exports = {
 
     const userId = message.author.id;
     const user = await Database.findOne({ userId });
-    const totalPings = user?.pings?.length || 0;
     const pings = [...(user?.pings || [])]
-      .sort((a, b) => Number(b.msg.when) - Number(a.msg.when))
-      .slice(0, MAX_DISPLAYED_PINGS);
-
-    const description = pings.length
-      ? (await Promise.all(
-          pings.map(async (ping, index) => {
-            const pinger =
-              (await message.client.users.fetch(ping.pingerId).catch(() => null))?.tag ||
-              'Unknown user';
-
-            return `\`${index + 1}.\` <t:${ping.msg.when}:R> **${pinger}**: ${formatPreview(ping.msg.content)} [jump](${ping.msg.url})`;
-          })
-        )).join('\n')
-      : 'You have no recent pings.';
-
-    const components = pings.length
-      ? [
-          new ActionRowBuilder().addComponents([
-            new ButtonBuilder()
-              .setCustomId(`lastping_clear_${message.id}`)
-              .setEmoji('🗑')
-              .setStyle(ButtonStyle.Secondary)
-          ])
-        ]
-      : [];
+      .sort((a, b) => Number(b.msg.when) - Number(a.msg.when));
+    let page = 0;
+    const totalPages = Math.max(1, Math.ceil(pings.length / PAGE_SIZE));
 
     const reply = await message.reply({
-      embeds: [
-        infoEmbed({
-          title: 'Last Pings',
-          description,
-          footer: pings.length
-            ? `Showing ${pings.length}/${totalPings}.`
-            : 'Only 10 pings are stored.'
-        })
-      ],
-      components,
+      components: [await createLastPingContainer(message, pings, page)],
+      flags: MessageFlags.IsComponentsV2,
       allowedMentions: { roles: [], users: [] }
     });
 
-    if (user?.pings?.length > MAX_DISPLAYED_PINGS) {
-      user.pings = pings;
-      await user.save();
-    }
-
     if (!pings.length) return;
 
-    reply
-      .awaitMessageComponent({
-        filter: (interaction) => interaction.user.id === message.author.id,
-        time: 60000
-      })
-      .then(async (interaction) => {
+    const collector = reply.createMessageComponentCollector({
+      filter: (interaction) => interaction.user.id === message.author.id,
+      idle: 60000
+    });
+
+    collector.on('collect', async (interaction) => {
+      if (interaction.customId === `lastping_prev_${message.id}`) {
+        page--;
+        if (page < 0) page = totalPages - 1;
+      } else if (interaction.customId === `lastping_next_${message.id}`) {
+        page++;
+        if (page >= totalPages) page = 0;
+      } else if (interaction.customId === `lastping_delete_${message.id}`) {
         user.pings = [];
         await user.save();
-        await interaction.update({
-          embeds: [
-            infoEmbed({
-              title: 'Last Pings',
-              description: 'Your pings have been cleared.',
-              footer: 'Only 10 pings are stored.'
-            })
-          ],
-          components: []
+        collector.stop('deleted');
+        return interaction.update({
+          components: [await createLastPingContainer(message, [], 0)],
+          flags: MessageFlags.IsComponentsV2
         });
-      })
-      .catch(() => {
-        reply.edit({ components: [] }).catch(() => {});
+      }
+
+      await interaction.update({
+        components: [await createLastPingContainer(message, pings, page)],
+        flags: MessageFlags.IsComponentsV2
       });
+    });
+
+    collector.on('end', async (_, reason) => {
+      if (reason === 'deleted') return;
+      reply.edit({
+        components: [await createLastPingContainer(message, pings, page, true)]
+      }).catch(() => {});
+    });
   }
 };
