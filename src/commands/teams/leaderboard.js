@@ -1,31 +1,23 @@
 const TeamDB = require('../../database/models/teams');
 const { infoEmbed } = require('../../utils/embeds');
 
-const arr = ['🥇', '🥈', '🥉'];
-
 module.exports = {
   name: 'teamleaderboard',
   aliases: ['eventleaderboard', 'tlb'],
-  /**
-   * @param {Message} message Discord Message
-   * @param {String[]} args Command Arguments
-   * @param {Client} client Discord Client
-   */
+
   async execute(message, args, client) {
-    const allTeams = await TeamDB.find({}).sort({ points: -1 });
+    const allTeams = await TeamDB.find({}).sort({ points: -1, lives: -1 });
 
     const map = allTeams.map(
-      (a, ind) =>
-        `${arr[ind] || '<:blank:914473340129906708>'} **${a.name}** : ${
-          a.points
-        }`
+      (team, index) =>
+        `${index + 1}. **${team.name}** : ${team.points} points, ${team.lives ?? 5} lives`
     );
 
     return message.reply({
       embeds: [
         infoEmbed({
-          title: 'Anniversary Leaderboard',
-          description: map.join('\n'),
+          title: 'Summer Fight Leaderboard',
+          description: map.join('\n') || 'No teams yet.',
           timestamp: true
         })
       ]

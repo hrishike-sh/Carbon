@@ -11,6 +11,7 @@ let opening = [];
 
 module.exports = {
   name: 'luckybox',
+  aliases: ['lootbox'],
   description: 'Open a lucky box.',
 
   execute: async (message, args, client) => {

@@ -32,6 +32,10 @@ module.exports = {
     if (!team)
       return message.reply('The team does not exist! Create it first.');
 
+    const existingTeam = await TeamDB.findOne({ users: member.id });
+    if (existingTeam)
+      return message.reply(`The member is already in **${existingTeam.name}**.`);
+
     if (team.users.includes(member.id))
       return message.reply('The member is already in the team.');
 
