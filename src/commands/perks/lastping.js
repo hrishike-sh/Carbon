@@ -1,12 +1,7 @@
 const {
   ActionRowBuilder,
   ButtonBuilder,
-  ButtonStyle,
-  ContainerBuilder,
-  MessageFlags,
-  SeparatorBuilder,
-  SeparatorSpacingSize,
-  TextDisplayBuilder
+  ButtonStyle
 } = require('discord.js');
 const Database = require('../../database/models/lastping');
 const config = require('../../config');
@@ -47,15 +42,6 @@ function createNavRow(messageId, totalPages, disabled = false) {
   ]);
 }
 
-function supportsComponentsV2() {
-  return Boolean(
-    ContainerBuilder &&
-    SeparatorBuilder &&
-    TextDisplayBuilder &&
-    MessageFlags?.IsComponentsV2
-  );
-}
-
 async function createLastPingDescription(message, pings, page) {
   const start = page * PAGE_SIZE;
   const pagePings = pings.slice(start, start + PAGE_SIZE);
@@ -83,41 +69,8 @@ function createFooter(pings, page) {
   return `Page ${page + 1}/${totalPages} - ${pings.length} ping${pings.length === 1 ? '' : 's'}`;
 }
 
-async function createLastPingContainer(message, pings, page, disabled = false) {
-  const totalPages = Math.max(1, Math.ceil(pings.length / PAGE_SIZE));
-  const description = await createLastPingDescription(message, pings, page);
-
-  const container = new ContainerBuilder()
-    .setAccentColor(0x5865f2)
-    .addTextDisplayComponents(
-      new TextDisplayBuilder().setContent('### Last Pings'),
-      new TextDisplayBuilder().setContent(description),
-      new TextDisplayBuilder().setContent(`-# ${createFooter(pings, page)}`)
-    );
-
-  if (pings.length) {
-    container
-      .addSeparatorComponents(
-        new SeparatorBuilder()
-          .setDivider(false)
-          .setSpacing(SeparatorSpacingSize.Small)
-      )
-      .addActionRowComponents(createNavRow(message.id, totalPages, disabled));
-  }
-
-  return container;
-}
-
 async function createLastPingPayload(message, pings, page, disabled = false) {
   const totalPages = Math.max(1, Math.ceil(pings.length / PAGE_SIZE));
-
-  if (supportsComponentsV2()) {
-    return {
-      components: [await createLastPingContainer(message, pings, page, disabled)],
-      flags: MessageFlags.IsComponentsV2,
-      allowedMentions: { roles: [], users: [] }
-    };
-  }
 
   return {
     embeds: [
