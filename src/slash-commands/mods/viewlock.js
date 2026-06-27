@@ -38,7 +38,7 @@ module.exports = {
     const client = interaction.client;
     if (!interaction.member.roles.cache.has('1016728636365209631')) {
       return interaction.reply({
-        ephemeral: true,
+        flags: 64,
         content: "You can't use this command."
       });
     }

@@ -76,7 +76,7 @@ module.exports = {
       filter: (interaction) => {
         if (players.some((p) => p.id === interaction.user.id)) {
           interaction.reply({
-            ephemeral: true,
+            flags: 64,
             content: 'You have already joined the game.'
           });
           return false;
@@ -90,7 +90,7 @@ module.exports = {
       if (players.length >= MAX_PLAYERS) {
         joinCollector.stop('full');
         interaction.reply({
-          ephemeral: true,
+          flags: 64,
           content: 'The game is already full!'
         });
         return;
@@ -105,7 +105,7 @@ module.exports = {
       });
 
       await interaction.reply({
-        ephemeral: true,
+        flags: 64,
         content: 'You have joined the game.'
       });
 
@@ -154,14 +154,14 @@ module.exports = {
           const player = players.find((p) => p.id === interaction.user.id);
           if (!player) {
             interaction.reply({
-              ephemeral: true,
+              flags: 64,
               content: "You're not in this game!"
             });
             return false;
           }
           if (player.health <= 0) {
             interaction.reply({
-              ephemeral: true,
+              flags: 64,
               content: "You're already dead!"
             });
             return false;
@@ -297,7 +297,7 @@ module.exports = {
 
         if (playersWhoActedThisRound.has(actor.id)) {
           await interaction.reply({
-            ephemeral: true,
+            flags: 64,
             content: 'You have already acted this round!'
           });
           return;
@@ -311,7 +311,7 @@ module.exports = {
 
             if (targets.length === 0) {
               await interaction.reply({
-                ephemeral: true,
+                flags: 64,
                 content: 'There is no one left to attack!'
               });
               return;
@@ -343,7 +343,7 @@ module.exports = {
             const attackReply = await interaction.reply({
               content: 'Who do you want to attack?',
               components: targetRows,
-              ephemeral: true,
+              flags: 64,
               fetchReply: true
             });
 
@@ -443,12 +443,12 @@ module.exports = {
               if (!actor.weapon) {
                 actor.weapon = true;
                 await interaction.reply({
-                  ephemeral: true,
+                  flags: 64,
                   content: 'You searched and found a Dagger! 🗡'
                 });
               } else {
                 await interaction.reply({
-                  ephemeral: true,
+                  flags: 64,
                   content:
                     'You searched and found another Dagger, but you already have one.'
                 });
@@ -456,7 +456,7 @@ module.exports = {
             } else {
               actor.bandaids++;
               await interaction.reply({
-                ephemeral: true,
+                flags: 64,
                 content: 'You searched and found a Bandaid! 🩹'
               });
             }
@@ -466,7 +466,7 @@ module.exports = {
           case 'br_use_bandaid':
             if (actor.bandaids <= 0) {
               await interaction.reply({
-                ephemeral: true,
+                flags: 64,
                 content: "You don't have any bandaids to use!"
               });
               return;
@@ -475,7 +475,7 @@ module.exports = {
             actor.bandaids--;
             actor.health += BANDAID_HEAL_AMOUNT;
             await interaction.reply({
-              ephemeral: true,
+              flags: 64,
               content: `You used a Bandaid and healed for ${BANDAID_HEAL_AMOUNT} HP! You now have ${actor.health} HP.`
             });
             updateGameMessage();

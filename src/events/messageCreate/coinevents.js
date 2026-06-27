@@ -60,10 +60,10 @@ async function runHeist(message) {
 
   collector.on('collect', async (button) => {
     if (joined.includes(button.user.id)) {
-      return button.reply({ ephemeral: true, content: "You've already joined the heist." });
+      return button.reply({ flags: 64, content: "You've already joined the heist." });
     }
     joined.push(button.user.id);
-    return button.reply({ ephemeral: true, content: "You've joined the heist, good luck!" });
+    return button.reply({ flags: 64, content: "You've joined the heist, good luck!" });
   });
 
   collector.on('end', async () => {

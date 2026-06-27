@@ -63,7 +63,7 @@ module.exports = {
                 });
                 await submitted.reply({
                     content: 'Settings Saved!',
-                    ephemeral: true
+                    flags: 64
                 });
                 IMPOSTERS = parseInt(submitted.fields.getTextInputValue('imposters_count'));
                 WORD = submitted.fields.getTextInputValue('word');
@@ -79,7 +79,7 @@ module.exports = {
             if (i.customId == 'imposters_start') {
                 await i.reply({
                     content: 'Game Started!',
-                    ephemeral: true
+                    flags: 64
                 });
                 SettingsCollector.stop();
             }
@@ -112,14 +112,14 @@ module.exports = {
                 // if (joinButton.user.id == message.author.id) {
                 //   return joinButton.reply({
                 //     content: "You cannot join this game because you're hosting it!",
-                //     ephemeral: true
+                //     flags: 64
                 //   });
                 // }
                 if (PLAYERS.has(joinButton.user.id)) {
                     PLAYERS.delete(joinButton.user.id);
                     await joinButton.reply({
                         content: 'You left the game!',
-                        ephemeral: true
+                        flags: 64
                     });
                     // @ts-ignore
                     GameRow.components[0].setLabel(`Join [${PLAYERS.size}]`);
@@ -136,7 +136,7 @@ module.exports = {
                     });
                     await joinButton.reply({
                         content: 'You joined the game!',
-                        ephemeral: true
+                        flags: 64
                     });
                     // @ts-ignore
                     GameRow.components[0].setLabel(`Join [${PLAYERS.size}]`);
@@ -238,20 +238,20 @@ module.exports = {
                         if (!PLAYERS.has(wordButton.user.id)) {
                             return wordButton.reply({
                                 content: 'You are not in this game.',
-                                ephemeral: true
+                                flags: 64
                             });
                         }
                         if (!PLAYERS.get(wordButton.user.id)?.alive) {
                             return wordButton.reply({
                                 content: "Dead users can't type!!",
-                                ephemeral: true
+                                flags: 64
                             });
                         }
                         const curr = queue[i];
                         if (wordButton.user.id !== curr.user.id) {
                             return wordButton.reply({
                                 content: "It's not your turn!",
-                                ephemeral: true
+                                flags: 64
                             });
                         }
                         await wordButton.showModal(modal);
@@ -264,7 +264,7 @@ module.exports = {
                             i++;
                             return wordButton.followUp({
                                 content: 'You did not submit the modal in time.',
-                                ephemeral: true
+                                flags: 64
                             });
                         }
                         const word = submitted?.fields?.getTextInputValue('word') || '';
@@ -272,14 +272,14 @@ module.exports = {
                             i++;
                             return submitted.reply({
                                 content: 'Someone else submitted that word! You lost your turn!',
-                                ephemeral: true
+                                flags: 64
                             });
                         }
                         else if (word == WORD) {
                             i++;
                             return submitted.reply({
                                 content: `You cannot use that word!`,
-                                ephemeral: true
+                                flags: 64
                             });
                         }
                         else {
@@ -287,7 +287,7 @@ module.exports = {
                         }
                         await submitted.reply({
                             content: 'Your word has been submitted!',
-                            ephemeral: true
+                            flags: 64
                         });
                         WriteEmbed.setFields([
                             {
@@ -414,13 +414,13 @@ module.exports = {
                             if (!PLAYERS.has(i.user.id)) {
                                 return i.reply({
                                     content: 'You are not in the game!',
-                                    ephemeral: true
+                                    flags: 64
                                 });
                             }
                             if (voted.includes(i.user.id)) {
                                 return i.reply({
                                     content: 'You have already voted!',
-                                    ephemeral: true
+                                    flags: 64
                                 });
                             }
                             voted.push(i.user.id);

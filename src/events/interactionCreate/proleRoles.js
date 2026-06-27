@@ -14,7 +14,7 @@ module.exports = {
     if (int.member.roles.cache.has(roleId)) {
       await int.member.roles.remove(roleId);
       return int.reply({
-        ephemeral: true,
+        flags: 64,
         allowedMentions: { roles: [], users: [] },
         content: `I have removed your <@&${roleId}> role.`
       });
@@ -22,7 +22,7 @@ module.exports = {
 
     await int.member.roles.add(roleId);
     return int.reply({
-      ephemeral: true,
+      flags: 64,
       allowedMentions: { roles: [], users: [] },
       content: `I have added the <@&${roleId}> role.`
     });

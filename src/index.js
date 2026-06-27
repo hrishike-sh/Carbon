@@ -147,7 +147,7 @@ async function main() {
       logger.error(`Slash command "${interaction.commandName}" error`, err);
       const embed = errorEmbed({ description: 'There was an error while executing this command!' });
       const reply = interaction.replied || interaction.deferred ? 'followUp' : 'reply';
-      interaction[reply]({ embeds: [embed], ephemeral: true }).catch(() => {});
+      interaction[reply]({ embeds: [embed], flags: 64 }).catch(() => {});
     }
   });
 

@@ -39,7 +39,7 @@ module.exports = {
     collector.on('collect', async (button) => {
       if (button.user.id !== message.author.id) {
         return button.reply({
-          ephemeral: true,
+          flags: 64,
           content: 'Run your own command, fh pussy!'
         });
       }

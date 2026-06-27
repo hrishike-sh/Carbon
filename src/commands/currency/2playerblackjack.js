@@ -128,7 +128,7 @@ module.exports = {
           if (userState.stood || userState.busted) {
             return i.reply({
               content: 'You have already finished your turn.',
-              ephemeral: true
+              flags: 64
             });
           }
 
@@ -155,7 +155,7 @@ module.exports = {
           const ephemeralMessage = await i.reply({
             embeds: [handEmbed],
             components: [handRow],
-            ephemeral: true,
+            flags: 64,
             fetchReply: true
           });
 

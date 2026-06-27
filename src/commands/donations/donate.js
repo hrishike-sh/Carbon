@@ -87,7 +87,7 @@ module.exports = {
         if (!button.member.roles.cache.has(consts.eventManagerRoleId)) {
           return button.reply({
             content: `You need to have the <@&${consts.eventManagerRoleId}> role to accept/deny donations!`,
-            ephemeral: true
+            flags: 64
           });
         }
         collector.stop();
@@ -177,7 +177,7 @@ module.exports = {
         if (!button.member.roles.cache.has(consts.giveawayManagerRoleId)) {
           return button.reply({
             content: `You need to have the <@&${consts.giveawayManagerRoleId}> role to accept/deny donations!`,
-            ephemeral: true
+            flags: 64
           });
         }
         collector.stop();

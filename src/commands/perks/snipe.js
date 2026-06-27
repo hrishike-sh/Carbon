@@ -66,7 +66,7 @@ module.exports = {
 
     collector.on('collect', async (button) => {
       if (button.user.id !== message.author.id) {
-        return button.reply({ content: 'This is not your command.', ephemeral: true });
+        return button.reply({ content: 'This is not your command.', flags: 64 });
       }
 
       const id = button.customId;

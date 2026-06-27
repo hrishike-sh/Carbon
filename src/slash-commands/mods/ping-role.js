@@ -96,7 +96,7 @@ module.exports = {
 
     if (!AllowedChannels.includes(interaction.channel.id)) {
       return interaction.reply({
-        ephemeral: true,
+        flags: 64,
         content: 'You can only use this command in allowed channels.'
       });
     }
@@ -118,7 +118,7 @@ module.exports = {
         const date = cooldowns.get('giveaway');
         if (Date.now() < date) {
           return interaction.reply({
-            ephemeral: true,
+            flags: 64,
             content: `This ping is on cooldown! Try again <t:${Math.floor(
               date / 1000
             )}:R>`
@@ -129,7 +129,7 @@ module.exports = {
 
       interaction.reply({
         content: 'Pinged!',
-        ephemeral: true
+        flags: 64
       });
 
       await interaction.channel.send({
@@ -144,7 +144,7 @@ module.exports = {
         const date = cooldowns.get('event');
         if (Date.now() < date) {
           return interaction.reply({
-            ephemeral: true,
+            flags: 64,
             content: `This ping is on cooldown! Try again <t:${Math.floor(
               date / 1000
             )}:R>`
@@ -179,7 +179,7 @@ module.exports = {
       );
       interaction.reply({
         content: 'Pinged!',
-        ephemeral: true
+        flags: 64
       });
 
       await interaction.channel.send({
@@ -193,7 +193,7 @@ module.exports = {
         const date = cooldowns.get('mgaw');
         if (Date.now() < date) {
           return interaction.reply({
-            ephemeral: true,
+            flags: 64,
             content: `This ping is on cooldown! Try again <t:${Math.floor(
               date / 1000
             )}:R>`
@@ -204,7 +204,7 @@ module.exports = {
 
       interaction.reply({
         content: 'Pinged!',
-        ephemeral: true
+        flags: 64
       });
 
       if (data.event.value) {

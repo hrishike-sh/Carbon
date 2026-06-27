@@ -55,7 +55,7 @@ module.exports = {
     const joinCollector = joinMessage.createMessageComponentCollector({
       filter: (m) => {
         if (data.joined.map((a) => a.id).includes(m.user.id)) {
-          m.reply({ ephemeral: true, content: 'You have already joined the game.' });
+          m.reply({ flags: 64, content: 'You have already joined the game.' });
           return false;
         }
         return true;
@@ -69,7 +69,7 @@ module.exports = {
         return;
       }
       data.joined.push({ id: m.user.id, name: m.user.tag, health: 100, weapon: false });
-      await m.reply({ ephemeral: true, content: 'You have joined the game.' });
+      await m.reply({ flags: 64, content: 'You have joined the game.' });
     });
 
     joinCollector.on('end', async () => {
@@ -102,12 +102,12 @@ module.exports = {
       const upgradeCollector = upgradesMessage.createMessageComponentCollector({
         filter: (m) => {
           if (!data.joined.map((a) => a.id).includes(m.user.id)) {
-            m.reply({ ephemeral: true, content: "You're not in this game!" });
+            m.reply({ flags: 64, content: "You're not in this game!" });
             return false;
           }
           const player = data.joined.find((a) => a.id === m.user.id);
           if (player.weapon || player.health > 100) {
-            m.reply({ ephemeral: true, content: "You can't upgrade more than once!" });
+            m.reply({ flags: 64, content: "You can't upgrade more than once!" });
             return false;
           }
           return true;
@@ -119,18 +119,18 @@ module.exports = {
         const player = data.joined.find((a) => a.id === button.user.id);
         if (button.customId.includes('sh')) {
           if (player.health > 100 || player.weapon) {
-            await button.reply({ ephemeral: true, content: 'You have already upgraded your shield or weapon!' });
+            await button.reply({ flags: 64, content: 'You have already upgraded your shield or weapon!' });
             return;
           }
           player.health += 50;
-          await button.reply({ ephemeral: true, content: 'You have upgraded your shield! You now have **150** Health!' });
+          await button.reply({ flags: 64, content: 'You have upgraded your shield! You now have **150** Health!' });
         } else {
           if (player.health > 100 || player.weapon) {
-            await button.reply({ ephemeral: true, content: 'You have already upgraded your shield or weapon!' });
+            await button.reply({ flags: 64, content: 'You have already upgraded your shield or weapon!' });
             return;
           }
           player.weapon = true;
-          await button.reply({ ephemeral: true, content: 'You have upgraded your weapon! You now deal **+10** damage!' });
+          await button.reply({ flags: 64, content: 'You have upgraded your weapon! You now deal **+10** damage!' });
         }
       });
 
@@ -174,11 +174,11 @@ module.exports = {
         ).createMessageComponentCollector({
           filter: (m) => {
             if (!data.joined.map((a) => a.id).includes(m.user.id)) {
-              m.reply({ ephemeral: true, content: "You're not in this game!" });
+              m.reply({ flags: 64, content: "You're not in this game!" });
               return false;
             }
             if (data.joined.find((a) => a.id === m.user.id).health < 1) {
-              m.reply({ ephemeral: true, content: "You're already dead!" });
+              m.reply({ flags: 64, content: "You're already dead!" });
               return false;
             }
             return true;
@@ -188,7 +188,7 @@ module.exports = {
         mainCollector.on('collect', async (m) => {
           const victim = data.joined.find((a) => a.id === m.customId.split('_')[1]);
           if (victim.id === m.user.id) {
-            m.reply({ ephemeral: true, content: "You can't attack yourself!" });
+            m.reply({ flags: 64, content: "You can't attack yourself!" });
             return;
           }
 

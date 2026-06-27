@@ -121,7 +121,7 @@ module.exports = {
       if (button.user.id != message.author.id) {
         return button.reply({
           content: 'This is not your command!',
-          ephemeral: true
+          flags: 64
         });
       }
 

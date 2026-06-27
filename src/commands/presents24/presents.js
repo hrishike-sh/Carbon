@@ -58,7 +58,7 @@ module.exports = {
         if (i.user.id !== message.author.id) {
           i.reply({
             content: 'Not your interaction!',
-            ephemeral: true
+            flags: 64
           });
           return false;
         } else return true;

@@ -97,7 +97,7 @@ module.exports = {
       const fightCollector = fightMessage.createMessageComponentCollector({
         filter: (btn) => {
           if (!users.map((a) => a.id).includes(btn.user.id)) {
-            btn.reply({ content: 'This is not your fight!', ephemeral: true });
+            btn.reply({ content: 'This is not your fight!', flags: 64 });
             return false;
           }
           return true;
@@ -114,7 +114,7 @@ module.exports = {
         }
 
         if (btn.user.id !== turn.id) {
-          return btn.reply({ content: 'This is not your turn!', ephemeral: true });
+          return btn.reply({ content: 'This is not your turn!', flags: 64 });
         }
 
         if (btn.customId === 'fight_attack') {
@@ -149,13 +149,13 @@ module.exports = {
           const heal = 20;
           if (turn.id === message.author.id) {
             if (hp.userT < 1) {
-              return btn.reply({ content: 'You have used all your 5 heals.', ephemeral: true });
+              return btn.reply({ content: 'You have used all your 5 heals.', flags: 64 });
             }
             hp.userT--;
             hp.user += heal;
           } else {
             if (hp.targetT < 1) {
-              return btn.reply({ content: 'You have used all your 5 heals.', ephemeral: true });
+              return btn.reply({ content: 'You have used all your 5 heals.', flags: 64 });
             }
             hp.targetT--;
             hp.target += heal;

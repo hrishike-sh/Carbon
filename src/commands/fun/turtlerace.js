@@ -42,7 +42,7 @@ module.exports = {
       if (gamedata.joined.includes(button.user.id)) {
         return button.reply({
           content: 'You have already joined the game',
-          ephemeral: true
+          flags: 64
         });
       }
       gamedata.joined.push(button.user.id);
@@ -52,7 +52,7 @@ module.exports = {
 
       button.reply({
         content: 'You have joined the game!',
-        ephemeral: true
+        flags: 64
       });
     });
     joinCollector.on('end', async () => {

@@ -46,7 +46,7 @@ module.exports = {
       const gameUser = gamedata.find((a) => a.userId == user.userId)[0];
       if (gameUser) {
         return button.reply({
-          ephemeral: true,
+          flags: 64,
           content: 'You have already joined this game you moneky'
         });
       } else {
@@ -58,7 +58,7 @@ module.exports = {
 
         button.reply({
           content: 'You have joined the game!',
-          ephemeral: true
+          flags: 64
         });
       }
     });

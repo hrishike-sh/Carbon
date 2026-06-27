@@ -78,7 +78,7 @@ module.exports = {
       filter: (button) => {
         if (button.user.id !== message.author.id) {
           button.reply({
-            ephemeral: true,
+            flags: 64,
             embeds: [{ description: 'Start your own game using `fh blackjack`' }]
           });
           return false;

@@ -58,7 +58,7 @@ module.exports = {
 
     collector.on('collect', async (button) => {
       if (button.user.id !== message.author.id) {
-        return button.reply({ ephemeral: true, content: 'This is not for you' });
+        return button.reply({ flags: 64, content: 'This is not for you' });
       }
       const id = button.customId;
       button.deferUpdate();

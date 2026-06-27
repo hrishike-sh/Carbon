@@ -69,7 +69,7 @@ module.exports = {
         if (i.user.id !== message.author.id) {
           i.reply({
             content: 'Not your game!',
-            ephemeral: true
+            flags: 64
           });
           return false;
         } else return true;

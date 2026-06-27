@@ -11,7 +11,7 @@ const {
 const Database = require('../../database/models/lastping');
 const config = require('../../config');
 const { sleep } = require('../../utils/helpers');
-const { errorEmbed } = require('../../utils/embeds');
+const { errorEmbed, infoEmbed } = require('../../utils/embeds');
 
 const PAGE_SIZE = 5;
 const MAX_PREVIEW_LENGTH = 120;
@@ -47,34 +47,52 @@ function createNavRow(messageId, totalPages, disabled = false) {
   ]);
 }
 
-async function createLastPingContainer(message, pings, page, disabled = false) {
-  const totalPages = Math.max(1, Math.ceil(pings.length / PAGE_SIZE));
+function supportsComponentsV2() {
+  return Boolean(
+    ContainerBuilder &&
+    SeparatorBuilder &&
+    TextDisplayBuilder &&
+    MessageFlags?.IsComponentsV2
+  );
+}
+
+async function createLastPingDescription(message, pings, page) {
   const start = page * PAGE_SIZE;
   const pagePings = pings.slice(start, start + PAGE_SIZE);
 
-  const description = pagePings.length
-    ? (await Promise.all(
-        pagePings.map(async (ping, index) => {
-          const pinger =
-            (await message.client.users.fetch(ping.pingerId).catch(() => null))?.tag ||
-            'Unknown user';
-          const number = String(start + index + 1).padStart(2, '0');
+  if (!pagePings.length) {
+    return 'You have no recent pings.';
+  }
 
-          return `\`${number}.\` **${pinger}** - <t:${ping.msg.when}:R>\n${formatPreview(ping.msg.content)} [jump](${ping.msg.url})`;
-        })
-      )).join('\n\n')
-    : 'You have no recent pings.';
+  return (await Promise.all(
+    pagePings.map(async (ping, index) => {
+      const pinger =
+        (await message.client.users.fetch(ping.pingerId).catch(() => null))?.tag ||
+        'Unknown user';
+      const number = String(start + index + 1).padStart(2, '0');
 
-  const footer = pagePings.length
-    ? `Page ${page + 1}/${totalPages} - ${pings.length} ping${pings.length === 1 ? '' : 's'}`
-    : 'No pings stored.';
+      return `\`${number}.\` **${pinger}** - <t:${ping.msg.when}:R>\n${formatPreview(ping.msg.content)} [jump](${ping.msg.url})`;
+    })
+  )).join('\n\n');
+}
+
+function createFooter(pings, page) {
+  if (!pings.length) return 'No pings stored.';
+
+  const totalPages = Math.max(1, Math.ceil(pings.length / PAGE_SIZE));
+  return `Page ${page + 1}/${totalPages} - ${pings.length} ping${pings.length === 1 ? '' : 's'}`;
+}
+
+async function createLastPingContainer(message, pings, page, disabled = false) {
+  const totalPages = Math.max(1, Math.ceil(pings.length / PAGE_SIZE));
+  const description = await createLastPingDescription(message, pings, page);
 
   const container = new ContainerBuilder()
     .setAccentColor(0x5865f2)
     .addTextDisplayComponents(
       new TextDisplayBuilder().setContent('### Last Pings'),
       new TextDisplayBuilder().setContent(description),
-      new TextDisplayBuilder().setContent(`-# ${footer}`)
+      new TextDisplayBuilder().setContent(`-# ${createFooter(pings, page)}`)
     );
 
   if (pings.length) {
@@ -88,6 +106,30 @@ async function createLastPingContainer(message, pings, page, disabled = false) {
   }
 
   return container;
+}
+
+async function createLastPingPayload(message, pings, page, disabled = false) {
+  const totalPages = Math.max(1, Math.ceil(pings.length / PAGE_SIZE));
+
+  if (supportsComponentsV2()) {
+    return {
+      components: [await createLastPingContainer(message, pings, page, disabled)],
+      flags: MessageFlags.IsComponentsV2,
+      allowedMentions: { roles: [], users: [] }
+    };
+  }
+
+  return {
+    embeds: [
+      infoEmbed({
+        title: 'Last Pings',
+        description: await createLastPingDescription(message, pings, page),
+        footer: createFooter(pings, page)
+      })
+    ],
+    components: pings.length ? [createNavRow(message.id, totalPages, disabled)] : [],
+    allowedMentions: { roles: [], users: [] }
+  };
 }
 
 module.exports = {
@@ -122,11 +164,7 @@ module.exports = {
     let page = 0;
     const totalPages = Math.max(1, Math.ceil(pings.length / PAGE_SIZE));
 
-    const reply = await message.reply({
-      components: [await createLastPingContainer(message, pings, page)],
-      flags: MessageFlags.IsComponentsV2,
-      allowedMentions: { roles: [], users: [] }
-    });
+    const reply = await message.reply(await createLastPingPayload(message, pings, page));
 
     if (!pings.length) return;
 
@@ -146,23 +184,15 @@ module.exports = {
         user.pings = [];
         await user.save();
         collector.stop('deleted');
-        return interaction.update({
-          components: [await createLastPingContainer(message, [], 0)],
-          flags: MessageFlags.IsComponentsV2
-        });
+        return interaction.update(await createLastPingPayload(message, [], 0));
       }
 
-      await interaction.update({
-        components: [await createLastPingContainer(message, pings, page)],
-        flags: MessageFlags.IsComponentsV2
-      });
+      await interaction.update(await createLastPingPayload(message, pings, page));
     });
 
     collector.on('end', async (_, reason) => {
       if (reason === 'deleted') return;
-      reply.edit({
-        components: [await createLastPingContainer(message, pings, page, true)]
-      }).catch(() => {});
+      reply.edit(await createLastPingPayload(message, pings, page, true)).catch(() => {});
     });
   }
 };

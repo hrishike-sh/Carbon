@@ -75,7 +75,7 @@ module.exports = {
       if (DATA.joined.includes(button.user.id)) {
         return button.reply({
           content: `You have already joined this game.`,
-          ephemeral: true
+          flags: 64
         });
       }
       if (DATA.joined.length == 9) {

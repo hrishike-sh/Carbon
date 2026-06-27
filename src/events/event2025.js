@@ -130,18 +130,18 @@ async function runFindTheBall(channel, winner, playedUsers, eventName, awardPoin
   const collector = mainMessage.createMessageComponentCollector({ idle: 30_000 });
 
   collector.on('collect', async (button) => {
-    if (winner) return button.reply({ content: 'Someone has already won.', ephemeral: true });
-    if (playedUsers.has(button.user.id)) return button.reply({ content: 'Already played.', ephemeral: true });
+    if (winner) return button.reply({ content: 'Someone has already won.', flags: 64 });
+    if (playedUsers.has(button.user.id)) return button.reply({ content: 'Already played.', flags: 64 });
     playedUsers.add(button.user.id);
 
     if (button.customId === 'ball') {
       winner = button.user;
       const team = await awardPoint(winner.id);
       await sendWinnerEmbed(channel, winner, eventName, team);
-      button.reply({ content: 'You found the ball!', ephemeral: true });
+      button.reply({ content: 'You found the ball!', flags: 64 });
       collector.stop();
     } else {
-      button.reply({ content: 'Incorrect!', ephemeral: true });
+      button.reply({ content: 'Incorrect!', flags: 64 });
     }
   });
 }
@@ -180,14 +180,14 @@ async function runEmojiMemory(channel, winner, playedUsers, eventName, awardPoin
   const gameData = new Collection();
 
   collector.on('collect', async (button) => {
-    if (winner) return button.reply({ content: 'Someone has already won.', ephemeral: true });
+    if (winner) return button.reply({ content: 'Someone has already won.', flags: 64 });
     if (!gameData.has(button.user.id)) {
-      if (playedUsers.has(button.user.id)) return button.reply({ content: 'Already played.', ephemeral: true });
+      if (playedUsers.has(button.user.id)) return button.reply({ content: 'Already played.', flags: 64 });
       gameData.set(button.user.id, { failed: false, correct: 0, won: false });
     }
     const user = gameData.get(button.user.id);
-    if (user.failed) return button.reply({ ephemeral: true, embeds: [{ description: 'Already failed!', color: Theme.error }] });
-    if (user.won) return button.reply({ ephemeral: true, embeds: [{ description: 'Already won!', color: Theme.success }] });
+    if (user.failed) return button.reply({ flags: 64, embeds: [{ description: 'Already failed!', color: Theme.error }] });
+    if (user.won) return button.reply({ flags: 64, embeds: [{ description: 'Already won!', color: Theme.success }] });
 
     if (toShow[user.correct] === button.customId) {
       user.correct++;
@@ -196,15 +196,15 @@ async function runEmojiMemory(channel, winner, playedUsers, eventName, awardPoin
         winner = button.user;
         const team = await awardPoint(winner.id);
         await sendWinnerEmbed(channel, winner, eventName, team);
-        button.reply({ ephemeral: true, embeds: [{ description: 'You won!', color: Theme.success }] });
+        button.reply({ flags: 64, embeds: [{ description: 'You won!', color: Theme.success }] });
         collector.stop();
       } else {
-        button.reply({ ephemeral: true, embeds: [{ description: 'Correct! Next...', color: Theme.success }] });
+        button.reply({ flags: 64, embeds: [{ description: 'Correct! Next...', color: Theme.success }] });
       }
     } else {
       user.failed = true;
       playedUsers.add(button.user.id);
-      button.reply({ ephemeral: true, embeds: [{ description: 'Incorrect! You lost!', color: Theme.error }] });
+      button.reply({ flags: 64, embeds: [{ description: 'Incorrect! You lost!', color: Theme.error }] });
     }
   });
 }
@@ -238,8 +238,8 @@ async function runBasketball(channel, winner, playedUsers, eventName, awardPoint
   const collector = mainMessage.createMessageComponentCollector({ idle: 30_000 });
 
   collector.on('collect', async (button) => {
-    if (winner) return button.reply({ content: 'Someone has already won.', ephemeral: true });
-    if (playedUsers.has(button.user.id)) return button.reply({ content: 'Already played.', ephemeral: true });
+    if (winner) return button.reply({ content: 'Someone has already won.', flags: 64 });
+    if (playedUsers.has(button.user.id)) return button.reply({ content: 'Already played.', flags: 64 });
     playedUsers.add(button.user.id);
 
     const ind = parseInt(button.customId);
@@ -248,9 +248,9 @@ async function runBasketball(channel, winner, playedUsers, eventName, awardPoint
       const team = await awardPoint(winner.id);
       await sendWinnerEmbed(channel, winner, eventName, team);
       collector.stop();
-      button.reply({ ephemeral: true, embeds: [{ description: 'You won!', color: Theme.success }] });
+      button.reply({ flags: 64, embeds: [{ description: 'You won!', color: Theme.success }] });
     } else {
-      button.reply({ ephemeral: true, embeds: [{ description: 'You hit LeBron! Lost!', color: Theme.error }] });
+      button.reply({ flags: 64, embeds: [{ description: 'You hit LeBron! Lost!', color: Theme.error }] });
     }
   });
 
@@ -281,11 +281,11 @@ async function runCrabRace(client, channel, eventName, awardPoint, sendWinnerEmb
 
   joinCollector.on('collect', async (button) => {
     if (gamedata.joined.includes(button.user.id)) {
-      return button.reply({ content: 'Already joined.', ephemeral: true });
+      return button.reply({ content: 'Already joined.', flags: 64 });
     }
     gamedata.joined.push(button.user.id);
     if (gamedata.joined.length === 10) joinCollector.stop();
-    button.reply({ content: 'Joined!', ephemeral: true });
+    button.reply({ content: 'Joined!', flags: 64 });
   });
 
   joinCollector.on('end', async () => {
@@ -357,8 +357,8 @@ async function runHigherOrLower(channel, winner, playedUsers, eventName, awardPo
   const collector = mainMessage.createMessageComponentCollector({ idle: 30_000 });
 
   collector.on('collect', async (button) => {
-    if (winner) return button.reply({ content: 'Someone already won.', ephemeral: true });
-    if (playedUsers.has(button.user.id)) return button.reply({ content: 'Already played.', ephemeral: true });
+    if (winner) return button.reply({ content: 'Someone already won.', flags: 64 });
+    if (playedUsers.has(button.user.id)) return button.reply({ content: 'Already played.', flags: 64 });
     playedUsers.add(button.user.id);
 
     const isHigh = button.customId === 'hol_high';
@@ -366,10 +366,10 @@ async function runHigherOrLower(channel, winner, playedUsers, eventName, awardPo
       winner = button.user;
       const team = await awardPoint(winner.id);
       await sendWinnerEmbed(channel, winner, eventName, team);
-      button.reply({ content: `Correct! The number was ${randomNumber}`, ephemeral: true });
+      button.reply({ content: `Correct! The number was ${randomNumber}`, flags: 64 });
       collector.stop();
     } else {
-      button.reply({ content: `Wrong! The number was ${randomNumber}`, ephemeral: true });
+      button.reply({ content: `Wrong! The number was ${randomNumber}`, flags: 64 });
     }
   });
 }
@@ -418,8 +418,8 @@ async function runRPS(channel, winner, playedUsers, eventName, awardPoint, sendW
   const collector = mainMessage.createMessageComponentCollector({ idle: 30_000 });
 
   collector.on('collect', async (button) => {
-    if (winner) return button.reply({ content: 'Someone already won.', ephemeral: true });
-    if (playedUsers.has(button.user.id)) return button.reply({ content: 'Already played.', ephemeral: true });
+    if (winner) return button.reply({ content: 'Someone already won.', flags: 64 });
+    if (playedUsers.has(button.user.id)) return button.reply({ content: 'Already played.', flags: 64 });
     playedUsers.add(button.user.id);
 
     const userChoice = button.customId;
@@ -439,7 +439,7 @@ async function runRPS(channel, winner, playedUsers, eventName, awardPoint, sendW
       result = 'You lose!';
     }
 
-    button.reply({ content: `You chose ${userChoice}, bot chose ${botChoice}. ${result}`, ephemeral: true });
+    button.reply({ content: `You chose ${userChoice}, bot chose ${botChoice}. ${result}`, flags: 64 });
   });
 }
 

@@ -169,7 +169,7 @@ module.exports = {
       if (button.user.id != message.author.id) {
         return button.reply({
           content: 'Not your command.',
-          ephemeral: true
+          flags: 64
         });
       }
       await button.deferUpdate();

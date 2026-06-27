@@ -167,7 +167,7 @@ module.exports = {
         const user = gameData.get(message.author.id);
         if (user.failed) {
           return button.reply({
-            ephemeral: true,
+            flags: 64,
             embeds: [
               {
                 description: 'You have already failed this game!',
@@ -178,7 +178,7 @@ module.exports = {
         }
         if (user.won) {
           return button.reply({
-            ephemeral: true,
+            flags: 64,
             embeds: [
               {
                 description: 'You have already won this game!',
@@ -192,7 +192,7 @@ module.exports = {
           if (user.correct == toShow.length) {
             user.won = true;
             button.reply({
-              ephemeral: true,
+              flags: 64,
               embeds: [
                 {
                   description: 'You won!',
@@ -202,7 +202,7 @@ module.exports = {
             });
           } else {
             button.reply({
-              ephemeral: true,
+              flags: 64,
               embeds: [
                 {
                   description: 'Correct! Guess the next emoji',
@@ -214,7 +214,7 @@ module.exports = {
         } else {
           user.failed = true;
           button.reply({
-            ephemeral: true,
+            flags: 64,
             embeds: [
               {
                 description: 'Incorrect! You lost!',
@@ -295,7 +295,7 @@ module.exports = {
         const user = gamedat.get(message.author.id);
         if (user.failed) {
           return button.reply({
-            ephemeral: true,
+            flags: 64,
             embeds: [
               {
                 description: 'You have already failed this game!',
@@ -306,7 +306,7 @@ module.exports = {
         }
         if (user.won) {
           return button.reply({
-            ephemeral: true,
+            flags: 64,
             embeds: [
               {
                 description: 'You have already won this game!',
@@ -330,7 +330,7 @@ module.exports = {
             ]
           });
           button.reply({
-            ephemeral: true,
+            flags: 64,
             embeds: [
               {
                 description: 'You won!',
@@ -341,7 +341,7 @@ module.exports = {
         } else {
           user.failed = true;
           button.reply({
-            ephemeral: true,
+            flags: 64,
             embeds: [
               {
                 description: 'Incorrect! You lost!',
@@ -405,7 +405,7 @@ module.exports = {
         if (gamedata.joined.includes(button.user.id)) {
           return button.reply({
             content: 'You have already joined the game',
-            ephemeral: true
+            flags: 64
           });
         }
         gamedata.joined.push(button.user.id);
@@ -415,7 +415,7 @@ module.exports = {
 
         button.reply({
           content: 'You have joined the game!',
-          ephemeral: true
+          flags: 64
         });
       });
       joinCollector.on('end', async () => {
@@ -584,7 +584,7 @@ module.exports = {
                 color: Theme.error
               }
             ],
-            ephemeral: true
+            flags: 64
           });
         }
         const what = button.customId;
@@ -594,17 +594,17 @@ module.exports = {
           });
           button.reply({
             content: `You're correct! The number was ${randomNumber}`,
-            ephemeral: true
+            flags: 64
           });
         } else if (what == 'hol_low' && randomNumber < reference) {
           button.reply({
             content: `You're correct! The number was ${randomNumber}`,
-            ephemeral: true
+            flags: 64
           });
         } else {
           button.reply({
             content: `You got it wrong! The number was ${randomNumber}`,
-            ephemeral: true
+            flags: 64
           });
         }
       });
@@ -704,7 +704,7 @@ module.exports = {
         if (played.has(button.user.id)) {
           return button.reply({
             content: 'You have already played!',
-            ephemeral: true
+            flags: 64
           });
         }
 
@@ -730,7 +730,7 @@ module.exports = {
 
         await button.reply({
           content: `You chose ${userChoice}, I chose ${botChoice}. ${result}`,
-          ephemeral: true
+          flags: 64
         });
       });
 

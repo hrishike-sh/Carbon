@@ -60,12 +60,12 @@ module.exports = {
     collector.on('collect', async (button) => {
       if (button.user.id !== message.author.id) {
         return button.reply({
-          ephemeral: true,
+          flags: 64,
           content: 'go away'
         });
       }
       button.reply({
-        ephemeral: true,
+        flags: 64,
         content: `Channel will be unlocked! The number is: ${randomNumber}`
       });
       collector.stop();
