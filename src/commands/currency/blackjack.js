@@ -285,7 +285,7 @@ function formatHand(hand, bot) {
       ind === 0
         ? `[\`${a.suit}${a.value}\`](https://discord.com/invite/fight "nuh uh")`
         : `[\`??\`](https://discord.com/invite/fight "nuh uh")`
-    );
+    ).join(' ');
   }
   return hand.map((a) => `[\`${a.suit}${a.value}\`](https://discord.com/invite/fight "nuh uh")`).join(' ');
 }

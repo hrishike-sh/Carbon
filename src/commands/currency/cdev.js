@@ -7,16 +7,25 @@ module.exports = {
   aliases: ['cdev'],
 
   async execute(message, args, client) {
-    if (message.author.id !== config.ids.devUserIds[0]) return;
+    if (!config.ids.devUserIds.includes(message.author.id)) return;
 
+    const actions = ['add', '+', 'remove', '-', 'del', 'delete'];
+    const firstArg = args[0]?.toLowerCase();
+    const actionFirst = actions.includes(firstArg);
+    const action = actionFirst ? firstArg : args[1]?.toLowerCase();
+    const userArg = actionFirst ? args[1] : args[0];
+    const amountArg = args[2];
+
+    const userId = userArg?.replace(/[^0-9]/g, '');
     const user =
       message.mentions.users.first() ||
-      (await message.guild.members.fetch(args[0]).catch(() => null))?.user;
+      (userId ? (await message.guild.members.fetch(userId).catch(() => null))?.user : null);
     if (!user) return message.reply('What are u doing');
-    const action = args[1];
-    const amount = parseAmount(args[2]);
 
-    if (!action || !amount)
+    if (!action) return message.reply('Please provide an action');
+
+    const amount = parseAmount(amountArg);
+    if (!['del', 'delete'].includes(action) && !amount)
       return message.reply('Please provide an action and an amount');
 
     switch (action) {

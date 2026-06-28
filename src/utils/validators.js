@@ -5,18 +5,17 @@ const StringValues = {
 };
 
 function parseAmount(input) {
-  if (!input || typeof input !== 'string') return { valid: false };
+  if (!input || typeof input !== 'string') return null;
 
-  const match = input.match(/^(\d+(?:\.\d+)?)([kmb]?)$/i);
-  if (!match) return { valid: false };
+  const match = input.trim().match(/^(\d+(?:\.\d+)?(?:e\d+)?)([kmb]?)$/i);
+  if (!match) return null;
 
-  const num = parseFloat(match[1]);
+  const num = Number(match[1]);
+  if (!Number.isFinite(num) || num <= 0) return null;
+
   const suffix = match[2].toLowerCase();
 
-  return {
-    valid: true,
-    value: suffix ? Math.floor(num * StringValues[suffix]) : Math.floor(num)
-  };
+  return suffix ? Math.floor(num * StringValues[suffix]) : Math.floor(num);
 }
 
 module.exports = { StringValues, parseAmount };
