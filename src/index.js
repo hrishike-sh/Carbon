@@ -7,6 +7,7 @@ const { loadCommands } = require('./command/registry');
 const { loadEvents } = require('./event/registry');
 const highlightModule = require('./events/messageCreate/highlight');
 const settingsService = require('./database/services/settingsService');
+const { CommandStatsService } = require('./database/services/commandStatsService');
 const afkModel = require('./database/models/afk');
 const cooldowns = require('./command/cooldowns');
 const antiBot = require('./client/AntiBot');
@@ -105,6 +106,11 @@ async function main() {
     try {
       await command.execute(message, args, client);
       client.state.counts.commandsRan++;
+      CommandStatsService.track({
+        guildId: message.guild.id,
+        commandName: command.name,
+        commandType: 'prefix'
+      });
 
       const logChannel = client.channels.cache.get(config.ids.channels.commandLog);
       if (logChannel) {
@@ -143,6 +149,11 @@ async function main() {
     try {
       await command.execute(interaction, client);
       client.state.counts.slashCommandsRan++;
+      CommandStatsService.track({
+        guildId: interaction.guildId,
+        commandName: command.data.name,
+        commandType: 'slash'
+      });
     } catch (err) {
       logger.error(`Slash command "${interaction.commandName}" error`, err);
       const embed = errorEmbed({ description: 'There was an error while executing this command!' });
