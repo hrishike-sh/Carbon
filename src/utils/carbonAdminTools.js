@@ -1,11 +1,18 @@
+const vm = require('vm');
+const { inspect } = require('util');
+const discord = require('discord.js');
+const config = require('../config');
 const {
+  AuditLogEvent,
   ChannelType,
   EmbedBuilder,
   PermissionFlagsBits,
   PermissionsBitField,
   GuildVerificationLevel,
   GuildExplicitContentFilter,
-  GuildDefaultMessageNotifications
+  GuildDefaultMessageNotifications,
+  GuildScheduledEventEntityType,
+  GuildScheduledEventPrivacyLevel
 } = require('discord.js');
 
 const COLOR_ROLE_NAMES = [
@@ -67,6 +74,23 @@ const RANDOM_ROLE_COLORS = [
   0x7bed9f
 ];
 
+const DANGEROUS_PERMISSIONS = [
+  'Administrator',
+  'ManageGuild',
+  'ManageRoles',
+  'ManageChannels',
+  'ManageWebhooks',
+  'ManageMessages',
+  'ManageThreads',
+  'ManageGuildExpressions',
+  'ManageEmojisAndStickers',
+  'BanMembers',
+  'KickMembers',
+  'ModerateMembers',
+  'MentionEveryone',
+  'ViewAuditLog'
+];
+
 const TOOL_DEFINITIONS = [
   {
     type: 'function',
@@ -76,6 +100,34 @@ const TOOL_DEFINITIONS = [
       parameters: {
         type: 'object',
         properties: {},
+        additionalProperties: false
+      }
+    }
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'get_eval_context',
+      description: 'Read-only context for drafting manual fh eval JavaScript when no safe built-in Carbon tool can do the requested task. This never executes code.',
+      parameters: {
+        type: 'object',
+        properties: {},
+        additionalProperties: false
+      }
+    }
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'run_reviewed_eval',
+      description: 'Last-resort developer-only eval fallback. DeepSeek provides JavaScript, Carbon shows it to the command caller for button confirmation, then runs it and returns output. Use only when no built-in tool can do the task.',
+      parameters: {
+        type: 'object',
+        required: ['purpose', 'code'],
+        properties: {
+          purpose: { type: 'string', minLength: 1, maxLength: 500, description: 'Plain-English reason this eval is needed.' },
+          code: { type: 'string', minLength: 1, maxLength: 2500, description: 'JavaScript body to run inside an async function. Must return a concise summary string/object.' }
+        },
         additionalProperties: false
       }
     }
@@ -643,10 +695,664 @@ const TOOL_DEFINITIONS = [
   }
 ];
 
+TOOL_DEFINITIONS.push(
+  {
+    type: 'function',
+    function: {
+      name: 'find_members',
+      description: 'Read-only search for guild members by ID, mention, username, tag, or display name.',
+      parameters: {
+        type: 'object',
+        properties: {
+          query: { type: 'string', description: 'Optional member search query.' },
+          includeBots: { type: 'boolean' },
+          limit: { type: 'integer', minimum: 1, maximum: 50 }
+        },
+        additionalProperties: false
+      }
+    }
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'list_members_with_permissions',
+      description: 'Read-only audit of members with dangerous permissions or specific permissions. Use this for questions like "who has dangerous permissions?"',
+      parameters: {
+        type: 'object',
+        properties: {
+          permissions: { type: 'array', items: { type: 'string' }, description: 'Permission names. Defaults to dangerous permissions.' },
+          dangerousOnly: { type: 'boolean', description: 'Use the built-in dangerous permission set.' },
+          includeBots: { type: 'boolean' },
+          includeRoleDetails: { type: 'boolean' },
+          limit: { type: 'integer', minimum: 1, maximum: 100 }
+        },
+        additionalProperties: false
+      }
+    }
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'list_roles_with_permissions',
+      description: 'Read-only audit of roles with dangerous permissions or specific permissions.',
+      parameters: {
+        type: 'object',
+        properties: {
+          permissions: { type: 'array', items: { type: 'string' }, description: 'Permission names. Defaults to dangerous permissions.' },
+          dangerousOnly: { type: 'boolean' },
+          limit: { type: 'integer', minimum: 1, maximum: 100 }
+        },
+        additionalProperties: false
+      }
+    }
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'get_effective_permissions',
+      description: 'Read-only effective guild or channel permissions for a member.',
+      parameters: {
+        type: 'object',
+        required: ['user'],
+        properties: {
+          user: { type: 'string', description: 'User ID, mention, username, or display name.' },
+          channel: { type: 'string', description: 'Optional channel ID, mention, or name.' }
+        },
+        additionalProperties: false
+      }
+    }
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'add_role_permissions',
+      description: 'Add permissions to a role without replacing its existing permissions.',
+      parameters: {
+        type: 'object',
+        required: ['role', 'permissions'],
+        properties: {
+          role: { type: 'string', description: 'Role ID, mention, or name.' },
+          permissions: { type: 'array', items: { type: 'string' } },
+          reason: { type: 'string', maxLength: 512 }
+        },
+        additionalProperties: false
+      }
+    }
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'remove_role_permissions',
+      description: 'Remove permissions from a role without replacing its other permissions.',
+      parameters: {
+        type: 'object',
+        required: ['role', 'permissions'],
+        properties: {
+          role: { type: 'string', description: 'Role ID, mention, or name.' },
+          permissions: { type: 'array', items: { type: 'string' } },
+          reason: { type: 'string', maxLength: 512 }
+        },
+        additionalProperties: false
+      }
+    }
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'lock_channel',
+      description: 'Deny sending messages and thread messages for @everyone in a channel.',
+      parameters: {
+        type: 'object',
+        properties: {
+          channel: { type: 'string', description: 'Channel ID, mention, or name. Defaults to current thread/channel.' },
+          targetRole: { type: 'string', description: 'Optional role to lock instead of @everyone.' },
+          reason: { type: 'string', maxLength: 512 }
+        },
+        additionalProperties: false
+      }
+    }
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'unlock_channel',
+      description: 'Clear send-message denies for @everyone or a target role in a channel.',
+      parameters: {
+        type: 'object',
+        properties: {
+          channel: { type: 'string', description: 'Channel ID, mention, or name. Defaults to current thread/channel.' },
+          targetRole: { type: 'string', description: 'Optional role to unlock instead of @everyone.' },
+          reason: { type: 'string', maxLength: 512 }
+        },
+        additionalProperties: false
+      }
+    }
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'clone_channel',
+      description: 'Clone a guild channel.',
+      parameters: {
+        type: 'object',
+        required: ['channel'],
+        properties: {
+          channel: { type: 'string', description: 'Channel ID, mention, or name.' },
+          name: { type: 'string', minLength: 1, maxLength: 100 },
+          reason: { type: 'string', maxLength: 512 }
+        },
+        additionalProperties: false
+      }
+    }
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'list_recent_messages',
+      description: 'Read-only list of recent messages in a channel.',
+      parameters: {
+        type: 'object',
+        properties: {
+          channel: { type: 'string', description: 'Channel ID, mention, or name. Defaults to current thread/channel.' },
+          limit: { type: 'integer', minimum: 1, maximum: 50 }
+        },
+        additionalProperties: false
+      }
+    }
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'fetch_message',
+      description: 'Read-only fetch of one message by channel and message ID.',
+      parameters: {
+        type: 'object',
+        required: ['messageId'],
+        properties: {
+          channel: { type: 'string', description: 'Channel ID, mention, or name. Defaults to current thread/channel.' },
+          messageId: { type: 'string' }
+        },
+        additionalProperties: false
+      }
+    }
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'edit_message',
+      description: 'Edit a bot-authored message by channel and message ID.',
+      parameters: {
+        type: 'object',
+        required: ['messageId', 'content'],
+        properties: {
+          channel: { type: 'string', description: 'Channel ID, mention, or name. Defaults to current thread/channel.' },
+          messageId: { type: 'string' },
+          content: { type: 'string', maxLength: 1900 },
+          reason: { type: 'string', maxLength: 512 }
+        },
+        additionalProperties: false
+      }
+    }
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'delete_message',
+      description: 'Delete one message by channel and message ID.',
+      parameters: {
+        type: 'object',
+        required: ['messageId'],
+        properties: {
+          channel: { type: 'string', description: 'Channel ID, mention, or name. Defaults to current thread/channel.' },
+          messageId: { type: 'string' },
+          reason: { type: 'string', maxLength: 512 }
+        },
+        additionalProperties: false
+      }
+    }
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'crosspost_message',
+      description: 'Publish/crosspost an announcement-channel message.',
+      parameters: {
+        type: 'object',
+        required: ['channel', 'messageId'],
+        properties: {
+          channel: { type: 'string', description: 'Announcement channel ID, mention, or name.' },
+          messageId: { type: 'string' }
+        },
+        additionalProperties: false
+      }
+    }
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'add_reaction',
+      description: 'Add a reaction to a message.',
+      parameters: {
+        type: 'object',
+        required: ['messageId', 'emoji'],
+        properties: {
+          channel: { type: 'string', description: 'Channel ID, mention, or name. Defaults to current thread/channel.' },
+          messageId: { type: 'string' },
+          emoji: { type: 'string', description: 'Unicode emoji or custom emoji ID/mention.' }
+        },
+        additionalProperties: false
+      }
+    }
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'clear_reactions',
+      description: 'Remove all reactions from a message.',
+      parameters: {
+        type: 'object',
+        required: ['messageId'],
+        properties: {
+          channel: { type: 'string', description: 'Channel ID, mention, or name. Defaults to current thread/channel.' },
+          messageId: { type: 'string' },
+          reason: { type: 'string', maxLength: 512 }
+        },
+        additionalProperties: false
+      }
+    }
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'create_thread',
+      description: 'Create a public or private thread in a text/announcement channel, optionally from a message ID.',
+      parameters: {
+        type: 'object',
+        required: ['channel', 'name'],
+        properties: {
+          channel: { type: 'string', description: 'Parent text/announcement channel.' },
+          name: { type: 'string', minLength: 1, maxLength: 100 },
+          messageId: { type: 'string', description: 'Optional message ID to start the thread from.' },
+          private: { type: 'boolean' },
+          autoArchiveDuration: { type: 'integer', enum: [60, 1440, 4320, 10080] },
+          slowmodeSeconds: { type: 'integer', minimum: 0, maximum: 21600 },
+          reason: { type: 'string', maxLength: 512 }
+        },
+        additionalProperties: false
+      }
+    }
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'edit_thread',
+      description: 'Edit a thread name, archived state, locked state, invitable state, auto archive duration, or slowmode.',
+      parameters: {
+        type: 'object',
+        required: ['thread'],
+        properties: {
+          thread: { type: 'string', description: 'Thread ID, mention, or name.' },
+          name: { type: 'string', minLength: 1, maxLength: 100 },
+          archived: { type: 'boolean' },
+          locked: { type: 'boolean' },
+          invitable: { type: 'boolean' },
+          autoArchiveDuration: { type: 'integer', enum: [60, 1440, 4320, 10080] },
+          slowmodeSeconds: { type: 'integer', minimum: 0, maximum: 21600 },
+          reason: { type: 'string', maxLength: 512 }
+        },
+        additionalProperties: false
+      }
+    }
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'add_thread_member',
+      description: 'Add a member to a thread.',
+      parameters: {
+        type: 'object',
+        required: ['thread', 'user'],
+        properties: {
+          thread: { type: 'string', description: 'Thread ID, mention, or name.' },
+          user: { type: 'string', description: 'User ID, mention, username, or display name.' }
+        },
+        additionalProperties: false
+      }
+    }
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'remove_thread_member',
+      description: 'Remove a member from a thread.',
+      parameters: {
+        type: 'object',
+        required: ['thread', 'user'],
+        properties: {
+          thread: { type: 'string', description: 'Thread ID, mention, or name.' },
+          user: { type: 'string', description: 'User ID, mention, username, or display name.' }
+        },
+        additionalProperties: false
+      }
+    }
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'list_threads',
+      description: 'Read-only list of active threads in the guild.',
+      parameters: {
+        type: 'object',
+        properties: {
+          limit: { type: 'integer', minimum: 1, maximum: 50 }
+        },
+        additionalProperties: false
+      }
+    }
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'list_invites',
+      description: 'Read-only list guild invites visible to the bot.',
+      parameters: {
+        type: 'object',
+        properties: {
+          limit: { type: 'integer', minimum: 1, maximum: 50 }
+        },
+        additionalProperties: false
+      }
+    }
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'delete_invite',
+      description: 'Delete an invite by code or URL.',
+      parameters: {
+        type: 'object',
+        required: ['invite'],
+        properties: {
+          invite: { type: 'string', description: 'Invite code or URL.' },
+          reason: { type: 'string', maxLength: 512 }
+        },
+        additionalProperties: false
+      }
+    }
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'list_bans',
+      description: 'Read-only list of banned users.',
+      parameters: {
+        type: 'object',
+        properties: {
+          limit: { type: 'integer', minimum: 1, maximum: 100 }
+        },
+        additionalProperties: false
+      }
+    }
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'list_webhooks',
+      description: 'Read-only list of webhooks in one channel or all visible guild channels.',
+      parameters: {
+        type: 'object',
+        properties: {
+          channel: { type: 'string', description: 'Optional channel ID, mention, or name.' },
+          limit: { type: 'integer', minimum: 1, maximum: 100 }
+        },
+        additionalProperties: false
+      }
+    }
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'list_emojis',
+      description: 'Read-only list of guild emojis.',
+      parameters: {
+        type: 'object',
+        properties: {
+          limit: { type: 'integer', minimum: 1, maximum: 100 }
+        },
+        additionalProperties: false
+      }
+    }
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'edit_emoji',
+      description: 'Edit a custom emoji name.',
+      parameters: {
+        type: 'object',
+        required: ['emoji', 'name'],
+        properties: {
+          emoji: { type: 'string', description: 'Emoji ID, name, or mention.' },
+          name: { type: 'string', minLength: 2, maxLength: 32 },
+          reason: { type: 'string', maxLength: 512 }
+        },
+        additionalProperties: false
+      }
+    }
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'list_stickers',
+      description: 'Read-only list of guild stickers.',
+      parameters: {
+        type: 'object',
+        properties: {
+          limit: { type: 'integer', minimum: 1, maximum: 100 }
+        },
+        additionalProperties: false
+      }
+    }
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'delete_sticker',
+      description: 'Delete a guild sticker by ID or name.',
+      parameters: {
+        type: 'object',
+        required: ['sticker'],
+        properties: {
+          sticker: { type: 'string', description: 'Sticker ID or name.' },
+          reason: { type: 'string', maxLength: 512 }
+        },
+        additionalProperties: false
+      }
+    }
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'fetch_audit_logs',
+      description: 'Read-only fetch of recent guild audit log entries. Requires ViewAuditLog.',
+      parameters: {
+        type: 'object',
+        properties: {
+          action: { type: 'string', description: 'Optional AuditLogEvent name like MemberBanAdd, RoleCreate, ChannelDelete.' },
+          limit: { type: 'integer', minimum: 1, maximum: 25 }
+        },
+        additionalProperties: false
+      }
+    }
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'move_member_voice',
+      description: 'Move a member to a voice/stage channel.',
+      parameters: {
+        type: 'object',
+        required: ['user', 'channel'],
+        properties: {
+          user: { type: 'string', description: 'User ID, mention, username, or display name.' },
+          channel: { type: 'string', description: 'Voice or stage channel ID/name.' },
+          reason: { type: 'string', maxLength: 512 }
+        },
+        additionalProperties: false
+      }
+    }
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'disconnect_member_voice',
+      description: 'Disconnect a member from voice.',
+      parameters: {
+        type: 'object',
+        required: ['user'],
+        properties: {
+          user: { type: 'string', description: 'User ID, mention, username, or display name.' },
+          reason: { type: 'string', maxLength: 512 }
+        },
+        additionalProperties: false
+      }
+    }
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'server_mute_member',
+      description: 'Set server mute for a voice member.',
+      parameters: {
+        type: 'object',
+        required: ['user', 'muted'],
+        properties: {
+          user: { type: 'string', description: 'User ID, mention, username, or display name.' },
+          muted: { type: 'boolean' },
+          reason: { type: 'string', maxLength: 512 }
+        },
+        additionalProperties: false
+      }
+    }
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'server_deafen_member',
+      description: 'Set server deaf for a voice member.',
+      parameters: {
+        type: 'object',
+        required: ['user', 'deafened'],
+        properties: {
+          user: { type: 'string', description: 'User ID, mention, username, or display name.' },
+          deafened: { type: 'boolean' },
+          reason: { type: 'string', maxLength: 512 }
+        },
+        additionalProperties: false
+      }
+    }
+  }
+);
+
+TOOL_DEFINITIONS.push(
+  {
+    type: 'function',
+    function: {
+      name: 'list_scheduled_events',
+      description: 'Read-only list of guild scheduled events.',
+      parameters: {
+        type: 'object',
+        properties: {
+          limit: { type: 'integer', minimum: 1, maximum: 50 }
+        },
+        additionalProperties: false
+      }
+    }
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'create_scheduled_event',
+      description: 'Create a guild scheduled event. External events need location and end time. Voice/stage events need a voice/stage channel.',
+      parameters: {
+        type: 'object',
+        required: ['name', 'startTime'],
+        properties: {
+          name: { type: 'string', minLength: 1, maxLength: 100 },
+          description: { type: 'string', maxLength: 1000 },
+          startTime: { type: 'string', description: 'Date/time parseable by JavaScript Date, preferably ISO.' },
+          endTime: { type: 'string', description: 'Date/time parseable by JavaScript Date, preferably ISO.' },
+          entityType: { type: 'string', enum: ['external', 'voice', 'stage'] },
+          channel: { type: 'string', description: 'Voice/stage channel for voice or stage events.' },
+          location: { type: 'string', maxLength: 100, description: 'Location for external events.' },
+          reason: { type: 'string', maxLength: 512 }
+        },
+        additionalProperties: false
+      }
+    }
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'delete_scheduled_event',
+      description: 'Delete a guild scheduled event by ID or name.',
+      parameters: {
+        type: 'object',
+        required: ['event'],
+        properties: {
+          event: { type: 'string', description: 'Scheduled event ID or name.' },
+          reason: { type: 'string', maxLength: 512 }
+        },
+        additionalProperties: false
+      }
+    }
+  }
+);
+
+TOOL_DEFINITIONS.push(
+  {
+    type: 'function',
+    function: {
+      name: 'list_forum_tags',
+      description: 'Read-only list of available tags in a forum channel.',
+      parameters: {
+        type: 'object',
+        required: ['channel'],
+        properties: {
+          channel: { type: 'string', description: 'Forum channel ID, mention, or name.' }
+        },
+        additionalProperties: false
+      }
+    }
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'create_forum_post',
+      description: 'Create a post/thread in a forum channel.',
+      parameters: {
+        type: 'object',
+        required: ['channel', 'title', 'content'],
+        properties: {
+          channel: { type: 'string', description: 'Forum channel ID, mention, or name.' },
+          title: { type: 'string', minLength: 1, maxLength: 100 },
+          content: { type: 'string', maxLength: 1900 },
+          tags: { type: 'array', items: { type: 'string' }, description: 'Forum tag IDs or names.' },
+          reason: { type: 'string', maxLength: 512 }
+        },
+        additionalProperties: false
+      }
+    }
+  }
+);
+
 const MUTATING_TOOLS = new Set([
+  'run_reviewed_eval',
   'create_role',
   'edit_role',
   'set_role_position',
+  'add_role_permissions',
+  'remove_role_permissions',
   'delete_role',
   'assign_role',
   'remove_role',
@@ -654,10 +1360,18 @@ const MUTATING_TOOLS = new Set([
   'edit_channel',
   'delete_channel',
   'set_channel_permission',
+  'lock_channel',
+  'unlock_channel',
+  'clone_channel',
   'send_channel_message',
   'purge_messages',
   'pin_message',
   'unpin_message',
+  'edit_message',
+  'delete_message',
+  'crosspost_message',
+  'add_reaction',
+  'clear_reactions',
   'timeout_member',
   'remove_timeout',
   'kick_member',
@@ -665,10 +1379,24 @@ const MUTATING_TOOLS = new Set([
   'unban_user',
   'set_nickname',
   'create_invite',
+  'delete_invite',
   'create_emoji',
+  'edit_emoji',
   'delete_emoji',
+  'delete_sticker',
   'create_webhook',
   'delete_webhook',
+  'create_thread',
+  'edit_thread',
+  'add_thread_member',
+  'remove_thread_member',
+  'move_member_voice',
+  'disconnect_member_voice',
+  'server_mute_member',
+  'server_deafen_member',
+  'create_scheduled_event',
+  'delete_scheduled_event',
+  'create_forum_post',
   'edit_guild'
 ]);
 
@@ -676,18 +1404,34 @@ const TOOL_REQUIRED_PERMISSIONS = {
   create_role: [PermissionFlagsBits.ManageRoles],
   edit_role: [PermissionFlagsBits.ManageRoles],
   set_role_position: [PermissionFlagsBits.ManageRoles],
+  add_role_permissions: [PermissionFlagsBits.ManageRoles],
+  remove_role_permissions: [PermissionFlagsBits.ManageRoles],
   delete_role: [PermissionFlagsBits.ManageRoles],
   assign_role: [PermissionFlagsBits.ManageRoles],
   remove_role: [PermissionFlagsBits.ManageRoles],
   create_channel: [PermissionFlagsBits.ManageChannels],
+  clone_channel: [PermissionFlagsBits.ManageChannels],
+  delete_invite: [PermissionFlagsBits.ManageGuild],
+  list_invites: [PermissionFlagsBits.ManageGuild],
+  list_webhooks: [PermissionFlagsBits.ManageWebhooks],
   timeout_member: [PermissionFlagsBits.ModerateMembers],
   remove_timeout: [PermissionFlagsBits.ModerateMembers],
   kick_member: [PermissionFlagsBits.KickMembers],
   ban_member: [PermissionFlagsBits.BanMembers],
   unban_user: [PermissionFlagsBits.BanMembers],
   set_nickname: [PermissionFlagsBits.ManageNicknames],
+  list_bans: [PermissionFlagsBits.BanMembers],
+  fetch_audit_logs: [PermissionFlagsBits.ViewAuditLog],
   create_emoji: [PermissionFlagsBits.ManageGuildExpressions],
+  edit_emoji: [PermissionFlagsBits.ManageGuildExpressions],
   delete_emoji: [PermissionFlagsBits.ManageGuildExpressions],
+  delete_sticker: [PermissionFlagsBits.ManageGuildExpressions],
+  move_member_voice: [PermissionFlagsBits.MoveMembers],
+  disconnect_member_voice: [PermissionFlagsBits.MoveMembers],
+  server_mute_member: [PermissionFlagsBits.MuteMembers],
+  server_deafen_member: [PermissionFlagsBits.DeafenMembers],
+  create_scheduled_event: [PermissionFlagsBits.ManageEvents],
+  delete_scheduled_event: [PermissionFlagsBits.ManageEvents],
   edit_guild: [PermissionFlagsBits.ManageGuild]
 };
 
@@ -730,6 +1474,69 @@ function clampString(value, max) {
 
 function cleanReason(reason, fallback) {
   return clampString(reason || fallback || 'Carbon AI admin assistant', 512);
+}
+
+function redactSensitive(value) {
+  let text = String(value ?? '');
+  const secrets = [
+    process.env.token,
+    process.env.mongopath,
+    process.env.amariToken,
+    process.env.deepseekApiKey,
+    process.env.DEEPSEEK_API_KEY
+  ].filter(Boolean);
+
+  for (const secret of secrets) {
+    text = text.split(secret).join('[redacted]');
+  }
+
+  return text
+    .replace(/mfa\.[\w-]{20,}/gi, '[redacted-token]')
+    .replace(/[A-Za-z0-9_-]{23,28}\.[A-Za-z0-9_-]{6,7}\.[A-Za-z0-9_-]{27,}/g, '[redacted-token]');
+}
+
+function inspectForEval(value) {
+  if (typeof value === 'string') return redactSensitive(value);
+  return redactSensitive(inspect(value, { depth: 2, maxArrayLength: 50, breakLength: 120 }));
+}
+
+function validateReviewedEvalCode(code) {
+  if (typeof code !== 'string' || !code.trim()) {
+    throw new Error('Eval code is empty.');
+  }
+  if (code.length > 2500) {
+    throw new Error('Eval code is too long to review safely.');
+  }
+
+  const blocked = [
+    /\bprocess\b/i,
+    /\brequire\s*\(/i,
+    /\bimport\s*\(/i,
+    /\bmodule\b/i,
+    /\bglobal(?:This)?\b/i,
+    /\beval\s*\(/i,
+    /\bFunction\b/i,
+    /\bconstructor\b/i,
+    /__proto__/i,
+    /\bprototype\b/i,
+    /\bchild_process\b/i,
+    /\bfs\b/i,
+    /\bhttp(?:s)?\b/i,
+    /\bnet\b/i,
+    /\btls\b/i,
+    /\bdgram\b/i,
+    /\bworker_threads\b/i,
+    /\bvm\b/i,
+    /\btoken\b/i,
+    /\bmongopath\b/i,
+    /\bdeepseek/i,
+    /\.env\b/i
+  ];
+
+  const hit = blocked.find((pattern) => pattern.test(code));
+  if (hit) {
+    throw new Error(`Eval code contains a blocked pattern: ${hit}`);
+  }
 }
 
 function extractId(value) {
@@ -1027,6 +1834,167 @@ async function resolveWebhook(client, value) {
   return client.fetchWebhook(id);
 }
 
+async function resolveThread(guild, value) {
+  if (!value) throw new Error('Missing thread.');
+  const id = extractId(value);
+  if (id) {
+    const cached = guild.channels.cache.get(id);
+    if (cached?.isThread?.()) return cached;
+    const fetched = await guild.channels.fetch(id).catch(() => null);
+    if (fetched?.isThread?.()) return fetched;
+  }
+
+  const query = String(value).replace(/^#/, '').trim();
+  const active = await guild.channels.fetchActiveThreads().catch(() => null);
+  const threads = active?.threads || guild.channels.cache.filter((channel) => channel.isThread?.());
+  const exact = threads.filter((thread) => sameText(thread.name, query));
+  if (exact.size === 1) return exact.first();
+  if (exact.size > 1) throw new Error(`Multiple threads named "${query}". Use the thread ID.`);
+
+  const partial = threads.filter((thread) => includesText(thread.name, query));
+  if (partial.size === 1) return partial.first();
+  if (partial.size > 1) {
+    throw new Error(`Multiple threads match "${query}": ${partial.map((thread) => `${thread.name} (${thread.id})`).slice(0, 8).join(', ')}`);
+  }
+
+  throw new Error(`Could not find thread "${value}".`);
+}
+
+async function resolveSticker(guild, value) {
+  if (!value) throw new Error('Missing sticker.');
+  const stickers = await guild.stickers.fetch().catch(() => guild.stickers.cache);
+  const id = extractId(value);
+  if (id) {
+    const sticker = stickers.get(id) || await guild.stickers.fetch(id).catch(() => null);
+    if (sticker) return sticker;
+  }
+
+  const query = String(value).trim();
+  const exact = stickers.filter((sticker) => sameText(sticker.name, query));
+  if (exact.size === 1) return exact.first();
+  if (exact.size > 1) throw new Error(`Multiple stickers named "${query}". Use the sticker ID.`);
+
+  throw new Error(`Could not find sticker "${value}".`);
+}
+
+async function resolveScheduledEvent(guild, value) {
+  if (!value) throw new Error('Missing scheduled event.');
+  const events = await guild.scheduledEvents.fetch({ withUserCount: true }).catch(() => guild.scheduledEvents.cache);
+  const id = extractId(value);
+  if (id) {
+    const event = events.get(id) || await guild.scheduledEvents.fetch({ guildScheduledEvent: id, withUserCount: true }).catch(() => null);
+    if (event) return event;
+  }
+
+  const query = String(value).trim();
+  const exact = events.filter((event) => sameText(event.name, query));
+  if (exact.size === 1) return exact.first();
+  if (exact.size > 1) throw new Error(`Multiple scheduled events named "${query}". Use the event ID.`);
+
+  const partial = events.filter((event) => includesText(event.name, query));
+  if (partial.size === 1) return partial.first();
+  if (partial.size > 1) {
+    throw new Error(`Multiple scheduled events match "${query}": ${partial.map((event) => `${event.name} (${event.id})`).slice(0, 8).join(', ')}`);
+  }
+
+  throw new Error(`Could not find scheduled event "${value}".`);
+}
+
+function parseInviteCode(value) {
+  if (!value) throw new Error('Missing invite.');
+  const match = String(value).match(/(?:discord\.gg\/|discord(?:app)?\.com\/invite\/)?([a-z0-9-]+)/i);
+  if (!match) throw new Error('Invite must be a code or URL.');
+  return match[1];
+}
+
+function resolveAuditLogEvent(value) {
+  if (!value) return undefined;
+  const normalized = String(value).replace(/[\s_-]/g, '').toLowerCase();
+  const match = Object.keys(AuditLogEvent).find((key) => key.toLowerCase() === normalized);
+  if (!match) throw new Error(`Unknown audit log action: ${value}`);
+  return AuditLogEvent[match];
+}
+
+function resolvePermissionNames(args = {}) {
+  if (args.permissions?.length) return parsePermissionNames(args.permissions);
+  return DANGEROUS_PERMISSIONS.filter((name) => PermissionFlagsBits[name] !== undefined);
+}
+
+function matchedPermissionNames(permissions, names) {
+  return names.filter((name) => permissions.has(PermissionFlagsBits[name]));
+}
+
+function serializeMember(member, opts = {}) {
+  const data = {
+    id: member.id,
+    tag: member.user.tag,
+    displayName: member.displayName,
+    bot: member.user.bot,
+    joinedAt: member.joinedAt?.toISOString() || null,
+    timedOutUntil: member.communicationDisabledUntil?.toISOString() || null
+  };
+
+  if (opts.roles) {
+    data.roles = member.roles.cache
+      .filter((role) => role.id !== member.guild.id)
+      .sort((a, b) => b.position - a.position)
+      .map(serializeRole);
+  }
+
+  return data;
+}
+
+function serializeMessage(message) {
+  return {
+    id: message.id,
+    channelId: message.channelId,
+    authorId: message.author?.id || null,
+    authorTag: message.author?.tag || null,
+    content: clampString(message.content || '', 1000),
+    createdAt: message.createdAt?.toISOString() || null,
+    editedAt: message.editedAt?.toISOString() || null,
+    pinned: message.pinned,
+    url: message.url
+  };
+}
+
+function serializeWebhook(webhook) {
+  return {
+    id: webhook.id,
+    name: webhook.name,
+    channelId: webhook.channelId,
+    guildId: webhook.guildId,
+    ownerId: webhook.owner?.id || null,
+    type: webhook.type
+  };
+}
+
+function serializeInvite(invite) {
+  return {
+    code: invite.code,
+    url: invite.url,
+    channelId: invite.channelId,
+    inviterId: invite.inviter?.id || null,
+    uses: invite.uses,
+    maxUses: invite.maxUses,
+    maxAge: invite.maxAge,
+    temporary: invite.temporary,
+    createdAt: invite.createdAt?.toISOString() || null,
+    expiresAt: invite.expiresAt?.toISOString() || null
+  };
+}
+
+async function resolveMessage(context, args = {}, allowedTypes) {
+  const channel = args.channel
+    ? await resolveChannel(context.guild, args.channel, allowedTypes)
+    : context.message.channel;
+  if (!channel?.messages?.fetch) throw new Error('That channel does not support messages.');
+
+  const target = await channel.messages.fetch(args.messageId).catch(() => null);
+  if (!target) throw new Error(`Could not fetch message ${args.messageId} in #${channel.name}.`);
+  return { channel, message: target };
+}
+
 function serializeRole(role) {
   return {
     id: role.id,
@@ -1077,81 +2045,241 @@ function getOrderedChannels(guild) {
 }
 
 async function executeTool(context, name, args = {}) {
+  const handlers = {
+    get_guild_summary: getGuildSummary,
+    get_eval_context: getEvalContext,
+    run_reviewed_eval: runReviewedEval,
+    list_roles: listRoles,
+    list_color_roles: listColorRoles,
+    list_channels: listChannels,
+    find_members: findMembers,
+    list_members_with_permissions: listMembersWithPermissions,
+    list_roles_with_permissions: listRolesWithPermissions,
+    get_effective_permissions: getEffectivePermissions,
+    get_member_info: getMemberInfo,
+    get_channel_info: getChannelInfo,
+    create_role: createRole,
+    edit_role: editRole,
+    set_role_position: setRolePosition,
+    add_role_permissions: addRolePermissions,
+    remove_role_permissions: removeRolePermissions,
+    delete_role: deleteRole,
+    assign_role: assignRole,
+    remove_role: removeRole,
+    create_channel: createChannel,
+    edit_channel: editChannel,
+    delete_channel: deleteChannel,
+    set_channel_permission: setChannelPermission,
+    lock_channel: lockChannel,
+    unlock_channel: unlockChannel,
+    clone_channel: cloneChannel,
+    send_channel_message: sendChannelMessage,
+    list_recent_messages: listRecentMessages,
+    fetch_message: fetchMessage,
+    edit_message: editMessage,
+    delete_message: deleteMessage,
+    crosspost_message: crosspostMessage,
+    add_reaction: addReaction,
+    clear_reactions: clearReactions,
+    purge_messages: purgeMessages,
+    pin_message: (ctx, toolArgs) => pinMessage(ctx, toolArgs, true),
+    unpin_message: (ctx, toolArgs) => pinMessage(ctx, toolArgs, false),
+    timeout_member: timeoutMember,
+    remove_timeout: removeTimeout,
+    kick_member: kickMember,
+    ban_member: banMember,
+    unban_user: unbanUser,
+    set_nickname: setNickname,
+    create_invite: createInvite,
+    list_invites: listInvites,
+    delete_invite: deleteInvite,
+    create_emoji: createEmoji,
+    edit_emoji: editEmoji,
+    delete_emoji: deleteEmoji,
+    list_emojis: listEmojis,
+    list_stickers: listStickers,
+    delete_sticker: deleteSticker,
+    create_webhook: createWebhook,
+    delete_webhook: deleteWebhook,
+    list_webhooks: listWebhooks,
+    create_thread: createThread,
+    edit_thread: editThread,
+    add_thread_member: addThreadMember,
+    remove_thread_member: removeThreadMember,
+    list_threads: listThreads,
+    list_bans: listBans,
+    fetch_audit_logs: fetchAuditLogs,
+    move_member_voice: moveMemberVoice,
+    disconnect_member_voice: disconnectMemberVoice,
+    server_mute_member: serverMuteMember,
+    server_deafen_member: serverDeafenMember,
+    list_scheduled_events: listScheduledEvents,
+    create_scheduled_event: createScheduledEvent,
+    delete_scheduled_event: deleteScheduledEvent,
+    list_forum_tags: listForumTags,
+    create_forum_post: createForumPost,
+    edit_guild: editGuild
+  };
+
   try {
     context.me = await ensureMe(context.guild);
     ensureBotGuildPermissions(context, name);
 
-    switch (name) {
-      case 'get_guild_summary':
-        return getGuildSummary(context);
-      case 'list_roles':
-        return listRoles(context, args);
-      case 'list_color_roles':
-        return listColorRoles(context, args);
-      case 'list_channels':
-        return listChannels(context, args);
-      case 'get_member_info':
-        return getMemberInfo(context, args);
-      case 'get_channel_info':
-        return getChannelInfo(context, args);
-      case 'create_role':
-        return createRole(context, args);
-      case 'edit_role':
-        return editRole(context, args);
-      case 'set_role_position':
-        return setRolePosition(context, args);
-      case 'delete_role':
-        return deleteRole(context, args);
-      case 'assign_role':
-        return assignRole(context, args);
-      case 'remove_role':
-        return removeRole(context, args);
-      case 'create_channel':
-        return createChannel(context, args);
-      case 'edit_channel':
-        return editChannel(context, args);
-      case 'delete_channel':
-        return deleteChannel(context, args);
-      case 'set_channel_permission':
-        return setChannelPermission(context, args);
-      case 'send_channel_message':
-        return sendChannelMessage(context, args);
-      case 'purge_messages':
-        return purgeMessages(context, args);
-      case 'pin_message':
-        return pinMessage(context, args, true);
-      case 'unpin_message':
-        return pinMessage(context, args, false);
-      case 'timeout_member':
-        return timeoutMember(context, args);
-      case 'remove_timeout':
-        return removeTimeout(context, args);
-      case 'kick_member':
-        return kickMember(context, args);
-      case 'ban_member':
-        return banMember(context, args);
-      case 'unban_user':
-        return unbanUser(context, args);
-      case 'set_nickname':
-        return setNickname(context, args);
-      case 'create_invite':
-        return createInvite(context, args);
-      case 'create_emoji':
-        return createEmoji(context, args);
-      case 'delete_emoji':
-        return deleteEmoji(context, args);
-      case 'create_webhook':
-        return createWebhook(context, args);
-      case 'delete_webhook':
-        return deleteWebhook(context, args);
-      case 'edit_guild':
-        return editGuild(context, args);
-      default:
-        return failure(`Unknown tool: ${name}`);
-    }
+    const handler = handlers[name];
+    if (!handler) return failure(`Unknown tool: ${name}`);
+    return await handler(context, args);
   } catch (err) {
     return failure(err.message || 'Tool failed.');
   }
+}
+
+async function getEvalContext(context) {
+  const { guild, message, me, client } = context;
+
+  return success('Eval drafting context loaded. Generate code for manual review only; do not execute it.', {
+    evalCommand: {
+      prefixForms: ['fh eval <javascript>', 'fh e <javascript>'],
+      execution: 'src/commands/dev/eval.js evaluates the provided JavaScript inside the eval command function.',
+      availableVariables: [
+        'message',
+        'args',
+        'client',
+        'require',
+        'process',
+        'console'
+      ],
+      preImportedInEvalFile: [
+        'Embed from discord.js EmbedBuilder',
+        'ActionRowBuilder',
+        'ButtonBuilder',
+        'ButtonStyle'
+      ],
+      asyncBehavior: 'If the snippet text contains "await", the eval command wraps it as (async()=>{ ... })();. Prefer snippets that use await and return a concise string.',
+      codeBlockBehavior: 'The eval command strips ```js code fences, so fenced JavaScript is acceptable for display.',
+      access: 'The existing eval command is developer-allowlisted. Carbon must never execute generated eval code automatically.'
+    },
+    discordContext: {
+      discordJs: 'v14',
+      guild: {
+        id: guild.id,
+        name: guild.name,
+        ownerId: guild.ownerId,
+        memberCount: guild.memberCount
+      },
+      assistantThread: {
+        id: message.channel.id,
+        name: message.channel.name,
+        parentId: message.channel.parentId || null
+      },
+      originalCommandChannel: message.originalMessage ? {
+        id: message.originalMessage.channel.id,
+        name: message.originalMessage.channel.name,
+        type: message.originalMessage.channel.type
+      } : null,
+      invoker: {
+        id: message.author.id,
+        tag: message.author.tag,
+        displayName: message.member.displayName
+      },
+      bot: {
+        id: client.user.id,
+        tag: client.user.tag,
+        highestRole: me.roles.highest ? serializeRole(me.roles.highest) : null,
+        guildPermissions: me.permissions.toArray()
+      },
+      detectedColorRoles: getDetectedColorRoles(guild, 20)
+    },
+    snippetRules: [
+      'Return only a concise explanation plus one JavaScript code block for fh eval.',
+      'Do not include token, API keys, process.env dumps, child_process, filesystem deletion, or external network calls unless the user explicitly requested that exact thing.',
+      'Use explicit IDs from context whenever possible instead of resolving by fuzzy names.',
+      'Use discord.js v14 APIs and require("discord.js") inside the snippet for needed constants/classes.',
+      'Check bot permissions and role hierarchy before mutating roles, members, channels, or messages.',
+      'For dangerous/bulk operations, write the snippet so it previews what it will change before doing it, or clearly mark where the developer should review the target list.',
+      'Use allowedMentions: { parse: [] } for sends unless the user explicitly wants pings.',
+      'End snippets with return "summary"; so eval output is readable.'
+    ],
+    exampleSnippetShape: [
+      'const { PermissionFlagsBits } = require("discord.js");',
+      'const guild = client.guilds.cache.get("GUILD_ID") || message.guild;',
+      'const me = guild.members.me || await guild.members.fetchMe();',
+      'if (!me.permissions.has(PermissionFlagsBits.ManageRoles)) return "Missing ManageRoles";',
+      '// ...review target IDs, do work...',
+      'return "Done: changed X items";'
+    ].join('\n')
+  });
+}
+
+async function runReviewedEval(context, args) {
+  if (!config.ids.devUserIds.includes(context.message.author.id)) {
+    throw new Error('Reviewed eval fallback is developer-only.');
+  }
+
+  const code = String(args.code || '').trim();
+  validateReviewedEvalCode(code);
+
+  const logs = [];
+  const originalMessage = context.message.originalMessage || context.message;
+  const sandbox = {
+    client: context.client,
+    guild: context.guild,
+    message: originalMessage,
+    channel: context.message.channel,
+    thread: context.message.channel,
+    originChannel: originalMessage.channel || null,
+    author: context.message.author,
+    member: context.message.member,
+    me: context.me,
+    discord,
+    PermissionFlagsBits,
+    PermissionsBitField,
+    ChannelType,
+    console: {
+      log: (...items) => logs.push(items.map(inspectForEval).join(' ')),
+      warn: (...items) => logs.push(items.map(inspectForEval).join(' ')),
+      error: (...items) => logs.push(items.map(inspectForEval).join(' '))
+    },
+    setTimeout,
+    clearTimeout,
+    Date,
+    Math,
+    JSON,
+    String,
+    Number,
+    Boolean,
+    Array,
+    Object,
+    Map,
+    Set,
+    RegExp,
+    BigInt,
+    Promise
+  };
+
+  const script = new vm.Script(`"use strict"; (async () => {\n${code}\n})()`, {
+    filename: 'carbon-reviewed-eval.vm'
+  });
+  const vmContext = vm.createContext(sandbox, {
+    name: 'CarbonReviewedEval'
+  });
+
+  const resultPromise = script.runInContext(vmContext, {
+    timeout: 1000,
+    displayErrors: true
+  });
+  const timeout = new Promise((_, reject) => {
+    setTimeout(() => reject(new Error('Reviewed eval timed out after 15 seconds.')), 15000);
+  });
+
+  const result = await Promise.race([Promise.resolve(resultPromise), timeout]);
+  const output = inspectForEval(result);
+  const logOutput = logs.join('\n');
+
+  return success('Reviewed eval executed.', {
+    purpose: clampString(args.purpose, 500),
+    output: clampString(output || 'undefined', 3500),
+    logs: clampString(logOutput || '', 3500)
+  });
 }
 
 async function getGuildSummary(context) {
@@ -1208,6 +2336,118 @@ async function listColorRoles(context, args) {
     roles: roles.first(limit).map(serializeRole),
     totalMatches: roles.size,
     detectionRule: 'Color roles are detected by role names like red, blue, green, pink, purple, black, white, etc.; staff/bot roles with non-default colors are not counted unless their names match color words.'
+  });
+}
+
+async function findMembers(context, args) {
+  const limit = Math.min(Math.max(Number(args.limit) || 20, 1), 50);
+  const includeBots = Boolean(args.includeBots);
+  const query = args.query ? String(args.query).replace(/^@/, '').trim() : '';
+
+  if (query) {
+    await context.guild.members.fetch({ query, limit }).catch(() => null);
+  } else if (context.guild.members.cache.size < Math.min(context.guild.memberCount, limit)) {
+    await context.guild.members.fetch({ limit }).catch(() => null);
+  }
+
+  let members = context.guild.members.cache;
+  if (!includeBots) members = members.filter((member) => !member.user.bot);
+  if (query) {
+    const id = extractId(query);
+    members = members.filter((member) => {
+      return member.id === id ||
+        includesText(member.user.username, query) ||
+        includesText(member.user.tag, query) ||
+        includesText(member.displayName, query);
+    });
+  }
+
+  return success('Members listed.', {
+    members: members.first(limit).map((member) => serializeMember(member, { roles: true })),
+    totalMatches: members.size
+  });
+}
+
+async function listMembersWithPermissions(context, args) {
+  const limit = Math.min(Math.max(Number(args.limit) || 50, 1), 100);
+  const permissionNames = resolvePermissionNames(args);
+  const includeBots = Boolean(args.includeBots);
+  const includeRoleDetails = Boolean(args.includeRoleDetails);
+
+  const members = await context.guild.members.fetch().catch(() => context.guild.members.cache);
+  const matches = [];
+
+  for (const member of members.values()) {
+    if (!includeBots && member.user.bot) continue;
+    const matched = matchedPermissionNames(member.permissions, permissionNames);
+    if (!matched.length) continue;
+
+    const item = {
+      ...serializeMember(member),
+      matchedPermissions: matched
+    };
+
+    if (includeRoleDetails) {
+      item.rolesGrantingDangerousPermissions = member.roles.cache
+        .filter((role) => role.id !== context.guild.id)
+        .map((role) => ({
+          ...serializeRole(role),
+          matchedPermissions: matchedPermissionNames(role.permissions, permissionNames)
+        }))
+        .filter((role) => role.matchedPermissions.length);
+    }
+
+    matches.push(item);
+  }
+
+  matches.sort((a, b) => b.matchedPermissions.length - a.matchedPermissions.length || a.tag.localeCompare(b.tag));
+
+  return success('Permission audit complete.', {
+    permissionSet: permissionNames,
+    totalMembersChecked: members.size,
+    matchingMemberCount: matches.length,
+    members: matches.slice(0, limit),
+    truncated: matches.length > limit
+  });
+}
+
+async function listRolesWithPermissions(context, args) {
+  const limit = Math.min(Math.max(Number(args.limit) || 50, 1), 100);
+  const permissionNames = resolvePermissionNames(args);
+  const roles = getOrderedRoles(context.guild)
+    .map((role) => ({
+      ...serializeRole(role),
+      matchedPermissions: matchedPermissionNames(role.permissions, permissionNames)
+    }))
+    .filter((role) => role.matchedPermissions.length);
+
+  return success('Role permission audit complete.', {
+    permissionSet: permissionNames,
+    matchingRoleCount: roles.length,
+    roles: roles.slice(0, limit),
+    truncated: roles.length > limit
+  });
+}
+
+async function getEffectivePermissions(context, args) {
+  const member = await resolveMember(context.guild, args.user);
+  let permissions = member.permissions;
+  let channel = null;
+
+  if (args.channel) {
+    channel = await resolveChannel(context.guild, args.channel);
+    permissions = channel.permissionsFor(member);
+    if (!permissions) throw new Error(`Could not resolve permissions for ${member.user.tag} in #${channel.name}.`);
+  }
+
+  const names = permissions.toArray();
+  const dangerous = matchedPermissionNames(permissions, DANGEROUS_PERMISSIONS.filter((name) => PermissionFlagsBits[name] !== undefined));
+
+  return success('Effective permissions loaded.', {
+    member: serializeMember(member, { roles: true }),
+    channel: channel ? serializeChannel(channel) : null,
+    permissions: names,
+    dangerousPermissions: dangerous
   });
 }
 
@@ -1350,6 +2590,40 @@ async function setRolePosition(context, args) {
   });
 }
 
+async function addRolePermissions(context, args) {
+  const role = await resolveRole(context.guild, args.role);
+  ensureRoleEditable(role, context);
+  const permissionNames = parsePermissionNames(args.permissions);
+  if (!permissionNames.length) return failure('No permissions were provided.');
+
+  const permissions = new PermissionsBitField(role.permissions.bitfield);
+  permissions.add(permissionNames.map((name) => PermissionFlagsBits[name]));
+  const edited = await role.edit({ permissions, reason: cleanReason(args.reason) });
+
+  return success(`Added permissions to "${edited.name}".`, {
+    role: serializeRole(edited),
+    addedPermissions: permissionNames,
+    permissions: edited.permissions.toArray()
+  });
+}
+
+async function removeRolePermissions(context, args) {
+  const role = await resolveRole(context.guild, args.role);
+  ensureRoleEditable(role, context);
+  const permissionNames = parsePermissionNames(args.permissions);
+  if (!permissionNames.length) return failure('No permissions were provided.');
+
+  const permissions = new PermissionsBitField(role.permissions.bitfield);
+  permissions.remove(permissionNames.map((name) => PermissionFlagsBits[name]));
+  const edited = await role.edit({ permissions, reason: cleanReason(args.reason) });
+
+  return success(`Removed permissions from "${edited.name}".`, {
+    role: serializeRole(edited),
+    removedPermissions: permissionNames,
+    permissions: edited.permissions.toArray()
+  });
+}
+
 async function deleteRole(context, args) {
   const role = await resolveRole(context.guild, args.role);
   ensureRoleEditable(role, context);
@@ -1472,6 +2746,62 @@ async function setChannelPermission(context, args) {
   });
 }
 
+async function lockChannel(context, args) {
+  const channel = args.channel ? await resolveChannel(context.guild, args.channel) : context.message.channel;
+  if (!channel.permissionOverwrites?.edit) throw new Error('That channel does not support permission overwrites.');
+  ensureChannelPermissions(channel, context.me, [PermissionFlagsBits.ManageChannels]);
+
+  const target = args.targetRole ? await resolveRole(context.guild, args.targetRole) : context.guild.roles.everyone;
+  await channel.permissionOverwrites.edit(target, {
+    SendMessages: false,
+    AddReactions: false,
+    CreatePublicThreads: false,
+    CreatePrivateThreads: false,
+    SendMessagesInThreads: false
+  }, { reason: cleanReason(args.reason, 'Carbon AI admin assistant: lock channel') });
+
+  return success(`Locked #${channel.name} for ${target.name}.`, {
+    channel: serializeChannel(channel),
+    target: serializeRole(target)
+  });
+}
+
+async function unlockChannel(context, args) {
+  const channel = args.channel ? await resolveChannel(context.guild, args.channel) : context.message.channel;
+  if (!channel.permissionOverwrites?.edit) throw new Error('That channel does not support permission overwrites.');
+  ensureChannelPermissions(channel, context.me, [PermissionFlagsBits.ManageChannels]);
+
+  const target = args.targetRole ? await resolveRole(context.guild, args.targetRole) : context.guild.roles.everyone;
+  await channel.permissionOverwrites.edit(target, {
+    SendMessages: null,
+    AddReactions: null,
+    CreatePublicThreads: null,
+    CreatePrivateThreads: null,
+    SendMessagesInThreads: null
+  }, { reason: cleanReason(args.reason, 'Carbon AI admin assistant: unlock channel') });
+
+  return success(`Unlocked #${channel.name} for ${target.name}.`, {
+    channel: serializeChannel(channel),
+    target: serializeRole(target)
+  });
+}
+
+async function cloneChannel(context, args) {
+  const channel = await resolveChannel(context.guild, args.channel);
+  ensureChannelPermissions(channel, context.me, [PermissionFlagsBits.ManageChannels]);
+  if (!channel.clone) throw new Error('That channel cannot be cloned.');
+
+  const cloned = await channel.clone({
+    name: args.name ? clampString(args.name, 100) : undefined,
+    reason: cleanReason(args.reason)
+  });
+
+  return success(`Cloned #${channel.name} to #${cloned.name}.`, {
+    source: serializeChannel(channel),
+    clone: serializeChannel(cloned)
+  });
+}
+
 async function sendChannelMessage(context, args) {
   const channel = args.channel
     ? await resolveChannel(context.guild, args.channel, [ChannelType.GuildText, ChannelType.GuildAnnouncement])
@@ -1500,6 +2830,95 @@ async function sendChannelMessage(context, args) {
     channel: serializeChannel(channel),
     messageId: sent.id,
     url: sent.url
+  });
+}
+
+async function listRecentMessages(context, args) {
+  const limit = Math.min(Math.max(Number(args.limit) || 10, 1), 50);
+  const channel = args.channel
+    ? await resolveChannel(context.guild, args.channel)
+    : context.message.channel;
+  if (!channel.messages?.fetch) throw new Error('That channel does not support messages.');
+  ensureChannelPermissions(channel, context.me, [PermissionFlagsBits.ReadMessageHistory, PermissionFlagsBits.ViewChannel]);
+
+  const messages = await channel.messages.fetch({ limit });
+  return success('Recent messages loaded.', {
+    channel: serializeChannel(channel),
+    messages: messages.map(serializeMessage)
+  });
+}
+
+async function fetchMessage(context, args) {
+  const resolved = await resolveMessage(context, args);
+  ensureChannelPermissions(resolved.channel, context.me, [PermissionFlagsBits.ReadMessageHistory, PermissionFlagsBits.ViewChannel]);
+
+  return success('Message loaded.', {
+    channel: serializeChannel(resolved.channel),
+    message: serializeMessage(resolved.message)
+  });
+}
+
+async function editMessage(context, args) {
+  const resolved = await resolveMessage(context, args);
+  if (resolved.message.author?.id !== context.client.user.id) {
+    throw new Error('I can only edit messages that I sent.');
+  }
+
+  const edited = await resolved.message.edit({
+    content: clampString(args.content, 1900),
+    allowedMentions: { parse: [] }
+  });
+
+  return success('Message edited.', {
+    channel: serializeChannel(resolved.channel),
+    message: serializeMessage(edited)
+  });
+}
+
+async function deleteMessage(context, args) {
+  const resolved = await resolveMessage(context, args);
+  ensureChannelPermissions(resolved.channel, context.me, [PermissionFlagsBits.ManageMessages]);
+  const data = serializeMessage(resolved.message);
+  await resolved.message.delete();
+
+  return success('Message deleted.', {
+    channel: serializeChannel(resolved.channel),
+    message: data
+  });
+}
+
+async function crosspostMessage(context, args) {
+  const resolved = await resolveMessage(context, args, [ChannelType.GuildAnnouncement]);
+  ensureChannelPermissions(resolved.channel, context.me, [PermissionFlagsBits.SendMessages, PermissionFlagsBits.ManageMessages]);
+  if (!resolved.message.crosspost) throw new Error('That message cannot be crossposted.');
+  const crossposted = await resolved.message.crosspost();
+
+  return success('Message crossposted.', {
+    channel: serializeChannel(resolved.channel),
+    message: serializeMessage(crossposted)
+  });
+}
+
+async function addReaction(context, args) {
+  const resolved = await resolveMessage(context, args);
+  ensureChannelPermissions(resolved.channel, context.me, [PermissionFlagsBits.AddReactions, PermissionFlagsBits.ReadMessageHistory]);
+  await resolved.message.react(args.emoji);
+
+  return success('Reaction added.', {
+    channel: serializeChannel(resolved.channel),
+    message: serializeMessage(resolved.message),
+    emoji: args.emoji
+  });
+}
+
+async function clearReactions(context, args) {
+  const resolved = await resolveMessage(context, args);
+  ensureChannelPermissions(resolved.channel, context.me, [PermissionFlagsBits.ManageMessages]);
+  await resolved.message.reactions.removeAll();
+
+  return success('Reactions cleared.', {
+    channel: serializeChannel(resolved.channel),
+    message: serializeMessage(resolved.message)
   });
 }
 
@@ -1537,6 +2956,100 @@ async function pinMessage(context, args, shouldPin) {
     channel: serializeChannel(channel),
     messageId: target.id,
     url: target.url
+  });
+}
+
+async function createThread(context, args) {
+  const channel = await resolveChannel(context.guild, args.channel, [ChannelType.GuildText, ChannelType.GuildAnnouncement]);
+  const needed = args.private ? PermissionFlagsBits.CreatePrivateThreads : PermissionFlagsBits.CreatePublicThreads;
+  ensureChannelPermissions(channel, context.me, [needed, PermissionFlagsBits.SendMessagesInThreads]);
+
+  let thread;
+  const options = {
+    name: clampString(args.name, 100),
+    autoArchiveDuration: args.autoArchiveDuration || 1440,
+    rateLimitPerUser: args.slowmodeSeconds,
+    reason: cleanReason(args.reason)
+  };
+
+  if (args.messageId) {
+    const target = await channel.messages.fetch(args.messageId).catch(() => null);
+    if (!target) throw new Error(`Could not fetch message ${args.messageId} in #${channel.name}.`);
+    thread = await target.startThread(options);
+  } else {
+    thread = await channel.threads.create({
+      ...options,
+      type: args.private ? ChannelType.PrivateThread : ChannelType.PublicThread
+    });
+  }
+
+  return success(`Created thread "${thread.name}".`, {
+    thread: serializeChannel(thread)
+  });
+}
+
+async function editThread(context, args) {
+  const thread = await resolveThread(context.guild, args.thread);
+  ensureChannelPermissions(thread, context.me, [PermissionFlagsBits.ManageThreads]);
+
+  const payload = {};
+  if (args.name !== undefined) payload.name = clampString(args.name, 100);
+  if (args.archived !== undefined) payload.archived = Boolean(args.archived);
+  if (args.locked !== undefined) payload.locked = Boolean(args.locked);
+  if (args.invitable !== undefined) payload.invitable = Boolean(args.invitable);
+  if (args.autoArchiveDuration !== undefined) payload.autoArchiveDuration = Number(args.autoArchiveDuration);
+  if (args.slowmodeSeconds !== undefined) payload.rateLimitPerUser = Number(args.slowmodeSeconds);
+  if (!Object.keys(payload).length) return failure('No thread changes were provided.');
+
+  payload.reason = cleanReason(args.reason);
+  const edited = await thread.edit(payload);
+  return success(`Edited thread "${edited.name}".`, {
+    thread: serializeChannel(edited),
+    archived: edited.archived,
+    locked: edited.locked
+  });
+}
+
+async function addThreadMember(context, args) {
+  const thread = await resolveThread(context.guild, args.thread);
+  const member = await resolveMember(context.guild, args.user);
+  await thread.members.add(member.id);
+
+  return success(`Added ${member.user.tag} to thread "${thread.name}".`, {
+    thread: serializeChannel(thread),
+    member: serializeMember(member)
+  });
+}
+
+async function removeThreadMember(context, args) {
+  const thread = await resolveThread(context.guild, args.thread);
+  const member = await resolveMember(context.guild, args.user);
+  await thread.members.remove(member.id);
+
+  return success(`Removed ${member.user.tag} from thread "${thread.name}".`, {
+    thread: serializeChannel(thread),
+    member: serializeMember(member)
+  });
+}
+
+async function listThreads(context, args) {
+  const limit = Math.min(Math.max(Number(args.limit) || 25, 1), 50);
+  const active = await context.guild.channels.fetchActiveThreads();
+  const threads = active.threads
+    .sort((a, b) => b.createdTimestamp - a.createdTimestamp)
+    .first(limit)
+    .map((thread) => ({
+      ...serializeChannel(thread),
+      archived: thread.archived,
+      locked: thread.locked,
+      parentId: thread.parentId,
+      memberCount: thread.memberCount,
+      messageCount: thread.messageCount
+    }));
+
+  return success('Active threads listed.', {
+    threads,
+    totalActiveThreads: active.threads.size
   });
 }
 
@@ -1640,6 +3153,39 @@ async function createInvite(context, args) {
   });
 }
 
+async function listInvites(context, args) {
+  const limit = Math.min(Math.max(Number(args.limit) || 25, 1), 50);
+  const invites = await context.guild.invites.fetch();
+
+  return success('Invites listed.', {
+    invites: invites.first(limit).map(serializeInvite),
+    totalInvites: invites.size,
+    truncated: invites.size > limit
+  });
+}
+
+async function deleteInvite(context, args) {
+  const code = parseInviteCode(args.invite);
+  await context.guild.invites.delete(code, cleanReason(args.reason));
+
+  return success(`Deleted invite ${code}.`, { code });
+}
+
+async function listBans(context, args) {
+  const limit = Math.min(Math.max(Number(args.limit) || 50, 1), 100);
+  const bans = await context.guild.bans.fetch({ limit });
+
+  return success('Bans listed.', {
+    bans: bans.map((ban) => ({
+      userId: ban.user.id,
+      tag: ban.user.tag,
+      bot: ban.user.bot,
+      reason: ban.reason || null
+    })),
+    count: bans.size
+  });
+}
+
 async function createEmoji(context, args) {
   const emoji = await context.guild.emojis.create({
     attachment: args.imageUrl,
@@ -1651,11 +3197,68 @@ async function createEmoji(context, args) {
   });
 }
 
+async function listEmojis(context, args) {
+  const limit = Math.min(Math.max(Number(args.limit) || 50, 1), 100);
+  await context.guild.emojis.fetch().catch(() => null);
+  const emojis = context.guild.emojis.cache.first(limit).map((emoji) => ({
+    id: emoji.id,
+    name: emoji.name,
+    animated: emoji.animated,
+    managed: emoji.managed,
+    available: emoji.available,
+    url: emoji.url
+  }));
+
+  return success('Emojis listed.', {
+    emojis,
+    totalEmojis: context.guild.emojis.cache.size,
+    truncated: context.guild.emojis.cache.size > limit
+  });
+}
+
+async function editEmoji(context, args) {
+  const emoji = await resolveEmoji(context.guild, args.emoji);
+  const edited = await emoji.edit({
+    name: clampString(args.name, 32),
+    reason: cleanReason(args.reason)
+  });
+
+  return success(`Edited emoji :${edited.name}:.`, {
+    emoji: { id: edited.id, name: edited.name, url: edited.url }
+  });
+}
+
 async function deleteEmoji(context, args) {
   const emoji = await resolveEmoji(context.guild, args.emoji);
   const data = { id: emoji.id, name: emoji.name };
   await emoji.delete(cleanReason(args.reason));
   return success(`Deleted emoji :${data.name}:.`, { emoji: data });
+}
+
+async function listStickers(context, args) {
+  const limit = Math.min(Math.max(Number(args.limit) || 50, 1), 100);
+  const stickers = await context.guild.stickers.fetch().catch(() => context.guild.stickers.cache);
+
+  return success('Stickers listed.', {
+    stickers: stickers.first(limit).map((sticker) => ({
+      id: sticker.id,
+      name: sticker.name,
+      description: sticker.description,
+      tags: sticker.tags,
+      available: sticker.available,
+      url: sticker.url
+    })),
+    totalStickers: stickers.size,
+    truncated: stickers.size > limit
+  });
+}
+
+async function deleteSticker(context, args) {
+  const sticker = await resolveSticker(context.guild, args.sticker);
+  const data = { id: sticker.id, name: sticker.name };
+  await sticker.delete(cleanReason(args.reason));
+
+  return success(`Deleted sticker "${data.name}".`, { sticker: data });
 }
 
 async function createWebhook(context, args) {
@@ -1686,6 +3289,217 @@ async function deleteWebhook(context, args) {
   const data = { id: webhook.id, name: webhook.name, channelId: webhook.channelId };
   await webhook.delete(cleanReason(args.reason));
   return success(`Deleted webhook "${data.name || data.id}".`, { webhook: data });
+}
+
+async function listWebhooks(context, args) {
+  const limit = Math.min(Math.max(Number(args.limit) || 50, 1), 100);
+  let webhooks;
+
+  if (args.channel) {
+    const channel = await resolveChannel(context.guild, args.channel, [ChannelType.GuildText, ChannelType.GuildAnnouncement]);
+    ensureChannelPermissions(channel, context.me, [PermissionFlagsBits.ManageWebhooks]);
+    webhooks = await channel.fetchWebhooks();
+  } else {
+    webhooks = await context.guild.fetchWebhooks();
+  }
+
+  return success('Webhooks listed.', {
+    webhooks: webhooks.first(limit).map(serializeWebhook),
+    totalWebhooks: webhooks.size,
+    truncated: webhooks.size > limit
+  });
+}
+
+async function fetchAuditLogs(context, args) {
+  const limit = Math.min(Math.max(Number(args.limit) || 10, 1), 25);
+  const type = resolveAuditLogEvent(args.action);
+  const logs = await context.guild.fetchAuditLogs({ limit, type });
+
+  return success('Audit logs loaded.', {
+    entries: logs.entries.map((entry) => ({
+      id: entry.id,
+      action: entry.action,
+      actionType: entry.actionType,
+      reason: entry.reason || null,
+      executorId: entry.executorId || null,
+      targetId: entry.targetId || null,
+      createdAt: entry.createdAt?.toISOString() || null,
+      changes: entry.changes?.slice(0, 10) || []
+    }))
+  });
+}
+
+async function moveMemberVoice(context, args) {
+  const member = await resolveMember(context.guild, args.user);
+  const channel = await resolveChannel(context.guild, args.channel, [ChannelType.GuildVoice, ChannelType.GuildStageVoice]);
+  if (!member.voice.channel) throw new Error(`${member.user.tag} is not connected to voice.`);
+  ensureChannelPermissions(channel, context.me, [PermissionFlagsBits.MoveMembers, PermissionFlagsBits.Connect]);
+
+  await member.voice.setChannel(channel, cleanReason(args.reason));
+  return success(`Moved ${member.user.tag} to ${channel.name}.`, {
+    member: serializeMember(member),
+    channel: serializeChannel(channel)
+  });
+}
+
+async function disconnectMemberVoice(context, args) {
+  const member = await resolveMember(context.guild, args.user);
+  if (!member.voice.channel) throw new Error(`${member.user.tag} is not connected to voice.`);
+  await member.voice.disconnect(cleanReason(args.reason));
+
+  return success(`Disconnected ${member.user.tag} from voice.`, {
+    member: serializeMember(member)
+  });
+}
+
+async function serverMuteMember(context, args) {
+  const member = await resolveMember(context.guild, args.user);
+  if (!member.voice.channel) throw new Error(`${member.user.tag} is not connected to voice.`);
+  await member.voice.setMute(Boolean(args.muted), cleanReason(args.reason));
+
+  return success(`${Boolean(args.muted) ? 'Muted' : 'Unmuted'} ${member.user.tag} in voice.`, {
+    member: serializeMember(member),
+    muted: Boolean(args.muted)
+  });
+}
+
+async function serverDeafenMember(context, args) {
+  const member = await resolveMember(context.guild, args.user);
+  if (!member.voice.channel) throw new Error(`${member.user.tag} is not connected to voice.`);
+  await member.voice.setDeaf(Boolean(args.deafened), cleanReason(args.reason));
+
+  return success(`${Boolean(args.deafened) ? 'Deafened' : 'Undeafened'} ${member.user.tag} in voice.`, {
+    member: serializeMember(member),
+    deafened: Boolean(args.deafened)
+  });
+}
+
+function serializeScheduledEvent(event) {
+  return {
+    id: event.id,
+    name: event.name,
+    description: event.description || null,
+    entityType: event.entityType,
+    status: event.status,
+    channelId: event.channelId || null,
+    creatorId: event.creatorId || null,
+    scheduledStartAt: event.scheduledStartAt?.toISOString() || null,
+    scheduledEndAt: event.scheduledEndAt?.toISOString() || null,
+    userCount: event.userCount || 0,
+    location: event.entityMetadata?.location || null,
+    url: event.url
+  };
+}
+
+async function listScheduledEvents(context, args) {
+  const limit = Math.min(Math.max(Number(args.limit) || 25, 1), 50);
+  const events = await context.guild.scheduledEvents.fetch({ withUserCount: true });
+
+  return success('Scheduled events listed.', {
+    events: events.first(limit).map(serializeScheduledEvent),
+    totalEvents: events.size,
+    truncated: events.size > limit
+  });
+}
+
+function parseEventEntityType(type) {
+  const normalized = String(type || 'external').toLowerCase();
+  if (normalized === 'voice') return GuildScheduledEventEntityType.Voice;
+  if (normalized === 'stage') return GuildScheduledEventEntityType.StageInstance;
+  return GuildScheduledEventEntityType.External;
+}
+
+async function createScheduledEvent(context, args) {
+  const entityType = parseEventEntityType(args.entityType);
+  const start = new Date(args.startTime);
+  const end = args.endTime ? new Date(args.endTime) : null;
+  if (Number.isNaN(start.getTime())) throw new Error('startTime is not a valid date.');
+  if (end && Number.isNaN(end.getTime())) throw new Error('endTime is not a valid date.');
+
+  const payload = {
+    name: clampString(args.name, 100),
+    description: args.description ? clampString(args.description, 1000) : undefined,
+    scheduledStartTime: start,
+    scheduledEndTime: end || undefined,
+    privacyLevel: GuildScheduledEventPrivacyLevel.GuildOnly,
+    entityType,
+    reason: cleanReason(args.reason)
+  };
+
+  if (entityType === GuildScheduledEventEntityType.External) {
+    if (!args.location) throw new Error('External scheduled events need a location.');
+    if (!end) throw new Error('External scheduled events need an endTime.');
+    payload.entityMetadata = { location: clampString(args.location, 100) };
+  } else {
+    if (!args.channel) throw new Error('Voice/stage scheduled events need a channel.');
+    payload.channel = await resolveChannel(context.guild, args.channel, [ChannelType.GuildVoice, ChannelType.GuildStageVoice]);
+  }
+
+  const event = await context.guild.scheduledEvents.create(payload);
+  return success(`Created scheduled event "${event.name}".`, {
+    event: serializeScheduledEvent(event)
+  });
+}
+
+async function deleteScheduledEvent(context, args) {
+  const event = await resolveScheduledEvent(context.guild, args.event);
+  const data = serializeScheduledEvent(event);
+  await event.delete(cleanReason(args.reason));
+
+  return success(`Deleted scheduled event "${data.name}".`, {
+    event: data
+  });
+}
+
+function resolveForumTags(channel, tags = []) {
+  if (!tags.length) return [];
+  const resolved = [];
+
+  for (const tag of tags) {
+    const id = extractId(tag);
+    const found = channel.availableTags.find((availableTag) => {
+      return availableTag.id === id || sameText(availableTag.name, tag);
+    });
+    if (!found) throw new Error(`Could not find forum tag "${tag}" in #${channel.name}.`);
+    resolved.push(found.id);
+  }
+
+  return resolved;
+}
+
+async function listForumTags(context, args) {
+  const channel = await resolveChannel(context.guild, args.channel, [ChannelType.GuildForum]);
+
+  return success('Forum tags listed.', {
+    channel: serializeChannel(channel),
+    tags: channel.availableTags.map((tag) => ({
+      id: tag.id,
+      name: tag.name,
+      moderated: tag.moderated,
+      emojiId: tag.emojiId || null,
+      emojiName: tag.emojiName || null
+    }))
+  });
+}
+
+async function createForumPost(context, args) {
+  const channel = await resolveChannel(context.guild, args.channel, [ChannelType.GuildForum]);
+  ensureChannelPermissions(channel, context.me, [PermissionFlagsBits.SendMessages, PermissionFlagsBits.CreatePublicThreads]);
+
+  const thread = await channel.threads.create({
+    name: clampString(args.title, 100),
+    message: {
+      content: clampString(args.content, 1900),
+      allowedMentions: { parse: [] }
+    },
+    appliedTags: resolveForumTags(channel, args.tags || []),
+    reason: cleanReason(args.reason)
+  });
+
+  return success(`Created forum post "${thread.name}".`, {
+    thread: serializeChannel(thread),
+    parent: serializeChannel(channel)
+  });
 }
 
 async function editGuild(context, args) {

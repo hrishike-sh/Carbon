@@ -68,6 +68,11 @@ function makeSystemPrompt() {
     'Color roles means self-assignable or aesthetic roles named after colors like red, orange, yellow, green, blue, purple, pink, black, white, gray, teal, etc. Do not treat every role with a non-default Discord color as a color role.',
     'If the user asks to put a role above color roles, use create_role with positionAboveColorRoles=true for new roles or set_role_position with aboveColorRoles=true for existing roles. Do not ask what color roles means.',
     'If the user asks for a random role name or random color, either choose one yourself or pass "random" to the role tool.',
+    'For dangerous permission audits, use list_members_with_permissions or list_roles_with_permissions. Do not call get_member_info on role names like Owner, Admin, Staff, or labels from role lists.',
+    'For broad "who/what/how many" server questions, prefer read-only list/audit tools first, then summarize counts and the most relevant entries.',
+    'If no available tool can satisfy a Discord admin request, call get_eval_context, then call run_reviewed_eval with JavaScript code. This is a last resort.',
+    'run_reviewed_eval is developer-only and requires a visible button confirmation before execution. After it runs, use its output to answer the user.',
+    'Never use run_reviewed_eval for tasks that an existing built-in tool can handle. Keep eval code short, targeted, and easy to review.',
     'Prefer IDs and mentions when users provide them. If a name may be ambiguous, use list/read tools or ask for a mention/ID.',
     'Mentions in messages sent through tools are disabled by default. Warn the user if they want real pings.',
     'You cannot bypass Discord limitations, bot permissions, owner-only settings, 2FA requirements, role hierarchy, or API limits.',
@@ -169,11 +174,22 @@ async function confirmToolCall(session, name, args) {
       .setStyle(ButtonStyle.Danger)
   );
 
+  const description = name === 'run_reviewed_eval'
+    ? [
+        `Purpose: ${args.purpose || 'No purpose provided.'}`,
+        '',
+        'Carbon wants to run this reviewed eval code:',
+        '```js',
+        String(args.code || '').slice(0, 3000),
+        '```'
+      ].join('\n')
+    : `Carbon wants to run:\n\`\`\`json\n${summarizeToolCall(name, args)}\n\`\`\``;
+
   const prompt = await session.channel.send({
     embeds: [
       warningEmbed({
         title: 'Confirm Discord action',
-        description: `Carbon wants to run:\n\`\`\`json\n${summarizeToolCall(name, args)}\n\`\`\``,
+        description,
         footer: 'Only the command caller can confirm this.'
       })
     ],
