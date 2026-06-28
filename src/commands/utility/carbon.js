@@ -2,6 +2,7 @@ const {
   ActionRowBuilder,
   ButtonBuilder,
   ButtonStyle,
+  ChannelType,
   ComponentType,
   PermissionFlagsBits
 } = require('discord.js');
@@ -9,6 +10,7 @@ const { createChatCompletion } = require('../../utils/deepseek');
 const {
   TOOL_DEFINITIONS,
   executeTool,
+  getColorRoleSummary,
   isMutatingTool,
   summarizeToolCall
 } = require('../../utils/carbonAdminTools');
@@ -16,6 +18,9 @@ const { infoEmbed, warningEmbed, errorEmbed, successEmbed } = require('../../uti
 
 const activeSessions = new Map();
 const AWAIT_MARKER = '[[await_user]]';
+const IDLE_TIMEOUT_MS = 15 * 60 * 1000;
+const MAX_MODEL_STEPS_PER_TURN = 20;
+const MAX_USER_TURNS = 30;
 
 function splitMessage(content) {
   const chunks = [];
@@ -28,8 +33,26 @@ function splitMessage(content) {
   return chunks;
 }
 
-function sessionKey(message) {
-  return `${message.guild.id}:${message.channel.id}:${message.author.id}`;
+function sessionKey(session) {
+  return `${session.guild.id}:${session.channel.id}:${session.author.id}`;
+}
+
+function createSessionMessage(baseMessage, channel) {
+  return {
+    guild: baseMessage.guild,
+    channel,
+    author: baseMessage.author,
+    member: baseMessage.member,
+    originalMessage: baseMessage
+  };
+}
+
+function makeThreadName(prompt) {
+  const compact = String(prompt || 'AI admin help')
+    .replace(/\s+/g, ' ')
+    .replace(/[^\w\s#@-]/g, '')
+    .trim();
+  return `carbon-${compact || 'assistant'}`.slice(0, 90);
 }
 
 function makeSystemPrompt() {
@@ -42,6 +65,9 @@ function makeSystemPrompt() {
     'If details are missing, ask one concise follow-up question and end the message with [[await_user]].',
     'Do not add [[await_user]] when your response is final.',
     'Mutating tool calls are automatically confirmed by the bot, so do not ask for a separate confirmation unless the user request itself is ambiguous.',
+    'Color roles means self-assignable or aesthetic roles named after colors like red, orange, yellow, green, blue, purple, pink, black, white, gray, teal, etc. Do not treat every role with a non-default Discord color as a color role.',
+    'If the user asks to put a role above color roles, use create_role with positionAboveColorRoles=true for new roles or set_role_position with aboveColorRoles=true for existing roles. Do not ask what color roles means.',
+    'If the user asks for a random role name or random color, either choose one yourself or pass "random" to the role tool.',
     'Prefer IDs and mentions when users provide them. If a name may be ambiguous, use list/read tools or ask for a mention/ID.',
     'Mentions in messages sent through tools are disabled by default. Warn the user if they want real pings.',
     'You cannot bypass Discord limitations, bot permissions, owner-only settings, 2FA requirements, role hierarchy, or API limits.',
@@ -49,41 +75,80 @@ function makeSystemPrompt() {
   ].join('\n');
 }
 
-function makeContextMessage(message) {
+function makeContextMessage(session) {
   return [
-    `Guild: ${message.guild.name} (${message.guild.id})`,
-    `Current channel: #${message.channel.name} (${message.channel.id})`,
-    `Invoker: ${message.author.tag} (${message.author.id})`,
-    `Invoker display name: ${message.member.displayName}`,
-    `Available tool count: ${TOOL_DEFINITIONS.length}`
+    `Guild: ${session.guild.name} (${session.guild.id})`,
+    `Command channel: #${session.originalMessage.channel.name} (${session.originalMessage.channel.id})`,
+    `Assistant thread: #${session.channel.name} (${session.channel.id})`,
+    `Invoker: ${session.author.tag} (${session.author.id})`,
+    `Invoker display name: ${session.member.displayName}`,
+    `Available tool count: ${TOOL_DEFINITIONS.length}`,
+    '',
+    'Detected color roles:',
+    getColorRoleSummary(session.guild)
   ].join('\n');
 }
 
-async function sendAssistantText(message, content) {
+async function createAssistantThread(message, prompt) {
+  if (message.channel.isThread()) return message.channel;
+
+  if (![ChannelType.GuildText, ChannelType.GuildAnnouncement].includes(message.channel.type)) {
+    const err = new Error('Carbon can only create assistant threads from text or announcement channels.');
+    err.code = 'THREAD_CREATE_FAILED';
+    throw err;
+  }
+
+  try {
+    return await message.startThread({
+      name: makeThreadName(prompt),
+      autoArchiveDuration: 60,
+      reason: 'Carbon AI assistant session'
+    });
+  } catch (err) {
+    const wrapped = new Error(`I could not create a thread for Carbon: ${err.message}`);
+    wrapped.code = 'THREAD_CREATE_FAILED';
+    throw wrapped;
+  }
+}
+
+async function sendAssistantText(session, content) {
   const clean = String(content || '').replace(AWAIT_MARKER, '').trim();
   if (!clean) return;
 
   const chunks = splitMessage(clean);
   for (const chunk of chunks) {
-    await message.channel.send({
+    await session.channel.send({
       embeds: [infoEmbed({ description: chunk })],
       allowedMentions: { parse: [] }
     });
   }
 }
 
-async function awaitUserReply(message) {
-  const filter = (m) => m.author.id === message.author.id && m.channel.id === message.channel.id;
-  const collected = await message.channel.awaitMessages({
+async function awaitUserReply(session, timeout = IDLE_TIMEOUT_MS) {
+  const filter = (m) => (
+    m.author.id === session.author.id &&
+    m.channel.id === session.channel.id &&
+    !m.author.bot &&
+    m.content.trim().length > 0
+  );
+  const collected = await session.channel.awaitMessages({
     filter,
     max: 1,
-    time: 180000,
+    time: timeout,
     errors: ['time']
-  });
+  }).catch(() => null);
+
+  if (!collected) {
+    const err = new Error('Session idle timeout.');
+    err.code = 'SESSION_IDLE_TIMEOUT';
+    throw err;
+  }
 
   const reply = collected.first();
-  const content = reply.content.trim();
-  if (/^(cancel|stop|nevermind|never mind)$/i.test(content)) {
+  let content = reply.content.trim();
+  content = content.replace(/^fh\s+carbon\s*/i, '').trim() || content;
+
+  if (/^(cancel|stop|nevermind|never mind|end)$/i.test(content)) {
     const err = new Error('Session cancelled.');
     err.code = 'SESSION_CANCELLED';
     throw err;
@@ -92,7 +157,7 @@ async function awaitUserReply(message) {
   return content;
 }
 
-async function confirmToolCall(message, name, args) {
+async function confirmToolCall(session, name, args) {
   const row = new ActionRowBuilder().addComponents(
     new ButtonBuilder()
       .setCustomId('carbon_confirm')
@@ -104,7 +169,7 @@ async function confirmToolCall(message, name, args) {
       .setStyle(ButtonStyle.Danger)
   );
 
-  const prompt = await message.channel.send({
+  const prompt = await session.channel.send({
     embeds: [
       warningEmbed({
         title: 'Confirm Discord action',
@@ -120,7 +185,7 @@ async function confirmToolCall(message, name, args) {
     const interaction = await prompt.awaitMessageComponent({
       componentType: ComponentType.Button,
       time: 60000,
-      filter: (i) => i.user.id === message.author.id
+      filter: (i) => i.user.id === session.author.id
     });
 
     const confirmed = interaction.customId === 'carbon_confirm';
@@ -160,7 +225,7 @@ function parseToolArgs(toolCall) {
   }
 }
 
-async function runToolCall(message, client, toolCall) {
+async function runToolCall(session, client, toolCall) {
   const name = toolCall.function?.name;
   const args = parseToolArgs(toolCall);
 
@@ -169,40 +234,31 @@ async function runToolCall(message, client, toolCall) {
   }
 
   if (isMutatingTool(name)) {
-    const confirmed = await confirmToolCall(message, name, args);
+    const confirmed = await confirmToolCall(session, name, args);
     if (!confirmed) {
       return { ok: false, cancelled: true, message: 'The user cancelled or did not confirm this action.' };
     }
   }
 
-  await message.channel.sendTyping().catch(() => {});
+  await session.channel.sendTyping().catch(() => {});
 
   return executeTool({
     client,
-    guild: message.guild,
-    message,
-    me: message.guild.members.me
+    guild: session.guild,
+    message: session,
+    me: session.guild.members.me
   }, name, args);
 }
 
-async function runSession(message, initialPrompt, client) {
-  const messages = [
-    { role: 'system', content: makeSystemPrompt() },
-    { role: 'user', content: `Runtime context:\n${makeContextMessage(message)}\n\nUser request:\n${initialPrompt}` }
-  ];
-
-  let aiCalls = 0;
-  let userTurns = 0;
-
-  while (aiCalls < 10 && userTurns < 8) {
-    await message.channel.sendTyping().catch(() => {});
+async function processModelTurn(session, client, messages) {
+  for (let step = 0; step < MAX_MODEL_STEPS_PER_TURN; step++) {
+    await session.channel.sendTyping().catch(() => {});
     const assistantMessage = await createChatCompletion({
       messages,
       tools: TOOL_DEFINITIONS,
       toolChoice: 'auto',
       temperature: 0.15
     });
-    aiCalls++;
 
     if (!assistantMessage) {
       throw new Error('DeepSeek returned an empty response.');
@@ -215,22 +271,13 @@ async function runSession(message, initialPrompt, client) {
       tool_calls: toolCalls.length ? toolCalls : undefined
     });
 
-    if (assistantMessage.content && !toolCalls.length) {
-      const waitingForUser = assistantMessage.content.includes(AWAIT_MARKER);
-      await sendAssistantText(message, assistantMessage.content);
-
-      if (!waitingForUser) return;
-
-      const reply = await awaitUserReply(message);
-      userTurns++;
-      messages.push({ role: 'user', content: reply });
-      continue;
+    if (!toolCalls.length) {
+      await sendAssistantText(session, assistantMessage.content);
+      return;
     }
 
-    if (!toolCalls.length) return;
-
     for (const toolCall of toolCalls) {
-      const result = await runToolCall(message, client, toolCall);
+      const result = await runToolCall(session, client, toolCall);
       messages.push({
         role: 'tool',
         tool_call_id: toolCall.id,
@@ -239,10 +286,36 @@ async function runSession(message, initialPrompt, client) {
     }
   }
 
-  await message.reply({
+  await session.channel.send({
     embeds: [
       warningEmbed({
-        description: 'This got a little long, so I stopped the assistant session. Run `fh carbon` again to continue with a fresh request.'
+        description: 'I hit my internal tool-call limit while working on that. Reply with a more specific next step and I can keep going here.'
+      })
+    ]
+  });
+}
+
+async function runSession(baseMessage, thread, initialPrompt, client) {
+  const session = createSessionMessage(baseMessage, thread);
+  const messages = [
+    { role: 'system', content: makeSystemPrompt() },
+    { role: 'user', content: `Runtime context:\n${makeContextMessage(session)}\n\nUser request:\n${initialPrompt}` }
+  ];
+
+  let userTurns = 1;
+  await processModelTurn(session, client, messages);
+
+  while (userTurns < MAX_USER_TURNS) {
+    const reply = await awaitUserReply(session);
+    userTurns++;
+    messages.push({ role: 'user', content: reply });
+    await processModelTurn(session, client, messages);
+  }
+
+  await session.channel.send({
+    embeds: [
+      warningEmbed({
+        description: 'Carbon reached the message limit for this assistant thread. Start a new `fh carbon` thread if you need more.'
       })
     ]
   });
@@ -275,37 +348,59 @@ module.exports = {
       });
     }
 
-    const key = sessionKey(message);
-    if (activeSessions.has(key)) {
+    let thread;
+    try {
+      thread = await createAssistantThread(message, prompt);
+    } catch (err) {
       return message.reply({
-        embeds: [warningEmbed({ description: 'You already have a Carbon assistant session running in this channel. Reply there or type `cancel`.' })]
+        embeds: [errorEmbed({ description: err.message })]
+      });
+    }
+
+    const session = createSessionMessage(message, thread);
+    const key = sessionKey(session);
+    if (activeSessions.has(key)) {
+      return thread.send({
+        embeds: [warningEmbed({ description: 'You already have a Carbon assistant session running in this thread. Reply here or type `cancel`.' })]
       });
     }
 
     activeSessions.set(key, true);
 
-    try {
-      await message.reply({
-        embeds: [infoEmbed({ description: 'Carbon is thinking...' })],
-        allowedMentions: { parse: [] }
-      });
-      await runSession(message, prompt, client);
-    } catch (err) {
-      if (err.code === 'SESSION_CANCELLED') {
-        await message.channel.send({
-          embeds: [warningEmbed({ description: 'Carbon session cancelled.' })]
+    (async () => {
+      try {
+        await thread.send({
+          embeds: [
+            infoEmbed({
+              description: 'Carbon thread opened. Reply here without `fh carbon`; type `cancel` to end the session.'
+            })
+          ],
+          allowedMentions: { parse: [] }
         });
-      } else if (err.code === 'MISSING_DEEPSEEK_API_KEY') {
-        await message.channel.send({
-          embeds: [errorEmbed({ description: 'Missing `deepseekApiKey` in `.env`. Add it and restart the bot.' })]
-        });
-      } else {
-        await message.channel.send({
-          embeds: [errorEmbed({ description: `Carbon hit an error: ${err.message}` })]
-        });
+        await runSession(message, thread, prompt, client);
+      } catch (err) {
+        if (err.code === 'SESSION_CANCELLED') {
+          await thread.send({
+            embeds: [warningEmbed({ description: 'Carbon session cancelled.' })]
+          });
+        } else if (err.code === 'SESSION_IDLE_TIMEOUT') {
+          await thread.send({
+            embeds: [warningEmbed({ description: 'Carbon session closed after 15 minutes with no messages.' })]
+          });
+        } else if (err.code === 'MISSING_DEEPSEEK_API_KEY') {
+          await thread.send({
+            embeds: [errorEmbed({ description: 'Missing `deepseekApiKey` in `.env`. Add it and restart the bot.' })]
+          });
+        } else {
+          await thread.send({
+            embeds: [errorEmbed({ description: `Carbon hit an error: ${err.message}` })]
+          });
+        }
+      } finally {
+        activeSessions.delete(key);
       }
-    } finally {
+    })().catch(() => {
       activeSessions.delete(key);
-    }
+    });
   }
 };

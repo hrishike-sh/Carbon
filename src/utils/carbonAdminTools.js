@@ -8,6 +8,65 @@ const {
   GuildDefaultMessageNotifications
 } = require('discord.js');
 
+const COLOR_ROLE_NAMES = [
+  'red',
+  'orange',
+  'yellow',
+  'green',
+  'blue',
+  'purple',
+  'pink',
+  'black',
+  'white',
+  'gray',
+  'grey',
+  'brown',
+  'cyan',
+  'aqua',
+  'teal',
+  'lime',
+  'mint',
+  'magenta',
+  'violet',
+  'indigo',
+  'gold',
+  'silver',
+  'maroon',
+  'navy',
+  'lavender',
+  'peach',
+  'crimson',
+  'scarlet',
+  'emerald',
+  'sapphire'
+];
+
+const RANDOM_ROLE_NAMES = [
+  'Nova',
+  'Ember',
+  'Aurora',
+  'Comet',
+  'Pulse',
+  'Mirage',
+  'Vertex',
+  'Prism',
+  'Echo',
+  'Halo'
+];
+
+const RANDOM_ROLE_COLORS = [
+  0xff4757,
+  0xffa502,
+  0xffd32a,
+  0x2ed573,
+  0x1e90ff,
+  0x9b59b6,
+  0xff6bcb,
+  0x00cec9,
+  0xf368e0,
+  0x7bed9f
+];
+
 const TOOL_DEFINITIONS = [
   {
     type: 'function',
@@ -31,6 +90,20 @@ const TOOL_DEFINITIONS = [
         properties: {
           query: { type: 'string', description: 'Optional role name or ID search.' },
           limit: { type: 'integer', minimum: 1, maximum: 25 }
+        },
+        additionalProperties: false
+      }
+    }
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'list_color_roles',
+      description: 'Read-only list of roles that look like self-assignable color roles. Color roles mean roles named after colors such as red, blue, green, pink, purple, black, white, etc.; not every role with a non-default Discord color.',
+      parameters: {
+        type: 'object',
+        properties: {
+          limit: { type: 'integer', minimum: 1, maximum: 30 }
         },
         additionalProperties: false
       }
@@ -90,15 +163,16 @@ const TOOL_DEFINITIONS = [
     type: 'function',
     function: {
       name: 'create_role',
-      description: 'Create a guild role.',
+      description: 'Create a guild role. Use "random" for name or color when the user asks for a random role name/color. Set positionAboveColorRoles when the user asks to place it above color roles.',
       parameters: {
         type: 'object',
         required: ['name'],
         properties: {
-          name: { type: 'string', minLength: 1, maxLength: 100 },
-          color: { type: 'string', description: 'Hex color like #ff9900, color name, or empty for default.' },
+          name: { type: 'string', minLength: 1, maxLength: 100, description: 'Role name, or "random".' },
+          color: { type: 'string', description: 'Hex color like #ff9900, color name, "random", or empty for default.' },
           hoist: { type: 'boolean', description: 'Display separately in member list.' },
           mentionable: { type: 'boolean' },
+          positionAboveColorRoles: { type: 'boolean', description: 'Move the new role above detected color roles after creating it.' },
           permissions: {
             type: 'array',
             items: { type: 'string' },
@@ -125,6 +199,26 @@ const TOOL_DEFINITIONS = [
           hoist: { type: 'boolean' },
           mentionable: { type: 'boolean' },
           permissions: { type: 'array', items: { type: 'string' } },
+          reason: { type: 'string', maxLength: 512 }
+        },
+        additionalProperties: false
+      }
+    }
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'set_role_position',
+      description: 'Move a role by exact position, above another role, below another role, or above detected color roles.',
+      parameters: {
+        type: 'object',
+        required: ['role'],
+        properties: {
+          role: { type: 'string', description: 'Role ID, mention, or name.' },
+          position: { type: 'integer', minimum: 1, description: 'Exact Discord role position.' },
+          aboveRole: { type: 'string', description: 'Role ID/name to place this role above.' },
+          belowRole: { type: 'string', description: 'Role ID/name to place this role below.' },
+          aboveColorRoles: { type: 'boolean', description: 'Place this role above detected color roles.' },
           reason: { type: 'string', maxLength: 512 }
         },
         additionalProperties: false
@@ -552,6 +646,7 @@ const TOOL_DEFINITIONS = [
 const MUTATING_TOOLS = new Set([
   'create_role',
   'edit_role',
+  'set_role_position',
   'delete_role',
   'assign_role',
   'remove_role',
@@ -580,6 +675,7 @@ const MUTATING_TOOLS = new Set([
 const TOOL_REQUIRED_PERMISSIONS = {
   create_role: [PermissionFlagsBits.ManageRoles],
   edit_role: [PermissionFlagsBits.ManageRoles],
+  set_role_position: [PermissionFlagsBits.ManageRoles],
   delete_role: [PermissionFlagsBits.ManageRoles],
   assign_role: [PermissionFlagsBits.ManageRoles],
   remove_role: [PermissionFlagsBits.ManageRoles],
@@ -687,10 +783,80 @@ function parsePermissions(input) {
 function parseColor(color) {
   if (color === undefined || color === null || color === '') return undefined;
   const value = String(color).trim();
+  if (sameText(value, 'random')) {
+    return RANDOM_ROLE_COLORS[Math.floor(Math.random() * RANDOM_ROLE_COLORS.length)];
+  }
   if (/^#?[0-9a-f]{6}$/i.test(value)) {
     return Number.parseInt(value.replace('#', ''), 16);
   }
   return value;
+}
+
+function wantsRandom(value) {
+  if (!value) return false;
+  const normalized = String(value).trim().toLowerCase();
+  return ['random', 'random name', 'anything', 'surprise me'].includes(normalized);
+}
+
+function randomRoleName(guild) {
+  const used = new Set(guild.roles.cache.map((role) => role.name.toLowerCase()));
+
+  for (let i = 0; i < 20; i++) {
+    const base = RANDOM_ROLE_NAMES[Math.floor(Math.random() * RANDOM_ROLE_NAMES.length)];
+    const suffix = Math.floor(Math.random() * 900) + 100;
+    const name = `${base} ${suffix}`;
+    if (!used.has(name.toLowerCase())) return name;
+  }
+
+  return `Role ${Date.now().toString().slice(-5)}`;
+}
+
+function normalizeColorRoleName(name) {
+  return String(name || '')
+    .toLowerCase()
+    .replace(/[^a-z]+/g, ' ')
+    .trim();
+}
+
+function isColorRole(role) {
+  if (!role || role.managed) return false;
+  const normalized = normalizeColorRoleName(role.name);
+  if (!normalized) return false;
+  const words = normalized.split(/\s+/g);
+  return COLOR_ROLE_NAMES.some((color) => normalized === color || words.includes(color));
+}
+
+function getColorRoles(guild) {
+  return guild.roles.cache
+    .filter((role) => role.id !== guild.id && isColorRole(role))
+    .sort((a, b) => b.position - a.position);
+}
+
+function highestAllowedRolePosition(context) {
+  return Math.max(context.me.roles.highest.position - 1, 1);
+}
+
+function ensureRolePositionAllowed(context, position) {
+  const max = highestAllowedRolePosition(context);
+  if (position > max) {
+    throw new Error(`I can only move roles up to position ${max}, directly below my highest role "${context.me.roles.highest.name}".`);
+  }
+  if (position < 1) {
+    throw new Error('Role position must be at least 1.');
+  }
+}
+
+function getAboveColorRolesTarget(context) {
+  const colorRoles = getColorRoles(context.guild);
+  if (!colorRoles.size) {
+    throw new Error('I could not detect any color roles. Color roles are detected by names like red, blue, green, pink, purple, black, white, etc.');
+  }
+
+  const highestColorRole = colorRoles.first();
+  const targetPosition = highestColorRole.position + 1;
+  ensureRolePositionAllowed(context, targetPosition);
+
+  return { colorRoles, highestColorRole, targetPosition };
 }
 
 function parseGuildEnum(field, value) {
@@ -867,11 +1033,27 @@ function serializeRole(role) {
     name: role.name,
     position: role.position,
     color: role.hexColor,
+    isColorRole: isColorRole(role),
     members: role.members.size,
     managed: role.managed,
     mentionable: role.mentionable,
     hoist: role.hoist
   };
+}
+
+function getDetectedColorRoles(guild, limit = 30) {
+  return getColorRoles(guild).first(limit).map(serializeRole);
+}
+
+function getColorRoleSummary(guild, limit = 12) {
+  const roles = getDetectedColorRoles(guild, limit);
+  if (!roles.length) {
+    return 'No color roles detected by name. Color roles are roles named red, blue, green, pink, purple, black, white, etc.';
+  }
+
+  return roles
+    .map((role) => `${role.name} (${role.id}) position ${role.position}, ${role.color}`)
+    .join('\n');
 }
 
 function serializeChannel(channel) {
@@ -904,6 +1086,8 @@ async function executeTool(context, name, args = {}) {
         return getGuildSummary(context);
       case 'list_roles':
         return listRoles(context, args);
+      case 'list_color_roles':
+        return listColorRoles(context, args);
       case 'list_channels':
         return listChannels(context, args);
       case 'get_member_info':
@@ -914,6 +1098,8 @@ async function executeTool(context, name, args = {}) {
         return createRole(context, args);
       case 'edit_role':
         return editRole(context, args);
+      case 'set_role_position':
+        return setRolePosition(context, args);
       case 'delete_role':
         return deleteRole(context, args);
       case 'assign_role':
@@ -1014,6 +1200,17 @@ async function listRoles(context, args) {
   });
 }
 
+async function listColorRoles(context, args) {
+  const limit = Math.min(Math.max(Number(args.limit) || 20, 1), 30);
+  const roles = getColorRoles(context.guild);
+
+  return success('Detected color roles listed.', {
+    roles: roles.first(limit).map(serializeRole),
+    totalMatches: roles.size,
+    detectionRule: 'Color roles are detected by role names like red, blue, green, pink, purple, black, white, etc.; staff/bot roles with non-default colors are not counted unless their names match color words.'
+  });
+}
+
 async function listChannels(context, args) {
   const limit = Math.min(Math.max(Number(args.limit) || 15, 1), 25);
   const query = args.query ? String(args.query).replace(/^#/, '').trim() : null;
@@ -1069,8 +1266,10 @@ async function getChannelInfo(context, args) {
 
 async function createRole(context, args) {
   const permissions = args.permissions ? parsePermissions(args.permissions) : undefined;
+  const name = wantsRandom(args.name) ? randomRoleName(context.guild) : clampString(args.name, 100);
+  const positionTarget = args.positionAboveColorRoles ? getAboveColorRolesTarget(context) : null;
   const role = await context.guild.roles.create({
-    name: clampString(args.name, 100),
+    name,
     color: parseColor(args.color),
     hoist: Boolean(args.hoist),
     mentionable: Boolean(args.mentionable),
@@ -1078,7 +1277,18 @@ async function createRole(context, args) {
     reason: cleanReason(args.reason)
   });
 
-  return success(`Created role "${role.name}".`, { role: serializeRole(role) });
+  let finalRole = role;
+  if (positionTarget) {
+    finalRole = await role.setPosition(positionTarget.targetPosition, {
+      reason: cleanReason(args.reason, 'Carbon AI admin assistant: place role above color roles')
+    });
+  }
+
+  return success(`Created role "${finalRole.name}".`, {
+    role: serializeRole(finalRole),
+    placedAboveColorRoles: Boolean(positionTarget),
+    highestColorRoleBelow: positionTarget ? serializeRole(positionTarget.highestColorRole) : null
+  });
 }
 
 async function editRole(context, args) {
@@ -1096,6 +1306,48 @@ async function editRole(context, args) {
 
   const edited = await role.edit(payload, cleanReason(args.reason));
   return success(`Edited role "${edited.name}".`, { role: serializeRole(edited) });
+}
+
+async function setRolePosition(context, args) {
+  const role = await resolveRole(context.guild, args.role);
+  ensureRoleEditable(role, context);
+
+  let targetPosition;
+  let relativeTo = null;
+
+  if (args.aboveColorRoles) {
+    const target = getAboveColorRolesTarget(context);
+    targetPosition = target.targetPosition;
+    relativeTo = {
+      mode: 'aboveColorRoles',
+      highestColorRole: serializeRole(target.highestColorRole),
+      detectedColorRoleCount: target.colorRoles.size
+    };
+  } else if (args.aboveRole) {
+    const targetRole = await resolveRole(context.guild, args.aboveRole);
+    targetPosition = targetRole.position + 1;
+    relativeTo = { mode: 'aboveRole', role: serializeRole(targetRole) };
+  } else if (args.belowRole) {
+    const targetRole = await resolveRole(context.guild, args.belowRole);
+    targetPosition = targetRole.position - 1;
+    relativeTo = { mode: 'belowRole', role: serializeRole(targetRole) };
+  } else if (args.position !== undefined) {
+    targetPosition = Number(args.position);
+    relativeTo = { mode: 'position' };
+  } else {
+    return failure('Provide position, aboveRole, belowRole, or aboveColorRoles.');
+  }
+
+  ensureRolePositionAllowed(context, targetPosition);
+  const moved = await role.setPosition(targetPosition, {
+    reason: cleanReason(args.reason, 'Carbon AI admin assistant: move role')
+  });
+
+  return success(`Moved role "${moved.name}" to position ${moved.position}.`, {
+    role: serializeRole(moved),
+    requestedPosition: targetPosition,
+    relativeTo
+  });
 }
 
 async function deleteRole(context, args) {
@@ -1473,6 +1725,8 @@ async function editGuild(context, args) {
 module.exports = {
   TOOL_DEFINITIONS,
   executeTool,
+  getColorRoleSummary,
+  getDetectedColorRoles,
   isMutatingTool,
   summarizeToolCall
 };
