@@ -4,6 +4,7 @@ const settingsService = require('../../database/services/settingsService');
 
 const handlers = [
   { name: 'highlight', execute: require('./highlight').execute },
+  { name: 'autoreact', execute: require('./autoreact').execute },
   { name: 'afk', execute: require('./afk').execute },
   { name: 'coins', execute: require('./coins').execute },
   { name: 'coinevents', execute: require('./coinevents').execute },
