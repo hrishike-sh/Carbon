@@ -6,6 +6,7 @@ const {
   displayReaction,
   ensureAutoReactIndexes,
   getKeywordFromArg,
+  importApplicationEmoji,
   loadAutoReacts,
   normalizeReaction
 } = require('../../utils/autoReact');
@@ -39,6 +40,45 @@ async function canUseReaction(message, reaction) {
   } catch (err) {
     return false;
   }
+}
+
+async function resolveUsableReaction(message, rawReaction, client) {
+  let reaction = normalizeReaction(rawReaction, client);
+  let imported = false;
+
+  if (!reaction) {
+    const importedEmoji = await importApplicationEmoji(rawReaction, client).catch(() => null);
+    if (importedEmoji) {
+      reaction = importedEmoji.reaction;
+      imported = importedEmoji.imported;
+    }
+  }
+
+  if (!reaction) {
+    return {
+      reaction: null,
+      imported: false,
+      error: 'Missing or unavailable reaction. Use a Unicode emoji or custom emoji mention.'
+    };
+  }
+
+  if (await canUseReaction(message, reaction)) {
+    return { reaction, imported };
+  }
+
+  const importedEmoji = await importApplicationEmoji(rawReaction, client).catch(() => null);
+  if (importedEmoji && await canUseReaction(message, importedEmoji.reaction)) {
+    return {
+      reaction: importedEmoji.reaction,
+      imported: true
+    };
+  }
+
+  return {
+    reaction: null,
+    imported: false,
+    error: `I cannot use ${rawReaction || 'that emoji'} here. If this is a custom emoji, make sure it was sent as an emoji mention.`
+  };
 }
 
 async function listAutoReacts(message) {
@@ -144,22 +184,14 @@ module.exports = {
     }
 
     const rawReaction = args.shift();
-    const reaction = normalizeReaction(rawReaction, client);
+    const resolvedReaction = await resolveUsableReaction(message, rawReaction, client);
+    const reaction = resolvedReaction.reaction;
     if (!reaction) {
       return message.reply({
-        embeds: [errorEmbed({ description: 'Missing or unavailable reaction. Use an emoji this bot can access.' })]
-      });
-    }
-
-    const usable = await canUseReaction(message, reaction);
-    if (!usable) {
-      return message.reply({
-        embeds: [
-          errorEmbed({
-            title: 'Reaction unavailable',
-            description: `I cannot use ${rawReaction || 'that emoji'} here. Make sure I can add reactions and access that emoji.`
-          })
-        ]
+        embeds: [errorEmbed({
+          title: 'Reaction unavailable',
+          description: resolvedReaction.error
+        })]
       });
     }
 
@@ -190,7 +222,10 @@ module.exports = {
       embeds: [
         successEmbed({
           title: 'Auto-react added',
-          description: `${displayKeyword(saved.keyword)} will now trigger ${displayReaction(saved.reaction)}.`
+          description: [
+            `${displayKeyword(saved.keyword)} will now trigger ${displayReaction(saved.reaction)}.`,
+            resolvedReaction.imported ? 'I copied that emoji into the bot first because I could not use the original.' : null
+          ].filter(Boolean).join('\n')
         })
       ],
       allowedMentions: { parse: [] }
