@@ -9,6 +9,6 @@ const AutoReactSchema = new Schema({
   updatedAt: { type: Number, default: Date.now }
 });
 
-AutoReactSchema.index({ guildId: 1, keyword: 1 }, { unique: true });
+AutoReactSchema.index({ guildId: 1, keyword: 1, reaction: 1 }, { unique: true });
 
 module.exports = model('autoreacts', AutoReactSchema);

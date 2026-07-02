@@ -1,5 +1,7 @@
 const AutoReact = require('../database/models/autoreact');
 
+let indexesReady = false;
+
 function getKeywordFromArg(arg) {
   const raw = String(arg || '').trim();
   const userMention = raw.match(/^<@!?(\d{17,20})>$/);
@@ -40,8 +42,32 @@ function displayReaction(reaction) {
   return `${reaction}`;
 }
 
+async function ensureAutoReactIndexes() {
+  if (indexesReady) return;
+
+  const indexes = await AutoReact.collection.indexes().catch(() => []);
+  const legacyIndex = indexes.find((index) => (
+    index.unique &&
+    index.key?.guildId === 1 &&
+    index.key?.keyword === 1 &&
+    !index.key?.reaction
+  ));
+
+  if (legacyIndex) {
+    await AutoReact.collection.dropIndex(legacyIndex.name).catch(() => {});
+  }
+
+  await AutoReact.collection.createIndex(
+    { guildId: 1, keyword: 1, reaction: 1 },
+    { unique: true }
+  ).catch(() => {});
+
+  indexesReady = true;
+}
+
 async function loadAutoReacts(client, guildId) {
-  const entries = await AutoReact.find({ guildId }).sort({ keyword: 1 });
+  await ensureAutoReactIndexes();
+  const entries = await AutoReact.find({ guildId }).sort({ keyword: 1, reaction: 1 });
   if (!client.state.autoReacts) client.state.autoReacts = new Map();
   client.state.autoReacts.set(guildId, entries.map((entry) => ({
     keyword: entry.keyword,
@@ -62,6 +88,7 @@ module.exports = {
   AutoReact,
   displayKeyword,
   displayReaction,
+  ensureAutoReactIndexes,
   getAutoReacts,
   getKeywordFromArg,
   loadAutoReacts,

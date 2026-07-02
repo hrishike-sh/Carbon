@@ -4,6 +4,7 @@ const {
   AutoReact,
   displayKeyword,
   displayReaction,
+  ensureAutoReactIndexes,
   getKeywordFromArg,
   loadAutoReacts,
   normalizeReaction
@@ -41,7 +42,7 @@ async function canUseReaction(message, reaction) {
 }
 
 async function listAutoReacts(message) {
-  const entries = await AutoReact.find({ guildId: config.ids.guildId }).sort({ keyword: 1 });
+  const entries = await AutoReact.find({ guildId: config.ids.guildId }).sort({ keyword: 1, reaction: 1 });
 
   if (!entries.length) {
     return message.reply({
@@ -88,6 +89,8 @@ module.exports = {
       });
     }
 
+    await ensureAutoReactIndexes();
+
     const subcommand = args.shift()?.toLowerCase();
     if (!subcommand || !['add', 'remove', 'list'].includes(subcommand)) {
       return message.reply({
@@ -115,24 +118,25 @@ module.exports = {
     }
 
     if (subcommand === 'remove') {
-      const removed = await AutoReact.findOneAndDelete({
+      const removed = await AutoReact.find({
         guildId: config.ids.guildId,
         keyword
       });
 
-      if (!removed) {
+      if (!removed.length) {
         return message.reply({
           embeds: [warningEmbed({ description: `${displayKeyword(keyword)} is not configured as an auto-react.` })],
           allowedMentions: { parse: [] }
         });
       }
 
+      await AutoReact.deleteMany({ guildId: config.ids.guildId, keyword });
       await loadAutoReacts(client, config.ids.guildId);
       return message.reply({
         embeds: [
           successEmbed({
             title: 'Auto-react removed',
-            description: `${displayKeyword(keyword)} will no longer trigger ${displayReaction(removed.reaction)}.`
+            description: `${displayKeyword(keyword)} will no longer trigger ${removed.map((entry) => displayReaction(entry.reaction)).join(' ')}.`
           })
         ],
         allowedMentions: { parse: [] }
@@ -159,25 +163,33 @@ module.exports = {
       });
     }
 
-    const existing = await AutoReact.findOne({ guildId: config.ids.guildId, keyword });
-    const saved = await AutoReact.findOneAndUpdate(
-      { guildId: config.ids.guildId, keyword },
-      {
-        guildId: config.ids.guildId,
-        keyword,
-        reaction,
-        createdBy: existing?.createdBy || message.author.id,
-        updatedAt: Date.now()
-      },
-      { upsert: true, new: true, setDefaultsOnInsert: true }
-    );
+    const existing = await AutoReact.findOne({ guildId: config.ids.guildId, keyword, reaction });
+    if (existing) {
+      return message.reply({
+        embeds: [
+          warningEmbed({
+            title: 'Auto-react already exists',
+            description: `${displayKeyword(keyword)} already triggers ${displayReaction(reaction)}.`
+          })
+        ],
+        allowedMentions: { parse: [] }
+      });
+    }
+
+    const saved = await AutoReact.create({
+      guildId: config.ids.guildId,
+      keyword,
+      reaction,
+      createdBy: message.author.id,
+      updatedAt: Date.now()
+    });
 
     await loadAutoReacts(client, config.ids.guildId);
 
     return message.reply({
       embeds: [
         successEmbed({
-          title: existing ? 'Auto-react updated' : 'Auto-react added',
+          title: 'Auto-react added',
           description: `${displayKeyword(saved.keyword)} will now trigger ${displayReaction(saved.reaction)}.`
         })
       ],
