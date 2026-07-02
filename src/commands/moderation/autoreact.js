@@ -24,6 +24,7 @@ const SELF_ALLOWED_ROLES = [
   '826197829126979635',
   '1126459041045024859'
 ];
+const SELF_MAX_REACTIONS = 5;
 
 function commandEmbed(title, description, color = Theme.info, fields = []) {
   return createEmbed({
@@ -44,8 +45,8 @@ function canManageAutoReacts(member) {
   return member.roles.cache.hasAny(config.roles.staff.mod, config.roles.staff.admin);
 }
 
-function getSelfAutoReactSlots(member) {
-  return SELF_ALLOWED_ROLES.filter((roleId) => member.roles.cache.has(roleId)).length;
+function canUseSelfAutoReact(member) {
+  return member.roles.cache.hasAny(...SELF_ALLOWED_ROLES);
 }
 
 async function canUseReaction(message, reaction) {
@@ -132,6 +133,30 @@ async function listAutoReacts(message) {
   });
 }
 
+async function sendSelfInfo(message) {
+  const current = await AutoReact.countDocuments({
+    guildId: config.ids.guildId,
+    keyword: message.author.id
+  });
+
+  return message.reply({
+    embeds: [
+      commandEmbed(
+        'Self auto-react',
+        [
+          `Use \`fh ar self <reaction>\` to add a reaction that triggers when you are pinged.`,
+          `You can set up to **${SELF_MAX_REACTIONS}** self auto-reacts.`,
+          'When you are pinged, Carbon will randomly pick **2** of your saved self auto-reacts.',
+          '',
+          `You currently have **${current}/${SELF_MAX_REACTIONS}** configured.`
+        ].join('\n'),
+        Theme.info
+      )
+    ],
+    allowedMentions: { parse: [] }
+  });
+}
+
 async function saveAutoReact({ message, client, keyword, reaction, createdBy }) {
   const existing = await AutoReact.findOne({ guildId: config.ids.guildId, keyword, reaction });
   if (existing) {
@@ -205,8 +230,7 @@ module.exports = {
     }
 
     if (subcommand === 'self') {
-      const slots = getSelfAutoReactSlots(message.member);
-      if (!slots) {
+      if (!canUseSelfAutoReact(message.member)) {
         return message.reply({
           embeds: [
             errorEmbed({
@@ -217,17 +241,21 @@ module.exports = {
         });
       }
 
+      if (!args.length) {
+        return sendSelfInfo(message);
+      }
+
       const existingSelfReactions = await AutoReact.countDocuments({
         guildId: config.ids.guildId,
         keyword: message.author.id
       });
 
-      if (existingSelfReactions >= slots) {
+      if (existingSelfReactions >= SELF_MAX_REACTIONS) {
         return message.reply({
           embeds: [
             warningEmbed({
               title: 'Self auto-react limit reached',
-              description: `You can set ${slots} self auto-react${slots === 1 ? '' : 's'} with your current roles.`
+              description: `You can set up to ${SELF_MAX_REACTIONS} self auto-reacts. When you are pinged, Carbon randomly picks 2 of them.`
             })
           ]
         });
@@ -273,8 +301,9 @@ module.exports = {
             title: 'Self auto-react added',
             description: [
               `Whenever you are pinged, I will react with ${displayReaction(result.saved.reaction)}.`,
+              'When you are pinged, I will randomly pick 2 of your saved self auto-reacts.',
               resolvedReaction.imported ? 'I copied that emoji into the bot first because I could not use the original.' : null,
-              `Slots used: ${existingSelfReactions + 1}/${slots}`
+              `Slots used: ${existingSelfReactions + 1}/${SELF_MAX_REACTIONS}`
             ].filter(Boolean).join('\n')
           })
         ],

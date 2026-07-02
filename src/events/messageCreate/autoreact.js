@@ -9,6 +9,18 @@ function keywordMatches(message, keyword) {
   return message.content.toLowerCase().includes(keyword);
 }
 
+function pickRandom(items, count) {
+  if (items.length <= count) return items;
+
+  const copy = [...items];
+  for (let i = copy.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+
+  return copy.slice(0, count);
+}
+
 module.exports = {
   name: 'autoreact',
 
@@ -20,9 +32,23 @@ module.exports = {
     if (!autoReacts?.length) return;
 
     const matchedReactions = new Set();
+    const selfMatches = new Map();
+
     for (const entry of autoReacts) {
-      if (keywordMatches(message, entry.keyword)) {
+      if (!keywordMatches(message, entry.keyword)) continue;
+
+      if (/^\d{17,20}$/.test(entry.keyword)) {
+        const reactions = selfMatches.get(entry.keyword) || [];
+        reactions.push(entry.reaction);
+        selfMatches.set(entry.keyword, reactions);
+      } else {
         matchedReactions.add(entry.reaction);
+      }
+    }
+
+    for (const reactions of selfMatches.values()) {
+      for (const reaction of pickRandom(reactions, 2)) {
+        matchedReactions.add(reaction);
       }
     }
 
