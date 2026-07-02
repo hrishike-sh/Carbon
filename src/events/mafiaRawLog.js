@@ -17,8 +17,9 @@ function getLogPath(date = new Date()) {
 async function isMafiaChannel(client, channelId) {
   if (mafiaChannelIds.has(channelId)) return true;
   if (nonMafiaChannelIds.has(channelId)) return false;
+  if (!client?.channels) return false;
 
-  const channel = client.channels.cache.get(channelId) ||
+  const channel = client.channels.cache?.get(channelId) ||
     await client.channels.fetch(channelId).catch(() => null);
 
   if (channel?.name !== 'mafia') {
@@ -56,18 +57,19 @@ function buildLogEntry(packet) {
 module.exports = {
   name: Events.Raw,
 
-  async execute(packet, client) {
-    if (packet.t !== 'MESSAGE_CREATE') return;
-    if (packet.d?.guild_id !== config.ids.guildId) return;
-    if (!packet.d?.channel_id) return;
-
-    const isMafia = await isMafiaChannel(client, packet.d.channel_id);
-    if (!isMafia) return;
-
-    const filePath = getLogPath();
-    const entry = buildLogEntry(packet);
-
+  async execute(packet, ...args) {
     try {
+      if (packet?.t !== 'MESSAGE_CREATE') return;
+      if (packet.d?.guild_id !== config.ids.guildId) return;
+      if (!packet.d?.channel_id) return;
+
+      const client = args.find((arg) => arg?.channels);
+      const isMafia = await isMafiaChannel(client, packet.d.channel_id);
+      if (!isMafia) return;
+
+      const filePath = getLogPath();
+      const entry = buildLogEntry(packet);
+
       await fs.mkdir(logDir, { recursive: true });
       await fs.appendFile(filePath, `${JSON.stringify(entry)}\n`, 'utf8');
 
@@ -76,7 +78,7 @@ module.exports = {
         logger.info(`Mafia raw message capture writing to ${filePath}`);
       }
     } catch (err) {
-      logger.error('Failed to write mafia raw message capture', err);
+      logger.error('Mafia raw message capture skipped a packet', err);
     }
   }
 };
