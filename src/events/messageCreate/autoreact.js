@@ -1,9 +1,14 @@
 const config = require('../../config');
 const { getAutoReacts } = require('../../utils/autoReact');
 
+function isExplicitUserMention(content, userId) {
+  const mentionRegex = new RegExp(`<@!?${userId}>`);
+  return mentionRegex.test(content);
+}
+
 function keywordMatches(message, keyword) {
   if (/^\d{17,20}$/.test(keyword)) {
-    return message.mentions.users.has(keyword) || message.content.includes(keyword);
+    return isExplicitUserMention(message.content, keyword);
   }
 
   return message.content.toLowerCase().includes(keyword);
@@ -37,7 +42,7 @@ module.exports = {
     for (const entry of autoReacts) {
       if (!keywordMatches(message, entry.keyword)) continue;
 
-      if (/^\d{17,20}$/.test(entry.keyword)) {
+      if (/^\d{17,20}$/.test(entry.keyword) && entry.createdBy === entry.keyword) {
         const reactions = selfMatches.get(entry.keyword) || [];
         reactions.push(entry.reaction);
         selfMatches.set(entry.keyword, reactions);

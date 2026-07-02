@@ -25,6 +25,7 @@ const SELF_ALLOWED_ROLES = [
   '1126459041045024859'
 ];
 const SELF_MAX_REACTIONS = 5;
+const SELF_LOG_CHANNEL_ID = '1522275308990890104';
 
 function commandEmbed(title, description, color = Theme.info, fields = []) {
   return createEmbed({
@@ -183,8 +184,8 @@ async function saveAutoReact({ message, client, keyword, reaction, createdBy }) 
 }
 
 async function sendSelfAutoReactLog(message, saved, resolvedReaction) {
-  const logChannel = message.client.channels.cache.get(config.ids.channels.modChat) ||
-    await message.client.channels.fetch(config.ids.channels.modChat).catch(() => null);
+  const logChannel = message.client.channels.cache.get(SELF_LOG_CHANNEL_ID) ||
+    await message.client.channels.fetch(SELF_LOG_CHANNEL_ID).catch(() => null);
   if (!logChannel?.isTextBased()) return;
 
   await logChannel.send({
@@ -204,6 +205,48 @@ async function sendSelfAutoReactLog(message, saved, resolvedReaction) {
     ],
     allowedMentions: { roles: [config.roles.staff.mod] }
   }).catch(() => {});
+}
+
+async function removeSelfAutoReacts(message, args, client) {
+  const rawReaction = args.shift();
+  const query = {
+    guildId: config.ids.guildId,
+    keyword: message.author.id
+  };
+
+  if (rawReaction) {
+    query.reaction = normalizeReaction(rawReaction, client) || rawReaction;
+  }
+
+  const removed = await AutoReact.find(query);
+  if (!removed.length) {
+    return message.reply({
+      embeds: [
+        warningEmbed({
+          title: 'No self auto-reacts found',
+          description: rawReaction
+            ? `You do not have ${displayReaction(query.reaction)} set as a self auto-react.`
+            : 'You do not have any self auto-reacts set.'
+        })
+      ],
+      allowedMentions: { parse: [] }
+    });
+  }
+
+  await AutoReact.deleteMany(query);
+  await loadAutoReacts(client, config.ids.guildId);
+
+  return message.reply({
+    embeds: [
+      successEmbed({
+        title: 'Self auto-react removed',
+        description: rawReaction
+          ? `Removed ${displayReaction(removed[0].reaction)} from your self auto-reacts.`
+          : `Removed ${removed.length} self auto-react${removed.length === 1 ? '' : 's'}: ${removed.map((entry) => displayReaction(entry.reaction)).join(' ')}`
+      })
+    ],
+    allowedMentions: { parse: [] }
+  });
 }
 
 module.exports = {
@@ -309,6 +352,17 @@ module.exports = {
         ],
         allowedMentions: { parse: [] }
       });
+    }
+
+    if (subcommand === 'remove') {
+      const removeSelf = !canManageAutoReacts(message.member) ||
+        !args.length ||
+        ['self', 'me'].includes(args[0]?.toLowerCase());
+
+      if (removeSelf) {
+        const selfArgs = ['self', 'me'].includes(args[0]?.toLowerCase()) ? args.slice(1) : args;
+        return removeSelfAutoReacts(message, selfArgs, client);
+      }
     }
 
     if (!canManageAutoReacts(message.member)) {

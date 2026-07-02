@@ -124,7 +124,8 @@ async function loadAutoReacts(client, guildId) {
   if (!client.state.autoReacts) client.state.autoReacts = new Map();
   client.state.autoReacts.set(guildId, entries.map((entry) => ({
     keyword: entry.keyword,
-    reaction: entry.reaction
+    reaction: entry.reaction,
+    createdBy: entry.createdBy
   })));
   return client.state.autoReacts.get(guildId);
 }
