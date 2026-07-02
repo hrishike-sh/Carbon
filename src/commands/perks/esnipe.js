@@ -3,8 +3,16 @@ const {
   ButtonBuilder,
   ActionRowBuilder
 } = require('discord.js');
-const config = require('../../config');
 const { createEmbed } = require('../../utils/embeds');
+
+const ALLOWED_ROLES = [
+  '999911166673428521',
+  '825965323500126208',
+  '839803117646512128',
+  '828048225096826890',
+  '826196972167757875',
+  '824687393868742696'
+];
 
 function buildESnipeEmbed(target, index, total) {
   const { author, oldContent, newContent } = target;
@@ -22,7 +30,7 @@ function buildESnipeEmbed(target, index, total) {
 module.exports = {
   name: 'esnipe',
   cooldown: 5,
-  roles: [config.roles.staff.mod, config.roles.staff.admin, config.roles.giveawayManager],
+  roles: ALLOWED_ROLES,
 
   async execute(message, args, client) {
     const sniped = client.state.snipes.esnipes.get(message.channel.id);

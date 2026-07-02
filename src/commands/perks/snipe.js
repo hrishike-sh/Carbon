@@ -6,6 +6,15 @@ const {
 const config = require('../../config');
 const { createEmbed } = require('../../utils/embeds');
 
+const ALLOWED_ROLES = [
+  '999911166673428521',
+  '825965323500126208',
+  '839803117646512128',
+  '828048225096826890',
+  '826196972167757875',
+  '824687393868742696'
+];
+
 function buildSnipeEmbed(target, index, total) {
   const { msg, time, image } = target;
   const author = msg.author;
@@ -28,11 +37,7 @@ module.exports = {
       return message.reply('This command is not available in this server.');
     }
 
-    const hasRole = [
-      config.roles.staff.mod,
-      config.roles.staff.admin,
-      config.roles.giveawayManager
-    ].some((roleId) => message.member.roles.cache.has(roleId));
+    const hasRole = ALLOWED_ROLES.some((roleId) => message.member.roles.cache.has(roleId));
     if (!hasRole) {
       return message.reply('You do not have permission to use this command.');
     }
