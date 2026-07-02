@@ -21,8 +21,19 @@ module.exports = {
   handlers,
 
   async execute(message, client) {
-    if (message.author?.bot) return;
     if (!message.guild) return;
+
+    if (message.author?.bot) {
+      const mafiaHandler = handlers.find((handler) => handler.name === 'mafia');
+      if (!mafiaHandler) return;
+
+      try {
+        await mafiaHandler.execute(message, client);
+      } catch (err) {
+        logger.error(`messageCreate handler "${mafiaHandler.name}" error`, err);
+      }
+      return;
+    }
 
     for (const handler of handlers) {
       try {
