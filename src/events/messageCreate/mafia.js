@@ -2,9 +2,7 @@ const { Collection, ChannelType } = require('discord.js');
 const config = require('../../config');
 const logger = require('../../utils/logger');
 const { warningEmbed, errorEmbed, successEmbed } = require('../../utils/embeds');
-const path = require('path');
-const os = require('os');
-const fs = require('fs');
+const { createHostedTranscript } = require('../../utils/transcripts');
 
 const Game = new Collection();
 const Messages = new Collection();
@@ -279,7 +277,7 @@ async function handleGameOver(message, client, currentGame, logChannelId, logCha
         .join('\n') || 'No messages yet.'
   });
 
-  const logCh = message.client.channels.cache.get(config.ids.channels.mafiaLog);
+  const logCh = logChannel || message.client.channels.cache.get(logChannelId);
   if (logCh?.isTextBased()) {
     await logCh.send({
       embeds: [
@@ -308,29 +306,21 @@ async function handleGameOver(message, client, currentGame, logChannelId, logCha
   Game.delete(message.channel.id);
 
   try {
-    const discordTranscripts = require('discord-html-transcripts');
     const channelMessages = Messages.get(message.channel.id);
-    if (channelMessages) {
-      const transcriptBuffer = await discordTranscripts.generateFromMessages(
-        channelMessages,
-        channel,
-        { returnType: 'buffer' }
-      );
-      const name = `mafia-${channel.id}-${Date.now()}`;
-      const transcriptDir = path.join(os.homedir(), 'transcripts', 'public');
-      if (!fs.existsSync(transcriptDir)) {
-        fs.mkdirSync(transcriptDir, { recursive: true });
-      }
-      const transcriptPath = path.join(transcriptDir, `${name}.html`);
-      fs.writeFileSync(transcriptPath, transcriptBuffer);
-      const lc = message.client.channels.cache.get(config.ids.channels.mafiaLog);
-      if (lc) {
-        await lc.send(`Transcript: https://hrish.dev/transcripts/${name}`);
+    if (channelMessages?.length) {
+      const transcript = await createHostedTranscript(channel, channelMessages, {
+        prefix: 'mafia'
+      });
+
+      const lc = logCh || message.client.channels.cache.get(config.ids.channels.mafiaLog);
+      if (lc?.isTextBased()) {
+        await lc.send(`Transcript: ${transcript.url}`);
       }
     }
-    Messages.delete(message.channel.id);
   } catch (err) {
     logger.error('Error generating mafia transcript', err);
+  } finally {
+    Messages.delete(message.channel.id);
   }
 }
 
