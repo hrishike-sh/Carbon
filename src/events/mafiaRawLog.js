@@ -54,6 +54,19 @@ function buildLogEntry(packet) {
   };
 }
 
+function safeStringify(value) {
+  const seen = new WeakSet();
+
+  return JSON.stringify(value, (key, item) => {
+    if (typeof item !== 'object' || item === null) return item;
+
+    if (seen.has(item)) return '[Circular]';
+    seen.add(item);
+
+    return item;
+  });
+}
+
 module.exports = {
   name: Events.Raw,
 
@@ -71,7 +84,7 @@ module.exports = {
       const entry = buildLogEntry(packet);
 
       await fs.mkdir(logDir, { recursive: true });
-      await fs.appendFile(filePath, `${JSON.stringify(entry)}\n`, 'utf8');
+      await fs.appendFile(filePath, `${safeStringify(entry)}\n`, 'utf8');
 
       if (announcedPath !== filePath) {
         announcedPath = filePath;

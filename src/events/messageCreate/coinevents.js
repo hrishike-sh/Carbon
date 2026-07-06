@@ -10,16 +10,19 @@ module.exports = {
   name: 'coinevents',
 
   async execute(message, client) {
-    if (message.guild.id !== config.ids.guildId) return;
+    if (message.guild?.id !== config.ids.guildId) return;
+    if (!message.channel?.id) return;
 
     const restrictedChannels = [config.ids.channels.modChat, config.ids.channels.fightAds];
     if (restrictedChannels.includes(message.channel.id)) return;
     if (channelCooldowns.includes(message.channel.id)) return;
     if (Math.random() > 0.03) return;
 
-    channelCooldowns.push(message.channel.id);
+    const channelId = message.channel.id;
+    channelCooldowns.push(channelId);
     setTimeout(() => {
-      channelCooldowns.splice(channelCooldowns.indexOf(message.channel.id), 1);
+      const index = channelCooldowns.indexOf(channelId);
+      if (index !== -1) channelCooldowns.splice(index, 1);
     }, 1000 * 60 * 10);
 
     client.state.counts.coinEventsTriggered++;
