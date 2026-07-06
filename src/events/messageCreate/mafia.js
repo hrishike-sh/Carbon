@@ -128,6 +128,15 @@ function isGameOverMessage(message) {
   return /game\s+over|thanks for playing|enjoyed/i.test(getMessageText(message));
 }
 
+async function getMafiaLogChannel(client, existingChannel, channelId = config.ids.channels.mafiaLog) {
+  if (existingChannel?.isTextBased()) return existingChannel;
+
+  const channel = client.channels.cache.get(channelId) ||
+    await client.channels.fetch(channelId).catch(() => null);
+
+  return channel?.isTextBased() ? channel : null;
+}
+
 async function handleExistingGame(message, client, { mafiaBotIds, logChannelId, logChannel }) {
   const currentGame = Game.get(message.channel.id);
 
@@ -277,7 +286,7 @@ async function handleGameOver(message, client, currentGame, logChannelId, logCha
         .join('\n') || 'No messages yet.'
   });
 
-  const logCh = logChannel || message.client.channels.cache.get(logChannelId);
+  const logCh = await getMafiaLogChannel(message.client, logChannel, logChannelId);
   if (logCh?.isTextBased()) {
     await logCh.send({
       embeds: [
@@ -312,8 +321,8 @@ async function handleGameOver(message, client, currentGame, logChannelId, logCha
         prefix: 'mafia'
       });
 
-      const lc = logCh || message.client.channels.cache.get(config.ids.channels.mafiaLog);
-      if (lc?.isTextBased()) {
+      const lc = await getMafiaLogChannel(message.client, logCh, logChannelId);
+      if (lc) {
         await lc.send(`Transcript: ${transcript.url}`);
       }
     }
