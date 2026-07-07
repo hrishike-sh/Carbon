@@ -4,7 +4,10 @@ const path = require('path');
 const discordTranscripts = require('discord-html-transcripts');
 
 const DEFAULT_PUBLIC_DIR = path.join(os.homedir(), 'transcripts', 'public');
-const DEFAULT_BASE_URL = 'https://hrish.dev/transcripts';
+const DEFAULT_BASE_URL = 'https://hrish.site/transcripts';
+const ACTION_ROW_TYPE = 1;
+const BUTTON_TYPE = 2;
+const MAX_BUTTONS_PER_ROW = 5;
 
 function getTranscriptConfig() {
   const publicDir = process.env.transcriptPublicDir || DEFAULT_PUBLIC_DIR;
@@ -21,20 +24,57 @@ function sanitizeNamePart(value) {
     .toLowerCase();
 }
 
+function componentToJSON(component) {
+  if (!component) return component;
+  if (typeof component.toJSON === 'function') {
+    try {
+      return component.toJSON();
+    } catch (err) {
+      return component;
+    }
+  }
+
+  return component;
+}
+
+function collectButtons(component, output = []) {
+  const data = componentToJSON(component);
+  if (!data || typeof data !== 'object') return output;
+
+  if (data.type === BUTTON_TYPE) {
+    output.push(data);
+    return output;
+  }
+
+  if (Array.isArray(data.components)) {
+    for (const child of data.components) collectButtons(child, output);
+  }
+
+  if (data.accessory) collectButtons(data.accessory, output);
+  if (Array.isArray(data.items)) {
+    for (const item of data.items) collectButtons(item, output);
+  }
+
+  return output;
+}
+
 function getSafeComponents(message) {
   if (!Array.isArray(message.components)) return [];
 
-  return message.components
-    .map((row) => {
-      const data = typeof row?.toJSON === 'function' ? row.toJSON() : row;
-      if (!Array.isArray(data?.components)) return null;
+  const rows = [];
 
-      return {
-        ...data,
-        components: data.components.filter((component) => component?.type)
-      };
-    })
-    .filter((row) => row?.components.length);
+  for (const component of message.components) {
+    const buttons = collectButtons(component);
+
+    for (let i = 0; i < buttons.length; i += MAX_BUTTONS_PER_ROW) {
+      rows.push({
+        type: ACTION_ROW_TYPE,
+        components: buttons.slice(i, i + MAX_BUTTONS_PER_ROW)
+      });
+    }
+  }
+
+  return rows;
 }
 
 function getSafeMessage(message) {
