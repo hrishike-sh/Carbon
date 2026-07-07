@@ -39,20 +39,22 @@ function getSafeComponents(message) {
 
 function getSafeMessage(message) {
   const safeComponents = getSafeComponents(message);
-  if (safeComponents.length === message.components?.length) return message;
 
-  const clone = Object.create(Object.getPrototypeOf(message));
-  const descriptors = Object.getOwnPropertyDescriptors(message);
-  delete descriptors.components;
-  Object.defineProperties(clone, descriptors);
-  Object.defineProperty(clone, 'components', {
-    configurable: true,
-    enumerable: true,
-    writable: true,
-    value: safeComponents
+  return new Proxy(message, {
+    get(target, prop, receiver) {
+      if (prop === 'components') return safeComponents;
+      return Reflect.get(target, prop, receiver);
+    },
+    getOwnPropertyDescriptor(target, prop) {
+      if (prop === 'components') {
+        return { configurable: true, enumerable: true, writable: true, value: safeComponents };
+      }
+      return Reflect.getOwnPropertyDescriptor(target, prop);
+    },
+    ownKeys(target) {
+      return Reflect.ownKeys(target);
+    }
   });
-
-  return clone;
 }
 
 function getSafeMessages(messages) {

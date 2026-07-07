@@ -287,29 +287,33 @@ async function handleGameOver(message, client, currentGame, logChannelId, logCha
   });
 
   const logCh = await getMafiaLogChannel(message.client, logChannel, logChannelId);
-  if (logCh?.isTextBased()) {
-    await logCh.send({
-      embeds: [
-        messageEmbed,
-        warningEmbed({
-          title: 'Final Summary',
-          description:
-            currentGame.players
-              .map((p) => {
-                const status = p.alive
-                  ? `<:Alive:${config.ids.emojis.alive}>`
-                  : `<:Dead:${config.ids.emojis.dead}>`;
-                const totalMsgs = [...p.messages.values()].reduce((t, v) => t + v, 0);
-                return `${status} <@${p.id}> ${p.alive ? '' : `Died N${p.deadAt}`}\n<:dot:${config.ids.emojis.dot}>Total messages: ${totalMsgs}`;
-              })
-              .join('\n')
-        })
-      ]
-    });
+  try {
+    if (logCh?.isTextBased()) {
+      await logCh.send({
+        embeds: [
+          messageEmbed,
+          warningEmbed({
+            title: 'Final Summary',
+            description:
+              currentGame.players
+                .map((p) => {
+                  const status = p.alive
+                    ? `<:Alive:${config.ids.emojis.alive}>`
+                    : `<:Dead:${config.ids.emojis.dead}>`;
+                  const totalMsgs = [...p.messages.values()].reduce((t, v) => t + v, 0);
+                  return `${status} <@${p.id}> ${p.alive ? '' : `Died N${p.deadAt}`}\n<:dot:${config.ids.emojis.dot}>Total messages: ${totalMsgs}`;
+                })
+                .join('\n')
+          })
+        ]
+      });
 
-    await logCh.send({
-      embeds: [errorEmbed({ title: 'Game over' })]
-    });
+      await logCh.send({
+        embeds: [errorEmbed({ title: 'Game over' })]
+      });
+    }
+  } catch (err) {
+    logger.error('Error sending mafia game-over embeds', err);
   }
 
   Game.delete(message.channel.id);
