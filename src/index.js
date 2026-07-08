@@ -6,6 +6,7 @@ const { connectDatabase } = require('./database');
 const { loadCommands } = require('./command/registry');
 const { loadEvents } = require('./event/registry');
 const highlightModule = require('./events/messageCreate/highlight');
+const lastPingModule = require('./events/messageCreate/lastping');
 const settingsService = require('./database/services/settingsService');
 const { CommandStatsService } = require('./database/services/commandStatsService');
 const afkModel = require('./database/models/afk');
@@ -61,6 +62,7 @@ async function main() {
   });
 
   await connectDatabase(process.env.mongopath);
+  await lastPingModule.load();
 
   loadCommands(client);
   loadEvents(client);

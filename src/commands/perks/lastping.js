@@ -9,6 +9,7 @@ const { sleep } = require('../../utils/helpers');
 const { errorEmbed, infoEmbed } = require('../../utils/embeds');
 
 const PAGE_SIZE = 5;
+const MAX_PINGS = 25;
 const MAX_PREVIEW_LENGTH = 120;
 const HIDDEN_CHANNEL_ID = '870240187198885888';
 
@@ -69,6 +70,17 @@ function createFooter(pings, page) {
   return `Page ${page + 1}/${totalPages} - ${pings.length} ping${pings.length === 1 ? '' : 's'}`;
 }
 
+async function trimStoredPings(user, pings) {
+  const latestPings = pings.slice(0, MAX_PINGS);
+
+  if (user && user.pings?.length > MAX_PINGS) {
+    user.pings = latestPings.slice().reverse();
+    await user.save();
+  }
+
+  return latestPings;
+}
+
 async function createLastPingPayload(message, pings, page, disabled = false) {
   const totalPages = Math.max(1, Math.ceil(pings.length / PAGE_SIZE));
 
@@ -112,8 +124,10 @@ module.exports = {
 
     const userId = message.author.id;
     const user = await Database.findOne({ userId });
-    const pings = [...(user?.pings || [])]
-      .sort((a, b) => Number(b.msg.when) - Number(a.msg.when));
+    const pings = await trimStoredPings(
+      user,
+      [...(user?.pings || [])].sort((a, b) => Number(b.msg.when) - Number(a.msg.when))
+    );
     let page = 0;
     const totalPages = Math.max(1, Math.ceil(pings.length / PAGE_SIZE));
 
