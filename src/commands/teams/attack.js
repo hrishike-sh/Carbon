@@ -19,6 +19,32 @@ const {
   scheduleAttackResolution
 } = require('../../utils/summerFight');
 
+async function notifyDefendingTeam(client, targetTeam, attackerTeam, expiresAt) {
+  const memberIds = [...new Set((targetTeam.users || []).map(String))];
+
+  await Promise.allSettled(
+    memberIds.map(async (memberId) => {
+      const member = await client.users.fetch(memberId);
+      await member.send({
+        embeds: [
+          warningEmbed({
+            title: 'Your team is under attack!',
+            description: `**${attackerTeam.name}** has launched an attack on **${targetTeam.name}**.`,
+            fields: [
+              {
+                name: 'Defend now',
+                value: `Ask a teammate to use \`fh block\` before <t:${expiresAt}:R>.`
+              }
+            ],
+            footer: 'Summer Fight',
+            timestamp: true
+          })
+        ]
+      });
+    })
+  );
+}
+
 async function runAttack(message, targetTeam, client) {
   const attackerTeam = await findTeamByUser(message.author.id);
   if (!attackerTeam) {
@@ -112,6 +138,8 @@ async function runAttack(message, targetTeam, client) {
   const expiresAt = Math.floor(
     new Date(targetTeam.summerFight.pendingAttack.expiresAt).getTime() / 1000
   );
+  void notifyDefendingTeam(client, targetTeam, attackerTeam, expiresAt);
+
   return message.channel.send({
     embeds: [
       infoEmbed({
