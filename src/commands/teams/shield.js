@@ -10,6 +10,7 @@ const {
   resolveExpiredAttack,
   blockPendingAttack
 } = require('../../utils/summerFight');
+const { successEmbed, warningEmbed, errorEmbed } = require('../../utils/embeds');
 
 module.exports = {
   name: 'shield',
@@ -18,20 +19,27 @@ module.exports = {
 
   async execute(message, args, client) {
     const team = await findTeamByUser(message.author.id);
-    if (!team) return message.reply('You are not in a team.');
+    if (!team) return message.reply({ embeds: [errorEmbed({ description: 'You are not in a team.' })] });
 
     await resolveExpiredAttack(team, message.channel);
     resetShieldUses(team);
 
     if (isShieldActive(team)) {
       const endsAt = Math.floor(new Date(team.summerFight.shieldExpiresAt).getTime() / 1000);
-      return message.reply(`Your team's shield is already active until <t:${endsAt}:R>.`);
+      return message.reply({
+        embeds: [warningEmbed({ title: 'Shield already active', description: `Your team's shield remains active until <t:${endsAt}:R>.` })]
+      });
     }
 
     if (team.summerFight.shieldUses >= SHIELDS_PER_DAY) {
-      return message.reply(
-        `Your team has used both shields today. Shields reset <t:${nextDayTimestamp()}:R>.`
-      );
+      return message.reply({
+        embeds: [
+          warningEmbed({
+            title: 'Shield limit reached',
+            description: `Your team has used all **${SHIELDS_PER_DAY}** shields today. They reset <t:${nextDayTimestamp()}:R>.`
+          })
+        ]
+      });
     }
 
     team.summerFight.shieldUses += 1;
@@ -43,15 +51,34 @@ module.exports = {
 
     if (hasPendingAttack(team)) {
       const result = await blockPendingAttack(team, 'shield');
-      return message.channel.send(
-        `**${team.name}** activated a 30 minute shield and auto-blocked **${result.attackerName}**'s attack! ` +
-          `Shield ends <t:${shieldEnds}:R>. **${team.name}** gained ${SCORE.SHIELD_BLOCK} points and **${result.attackerName}** lost ${Math.abs(SCORE.FAILED_ATTACK)} points.`
-      );
+      return message.channel.send({
+        embeds: [
+          successEmbed({
+            title: 'Shield activated — attack blocked!',
+            description: `**${team.name}**'s shield stopped **${result.attackerName}**'s attack.`,
+            fields: [
+              { name: 'Shield expires', value: `<t:${shieldEnds}:R>`, inline: true },
+              { name: `${team.name} earned`, value: `+${SCORE.SHIELD_BLOCK} points`, inline: true },
+              { name: `${result.attackerName} lost`, value: `${Math.abs(SCORE.FAILED_ATTACK)} points`, inline: true }
+            ],
+            footer: 'Summer Fight',
+            timestamp: true
+          })
+        ]
+      });
     }
 
     await team.save();
-    return message.channel.send(
-      `**${team.name}** activated a 30 minute shield. It will auto-block attacks until <t:${shieldEnds}:R>.`
-    );
+    return message.channel.send({
+      embeds: [
+        successEmbed({
+          title: 'Shield activated!',
+          description: `**${team.name}** is protected from incoming attacks.`,
+          fields: [{ name: 'Protection ends', value: `<t:${shieldEnds}:R>`, inline: true }],
+          footer: 'Summer Fight',
+          timestamp: true
+        })
+      ]
+    });
   }
 };

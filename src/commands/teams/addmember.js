@@ -1,6 +1,7 @@
 const { Message, Client } = require('discord.js');
 const TeamDB = require('../../database/models/teams');
 const config = require('../../config');
+const { successEmbed, errorEmbed } = require('../../utils/embeds');
 module.exports = {
   name: 'ta',
   aliases: ['teamadd'],
@@ -23,26 +24,33 @@ module.exports = {
     const member =
       message.mentions.members?.first() ||
       message.guild.members.cache.get(args[0]);
-    if (!member) return message.reply('Mention the user dumbfuck.');
+    if (!member) return message.reply({ embeds: [errorEmbed({ description: 'Mention the user to add.' })] });
 
     const teamName = args.slice(1).join(' ');
-    if (!teamName) return message.reply('Provide the team name.');
+    if (!teamName) return message.reply({ embeds: [errorEmbed({ description: 'Provide the team name.' })] });
 
     const team = await TeamDB.findOne({ name: teamName });
     if (!team)
-      return message.reply('The team does not exist! Create it first.');
+      return message.reply({ embeds: [errorEmbed({ description: 'That team does not exist. Create it first.' })] });
 
     const existingTeam = await TeamDB.findOne({ users: member.id });
     if (existingTeam)
-      return message.reply(`The member is already in **${existingTeam.name}**.`);
+      return message.reply({
+        embeds: [errorEmbed({ description: `That member is already in **${existingTeam.name}**.` })]
+      });
 
     if (team.users.includes(member.id))
-      return message.reply('The member is already in the team.');
+      return message.reply({ embeds: [errorEmbed({ description: 'That member is already in this team.' })] });
 
     team.users.push(member.id);
     team.save();
-    message.reply(
-      `Member **${member.user.tag}** added to the **${team.name}** team`
-    );
+    return message.reply({
+      embeds: [
+        successEmbed({
+          title: 'Team member added',
+          description: `**${member.user.tag}** joined **${team.name}**.`
+        })
+      ]
+    });
   }
 };

@@ -1,6 +1,6 @@
 const TeamDB = require('../../database/models/teams');
 const config = require('../../config');
-const { successEmbed } = require('../../utils/embeds');
+const { successEmbed, errorEmbed } = require('../../utils/embeds');
 const { MIN_TEAM_MEMBERS, findTeamByName } = require('../../utils/summerFight');
 
 async function parseMemberIds(message, args) {
@@ -47,20 +47,22 @@ module.exports = {
 
     const memberIds = await parseMemberIds(message, args);
     if (memberIds.length < MIN_TEAM_MEMBERS) {
-      return message.reply(`Mention at least ${MIN_TEAM_MEMBERS} members for the team.`);
+      return message.reply({
+        embeds: [errorEmbed({ description: `Mention at least **${MIN_TEAM_MEMBERS}** members for the team.` })]
+      });
     }
 
     const teamName = parseTeamName(args);
-    if (!teamName) return message.reply('Provide the team name.');
+    if (!teamName) return message.reply({ embeds: [errorEmbed({ description: 'Provide the team name.' })] });
 
     let team = await findTeamByName(teamName);
-    if (team) return message.reply('Team already exists!');
+    if (team) return message.reply({ embeds: [errorEmbed({ description: 'A team with that name already exists.' })] });
 
     const existingMemberTeam = await TeamDB.findOne({ users: { $in: memberIds } });
     if (existingMemberTeam) {
-      return message.reply(
-        `One of those members is already in **${existingMemberTeam.name}**.`
-      );
+      return message.reply({
+        embeds: [errorEmbed({ description: `One of those members is already in **${existingMemberTeam.name}**.` })]
+      });
     }
 
     team = new TeamDB({

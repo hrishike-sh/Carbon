@@ -1,6 +1,7 @@
 const { Message, Client } = require('discord.js');
 const TeamDB = require('../../database/models/teams');
 const config = require('../../config');
+const { successEmbed, errorEmbed } = require('../../utils/embeds');
 module.exports = {
   name: 'removemember',
   aliases: ['teamremove', 'tr'],
@@ -23,14 +24,19 @@ module.exports = {
     const member =
       message.mentions.members?.first() ||
       message.guild.members.cache.get(args[0]);
-    if (!member) return message.reply('Mention the member dumbfuck.');
+    if (!member) return message.reply({ embeds: [errorEmbed({ description: 'Mention the member to remove.' })] });
     const team = await TeamDB.findOne({ users: member.id });
-    if (!team) return message.reply('The member is not in a team.');
+    if (!team) return message.reply({ embeds: [errorEmbed({ description: 'That member is not in a team.' })] });
 
     team.users = team.users.filter((a) => a !== member.id);
     team.save();
-    message.reply(
-      `Removed member **${member.user.tag}** from the **${team.name}** team.`
-    );
+    return message.reply({
+      embeds: [
+        successEmbed({
+          title: 'Team member removed',
+          description: `Removed **${member.user.tag}** from **${team.name}**.`
+        })
+      ]
+    });
   }
 };

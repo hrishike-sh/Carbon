@@ -5,7 +5,7 @@ const {
 const TeamsDB = require('../../database/models/teams');
 const config = require('../../config');
 const { sleep } = require('../../utils/helpers');
-const { Theme } = require('../../utils/embeds');
+const { Theme, warningEmbed, errorEmbed } = require('../../utils/embeds');
 
 let opening = [];
 
@@ -19,16 +19,20 @@ module.exports = {
     const userId = message.author.id;
     const Team = await TeamsDB.findOne({ users: userId });
 
-    if (!Team) return message.reply('You are not in a team.');
+    if (!Team) return message.reply({ embeds: [errorEmbed({ description: 'You are not in a team.' })] });
 
     if (Date.now() - Team.lastLb < 43200000) {
       const nextDb = 43200000 - (Date.now() - Team.lastLb);
       const nextOpenTimestamp = Math.floor((Date.now() + nextDb) / 1000);
-      return message.reply(`You can open the lucky box again <t:${nextOpenTimestamp}:R>.`);
+      return message.reply({
+        embeds: [warningEmbed({ title: 'Lucky Box unavailable', description: `You can open another Lucky Box <t:${nextOpenTimestamp}:R>.` })]
+      });
     }
 
     if (opening.includes(Team.id)) {
-      return message.reply('The lucky box is already opening.');
+      return message.reply({
+        embeds: [warningEmbed({ title: 'Lucky Box opening', description: 'Your Lucky Box is already opening.' })]
+      });
     }
 
     opening.push(Team.id);
@@ -90,7 +94,9 @@ module.exports = {
       });
       collector.on('end', (collected, reason) => {
         if (reason === 'idle') {
-          message.reply('You did not select a team in time.');
+          message.reply({
+            embeds: [warningEmbed({ title: 'Lucky Box expired', description: 'You did not select a team in time.' })]
+          });
           unboxMessage.edit({ components: null });
         }
       });

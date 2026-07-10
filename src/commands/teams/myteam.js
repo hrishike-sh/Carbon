@@ -1,5 +1,5 @@
 const TeamDB = require('../../database/models/teams');
-const { infoEmbed } = require('../../utils/embeds');
+const { infoEmbed, errorEmbed } = require('../../utils/embeds');
 const {
   ATTACKS_PER_WINDOW,
   SHIELDS_PER_DAY,
@@ -15,7 +15,7 @@ module.exports = {
   async execute(message, args, client) {
     const userId = message.mentions?.users?.first()?.id || message.author.id;
     const team = await TeamDB.findOne({ users: userId });
-    if (!team) return message.reply('You are not in a team.');
+    if (!team) return message.reply({ embeds: [errorEmbed({ description: 'You are not in a team.' })] });
 
     ensureSummerFight(team);
     resetAttackWindow(team);

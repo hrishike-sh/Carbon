@@ -1,7 +1,8 @@
 const TeamDB = require('../database/models/teams');
+const { successEmbed } = require('./embeds');
 
 const MIN_TEAM_MEMBERS = 3;
-const ATTACKS_PER_WINDOW = 2;
+const ATTACKS_PER_WINDOW = 4;
 const ATTACK_WINDOW_MS = 6 * 60 * 60 * 1000;
 const BLOCK_WINDOW_MS = 60 * 1000;
 const SHIELD_DURATION_MS = 30 * 60 * 1000;
@@ -130,10 +131,22 @@ async function resolveExpiredAttack(targetTeam, channel) {
   await targetTeam.save();
 
   if (channel) {
-    await channel.send(
-      `**${pending.attackerTeamName}** successfully attacked **${targetTeam.name}**! ` +
-        `**${targetTeam.name}** lost 1 life and **${pending.attackerTeamName}** gained ${SCORE.ATTACK_SUCCESS} points.`
-    ).catch(() => {});
+    await channel.send({
+      embeds: [
+        successEmbed({
+          title: 'Attack successful!',
+          description: `**${pending.attackerTeamName}** broke through **${targetTeam.name}**'s defenses.`,
+          fields: [
+            { name: 'Attacker', value: pending.attackerTeamName, inline: true },
+            { name: 'Defender', value: targetTeam.name, inline: true },
+            { name: 'Damage dealt', value: '1 life', inline: true },
+            { name: 'Points earned', value: `+${SCORE.ATTACK_SUCCESS}`, inline: true }
+          ],
+          footer: 'Summer Fight',
+          timestamp: true
+        })
+      ]
+    }).catch(() => {});
   }
 
   return true;

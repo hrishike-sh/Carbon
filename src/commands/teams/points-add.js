@@ -1,6 +1,7 @@
 const { Message, Client } = require('discord.js');
 const TeamDB = require('../../database/models/teams');
 const config = require('../../config');
+const { successEmbed, errorEmbed } = require('../../utils/embeds');
 
 module.exports = {
   name: 'points-add',
@@ -29,11 +30,15 @@ module.exports = {
     const points = args.shift();
 
     if (!user || !points) {
-      return message.reply('That is NOT how you use this command!');
+      return message.reply({
+        embeds: [errorEmbed({ description: 'Usage: mention a team member followed by the number of points.' })]
+      });
     }
 
     if (isNaN(points)) {
-      return message.reply('That is NOT how you use this command!');
+      return message.reply({
+        embeds: [errorEmbed({ description: 'Points must be a valid number.' })]
+      });
     }
 
     const updated = await TeamDB.updateOne(
@@ -51,6 +56,13 @@ module.exports = {
       }
     );
 
-    return message.reply(`Added ${points} points to **<@${user}>**!`);
+    return message.reply({
+      embeds: [
+        successEmbed({
+          title: 'Points updated',
+          description: `Added **${points}** points to <@${user}>'s team.`
+        })
+      ]
+    });
   }
 };
