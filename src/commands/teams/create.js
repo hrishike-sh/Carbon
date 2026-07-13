@@ -6,10 +6,6 @@ const { MIN_TEAM_MEMBERS, findTeamByName } = require('../../utils/summerFight');
 async function parseMemberIds(message, args) {
   const ids = new Set();
 
-  for (const member of message.mentions.members.values()) {
-    ids.add(member.id);
-  }
-
   for (const arg of args) {
     const match = arg.match(/^<@!?(\d{17,20})>$/) || arg.match(/^(\d{17,20})$/);
     if (!match) continue;
@@ -30,6 +26,14 @@ function parseTeamName(args) {
     .replace(/\b\d{17,20}\b/g, '')
     .replace(/\s+/g, ' ')
     .trim();
+}
+
+function displayTeamName(name) {
+  return String(name || '')
+    .replace(/<@[^>]+>/g, '')
+    .replace(/\s+/g, ' ')
+    .replace(/^[*_~`\s]+|[*_~`\s]+$/g, '')
+    .trim() || 'Unnamed Team';
 }
 
 module.exports = {
@@ -62,8 +66,20 @@ module.exports = {
 
     const existingMemberTeam = await TeamDB.findOne({ users: { $in: memberIds } });
     if (existingMemberTeam) {
+      const conflictingMemberId = memberIds.find((id) =>
+        existingMemberTeam.users.includes(id)
+      );
+
       return message.reply({
-        embeds: [errorEmbed({ description: `One of those members is already in **${existingMemberTeam.name}**.` })]
+        embeds: [
+          errorEmbed({
+            title: 'Member already assigned',
+            description:
+              `User \`${conflictingMemberId || 'unknown'}\` is already in ` +
+              `**${displayTeamName(existingMemberTeam.name)}**.`
+          })
+        ],
+        allowedMentions: { parse: [] }
       });
     }
 
