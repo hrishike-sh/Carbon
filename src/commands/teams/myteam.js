@@ -4,6 +4,7 @@ const {
   ATTACKS_PER_WINDOW,
   SHIELDS_PER_DAY,
   ensureSummerFight,
+  findTeamByName,
   resetAttackWindow,
   resetShieldUses
 } = require('../../utils/summerFight');
@@ -13,9 +14,22 @@ module.exports = {
   aliases: ['team'],
 
   async execute(message, args, client) {
-    const userId = message.mentions?.users?.first()?.id || message.author.id;
-    const team = await TeamDB.findOne({ users: userId });
-    if (!team) return message.reply({ embeds: [errorEmbed({ description: 'You are not in a team.' })] });
+    const mentionedUserId = message.mentions?.users?.first()?.id;
+    const teamName = mentionedUserId ? '' : args.join(' ').trim();
+    const userId = mentionedUserId || (!teamName ? message.author.id : null);
+    const team = teamName
+      ? await findTeamByName(teamName)
+      : await TeamDB.findOne({ users: userId });
+
+    if (!team) {
+      return message.reply({
+        embeds: [
+          errorEmbed({
+            description: teamName ? 'That team does not exist.' : 'That user is not in a team.'
+          })
+        ]
+      });
+    }
 
     ensureSummerFight(team);
     resetAttackWindow(team);
@@ -35,11 +49,18 @@ module.exports = {
       immunityExpiresAt > Date.now()
         ? `Active until <t:${Math.floor(immunityExpiresAt / 1000)}:R>`
         : 'Inactive';
-    const lootboxes = team.lootboxes
+    const lootboxes = userId && team.lootboxes
       ? (typeof team.lootboxes.get === 'function'
           ? team.lootboxes.get(userId)
           : team.lootboxes[userId]) || 0
-      : 0;
+      : null;
+    const scoreLines = [
+      `Points: ${team.points}`,
+      `Lives: ${team.lives}`,
+      `Attacks: ${team.summerFight.attacksUsed}/${ATTACKS_PER_WINDOW}`,
+      `Shields: ${team.summerFight.shieldUses}/${SHIELDS_PER_DAY}`
+    ];
+    if (lootboxes !== null) scoreLines.push(`Loot Boxes: ${lootboxes}`);
 
     return message.reply({
       embeds: [
@@ -48,12 +69,7 @@ module.exports = {
           fields: [
             {
               name: 'Score',
-              value:
-                `Points: ${team.points}\n` +
-                `Lives: ${team.lives}\n` +
-                `Attacks: ${team.summerFight.attacksUsed}/${ATTACKS_PER_WINDOW}\n` +
-                `Shields: ${team.summerFight.shieldUses}/${SHIELDS_PER_DAY}\n` +
-                `Loot Boxes: ${lootboxes}`,
+              value: scoreLines.join('\n'),
               inline: true
             },
             {
