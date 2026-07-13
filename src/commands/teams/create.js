@@ -25,8 +25,10 @@ async function parseMemberIds(message, args) {
 
 function parseTeamName(args) {
   return args
-    .filter((arg) => !/^<@!?\d{17,20}>$/.test(arg) && !/^\d{17,20}$/.test(arg))
     .join(' ')
+    .replace(/<@!?\d+>/g, '')
+    .replace(/\b\d{17,20}\b/g, '')
+    .replace(/\s+/g, ' ')
     .trim();
 }
 
