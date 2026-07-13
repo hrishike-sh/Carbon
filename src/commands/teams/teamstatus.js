@@ -2,19 +2,17 @@ const TeamDB = require('../../database/models/teams');
 const { infoEmbed } = require('../../utils/embeds');
 const {
   ATTACKS_PER_WINDOW,
+  ATTACK_WINDOW_MS,
   SHIELDS_PER_DAY,
   cleanTeamName,
   ensureSummerFight,
+  nextDayTimestamp,
   resetAttackWindow,
   resetShieldUses,
   hasPendingAttack
 } = require('../../utils/summerFight');
 
 const MAX_DESCRIPTION_LENGTH = 3800;
-
-function relativeTime(date) {
-  return `<t:${Math.floor(new Date(date).getTime() / 1000)}:R>`;
-}
 
 function teamBlock(team, now) {
   ensureSummerFight(team);
@@ -29,15 +27,21 @@ function teamBlock(team, now) {
     0,
     SHIELDS_PER_DAY - team.summerFight.shieldUses
   );
+  const attacks = '⚔️'.repeat(attacksRemaining) || '0';
+  const shields = '🛡️'.repeat(shieldsRemaining) || '0';
+  const attackReset = team.summerFight.attacksUsed > 0
+    ? ` · reset <t:${Math.floor(
+        (new Date(team.summerFight.attackWindowStartedAt).getTime() + ATTACK_WINDOW_MS) / 1000
+      )}:R>`
+    : '';
   const pending = hasPendingAttack(team) &&
     new Date(team.summerFight.pendingAttack.expiresAt).getTime() > now
-    ? `\nUnder attack: block ${relativeTime(team.summerFight.pendingAttack.expiresAt)}`
+    ? ' · UNDER ATTACK'
     : '';
 
   return (
-    `**${cleanTeamName(team.name) || 'Unnamed Team'}**\n` +
-    `Attacks: ${attacksRemaining}/${ATTACKS_PER_WINDOW} | ` +
-    `Shields: ${shieldsRemaining}/${SHIELDS_PER_DAY}${pending}`
+    `**${cleanTeamName(team.name) || 'Unnamed Team'}**: ` +
+    `${attacks} | ${shields}${attackReset}${pending}`
   );
 }
 
@@ -81,8 +85,9 @@ module.exports = {
             title: pages.length > 1
               ? `Team Status (${index + 1}/${pages.length})`
               : 'Team Status',
-            description: pages[index],
-            footer: 'Summer Fight',
+            description:
+              `Shield reset: <t:${nextDayTimestamp()}:R>\n\n${pages[index]}`,
+            footer: 'Swords: attacks | Shields: daily shields',
             timestamp: true
           })
         ],
