@@ -35,20 +35,6 @@ module.exports = {
     resetAttackWindow(team);
     resetShieldUses(team);
 
-    const shieldExpiresAt = team.summerFight.shieldExpiresAt
-      ? new Date(team.summerFight.shieldExpiresAt).getTime()
-      : 0;
-    const shieldStatus =
-      shieldExpiresAt > Date.now()
-        ? 'Active'
-        : 'Inactive';
-    const immunityExpiresAt = team.summerFight.immunityExpiresAt
-      ? new Date(team.summerFight.immunityExpiresAt).getTime()
-      : 0;
-    const immunityStatus =
-      immunityExpiresAt > Date.now()
-        ? 'Active'
-        : 'Inactive';
     const lootboxes = userId && team.lootboxes
       ? (typeof team.lootboxes.get === 'function'
           ? team.lootboxes.get(userId)
@@ -70,16 +56,6 @@ module.exports = {
             {
               name: 'Score',
               value: scoreLines.join('\n'),
-              inline: true
-            },
-            {
-              name: 'Shield',
-              value: shieldStatus,
-              inline: true
-            },
-            {
-              name: 'Immunity',
-              value: immunityStatus,
               inline: true
             },
             {

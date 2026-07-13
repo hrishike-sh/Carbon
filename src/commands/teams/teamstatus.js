@@ -16,25 +16,6 @@ function relativeTime(date) {
   return `<t:${Math.floor(new Date(date).getTime() / 1000)}:R>`;
 }
 
-function protectionStatus(team, now) {
-  const statuses = [];
-  const shieldExpiresAt = team.summerFight.shieldExpiresAt
-    ? new Date(team.summerFight.shieldExpiresAt).getTime()
-    : 0;
-  const immunityExpiresAt = team.summerFight.immunityExpiresAt
-    ? new Date(team.summerFight.immunityExpiresAt).getTime()
-    : 0;
-
-  if (shieldExpiresAt > now) {
-    statuses.push('Shield active');
-  }
-  if (immunityExpiresAt > now) {
-    statuses.push('Immunity active');
-  }
-
-  return statuses.join(' | ') || 'None';
-}
-
 function teamBlock(team, now) {
   ensureSummerFight(team);
   resetAttackWindow(team, now);
@@ -56,8 +37,7 @@ function teamBlock(team, now) {
   return (
     `**${cleanTeamName(team.name) || 'Unnamed Team'}**\n` +
     `Attacks: ${attacksRemaining}/${ATTACKS_PER_WINDOW} | ` +
-    `Shields: ${shieldsRemaining}/${SHIELDS_PER_DAY}\n` +
-    `Protection: ${protectionStatus(team, now)}${pending}`
+    `Shields: ${shieldsRemaining}/${SHIELDS_PER_DAY}${pending}`
   );
 }
 
