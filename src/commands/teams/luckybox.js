@@ -229,13 +229,12 @@ async function showPointStealReward(boxMessage, team, userId) {
 
 module.exports = {
   name: 'luckybox',
-  aliases: ['lootbox'],
+  aliases: ['lootbox', 'lotobox'],
   cooldown: 3,
   description: 'Open a lucky box.',
 
   async execute(message, args) {
     const isTester = message.author.id === config.roles.staff.owner;
-    if (!isTester && message.channel.id !== config.ids.channels.event2025) return;
 
     const testTeamName = isTester ? args.join(' ').trim() : '';
     const team = testTeamName
