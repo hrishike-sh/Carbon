@@ -26,10 +26,10 @@ function protectionStatus(team, now) {
     : 0;
 
   if (shieldExpiresAt > now) {
-    statuses.push(`Shield ${relativeTime(team.summerFight.shieldExpiresAt)}`);
+    statuses.push('Shield active');
   }
   if (immunityExpiresAt > now) {
-    statuses.push(`Immune ${relativeTime(team.summerFight.immunityExpiresAt)}`);
+    statuses.push('Immunity active');
   }
 
   return statuses.join(' | ') || 'None';

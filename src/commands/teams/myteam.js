@@ -40,14 +40,14 @@ module.exports = {
       : 0;
     const shieldStatus =
       shieldExpiresAt > Date.now()
-        ? `Active until <t:${Math.floor(shieldExpiresAt / 1000)}:R>`
+        ? 'Active'
         : 'Inactive';
     const immunityExpiresAt = team.summerFight.immunityExpiresAt
       ? new Date(team.summerFight.immunityExpiresAt).getTime()
       : 0;
     const immunityStatus =
       immunityExpiresAt > Date.now()
-        ? `Active until <t:${Math.floor(immunityExpiresAt / 1000)}:R>`
+        ? 'Active'
         : 'Inactive';
     const lootboxes = userId && team.lootboxes
       ? (typeof team.lootboxes.get === 'function'
