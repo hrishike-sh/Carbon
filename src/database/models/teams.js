@@ -5,6 +5,7 @@ const TeamSchema = new Schema({
   points: { type: Number, default: 0 },
   name: { type: String, required: true },
   lastLb: { type: Date, default: () => new Date(Date.now() - 86400000) },
+  lootboxes: { type: Map, of: Number, default: {} },
   lives: { type: Number, default: 5 },
   summerFight: {
     attackWindowStartedAt: { type: Date, default: () => new Date(0) },
@@ -12,6 +13,7 @@ const TeamSchema = new Schema({
     shieldDay: { type: String, default: '' },
     shieldUses: { type: Number, default: 0 },
     shieldExpiresAt: { type: Date, default: null },
+    immunityExpiresAt: { type: Date, default: null },
     pendingAttack: {
       attackerTeamId: { type: Schema.Types.ObjectId, default: null },
       attackerTeamName: { type: String, default: '' },

@@ -6,6 +6,7 @@ const ATTACKS_PER_WINDOW = 4;
 const ATTACK_WINDOW_MS = 6 * 60 * 60 * 1000;
 const BLOCK_WINDOW_MS = 60 * 1000;
 const SHIELD_DURATION_MS = 30 * 60 * 1000;
+const IMMUNITY_DURATION_MS = 6 * 60 * 60 * 1000;
 const SHIELDS_PER_DAY = 2;
 
 const SCORE = {
@@ -91,6 +92,12 @@ function isShieldActive(team, now = Date.now()) {
   ensureSummerFight(team);
   const expiresAt = team.summerFight.shieldExpiresAt;
   return expiresAt && new Date(expiresAt).getTime() > now;
+}
+
+function isImmunityActive(team, now = Date.now()) {
+  ensureSummerFight(team);
+  const expiresAt = team.summerFight.immunityExpiresAt;
+  return Boolean(expiresAt && new Date(expiresAt).getTime() > now);
 }
 
 function resetAttackWindow(team, now = Date.now()) {
@@ -226,6 +233,7 @@ module.exports = {
   ATTACK_WINDOW_MS,
   BLOCK_WINDOW_MS,
   SHIELD_DURATION_MS,
+  IMMUNITY_DURATION_MS,
   SHIELDS_PER_DAY,
   SCORE,
   dayKey,
@@ -237,6 +245,7 @@ module.exports = {
   findTeamByUser,
   findTeamByName,
   isShieldActive,
+  isImmunityActive,
   resetAttackWindow,
   resetShieldUses,
   hasPendingAttack,

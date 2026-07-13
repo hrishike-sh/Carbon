@@ -1,66 +1,71 @@
-const { Message, Client } = require('discord.js');
 const TeamDB = require('../../database/models/teams');
 const config = require('../../config');
+const { findTeamByName } = require('../../utils/summerFight');
 const { successEmbed, errorEmbed } = require('../../utils/embeds');
 
+function canManageEvent(message) {
+  return (
+    message.author.id === config.roles.staff.owner ||
+    message.member.roles.cache.hasAny(
+      config.roles.staff.cman,
+      config.roles.staff.admin,
+      '1163857079300276254'
+    )
+  );
+}
+
+function parseUserId(value) {
+  const match = String(value || '').match(/^<@!?(\d{17,20})>$/) ||
+    String(value || '').match(/^(\d{17,20})$/);
+  return match ? match[1] : null;
+}
+
 module.exports = {
-  name: 'points-add',
-  aliases: ['padd'],
-  /**
-   *
-   * @param {Message} message
-   * @param {String[]} args
-   * @param {Client} client
-   */
-  async execute(message, args, client) {
-    if (
-      !message.member.roles.cache.hasAny(
-        config.roles.staff.cman,
-        config.roles.staff.admin,
-        '1163857079300276254'
-      )
-    ) {
-      return;
+  name: 'points',
+  aliases: ['points-add', 'padd', 'teampoints'],
+
+  async execute(message, args) {
+    if (!canManageEvent(message)) return;
+
+    let team;
+    let amount;
+    const userId = message.mentions.users.first()?.id || parseUserId(args[0]);
+
+    if (userId) {
+      amount = Number(args[1]);
+      team = await TeamDB.findOne({ users: userId });
+    } else {
+      amount = Number(args[0]);
+      team = await findTeamByName(args.slice(1).join(' '));
     }
 
-    const t = args.shift();
-    const user =
-      message.mentions.members.first()?.id ||
-      message.guild.members.cache.get(t)?.id;
-    const points = args.shift();
-
-    if (!user || !points) {
+    if (!Number.isSafeInteger(amount) || amount === 0) {
       return message.reply({
-        embeds: [errorEmbed({ description: 'Usage: mention a team member followed by the number of points.' })]
+        embeds: [
+          errorEmbed({
+            title: 'Invalid amount',
+            description:
+              'Use `fh points +5 Team Name`, `fh points -5 Team Name`, or `fh points @member -5`.'
+          })
+        ]
       });
     }
 
-    if (isNaN(points)) {
-      return message.reply({
-        embeds: [errorEmbed({ description: 'Points must be a valid number.' })]
-      });
+    if (!team) {
+      return message.reply({ embeds: [errorEmbed({ description: 'That team does not exist.' })] });
     }
 
-    const updated = await TeamDB.updateOne(
-      {
-        users: user
-      },
-      {
-        $inc: {
-          points: parseInt(points)
-        }
-      },
-      {
-        upsert: true,
-        new: true
-      }
-    );
+    team.points = (team.points || 0) + amount;
+    await team.save();
 
+    const action = amount > 0 ? 'Added' : 'Removed';
     return message.reply({
       embeds: [
         successEmbed({
-          title: 'Points updated',
-          description: `Added **${points}** points to <@${user}>'s team.`
+          title: 'Team points updated',
+          description:
+            `${action} **${Math.abs(amount)} points** ${amount > 0 ? 'to' : 'from'} **${team.name}**.\n` +
+            `New total: **${team.points} points**.`
         })
       ]
     });

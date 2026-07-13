@@ -13,6 +13,7 @@ const {
   findTeamByName,
   ensureSummerFight,
   isShieldActive,
+  isImmunityActive,
   resetAttackWindow,
   hasPendingAttack,
   resolveExpiredAttack,
@@ -90,6 +91,37 @@ async function runAttack(message, targetTeam, client) {
   }
 
   attackerTeam.summerFight.attacksUsed += 1;
+
+  if (isImmunityActive(targetTeam)) {
+    attackerTeam.points += SCORE.FAILED_ATTACK;
+    attackerTeam.summerFight.stats.attacksFailed =
+      (attackerTeam.summerFight.stats.attacksFailed || 0) + 1;
+    targetTeam.points += SCORE.SHIELD_BLOCK;
+    targetTeam.summerFight.stats.shieldBlocks =
+      (targetTeam.summerFight.stats.shieldBlocks || 0) + 1;
+
+    await attackerTeam.save();
+    await targetTeam.save();
+
+    const immunityEnds = Math.floor(
+      new Date(targetTeam.summerFight.immunityExpiresAt).getTime() / 1000
+    );
+    return message.channel.send({
+      embeds: [
+        warningEmbed({
+          title: 'Attack blocked by immunity',
+          description: `**${targetTeam.name}** is immune to attacks, so **${attackerTeam.name}**'s attack failed.`,
+          fields: [
+            { name: 'Immunity expires', value: `<t:${immunityEnds}:R>`, inline: true },
+            { name: `${targetTeam.name} earned`, value: `+${SCORE.SHIELD_BLOCK} points`, inline: true },
+            { name: `${attackerTeam.name} lost`, value: `${Math.abs(SCORE.FAILED_ATTACK)} points`, inline: true }
+          ],
+          footer: 'Summer Fight',
+          timestamp: true
+        })
+      ]
+    });
+  }
 
   if (isShieldActive(targetTeam)) {
     attackerTeam.points += SCORE.FAILED_ATTACK;

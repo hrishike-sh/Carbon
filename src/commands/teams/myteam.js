@@ -28,6 +28,18 @@ module.exports = {
       shieldExpiresAt > Date.now()
         ? `Active until <t:${Math.floor(shieldExpiresAt / 1000)}:R>`
         : 'Inactive';
+    const immunityExpiresAt = team.summerFight.immunityExpiresAt
+      ? new Date(team.summerFight.immunityExpiresAt).getTime()
+      : 0;
+    const immunityStatus =
+      immunityExpiresAt > Date.now()
+        ? `Active until <t:${Math.floor(immunityExpiresAt / 1000)}:R>`
+        : 'Inactive';
+    const lootboxes = team.lootboxes
+      ? (typeof team.lootboxes.get === 'function'
+          ? team.lootboxes.get(userId)
+          : team.lootboxes[userId]) || 0
+      : 0;
 
     return message.reply({
       embeds: [
@@ -40,12 +52,18 @@ module.exports = {
                 `Points: ${team.points}\n` +
                 `Lives: ${team.lives}\n` +
                 `Attacks: ${team.summerFight.attacksUsed}/${ATTACKS_PER_WINDOW}\n` +
-                `Shields: ${team.summerFight.shieldUses}/${SHIELDS_PER_DAY}`,
+                `Shields: ${team.summerFight.shieldUses}/${SHIELDS_PER_DAY}\n` +
+                `Loot Boxes: ${lootboxes}`,
               inline: true
             },
             {
               name: 'Shield',
               value: shieldStatus,
+              inline: true
+            },
+            {
+              name: 'Immunity',
+              value: immunityStatus,
               inline: true
             },
             {
