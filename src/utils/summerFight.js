@@ -33,6 +33,30 @@ function escapeRegex(input) {
   return input.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
+function cleanTeamName(name) {
+  return String(name || '')
+    .replace(/<@!?\d+>/g, '')
+    .replace(/\s+/g, ' ')
+    .replace(/^[*_~`\s]+|[*_~`\s]+$/g, '')
+    .trim();
+}
+
+async function cleanupTeamNames() {
+  const teams = await TeamDB.find({ name: /<@!?\d+>/ });
+  let updated = 0;
+
+  for (const team of teams) {
+    const cleanedName = cleanTeamName(team.name);
+    if (!cleanedName || cleanedName === team.name) continue;
+
+    team.name = cleanedName;
+    await team.save();
+    updated += 1;
+  }
+
+  return updated;
+}
+
 function ensureSummerFight(team) {
   if (!team.summerFight) team.summerFight = {};
   if (!team.summerFight.stats) team.summerFight.stats = {};
@@ -207,6 +231,8 @@ module.exports = {
   dayKey,
   nextDayTimestamp,
   formatSeconds,
+  cleanTeamName,
+  cleanupTeamNames,
   ensureSummerFight,
   findTeamByUser,
   findTeamByName,

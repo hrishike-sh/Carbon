@@ -1,7 +1,11 @@
 const TeamDB = require('../../database/models/teams');
 const config = require('../../config');
 const { successEmbed, errorEmbed } = require('../../utils/embeds');
-const { MIN_TEAM_MEMBERS, findTeamByName } = require('../../utils/summerFight');
+const {
+  MIN_TEAM_MEMBERS,
+  findTeamByName,
+  cleanTeamName
+} = require('../../utils/summerFight');
 
 async function parseMemberIds(message, args) {
   const ids = new Set();
@@ -29,11 +33,7 @@ function parseTeamName(args) {
 }
 
 function displayTeamName(name) {
-  return String(name || '')
-    .replace(/<@[^>]+>/g, '')
-    .replace(/\s+/g, ' ')
-    .replace(/^[*_~`\s]+|[*_~`\s]+$/g, '')
-    .trim() || 'Unnamed Team';
+  return cleanTeamName(name) || 'Unnamed Team';
 }
 
 module.exports = {

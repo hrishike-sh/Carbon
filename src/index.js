@@ -13,6 +13,7 @@ const afkModel = require('./database/models/afk');
 const cooldowns = require('./command/cooldowns');
 const antiBot = require('./client/AntiBot');
 const logger = require('./utils/logger');
+const { cleanupTeamNames } = require('./utils/summerFight');
 const {
   warningEmbed,
   neutralEmbed,
@@ -62,6 +63,10 @@ async function main() {
   });
 
   await connectDatabase(process.env.mongopath);
+  const cleanedTeamNames = await cleanupTeamNames();
+  if (cleanedTeamNames > 0) {
+    logger.info(`Removed user mentions from ${cleanedTeamNames} team name(s)`);
+  }
   await lastPingModule.load();
 
   loadCommands(client);

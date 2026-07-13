@@ -1,14 +1,9 @@
 const TeamDB = require('../../database/models/teams');
 const { infoEmbed } = require('../../utils/embeds');
+const { cleanTeamName } = require('../../utils/summerFight');
 
 function displayTeamName(name) {
-  const cleaned = String(name || '')
-    .replace(/<@[^>]+>/g, '')
-    .replace(/\s+/g, ' ')
-    .replace(/^[*_~`\s]+|[*_~`\s]+$/g, '')
-    .trim();
-
-  return cleaned || 'Unnamed Team';
+  return cleanTeamName(name) || 'Unnamed Team';
 }
 
 module.exports = {
