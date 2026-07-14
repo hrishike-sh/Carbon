@@ -2,6 +2,7 @@ const {
   SHIELD_DURATION_MS,
   SHIELDS_PER_DAY,
   SCORE,
+  displayTeamName,
   findTeamByUser,
   nextDayTimestamp,
   resetShieldUses,
@@ -20,6 +21,7 @@ module.exports = {
   async execute(message, args, client) {
     const team = await findTeamByUser(message.author.id);
     if (!team) return message.reply({ embeds: [errorEmbed({ description: 'You are not in a team.' })] });
+    const teamName = displayTeamName(team);
 
     await resolveExpiredAttack(team, message.channel);
     resetShieldUses(team);
@@ -55,10 +57,10 @@ module.exports = {
         embeds: [
           successEmbed({
             title: 'Shield activated — attack blocked!',
-            description: `**${team.name}**'s shield stopped **${result.attackerName}**'s attack.`,
+            description: `**${teamName}**'s shield stopped **${result.attackerName}**'s attack.`,
             fields: [
               { name: 'Shield expires', value: `<t:${shieldEnds}:R>`, inline: true },
-              { name: `${team.name} earned`, value: `+${SCORE.SHIELD_BLOCK} points`, inline: true },
+              { name: `${teamName} earned`, value: `+${SCORE.SHIELD_BLOCK} points`, inline: true },
               { name: `${result.attackerName} lost`, value: `${Math.abs(SCORE.FAILED_ATTACK)} points`, inline: true }
             ],
             footer: 'Summer Fight',
@@ -73,7 +75,7 @@ module.exports = {
       embeds: [
         successEmbed({
           title: 'Shield activated!',
-          description: `**${team.name}** is protected from incoming attacks.`,
+          description: `**${teamName}** is protected from incoming attacks.`,
           fields: [{ name: 'Protection ends', value: `<t:${shieldEnds}:R>`, inline: true }],
           footer: 'Summer Fight',
           timestamp: true

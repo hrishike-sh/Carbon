@@ -1,5 +1,6 @@
 const {
   SCORE,
+  displayTeamName,
   findTeamByUser,
   hasPendingAttack,
   resolveExpiredAttack,
@@ -29,14 +30,15 @@ module.exports = {
         embeds: [errorEmbed({ title: 'Nothing to block', description: 'Your team is not currently under attack.' })]
       });
     }
+    const teamName = displayTeamName(team);
 
     return message.channel.send({
       embeds: [
         successEmbed({
           title: 'Attack blocked!',
-          description: `**${team.name}** successfully defended against **${result.attackerName}**.`,
+          description: `**${teamName}** successfully defended against **${result.attackerName}**.`,
           fields: [
-            { name: `${team.name} earned`, value: `+${SCORE.MANUAL_BLOCK} points`, inline: true },
+            { name: `${teamName} earned`, value: `+${SCORE.MANUAL_BLOCK} points`, inline: true },
             { name: `${result.attackerName} lost`, value: `${Math.abs(SCORE.FAILED_ATTACK)} points`, inline: true }
           ],
           footer: 'Summer Fight',

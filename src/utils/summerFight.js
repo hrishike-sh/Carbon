@@ -42,6 +42,13 @@ function cleanTeamName(name) {
     .trim();
 }
 
+function displayTeamName(teamOrName, fallback = 'Unknown team') {
+  const name = typeof teamOrName === 'object' && teamOrName !== null
+    ? teamOrName.name
+    : teamOrName;
+  return cleanTeamName(name) || fallback;
+}
+
 async function cleanupTeamNames() {
   const teams = await TeamDB.find({ name: /<@!?\d+>/ });
   let updated = 0;
@@ -149,6 +156,11 @@ async function resolveExpiredAttack(targetTeam, channel) {
   if (new Date(pending.expiresAt).getTime() > Date.now()) return false;
 
   const attacker = await TeamDB.findById(pending.attackerTeamId);
+  const attackerName = displayTeamName(
+    pending.attackerTeamName,
+    displayTeamName(attacker)
+  );
+  const targetName = displayTeamName(targetTeam);
   if (attacker) {
     ensureSummerFight(attacker);
     attacker.points += SCORE.ATTACK_SUCCESS;
@@ -166,10 +178,10 @@ async function resolveExpiredAttack(targetTeam, channel) {
       embeds: [
         successEmbed({
           title: 'Attack successful!',
-          description: `**${pending.attackerTeamName}** broke through **${targetTeam.name}**'s defenses.`,
+          description: `**${attackerName}** broke through **${targetName}**'s defenses.`,
           fields: [
-            { name: 'Attacker', value: pending.attackerTeamName, inline: true },
-            { name: 'Defender', value: targetTeam.name, inline: true },
+            { name: 'Attacker', value: attackerName, inline: true },
+            { name: 'Defender', value: targetName, inline: true },
             { name: 'Damage dealt', value: '1 life', inline: true },
             { name: 'Points earned', value: `+${SCORE.ATTACK_SUCCESS}`, inline: true }
           ],
@@ -189,6 +201,10 @@ async function blockPendingAttack(targetTeam, type) {
 
   const pending = targetTeam.summerFight.pendingAttack;
   const attacker = await TeamDB.findById(pending.attackerTeamId);
+  const attackerName = displayTeamName(
+    pending.attackerTeamName,
+    displayTeamName(attacker)
+  );
   const blockScore = type === 'shield' ? SCORE.SHIELD_BLOCK : SCORE.MANUAL_BLOCK;
 
   if (attacker) {
@@ -212,7 +228,7 @@ async function blockPendingAttack(targetTeam, type) {
 
   return {
     attacker,
-    attackerName: pending.attackerTeamName,
+    attackerName,
     blockScore
   };
 }
@@ -240,6 +256,7 @@ module.exports = {
   nextDayTimestamp,
   formatSeconds,
   cleanTeamName,
+  displayTeamName,
   cleanupTeamNames,
   ensureSummerFight,
   findTeamByUser,

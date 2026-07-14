@@ -11,6 +11,7 @@ const {
   SCORE,
   findTeamByUser,
   findTeamByName,
+  displayTeamName,
   ensureSummerFight,
   isShieldActive,
   isImmunityActive,
@@ -22,6 +23,8 @@ const {
 
 async function notifyDefendingTeam(client, targetTeam, attackerTeam, expiresAt) {
   const memberIds = [...new Set((targetTeam.users || []).map(String))];
+  const attackerName = displayTeamName(attackerTeam);
+  const targetName = displayTeamName(targetTeam);
 
   await Promise.allSettled(
     memberIds.map(async (memberId) => {
@@ -30,7 +33,7 @@ async function notifyDefendingTeam(client, targetTeam, attackerTeam, expiresAt) 
         embeds: [
           warningEmbed({
             title: 'Your team is under attack!',
-            description: `**${attackerTeam.name}** has launched an attack on **${targetTeam.name}**.`,
+            description: `**${attackerName}** has launched an attack on **${targetName}**.`,
             fields: [
               {
                 name: 'Defend now',
@@ -53,6 +56,8 @@ async function runAttack(message, targetTeam, client) {
   }
 
   ensureSummerFight(targetTeam);
+  const attackerName = displayTeamName(attackerTeam);
+  const targetName = displayTeamName(targetTeam);
 
   if (attackerTeam._id.equals(targetTeam._id)) {
     return message.reply({
@@ -64,7 +69,7 @@ async function runAttack(message, targetTeam, client) {
 
   if ((targetTeam.lives ?? 5) <= 0) {
     return message.reply({
-      embeds: [warningEmbed({ title: 'Attack unavailable', description: `**${targetTeam.name}** has no lives left.` })]
+      embeds: [warningEmbed({ title: 'Attack unavailable', description: `**${targetName}** has no lives left.` })]
     });
   }
 
@@ -86,7 +91,7 @@ async function runAttack(message, targetTeam, client) {
 
   if (hasPendingAttack(targetTeam)) {
     return message.reply({
-      embeds: [warningEmbed({ title: 'Attack unavailable', description: `**${targetTeam.name}** is already under attack.` })]
+      embeds: [warningEmbed({ title: 'Attack unavailable', description: `**${targetName}** is already under attack.` })]
     });
   }
 
@@ -110,11 +115,11 @@ async function runAttack(message, targetTeam, client) {
       embeds: [
         warningEmbed({
           title: 'Attack blocked by immunity',
-          description: `**${targetTeam.name}** is immune to attacks, so **${attackerTeam.name}**'s attack failed.`,
+          description: `**${targetName}** is immune to attacks, so **${attackerName}**'s attack failed.`,
           fields: [
             { name: 'Immunity expires', value: `<t:${immunityEnds}:R>`, inline: true },
-            { name: `${targetTeam.name} earned`, value: `+${SCORE.SHIELD_BLOCK} points`, inline: true },
-            { name: `${attackerTeam.name} lost`, value: `${Math.abs(SCORE.FAILED_ATTACK)} points`, inline: true }
+            { name: `${targetName} earned`, value: `+${SCORE.SHIELD_BLOCK} points`, inline: true },
+            { name: `${attackerName} lost`, value: `${Math.abs(SCORE.FAILED_ATTACK)} points`, inline: true }
           ],
           footer: 'Summer Fight',
           timestamp: true
@@ -141,11 +146,11 @@ async function runAttack(message, targetTeam, client) {
       embeds: [
         warningEmbed({
           title: 'Attack blocked by shield',
-          description: `**${targetTeam.name}**'s shield stopped **${attackerTeam.name}**'s attack.`,
+          description: `**${targetName}**'s shield stopped **${attackerName}**'s attack.`,
           fields: [
             { name: 'Shield expires', value: `<t:${shieldEnds}:R>`, inline: true },
-            { name: `${targetTeam.name} earned`, value: `+${SCORE.SHIELD_BLOCK} points`, inline: true },
-            { name: `${attackerTeam.name} lost`, value: `${Math.abs(SCORE.FAILED_ATTACK)} points`, inline: true }
+            { name: `${targetName} earned`, value: `+${SCORE.SHIELD_BLOCK} points`, inline: true },
+            { name: `${attackerName} lost`, value: `${Math.abs(SCORE.FAILED_ATTACK)} points`, inline: true }
           ],
           footer: 'Summer Fight',
           timestamp: true
@@ -156,7 +161,7 @@ async function runAttack(message, targetTeam, client) {
 
   targetTeam.summerFight.pendingAttack = {
     attackerTeamId: attackerTeam._id,
-    attackerTeamName: attackerTeam.name,
+    attackerTeamName: attackerName,
     createdAt: new Date(),
     expiresAt: new Date(Date.now() + BLOCK_WINDOW_MS),
     channelId: message.channel.id
@@ -176,7 +181,7 @@ async function runAttack(message, targetTeam, client) {
     embeds: [
       infoEmbed({
         title: 'Surprise attack launched!',
-        description: `**${attackerTeam.name}** is attacking **${targetTeam.name}**.`,
+        description: `**${attackerName}** is attacking **${targetName}**.`,
         fields: [
           { name: 'Defend now', value: `Use \`fh block\` before <t:${expiresAt}:R>.`, inline: false },
           {
@@ -231,7 +236,7 @@ async function sendTeamSelect(message, client) {
       .setPlaceholder('Select a team to attack')
       .addOptions(
         visibleTeams.map((team) => ({
-          label: team.name.slice(0, 100),
+          label: displayTeamName(team).slice(0, 100),
           description: `${team.points} points, ${team.lives ?? 5} lives`.slice(0, 100),
           value: team._id.toString()
         }))
@@ -270,7 +275,7 @@ async function sendTeamSelect(message, client) {
     await interaction.update({
       embeds: [
         targetTeam
-          ? successEmbed({ title: 'Target selected', description: `Preparing an attack on **${targetTeam.name}**.` })
+          ? successEmbed({ title: 'Target selected', description: `Preparing an attack on **${displayTeamName(targetTeam)}**.` })
           : errorEmbed({ title: 'Target unavailable', description: 'That team no longer exists.' })
       ],
       components: []
