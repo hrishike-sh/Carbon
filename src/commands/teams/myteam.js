@@ -43,8 +43,8 @@ module.exports = {
     const scoreLines = [
       `Points: ${team.points}`,
       `Lives: ${team.lives}`,
-      `Attacks: ${team.summerFight.attacksUsed}/${ATTACKS_PER_WINDOW}`,
-      `Shields: ${team.summerFight.shieldUses}/${SHIELDS_PER_DAY}`
+      `Attacks remaining: ${Math.max(0, ATTACKS_PER_WINDOW - team.summerFight.attacksUsed)}/${ATTACKS_PER_WINDOW}`,
+      `Shields remaining: ${Math.max(0, SHIELDS_PER_DAY - team.summerFight.shieldUses)}/${SHIELDS_PER_DAY}`
     ];
     if (lootboxes !== null) scoreLines.push(`Loot Boxes: ${lootboxes}`);
 
