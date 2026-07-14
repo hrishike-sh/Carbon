@@ -9,9 +9,9 @@ const handlers = [
   { name: 'coins', execute: require('./coins').execute },
   { name: 'coinevents', execute: require('./coinevents').execute },
   { name: 'calc', execute: require('./calc').execute },
-  { name: 'carlModlogs', execute: require('./carlModlogs').execute },
+  { name: 'carlModlogs', execute: require('./carlModlogs').execute, acceptsBotMessages: true },
   { name: 'lastping', execute: require('./lastping').execute },
-  { name: 'mafia', execute: require('./mafia').execute },
+  { name: 'mafia', execute: require('./mafia').execute, acceptsBotMessages: true },
   { name: 'presents', execute: require('./presents').execute },
   { name: 'tot', execute: require('./tot').execute }
 ];
@@ -23,19 +23,9 @@ module.exports = {
   async execute(message, client) {
     if (!message.guild) return;
 
-    if (message.author?.bot) {
-      const mafiaHandler = handlers.find((handler) => handler.name === 'mafia');
-      if (!mafiaHandler) return;
-
-      try {
-        await mafiaHandler.execute(message, client);
-      } catch (err) {
-        logger.error(`messageCreate handler "${mafiaHandler.name}" error`, err);
-      }
-      return;
-    }
-
     for (const handler of handlers) {
+      if (message.author?.bot && !handler.acceptsBotMessages) continue;
+
       try {
         await handler.execute(message, client);
       } catch (err) {
