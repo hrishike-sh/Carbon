@@ -7,6 +7,7 @@ const {
   ensureSummerFight,
   resetAttackWindow,
   resetShieldUses,
+  resetLives,
   hasPendingAttack
 } = require('../../utils/summerFight');
 
@@ -14,6 +15,7 @@ const MAX_DESCRIPTION_LENGTH = 3800;
 
 function teamBlock(team, now) {
   ensureSummerFight(team);
+  resetLives(team, new Date(now));
   resetAttackWindow(team, now);
   resetShieldUses(team, new Date(now));
 
@@ -69,6 +71,8 @@ module.exports = {
     }
 
     const now = Date.now();
+    const resetTeams = teams.filter((team) => resetLives(team, new Date(now)));
+    await Promise.all(resetTeams.map((team) => team.save()));
     const pages = makePages(teams.map((team) => teamBlock(team, now)));
 
     for (let index = 0; index < pages.length; index += 1) {

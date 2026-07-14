@@ -6,6 +6,7 @@ const {
   findTeamByUser,
   nextDayTimestamp,
   resetShieldUses,
+  resetLives,
   isShieldActive,
   hasPendingAttack,
   resolveExpiredAttack,
@@ -22,6 +23,12 @@ module.exports = {
     const team = await findTeamByUser(message.author.id);
     if (!team) return message.reply({ embeds: [errorEmbed({ description: 'You are not in a team.' })] });
     const teamName = displayTeamName(team);
+    resetLives(team);
+    if ((team.lives ?? 5) <= 0) {
+      return message.reply({
+        embeds: [errorEmbed({ title: 'Shield unavailable', description: 'Your team has no lives left.' })]
+      });
+    }
 
     await resolveExpiredAttack(team, message.channel);
     resetShieldUses(team);

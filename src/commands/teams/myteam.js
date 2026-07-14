@@ -6,7 +6,8 @@ const {
   ensureSummerFight,
   findTeamByName,
   resetAttackWindow,
-  resetShieldUses
+  resetShieldUses,
+  resetLives
 } = require('../../utils/summerFight');
 
 module.exports = {
@@ -32,8 +33,10 @@ module.exports = {
     }
 
     ensureSummerFight(team);
+    const livesReset = resetLives(team);
     resetAttackWindow(team);
     resetShieldUses(team);
+    if (livesReset) await team.save();
 
     const lootboxes = userId && team.lootboxes
       ? (typeof team.lootboxes.get === 'function'

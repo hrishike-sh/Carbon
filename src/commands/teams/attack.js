@@ -16,6 +16,7 @@ const {
   isShieldActive,
   isImmunityActive,
   resetAttackWindow,
+  resetLives,
   hasPendingAttack,
   resolveExpiredAttack,
   scheduleAttackResolution
@@ -56,12 +57,20 @@ async function runAttack(message, targetTeam, client) {
   }
 
   ensureSummerFight(targetTeam);
+  resetLives(attackerTeam);
+  resetLives(targetTeam);
   const attackerName = displayTeamName(attackerTeam);
   const targetName = displayTeamName(targetTeam);
 
   if (attackerTeam._id.equals(targetTeam._id)) {
     return message.reply({
       embeds: [errorEmbed({ title: 'Attack unavailable', description: 'You cannot attack your own team.' })]
+    });
+  }
+
+  if ((attackerTeam.lives ?? 5) <= 0) {
+    return message.reply({
+      embeds: [warningEmbed({ title: 'Attack unavailable', description: 'Your team has no lives left.' })]
     });
   }
 
@@ -74,6 +83,12 @@ async function runAttack(message, targetTeam, client) {
   }
 
   resetAttackWindow(attackerTeam);
+  resetLives(attackerTeam);
+  if ((attackerTeam.lives ?? 5) <= 0) {
+    return message.reply({
+      embeds: [warningEmbed({ title: 'Attack unavailable', description: 'Your team has no lives left.' })]
+    });
+  }
 
   if (attackerTeam.summerFight.attacksUsed >= ATTACKS_PER_WINDOW) {
     const resetAt =
@@ -218,10 +233,13 @@ async function sendTeamSelect(message, client) {
     });
   }
 
-  const teams = await TeamDB.find({
-    _id: { $ne: attackerTeam._id },
-    $or: [{ lives: { $gt: 0 } }, { lives: { $exists: false } }]
-  }).sort({ name: 1 });
+  const allTeams = await TeamDB.find({ _id: { $ne: attackerTeam._id } }).sort({ name: 1 });
+  const resetTeams = [];
+  const teams = allTeams.filter((team) => {
+    if (resetLives(team)) resetTeams.push(team);
+    return (team.lives ?? 5) > 0;
+  });
+  await Promise.all(resetTeams.map((team) => team.save()));
 
   if (!teams.length) {
     return message.reply({

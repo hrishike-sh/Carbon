@@ -38,9 +38,9 @@ module.exports = {
     const userId = parseUserId(message, args[0]);
     const amount = args[1] === undefined ? 1 : Number(args[1]);
 
-    if (!userId || !Number.isSafeInteger(amount) || amount <= 0) {
+    if (!userId || !Number.isSafeInteger(amount) || amount === 0) {
       return message.reply({
-        embeds: [errorEmbed({ description: 'Usage: `fh addlootbox @user [amount]`' })]
+        embeds: [errorEmbed({ description: 'Usage: `fh addlootbox @user <positive or negative amount>`' })]
       });
     }
 
@@ -53,16 +53,23 @@ module.exports = {
     if (!team.lootboxes || typeof team.lootboxes.set !== 'function') {
       team.lootboxes = new Map(Object.entries(team.lootboxes || {}));
     }
-    team.lootboxes.set(userId, current + amount);
+    const newTotal = Math.max(0, current + amount);
+    const changedBy = newTotal - current;
+    team.lootboxes.set(userId, newTotal);
     await team.save();
+
+    const isRemoval = amount < 0;
+    const action = isRemoval ? 'Removed' : 'Added';
+    const changedAmount = Math.abs(changedBy);
 
     return message.reply({
       embeds: [
         successEmbed({
-          title: 'Loot Boxes added',
+          title: 'Loot Boxes updated',
           description:
-            `Added **${amount} Loot Box${amount === 1 ? '' : 'es'}** to <@${userId}>.\n` +
-            `Available: **${current + amount}**.`
+            `${action} **${changedAmount} Loot Box${changedAmount === 1 ? '' : 'es'}** ` +
+            `${isRemoval ? 'from' : 'to'} <@${userId}>.\n` +
+            `Available: **${newTotal}**.`
         })
       ],
       allowedMentions: { users: [] }

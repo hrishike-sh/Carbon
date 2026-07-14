@@ -12,6 +12,7 @@ const {
   SCORE,
   ensureSummerFight,
   findTeamByName,
+  resetLives,
   hasPendingAttack,
   blockPendingAttack
 } = require('../../utils/summerFight');
@@ -130,6 +131,14 @@ async function applyReward(team, roll, userId) {
 
   if (roll <= 95) {
     return { selectTarget: true };
+  }
+
+  if (roll <= 98) {
+    team.lives = (team.lives ?? 5) + 1;
+    return {
+      description: 'Rare reward! Your team gained **1 life**.',
+      color: Theme.success
+    };
   }
 
   return { description: 'The Loot Box was empty. Better luck next time!', color: Theme.warning };
@@ -251,6 +260,12 @@ module.exports = {
         ]
       });
     }
+    resetLives(team);
+    if ((team.lives ?? 5) <= 0) {
+      return message.reply({
+        embeds: [errorEmbed({ title: 'Loot Box unavailable', description: 'Your team has no lives left.' })]
+      });
+    }
 
     const lastOpenedAt = team.lastLb ? new Date(team.lastLb).getTime() : 0;
     const remaining = LOOTBOX_COOLDOWN_MS - (Date.now() - lastOpenedAt);
@@ -309,6 +324,13 @@ module.exports = {
       if (!freshTeam) {
         return boxMessage.edit({
           embeds: [errorEmbed({ title: 'Loot Box unavailable', description: 'Your team no longer exists.' })],
+          components: []
+        });
+      }
+      resetLives(freshTeam);
+      if ((freshTeam.lives ?? 5) <= 0) {
+        return boxMessage.edit({
+          embeds: [errorEmbed({ title: 'Loot Box unavailable', description: 'Your team has no lives left.' })],
           components: []
         });
       }

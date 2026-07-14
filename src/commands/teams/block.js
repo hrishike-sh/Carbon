@@ -2,6 +2,7 @@ const {
   SCORE,
   displayTeamName,
   findTeamByUser,
+  resetLives,
   hasPendingAttack,
   resolveExpiredAttack,
   blockPendingAttack
@@ -16,6 +17,12 @@ module.exports = {
   async execute(message, args, client) {
     const team = await findTeamByUser(message.author.id);
     if (!team) return message.reply({ embeds: [errorEmbed({ description: 'You are not in a team.' })] });
+    resetLives(team);
+    if ((team.lives ?? 5) <= 0) {
+      return message.reply({
+        embeds: [errorEmbed({ title: 'Defend unavailable', description: 'Your team has no lives left.' })]
+      });
+    }
 
     const expired = await resolveExpiredAttack(team, message.channel);
     if (expired || !hasPendingAttack(team)) {

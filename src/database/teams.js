@@ -10,6 +10,7 @@ const TeamSchema = new Schema({
   summerFight: {
     attackWindowStartedAt: { type: Date, default: () => new Date(0) },
     attacksUsed: { type: Number, default: 0 },
+    livesDay: { type: String, default: () => new Date().toISOString().slice(0, 10) },
     shieldDay: { type: String, default: '' },
     shieldUses: { type: Number, default: 0 },
     shieldExpiresAt: { type: Date, default: null },

@@ -8,6 +8,7 @@ const BLOCK_WINDOW_MS = 60 * 1000;
 const SHIELD_DURATION_MS = 30 * 60 * 1000;
 const IMMUNITY_DURATION_MS = 6 * 60 * 60 * 1000;
 const SHIELDS_PER_DAY = 2;
+const resolvingAttacks = new Set();
 
 const SCORE = {
   ATTACK_SUCCESS: 10,
@@ -129,6 +130,24 @@ function resetShieldUses(team, now = new Date()) {
   }
 }
 
+function resetLives(team, now = new Date()) {
+  ensureSummerFight(team);
+  const today = dayKey(now);
+
+  if (!team.summerFight.livesDay) {
+    team.summerFight.livesDay = today;
+    return false;
+  }
+
+  if (team.summerFight.livesDay !== today) {
+    team.summerFight.livesDay = today;
+    team.lives = 5;
+    return true;
+  }
+
+  return false;
+}
+
 function hasPendingAttack(team) {
   ensureSummerFight(team);
   return Boolean(
@@ -148,89 +167,139 @@ function clearPendingAttack(team) {
   };
 }
 
+function acquireAttackResolution(team) {
+  const key = team._id.toString();
+  if (resolvingAttacks.has(key)) return null;
+  resolvingAttacks.add(key);
+  return key;
+}
+
+function releaseAttackResolution(key) {
+  if (key) resolvingAttacks.delete(key);
+}
+
+function samePendingAttack(first, second) {
+  if (!first?.attackerTeamId || !second?.attackerTeamId) return false;
+  return (
+    first.attackerTeamId.toString() === second.attackerTeamId.toString() &&
+    new Date(first.expiresAt).getTime() === new Date(second.expiresAt).getTime()
+  );
+}
+
 async function resolveExpiredAttack(targetTeam, channel) {
   ensureSummerFight(targetTeam);
   if (!hasPendingAttack(targetTeam)) return false;
 
-  const pending = targetTeam.summerFight.pendingAttack;
-  if (new Date(pending.expiresAt).getTime() > Date.now()) return false;
+  const resolutionKey = acquireAttackResolution(targetTeam);
+  if (!resolutionKey) return false;
 
-  const attacker = await TeamDB.findById(pending.attackerTeamId);
-  const attackerName = displayTeamName(
-    pending.attackerTeamName,
-    displayTeamName(attacker)
-  );
-  const targetName = displayTeamName(targetTeam);
-  if (attacker) {
-    ensureSummerFight(attacker);
-    attacker.points += SCORE.ATTACK_SUCCESS;
-    attacker.summerFight.stats.attacksSucceeded =
-      (attacker.summerFight.stats.attacksSucceeded || 0) + 1;
-    await attacker.save();
+  try {
+    const currentTeam = await TeamDB.findById(targetTeam._id);
+    if (!currentTeam) return false;
+    ensureSummerFight(currentTeam);
+
+    const pending = currentTeam.summerFight.pendingAttack;
+    if (!hasPendingAttack(currentTeam)) return false;
+    if (new Date(pending.expiresAt).getTime() > Date.now()) return false;
+
+    const attacker = await TeamDB.findById(pending.attackerTeamId);
+    const attackerName = displayTeamName(
+      pending.attackerTeamName,
+      displayTeamName(attacker)
+    );
+    const targetName = displayTeamName(currentTeam);
+    if (attacker) {
+      ensureSummerFight(attacker);
+      attacker.points += SCORE.ATTACK_SUCCESS;
+      attacker.summerFight.stats.attacksSucceeded =
+        (attacker.summerFight.stats.attacksSucceeded || 0) + 1;
+      await attacker.save();
+    }
+
+    currentTeam.lives = Math.max(0, (currentTeam.lives || 0) - 1);
+    clearPendingAttack(currentTeam);
+    await currentTeam.save();
+
+    if (channel) {
+      await channel.send({
+        embeds: [
+          successEmbed({
+            title: 'Attack successful!',
+            description: `**${attackerName}** broke through **${targetName}**'s defenses.`,
+            fields: [
+              { name: 'Attacker', value: attackerName, inline: true },
+              { name: 'Defender', value: targetName, inline: true },
+              { name: 'Damage dealt', value: '1 life', inline: true },
+              { name: 'Points earned', value: `+${SCORE.ATTACK_SUCCESS}`, inline: true }
+            ],
+            footer: 'Summer Fight',
+            timestamp: true
+          })
+        ]
+      }).catch(() => {});
+    }
+
+    return true;
+  } finally {
+    releaseAttackResolution(resolutionKey);
   }
-
-  targetTeam.lives = Math.max(0, (targetTeam.lives || 0) - 1);
-  clearPendingAttack(targetTeam);
-  await targetTeam.save();
-
-  if (channel) {
-    await channel.send({
-      embeds: [
-        successEmbed({
-          title: 'Attack successful!',
-          description: `**${attackerName}** broke through **${targetName}**'s defenses.`,
-          fields: [
-            { name: 'Attacker', value: attackerName, inline: true },
-            { name: 'Defender', value: targetName, inline: true },
-            { name: 'Damage dealt', value: '1 life', inline: true },
-            { name: 'Points earned', value: `+${SCORE.ATTACK_SUCCESS}`, inline: true }
-          ],
-          footer: 'Summer Fight',
-          timestamp: true
-        })
-      ]
-    }).catch(() => {});
-  }
-
-  return true;
 }
 
 async function blockPendingAttack(targetTeam, type) {
   ensureSummerFight(targetTeam);
   if (!hasPendingAttack(targetTeam)) return null;
 
-  const pending = targetTeam.summerFight.pendingAttack;
-  const attacker = await TeamDB.findById(pending.attackerTeamId);
-  const attackerName = displayTeamName(
-    pending.attackerTeamName,
-    displayTeamName(attacker)
-  );
-  const blockScore = type === 'shield' ? SCORE.SHIELD_BLOCK : SCORE.MANUAL_BLOCK;
+  const resolutionKey = acquireAttackResolution(targetTeam);
+  if (!resolutionKey) return null;
 
-  if (attacker) {
-    ensureSummerFight(attacker);
-    attacker.points += SCORE.FAILED_ATTACK;
-    attacker.summerFight.stats.attacksFailed =
-      (attacker.summerFight.stats.attacksFailed || 0) + 1;
-    await attacker.save();
+  try {
+    const currentTeam = await TeamDB.findById(targetTeam._id);
+    if (!currentTeam) return null;
+    ensureSummerFight(currentTeam);
+    if (!hasPendingAttack(currentTeam)) return null;
+    if (new Date(currentTeam.summerFight.pendingAttack.expiresAt).getTime() <= Date.now()) {
+      return null;
+    }
+    if (!samePendingAttack(
+      targetTeam.summerFight.pendingAttack,
+      currentTeam.summerFight.pendingAttack
+    )) return null;
+
+    const pending = targetTeam.summerFight.pendingAttack;
+    const attacker = await TeamDB.findById(pending.attackerTeamId);
+    const attackerName = displayTeamName(
+      pending.attackerTeamName,
+      displayTeamName(attacker)
+    );
+    const blockScore = type === 'shield' ? SCORE.SHIELD_BLOCK : SCORE.MANUAL_BLOCK;
+
+    if (attacker) {
+      ensureSummerFight(attacker);
+      attacker.points += SCORE.FAILED_ATTACK;
+      attacker.summerFight.stats.attacksFailed =
+        (attacker.summerFight.stats.attacksFailed || 0) + 1;
+      await attacker.save();
+    }
+
+    targetTeam.points += blockScore;
+    if (type === 'shield') {
+      targetTeam.summerFight.stats.shieldBlocks =
+        (targetTeam.summerFight.stats.shieldBlocks || 0) + 1;
+    } else {
+      targetTeam.summerFight.stats.manualBlocks =
+        (targetTeam.summerFight.stats.manualBlocks || 0) + 1;
+    }
+    clearPendingAttack(targetTeam);
+    await targetTeam.save();
+
+    return {
+      attacker,
+      attackerName,
+      blockScore
+    };
+  } finally {
+    releaseAttackResolution(resolutionKey);
   }
-
-  targetTeam.points += blockScore;
-  if (type === 'shield') {
-    targetTeam.summerFight.stats.shieldBlocks =
-      (targetTeam.summerFight.stats.shieldBlocks || 0) + 1;
-  } else {
-    targetTeam.summerFight.stats.manualBlocks =
-      (targetTeam.summerFight.stats.manualBlocks || 0) + 1;
-  }
-  clearPendingAttack(targetTeam);
-  await targetTeam.save();
-
-  return {
-    attacker,
-    attackerName,
-    blockScore
-  };
 }
 
 function scheduleAttackResolution(client, targetTeamId, channelId) {
@@ -265,6 +334,7 @@ module.exports = {
   isImmunityActive,
   resetAttackWindow,
   resetShieldUses,
+  resetLives,
   hasPendingAttack,
   clearPendingAttack,
   resolveExpiredAttack,
