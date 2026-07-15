@@ -71,6 +71,7 @@ function ensureSummerFight(team) {
   if (!team.summerFight.stats) team.summerFight.stats = {};
   if (!team.summerFight.pendingAttack) team.summerFight.pendingAttack = {};
   if (typeof team.lives !== 'number') team.lives = 5;
+  team.lives = Math.max(0, Math.min(5, team.lives));
   if (typeof team.points !== 'number') team.points = 0;
   if (typeof team.summerFight.attacksUsed !== 'number') {
     team.summerFight.attacksUsed = 0;

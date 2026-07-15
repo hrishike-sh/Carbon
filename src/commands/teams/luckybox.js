@@ -134,7 +134,15 @@ async function applyReward(team, roll, userId) {
   }
 
   if (roll <= 98) {
-    team.lives = (team.lives ?? 5) + 1;
+    if ((team.lives ?? 5) >= 5) {
+      team.points += 10;
+      return {
+        description: 'Your team already has **5 lives**, so the life reward became **+10 points**!',
+        color: Theme.success
+      };
+    }
+
+    team.lives = Math.min(5, (team.lives ?? 5) + 1);
     return {
       description: 'Rare reward! Your team gained **1 life**.',
       color: Theme.success

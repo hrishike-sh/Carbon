@@ -6,7 +6,7 @@ const TeamSchema = new Schema({
   name: { type: String, required: true },
   lastLb: { type: Date, default: () => new Date(Date.now() - 86400000) },
   lootboxes: { type: Map, of: Number, default: {} },
-  lives: { type: Number, default: 5 },
+  lives: { type: Number, default: 5, min: 0, max: 5 },
   summerFight: {
     attackWindowStartedAt: { type: Date, default: () => new Date(0) },
     attacksUsed: { type: Number, default: 0 },
