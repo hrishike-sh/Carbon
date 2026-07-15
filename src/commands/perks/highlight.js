@@ -3,86 +3,147 @@ const db = require('../../database/models/highlight');
 const config = require('../../config');
 const { Theme } = require('../../utils/embeds');
 
+const MAX_HIGHLIGHTS = 25;
+const MAX_HIGHLIGHT_LENGTH = 50;
+const EXTRA_ALLOWED_ROLES = [
+  '839803117646512128',
+  '825283097830096908',
+  '828048225096826890',
+  '824687430753189902'
+];
+
+function normalizeHighlight(value) {
+  return value.trim().replace(/\s+/g, ' ').toLowerCase();
+}
+
+function inlineCode(value) {
+  return `\`${value.replace(/`/g, '\u02cb')}\``;
+}
+
+function compactReply(message, description, color = Theme.info) {
+  return message.reply({
+    embeds: [new EmbedBuilder().setColor(color).setDescription(description)]
+  });
+}
+
+function usage(message) {
+  return compactReply(
+    message,
+    '**Highlight commands**\n`fh hl add <word or phrase>` · `remove <highlight>` · `list`'
+  );
+}
+
 module.exports = {
   name: 'highlight',
   aliases: ['hl'],
+  cooldown: 2,
+  roles: [
+    config.roles.giveawayManager,
+    config.roles.staff.mod,
+    config.roles.staff.admin,
+    ...EXTRA_ALLOWED_ROLES
+  ],
 
   async execute(message, args, client) {
-    const allowedRoles = [
-      config.roles.giveawayManager,
-      config.roles.staff.mod,
-      config.roles.staff.admin
-    ];
     const userId = message.author.id;
-    const sample = 'Incorrect usage! Examples below\n\n`fh hl add <hl>`, `fh hl remove <hl>`, `fh hl list`';
+    const subcommand = args.shift()?.toLowerCase();
 
-    if (!message.member.roles.cache.hasAny(...allowedRoles)) {
-      return message.reply("You don't have the perks to use this command.");
+    if (!subcommand) return usage(message);
+
+    if (subcommand === 'list' || subcommand === 'show') {
+      const entry = await db.findOne({ userId });
+      const highlights = entry?.highlights || [];
+
+      if (highlights.length === 0) {
+        return compactReply(
+          message,
+          'You have no highlights yet. Use `fh hl add <word or phrase>` to add one.'
+        );
+      }
+
+      const list = highlights.map((highlight) => inlineCode(highlight)).join(' · ');
+      return compactReply(
+        message,
+        `**Your highlights (${highlights.length}/${MAX_HIGHLIGHTS})**\n${list}`
+      );
     }
 
-    const subcommand = args.shift();
-    if (!subcommand) return message.reply(sample);
+    if (!['add', 'remove', 'delete', 'rm'].includes(subcommand)) return usage(message);
 
-    const embed = new EmbedBuilder()
-      .setTitle('Highlight')
-      .setTimestamp()
-      .setColor(Theme.success);
+    const highlight = normalizeHighlight(args.join(' '));
+    if (!highlight) return usage(message);
 
-    if (subcommand === 'list') {
-      const highlights = await db.findOne({ userId });
-      if (!highlights?.highlights?.length) {
-        embed.setDescription('You do not have any highlights! Add them using `fh hl add <item>`');
-        return message.reply({ embeds: [embed] });
-      }
-      embed.setDescription(highlights.highlights.map((a, i) => `${i + 1}. ${a}`).join('\n'));
-      return message.reply({ embeds: [embed] });
-    } else if (subcommand === 'add') {
-      const toAdd = args.shift();
-      if (!toAdd) return message.reply(sample);
-      if (toAdd.length < 3) {
-        return message.reply('Your highlight must be atleast 3 characters long.');
-      }
-
-      let highlights = await db.findOne({ userId });
-      if (highlights?.highlights.includes(toAdd))
-        return message.reply('You already have this word in your highlights.');
-
-      if (highlights) {
-        highlights.highlights.push(toAdd);
-        await highlights.save();
-      } else {
-        highlights = await db.create({ userId, highlights: [toAdd] });
-      }
-
-      if (client.state.highlights.has(toAdd)) {
-        client.state.highlights.get(toAdd).push(userId);
-      } else {
-        client.state.highlights.set(toAdd, [userId]);
-      }
-
-      embed.setDescription(`Added \`${toAdd}\` to your highlights.`);
-      return message.reply({ embeds: [embed] });
-    } else if (subcommand === 'remove') {
-      const toRemove = args.shift();
-      if (!toRemove) return message.reply(sample);
-
-      const highlights = await db.findOne({ userId });
-      if (!highlights?.highlights.includes(toRemove)) {
-        return message.reply("You dont have this word in your highlights. Check using `fh hl list`");
-      }
-
-      highlights.highlights = highlights.highlights.filter((a) => a !== toRemove);
-      await highlights.save();
-
-      if (client.state.highlights.has(toRemove)) {
-        const users = client.state.highlights.get(toRemove);
-        const index = users.indexOf(userId);
-        if (index > -1) users.splice(index, 1);
-        if (users.length === 0) client.state.highlights.delete(toRemove);
-      }
-
-      embed.setDescription(`Removed \`${toRemove}\` from your highlights.`);
-      return message.reply({ embeds: [embed] });
+    if (highlight.length < 3) {
+      return compactReply(message, 'Highlights must be at least 3 characters long.', Theme.error);
     }
+
+    if (highlight.length > MAX_HIGHLIGHT_LENGTH) {
+      return compactReply(
+        message,
+        `Highlights cannot be longer than ${MAX_HIGHLIGHT_LENGTH} characters.`,
+        Theme.error
+      );
+    }
+
+    let entry = await db.findOne({ userId });
+    const storedMatch = entry?.highlights.find(
+      (storedHighlight) => normalizeHighlight(storedHighlight) === highlight
+    );
+
+    if (subcommand === 'add') {
+      if (storedMatch) {
+        return compactReply(message, `${inlineCode(highlight)} is already in your highlights.`, Theme.error);
+      }
+
+      if (entry?.highlights.length >= MAX_HIGHLIGHTS) {
+        return compactReply(
+          message,
+          `You can have up to ${MAX_HIGHLIGHTS} highlights. Remove one before adding another.`,
+          Theme.error
+        );
+      }
+
+      if (entry) {
+        entry.highlights.push(highlight);
+        await entry.save();
+      } else {
+        entry = await db.create({ userId, highlights: [highlight] });
+      }
+
+      if (!client.state.highlights) client.state.highlights = new Map();
+      const subscribers = client.state.highlights.get(highlight) || [];
+      if (!subscribers.includes(userId)) subscribers.push(userId);
+      client.state.highlights.set(highlight, subscribers);
+
+      return compactReply(message, `Added ${inlineCode(highlight)} to your highlights.`, Theme.success);
+    }
+
+    if (!storedMatch) {
+      return compactReply(
+        message,
+        `${inlineCode(highlight)} is not in your highlights. Use \`fh hl list\` to check them.`,
+        Theme.error
+      );
+    }
+
+    entry.highlights = entry.highlights.filter(
+      (storedHighlight) => normalizeHighlight(storedHighlight) !== highlight
+    );
+
+    if (entry.highlights.length === 0) {
+      await entry.deleteOne();
+    } else {
+      await entry.save();
+    }
+
+    const subscribers = client.state.highlights?.get(highlight) || [];
+    const remainingSubscribers = subscribers.filter((subscriberId) => subscriberId !== userId);
+    if (remainingSubscribers.length > 0) {
+      client.state.highlights.set(highlight, remainingSubscribers);
+    } else {
+      client.state.highlights?.delete(highlight);
+    }
+
+    return compactReply(message, `Removed ${inlineCode(highlight)} from your highlights.`, Theme.success);
   }
 };
