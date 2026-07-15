@@ -261,11 +261,6 @@ module.exports = {
       });
     }
     resetLives(team);
-    if ((team.lives ?? 5) <= 0) {
-      return message.reply({
-        embeds: [errorEmbed({ title: 'Loot Box unavailable', description: 'Your team has no lives left.' })]
-      });
-    }
 
     const lastOpenedAt = team.lastLb ? new Date(team.lastLb).getTime() : 0;
     const remaining = LOOTBOX_COOLDOWN_MS - (Date.now() - lastOpenedAt);
@@ -328,12 +323,6 @@ module.exports = {
         });
       }
       resetLives(freshTeam);
-      if ((freshTeam.lives ?? 5) <= 0) {
-        return boxMessage.edit({
-          embeds: [errorEmbed({ title: 'Loot Box unavailable', description: 'Your team has no lives left.' })],
-          components: []
-        });
-      }
 
       const teamId = freshTeam._id.toString();
       if (opening.has(teamId)) {
