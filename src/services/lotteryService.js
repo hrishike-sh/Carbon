@@ -13,7 +13,7 @@ const LOTTERY_CHANNEL_ID = config.ids.channels.lottery;
 
 let schedulerStarted = false;
 let schedulerStartPromise = null;
-let tickRunning = false;
+let tickPromise = null;
 
 function nextDrawAt(now = new Date()) {
   const istNow = new Date(now.getTime() + IST_OFFSET_MS);
@@ -149,7 +149,7 @@ async function migrateCurrentRound(now = new Date()) {
   );
 }
 
-async function recordDonation(donation) {
+async function recordDonation(donation, client) {
   const alreadyProcessed = await LotteryRound.exists({
     processedMessageIds: donation.messageId
   });
@@ -157,8 +157,17 @@ async function recordDonation(donation) {
 
   let round = await ensureActiveRound();
 
-  for (let attempt = 0; attempt < 2; attempt++) {
+  for (let attempt = 0; attempt < 3; attempt++) {
     if (!round) {
+      round = await ensureActiveRound();
+      continue;
+    }
+
+    if (round.scheduledDrawAt <= new Date()) {
+      if (!client) {
+        throw new Error('Cannot rotate an overdue lottery round without a client');
+      }
+      await lotteryTick(client);
       round = await ensureActiveRound();
       continue;
     }
@@ -167,6 +176,7 @@ async function recordDonation(donation) {
       {
         _id: round._id,
         status: 'active',
+        scheduledDrawAt: { $gt: new Date() },
         processedMessageIds: { $ne: donation.messageId }
       },
       {
@@ -224,7 +234,7 @@ async function processDonationEdit(message) {
   const donation = parseDonationMessage(message);
   if (!donation) return null;
 
-  const result = await recordDonation(donation);
+  const result = await recordDonation(donation, message.client);
   if (result?.recorded) {
     logger.info(
       `Lottery donation: ${donation.userId} donated ${donation.amount.toLocaleString()} ` +
@@ -530,49 +540,52 @@ async function finishRound(client, round) {
   }
 }
 
-async function lotteryTick(client) {
-  if (tickRunning) return;
-  tickRunning = true;
+function lotteryTick(client) {
+  if (tickPromise) return tickPromise;
 
-  try {
-    await unlockDueLotteryChannels(client);
+  tickPromise = (async () => {
+    try {
+      await unlockDueLotteryChannels(client);
 
-    // Always keep a round open, even if retrying an older announcement fails.
-    await ensureActiveRound();
-
-    const unfinished = await LotteryRound.find({
-      channelId: LOTTERY_CHANNEL_ID,
-      status: { $in: ['drawing', 'announcing'] }
-    }).sort({ scheduledDrawAt: 1 });
-
-    for (const round of unfinished) {
-      await finishRound(client, round);
-    }
-
-    const dueRound = await LotteryRound.findOneAndUpdate(
-      {
-        activeKey: LOTTERY_CHANNEL_ID,
-        status: 'active',
-        scheduledDrawAt: { $lte: new Date() }
-      },
-      {
-        $set: { status: 'drawing' },
-        $unset: { activeKey: 1 }
-      },
-      { new: true }
-    );
-
-    if (dueRound) {
+      // Always keep a round open, even if retrying an older announcement fails.
       await ensureActiveRound();
-      await finishRound(client, dueRound);
-    } else {
-      await ensureActiveRound();
+
+      const unfinished = await LotteryRound.find({
+        channelId: LOTTERY_CHANNEL_ID,
+        status: { $in: ['drawing', 'announcing'] }
+      }).sort({ scheduledDrawAt: 1 });
+
+      for (const round of unfinished) {
+        await finishRound(client, round);
+      }
+
+      const dueRound = await LotteryRound.findOneAndUpdate(
+        {
+          activeKey: LOTTERY_CHANNEL_ID,
+          status: 'active',
+          scheduledDrawAt: { $lte: new Date() }
+        },
+        {
+          $set: { status: 'drawing' },
+          $unset: { activeKey: 1 }
+        },
+        { new: true }
+      );
+
+      if (dueRound) {
+        await ensureActiveRound();
+        await finishRound(client, dueRound);
+      } else {
+        await ensureActiveRound();
+      }
+    } catch (error) {
+      logger.error('Lottery scheduler error', error);
+    } finally {
+      tickPromise = null;
     }
-  } catch (error) {
-    logger.error('Lottery scheduler error', error);
-  } finally {
-    tickRunning = false;
-  }
+  })();
+
+  return tickPromise;
 }
 
 function scheduleBoundaryTick(client) {
