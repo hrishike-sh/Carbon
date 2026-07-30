@@ -7,9 +7,12 @@ const {
 const {
   TICKET_PRICE,
   chanceText,
+  forceLotteryDraw,
   getCurrentRoundSnapshot
 } = require('../../services/lotteryService');
 const { Theme } = require('../../utils/embeds');
+
+const HRISH_USER_ID = '598918643727990784';
 
 module.exports = {
   name: 'lottery',
@@ -18,6 +21,27 @@ module.exports = {
 
   async execute(message, args) {
     const subcommand = (args.shift() || '').toLowerCase();
+
+    if (subcommand === 'pull') {
+      if (message.author.id !== HRISH_USER_ID) {
+        return message.reply('Only Hrish can manually pull the lottery.');
+      }
+
+      const status = await message.reply('Pulling the current lottery round...');
+
+      try {
+        const result = await forceLotteryDraw(message.client, message.author.id);
+        return status.edit(
+          result.drawn
+            ? 'Lottery pulled successfully.'
+            : result.reason
+        );
+      } catch (error) {
+        await status.edit('The manual lottery draw failed. Check the bot logs.');
+        throw error;
+      }
+    }
+
     if (subcommand !== 'view') {
       return message.reply(
         `Use \`fh lottery view\` to see your tickets and winning chance.`

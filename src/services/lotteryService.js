@@ -540,6 +540,33 @@ async function finishRound(client, round) {
   }
 }
 
+async function forceLotteryDraw(client, pulledBy) {
+  if (tickPromise) await tickPromise;
+  await ensureActiveRound();
+
+  const round = await LotteryRound.findOneAndUpdate(
+    {
+      activeKey: LOTTERY_CHANNEL_ID,
+      status: 'active'
+    },
+    {
+      $set: { status: 'drawing' },
+      $unset: { activeKey: 1 }
+    },
+    { new: true }
+  );
+
+  if (!round) {
+    return { drawn: false, reason: 'A lottery draw is already in progress.' };
+  }
+
+  await ensureActiveRound();
+  await finishRound(client, round);
+  logger.info(`Manual lottery draw completed by ${pulledBy} for round ${round.id}`);
+
+  return { drawn: true, roundId: round.id };
+}
+
 function lotteryTick(client) {
   if (tickPromise) return tickPromise;
 
@@ -677,6 +704,7 @@ module.exports = {
   componentText,
   buildEntriesManifest,
   entriesForRound,
+  forceLotteryDraw,
   formatPercent,
   getCurrentRoundSnapshot,
   isMidnightIst,
