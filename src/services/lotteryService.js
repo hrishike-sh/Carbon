@@ -129,15 +129,25 @@ async function recordDonation(donation) {
     if (updated) {
       const userTotal = updated.donationsByUser.get(donation.userId) || 0;
       const previousTotal = userTotal - donation.amount;
+      const entries = entriesForRound(updated);
+      const totalTickets = entries.reduce(
+        (sum, entry) => sum + entry.tickets,
+        0
+      );
+      const userTickets = Math.floor(userTotal / TICKET_PRICE);
 
       return {
         recorded: true,
         roundId: updated.id,
+        userId: donation.userId,
         amount: donation.amount,
         userTotal,
+        userTickets,
+        totalTickets,
+        totalPool: updated.totalPool,
+        scheduledDrawAt: updated.scheduledDrawAt,
         ticketsAdded:
-          Math.floor(userTotal / TICKET_PRICE) -
-          Math.floor(previousTotal / TICKET_PRICE)
+          userTickets - Math.floor(previousTotal / TICKET_PRICE)
       };
     }
 
@@ -164,9 +174,84 @@ async function processDonationEdit(message) {
       `Lottery donation: ${donation.userId} donated ${donation.amount.toLocaleString()} ` +
         `(${result.ticketsAdded} new ticket(s))`
     );
+
+    try {
+      await sendDonationReceipt(message, result);
+    } catch (error) {
+      logger.error('Lottery donation receipt error', error);
+    }
   }
 
   return result;
+}
+
+async function sendDonationReceipt(message, result) {
+  const progress = result.userTotal % TICKET_PRICE;
+  const amountToNextTicket = TICKET_PRICE - progress;
+  const prizeAmount = Math.floor(result.totalPool * PRIZE_PERCENT);
+  const drawTimestamp = Math.floor(result.scheduledDrawAt.getTime() / 1000);
+  const ticketsAddedText =
+    result.ticketsAdded > 0
+      ? ` (+${result.ticketsAdded.toLocaleString()} new)`
+      : '';
+
+  const embed = new EmbedBuilder()
+    .setColor(Theme.success)
+    .setTitle('Lottery Donation Counted')
+    .setDescription(
+      `<@${result.userId}>, your server-pool donation has been added to the current lottery round.`
+    )
+    .addFields(
+      {
+        name: 'This Donation',
+        value: `\u23e3 ${result.amount.toLocaleString()}`,
+        inline: true
+      },
+      {
+        name: 'Your Round Total',
+        value: `\u23e3 ${result.userTotal.toLocaleString()}`,
+        inline: true
+      },
+      {
+        name: 'Your Tickets',
+        value: `${result.userTickets.toLocaleString()}${ticketsAddedText}`,
+        inline: true
+      },
+      {
+        name: 'Next Ticket',
+        value:
+          `\u23e3 ${progress.toLocaleString()} / ${TICKET_PRICE.toLocaleString()}\n` +
+          `\u23e3 ${amountToNextTicket.toLocaleString()} more needed`,
+        inline: true
+      },
+      {
+        name: 'Current Winning Chance',
+        value: chanceText(result.userTickets, result.totalTickets),
+        inline: true
+      },
+      {
+        name: 'Current Pool / Prize',
+        value:
+          `\u23e3 ${result.totalPool.toLocaleString()} pool\n` +
+          `\u23e3 ${prizeAmount.toLocaleString()} prize (95%)`,
+        inline: true
+      },
+      {
+        name: 'Next Draw',
+        value: `<t:${drawTimestamp}:F> (<t:${drawTimestamp}:R>)`,
+        inline: false
+      }
+    )
+    .setFooter({ text: 'Every \u23e3 100,000 donated earns one ticket' })
+    .setTimestamp();
+
+  return message.reply({
+    embeds: [embed],
+    allowedMentions: {
+      users: [result.userId],
+      repliedUser: false
+    }
+  });
 }
 
 function entriesForRound(round) {
@@ -419,5 +504,6 @@ module.exports = {
   pickWinner,
   processDonationEdit,
   recordDonation,
+  sendDonationReceipt,
   startLotteryScheduler
 };
