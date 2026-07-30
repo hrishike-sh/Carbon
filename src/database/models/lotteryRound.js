@@ -21,11 +21,20 @@ const LotteryRoundSchema = new Schema(
       of: Number,
       default: () => new Map()
     },
+    usernamesByUser: {
+      type: Map,
+      of: String,
+      default: () => new Map()
+    },
     processedMessageIds: { type: [String], default: [], index: true },
     winnerId: { type: String },
     winnerTickets: { type: Number, default: 0 },
     prizeAmount: { type: Number, default: 0 },
-    announcementMessageId: { type: String }
+    entriesMessageId: { type: String },
+    announcementMessageId: { type: String },
+    channelLockedAt: { type: Date },
+    channelUnlockAt: { type: Date, index: true },
+    channelUnlockedAt: { type: Date }
   },
   { timestamps: true }
 );

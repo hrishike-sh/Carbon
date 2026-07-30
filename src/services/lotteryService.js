@@ -1,5 +1,5 @@
 const crypto = require('crypto');
-const { EmbedBuilder } = require('discord.js');
+const { AttachmentBuilder, EmbedBuilder } = require('discord.js');
 const LotteryRound = require('../database/models/lotteryRound');
 const config = require('../config');
 const logger = require('../utils/logger');
@@ -32,6 +32,21 @@ function isMidnightIst(date) {
     istDate.getUTCSeconds() === 0 &&
     istDate.getUTCMilliseconds() === 0
   );
+}
+
+function isLotteryLockWindow(now = new Date()) {
+  const istNow = new Date(now.getTime() + IST_OFFSET_MS);
+  return istNow.getUTCHours() < 6;
+}
+
+function nextUnlockAt(now = new Date()) {
+  const istNow = new Date(now.getTime() + IST_OFFSET_MS);
+  const istUnlock = new Date(istNow);
+
+  istUnlock.setUTCHours(6, 0, 0, 0);
+  if (istUnlock <= istNow) istUnlock.setUTCDate(istUnlock.getUTCDate() + 1);
+
+  return new Date(istUnlock.getTime() - IST_OFFSET_MS);
 }
 
 function componentText(components) {
@@ -76,6 +91,7 @@ function parseDonationMessage(message) {
     guildId: message.guildId,
     channelId: message.channelId,
     userId: donor.id,
+    username: donor.username || donor.globalName || donor.id,
     amount
   };
 }
@@ -156,6 +172,9 @@ async function recordDonation(donation) {
         $inc: {
           totalPool: donation.amount,
           [`donationsByUser.${donation.userId}`]: donation.amount
+        },
+        $set: {
+          [`usernamesByUser.${donation.userId}`]: donation.username
         },
         $push: { processedMessageIds: donation.messageId }
       },
@@ -258,10 +277,15 @@ function entriesForRound(round) {
     round.donationsByUser instanceof Map
       ? [...round.donationsByUser.entries()]
       : Object.entries(round.donationsByUser || {});
+  const usernames =
+    round.usernamesByUser instanceof Map
+      ? round.usernamesByUser
+      : new Map(Object.entries(round.usernamesByUser || {}));
 
   return donations
     .map(([userId, donated]) => ({
       userId,
+      username: usernames.get(userId),
       donated: Number(donated) || 0,
       tickets: Math.floor((Number(donated) || 0) / TICKET_PRICE)
     }))
@@ -309,13 +333,124 @@ async function prepareDrawing(round) {
   );
 }
 
-async function announceDrawing(client, round) {
+async function getLotteryChannel(client, channelId = LOTTERY_CHANNEL_ID) {
   const channel =
-    client.channels.cache.get(round.channelId) ||
-    (await client.channels.fetch(round.channelId));
-  if (!channel?.isTextBased()) {
-    throw new Error(`Lottery channel ${round.channelId} is not text based`);
+    client.channels.cache.get(channelId) ||
+    (await client.channels.fetch(channelId));
+  if (!channel?.isTextBased() || !channel.permissionOverwrites) {
+    throw new Error(`Lottery channel ${channelId} is not a guild text channel`);
   }
+  return channel;
+}
+
+async function buildEntriesManifest(client, round) {
+  const entries = entriesForRound(round);
+  if (!entries.length) return 'No entries.';
+
+  const usernames = await Promise.all(
+    entries.map(async (entry) => {
+      if (entry.username) return entry.username;
+
+      const cached = client.users.cache.get(entry.userId);
+      const user =
+        cached || (await client.users.fetch(entry.userId).catch(() => null));
+      return user?.username || 'unknown-user';
+    })
+  );
+
+  return entries
+    .map((entry, index) => {
+      const username = usernames[index].replace(/[\r\n]+/g, ' ').trim();
+      return `${index + 1}. @${username} (${entry.userId}) - ${entry.tickets.toLocaleString()} entries`;
+    })
+    .join('\n');
+}
+
+async function sendEntriesManifest(client, channel, round) {
+  if (round.entriesMessageId) return round.entriesMessageId;
+
+  const manifest = await buildEntriesManifest(client, round);
+  const date = new Date((round.drawnAt || new Date()).getTime() + IST_OFFSET_MS)
+    .toISOString()
+    .slice(0, 10);
+  const attachment = new AttachmentBuilder(Buffer.from(manifest, 'utf8'), {
+    name: `lottery-entries-${date}.txt`,
+    description: 'Lottery entries sorted by ticket count'
+  });
+  const message = await channel.send({ files: [attachment] });
+
+  await LotteryRound.updateOne(
+    { _id: round._id, status: 'announcing' },
+    { $set: { entriesMessageId: message.id } }
+  );
+  round.entriesMessageId = message.id;
+  return message.id;
+}
+
+async function lockLotteryChannel(client, round, now = new Date()) {
+  if (!isLotteryLockWindow(now)) return;
+
+  const channel = await getLotteryChannel(client, round.channelId);
+  const unlockAt = nextUnlockAt(now);
+
+  await LotteryRound.updateOne(
+    { _id: round._id },
+    {
+      $set: {
+        channelLockedAt: round.channelLockedAt || now,
+        channelUnlockAt: unlockAt
+      },
+      $unset: { channelUnlockedAt: 1 }
+    }
+  );
+
+  await channel.permissionOverwrites.edit(
+    channel.guild.roles.everyone,
+    {
+      SendMessages: false,
+      AddReactions: false,
+      CreatePublicThreads: false,
+      CreatePrivateThreads: false,
+      SendMessagesInThreads: false
+    },
+    { reason: 'Lottery draw completed; locked until 6 AM IST' }
+  );
+  logger.info(`Lottery channel ${channel.id} locked until 6 AM IST`);
+}
+
+async function unlockDueLotteryChannels(client, now = new Date()) {
+  const rounds = await LotteryRound.find({
+    guildId: config.ids.guildId,
+    channelUnlockAt: { $lte: now },
+    channelLockedAt: { $exists: true },
+    channelUnlockedAt: { $exists: false }
+  }).sort({ channelUnlockAt: 1 });
+
+  for (const round of rounds) {
+    const channel = await getLotteryChannel(client, round.channelId);
+    await channel.permissionOverwrites.edit(
+      channel.guild.roles.everyone,
+      {
+        SendMessages: null,
+        AddReactions: null,
+        CreatePublicThreads: null,
+        CreatePrivateThreads: null,
+        SendMessagesInThreads: null
+      },
+      { reason: 'Lottery channel reopened at 6 AM IST' }
+    );
+
+    await LotteryRound.updateOne(
+      { _id: round._id, channelUnlockedAt: { $exists: false } },
+      { $set: { channelUnlockedAt: now } }
+    );
+    logger.info(`Lottery channel ${channel.id} reopened`);
+  }
+}
+
+async function announceDrawing(client, round) {
+  const channel = await getLotteryChannel(client, round.channelId);
+  await sendEntriesManifest(client, channel, round);
 
   const embed = new EmbedBuilder()
     .setColor(round.winnerId ? Theme.success : Theme.warning)
@@ -360,21 +495,29 @@ async function announceDrawing(client, round) {
     );
   }
 
-  const announcement = await channel.send({
-    embeds: [embed],
-    allowedMentions: {
-      users: round.winnerId ? [round.winnerId] : []
-    }
-  });
+  if (!round.announcementMessageId) {
+    const announcement = await channel.send({
+      embeds: [embed],
+      allowedMentions: {
+        users: round.winnerId ? [round.winnerId] : []
+      }
+    });
 
+    await LotteryRound.updateOne(
+      { _id: round._id, status: 'announcing' },
+      {
+        $set: {
+          announcementMessageId: announcement.id
+        }
+      }
+    );
+    round.announcementMessageId = announcement.id;
+  }
+
+  await lockLotteryChannel(client, round);
   await LotteryRound.updateOne(
     { _id: round._id, status: 'announcing' },
-    {
-      $set: {
-        status: 'completed',
-        announcementMessageId: announcement.id
-      }
-    }
+    { $set: { status: 'completed' } }
   );
 }
 
@@ -393,6 +536,8 @@ async function lotteryTick(client) {
   tickRunning = true;
 
   try {
+    await unlockDueLotteryChannels(client);
+
     // Always keep a round open, even if retrying an older announcement fails.
     await ensureActiveRound();
 
@@ -440,6 +585,15 @@ function scheduleBoundaryTick(client) {
   timeout.unref();
 }
 
+function scheduleUnlockTick(client) {
+  const delay = Math.max(1_000, nextUnlockAt().getTime() - Date.now());
+  const timeout = setTimeout(async () => {
+    await lotteryTick(client);
+    scheduleUnlockTick(client);
+  }, delay);
+  timeout.unref();
+}
+
 async function startLotteryScheduler(client) {
   if (schedulerStarted) return;
   schedulerStarted = true;
@@ -451,6 +605,7 @@ async function startLotteryScheduler(client) {
   const interval = setInterval(() => lotteryTick(client), 30_000);
   interval.unref();
   scheduleBoundaryTick(client);
+  scheduleUnlockTick(client);
   logger.info('Lottery scheduler started (00:00 IST daily)');
 }
 
@@ -493,19 +648,26 @@ module.exports = {
   LOTTERY_CHANNEL_ID,
   PRIZE_PERCENT,
   TICKET_PRICE,
+  announceDrawing,
   chanceText,
   componentText,
+  buildEntriesManifest,
   entriesForRound,
   formatPercent,
   getCurrentRoundSnapshot,
   isMidnightIst,
+  isLotteryLockWindow,
   lotteryTick,
+  lockLotteryChannel,
   migrateCurrentRound,
   nextDrawAt,
+  nextUnlockAt,
   parseDonationMessage,
   pickWinner,
   processDonationEdit,
   recordDonation,
   sendDonationReceipt,
-  startLotteryScheduler
+  sendEntriesManifest,
+  startLotteryScheduler,
+  unlockDueLotteryChannels
 };
