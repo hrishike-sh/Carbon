@@ -12,6 +12,7 @@ const IST_OFFSET_MS = (5 * 60 + 30) * 60 * 1000;
 const LOTTERY_CHANNEL_ID = config.ids.channels.lottery;
 
 let schedulerStarted = false;
+let schedulerStartPromise = null;
 let tickRunning = false;
 
 function nextDrawAt(now = new Date()) {
@@ -594,17 +595,29 @@ function scheduleUnlockTick(client) {
 
 async function startLotteryScheduler(client) {
   if (schedulerStarted) return;
-  schedulerStarted = true;
+  if (schedulerStartPromise) return schedulerStartPromise;
 
-  await LotteryRound.init();
-  await migrateCurrentRound();
-  await lotteryTick(client);
+  schedulerStartPromise = (async () => {
+    try {
+      await LotteryRound.init();
+      await migrateCurrentRound();
+      await lotteryTick(client);
 
-  const interval = setInterval(() => lotteryTick(client), 30_000);
-  interval.unref();
-  scheduleBoundaryTick(client);
-  scheduleUnlockTick(client);
-  logger.info('Lottery scheduler started (00:00 IST daily)');
+      const interval = setInterval(() => lotteryTick(client), 30_000);
+      interval.unref();
+      scheduleBoundaryTick(client);
+      scheduleUnlockTick(client);
+      schedulerStarted = true;
+      logger.info('Lottery scheduler started (00:00 IST daily)');
+    } catch (error) {
+      logger.error('Lottery scheduler failed to start', error);
+      throw error;
+    } finally {
+      schedulerStartPromise = null;
+    }
+  })();
+
+  return schedulerStartPromise;
 }
 
 async function getCurrentRoundSnapshot(userId) {

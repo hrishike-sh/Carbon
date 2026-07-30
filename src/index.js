@@ -14,6 +14,7 @@ const cooldowns = require('./command/cooldowns');
 const antiBot = require('./client/AntiBot');
 const logger = require('./utils/logger');
 const { cleanupTeamNames } = require('./utils/summerFight');
+const { startLotteryScheduler } = require('./services/lotteryService');
 const {
   warningEmbed,
   neutralEmbed,
@@ -194,6 +195,7 @@ async function main() {
   });
 
   await client.login(process.env.token);
+  await startLotteryScheduler(client);
 }
 
 main().catch((err) => {
