@@ -519,8 +519,10 @@ async function announceDrawing(client, round) {
 
   if (!round.announcementMessageId) {
     const announcement = await channel.send({
+      content: `<@&${config.roles.pingRoles.lottery}>`,
       embeds: [embed],
       allowedMentions: {
+        roles: [config.roles.pingRoles.lottery],
         users: round.winnerId ? [round.winnerId] : []
       }
     });
