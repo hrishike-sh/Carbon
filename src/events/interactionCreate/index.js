@@ -1,4 +1,4 @@
-const handlers = [require('./proleRoles')];
+const handlers = [require('./proleRoles'), require('./lottery')];
 
 module.exports = {
   name: 'interactionCreate',

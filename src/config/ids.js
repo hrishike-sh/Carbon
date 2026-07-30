@@ -18,7 +18,8 @@ module.exports = {
     modChat: '881128829131841596',
     fightAds: '824313123728261150',
     event2025: '1394023960298913933',
-    stats: '1508526019219554497'
+    stats: '1508526019219554497',
+    lottery: '1017447849979559966'
   },
 
   restrictedCurrencyChannels: [

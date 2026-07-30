@@ -1,3 +1,6 @@
+const logger = require('../utils/logger');
+const { processDonationEdit } = require('../services/lotteryService');
+
 module.exports = {
   name: 'messageUpdate',
 
@@ -8,6 +11,12 @@ module.exports = {
       } catch {
         return;
       }
+    }
+
+    try {
+      await processDonationEdit(newMessage);
+    } catch (error) {
+      logger.error('Lottery donation processing error', error);
     }
 
     if (!newMessage.author || newMessage.author.bot) return;
