@@ -186,21 +186,11 @@ async function processDonationEdit(message) {
 }
 
 async function sendDonationReceipt(message, result) {
-  const progress = result.userTotal % TICKET_PRICE;
-  const amountToNextTicket = TICKET_PRICE - progress;
-  const prizeAmount = Math.floor(result.totalPool * PRIZE_PERCENT);
   const drawTimestamp = Math.floor(result.scheduledDrawAt.getTime() / 1000);
-  const ticketsAddedText =
-    result.ticketsAdded > 0
-      ? ` (+${result.ticketsAdded.toLocaleString()} new)`
-      : '';
 
   const embed = new EmbedBuilder()
     .setColor(Theme.success)
     .setTitle('Lottery Donation Counted')
-    .setDescription(
-      `<@${result.userId}>, your server-pool donation has been added to the current lottery round.`
-    )
     .addFields(
       {
         name: 'This Donation',
@@ -208,47 +198,20 @@ async function sendDonationReceipt(message, result) {
         inline: true
       },
       {
-        name: 'Your Round Total',
-        value: `\u23e3 ${result.userTotal.toLocaleString()}`,
-        inline: true
-      },
-      {
         name: 'Your Tickets',
-        value: `${result.userTickets.toLocaleString()}${ticketsAddedText}`,
+        value: result.userTickets.toLocaleString(),
         inline: true
       },
       {
-        name: 'Next Ticket',
-        value:
-          `\u23e3 ${progress.toLocaleString()} / ${TICKET_PRICE.toLocaleString()}\n` +
-          `\u23e3 ${amountToNextTicket.toLocaleString()} more needed`,
+        name: 'Draw',
+        value: `<t:${drawTimestamp}:R>`,
         inline: true
-      },
-      {
-        name: 'Current Winning Chance',
-        value: chanceText(result.userTickets, result.totalTickets),
-        inline: true
-      },
-      {
-        name: 'Current Pool / Prize',
-        value:
-          `\u23e3 ${result.totalPool.toLocaleString()} pool\n` +
-          `\u23e3 ${prizeAmount.toLocaleString()} prize (95%)`,
-        inline: true
-      },
-      {
-        name: 'Next Draw',
-        value: `<t:${drawTimestamp}:F> (<t:${drawTimestamp}:R>)`,
-        inline: false
       }
-    )
-    .setFooter({ text: 'Every \u23e3 100,000 donated earns one ticket' })
-    .setTimestamp();
+    );
 
   return message.reply({
     embeds: [embed],
     allowedMentions: {
-      users: [result.userId],
       repliedUser: false
     }
   });
