@@ -19,9 +19,19 @@ function nextDrawAt(now = new Date()) {
   const istBoundary = new Date(istNow);
 
   istBoundary.setUTCMinutes(0, 0, 0);
-  istBoundary.setUTCHours(istNow.getUTCHours() < 12 ? 12 : 24);
+  istBoundary.setUTCHours(24);
 
   return new Date(istBoundary.getTime() - IST_OFFSET_MS);
+}
+
+function isMidnightIst(date) {
+  const istDate = new Date(date.getTime() + IST_OFFSET_MS);
+  return (
+    istDate.getUTCHours() === 0 &&
+    istDate.getUTCMinutes() === 0 &&
+    istDate.getUTCSeconds() === 0 &&
+    istDate.getUTCMilliseconds() === 0
+  );
 }
 
 function componentText(components) {
@@ -94,6 +104,32 @@ async function ensureActiveRound(now = new Date()) {
       status: 'active'
     });
   }
+}
+
+async function migrateCurrentRound(now = new Date()) {
+  const activeRound = await LotteryRound.findOne({
+    guildId: config.ids.guildId,
+    status: 'active'
+  }).sort({ startedAt: -1 });
+
+  if (activeRound) {
+    activeRound.channelId = LOTTERY_CHANNEL_ID;
+    activeRound.activeKey = LOTTERY_CHANNEL_ID;
+
+    if (!isMidnightIst(activeRound.scheduledDrawAt)) {
+      activeRound.scheduledDrawAt = nextDrawAt(now);
+    }
+
+    await activeRound.save();
+  }
+
+  await LotteryRound.updateMany(
+    {
+      guildId: config.ids.guildId,
+      status: { $in: ['drawing', 'announcing'] }
+    },
+    { $set: { channelId: LOTTERY_CHANNEL_ID } }
+  );
 }
 
 async function recordDonation(donation) {
@@ -409,12 +445,13 @@ async function startLotteryScheduler(client) {
   schedulerStarted = true;
 
   await LotteryRound.init();
+  await migrateCurrentRound();
   await lotteryTick(client);
 
   const interval = setInterval(() => lotteryTick(client), 30_000);
   interval.unref();
   scheduleBoundaryTick(client);
-  logger.info('Lottery scheduler started (00:00 and 12:00 IST)');
+  logger.info('Lottery scheduler started (00:00 IST daily)');
 }
 
 async function getCurrentRoundSnapshot(userId) {
@@ -461,7 +498,9 @@ module.exports = {
   entriesForRound,
   formatPercent,
   getCurrentRoundSnapshot,
+  isMidnightIst,
   lotteryTick,
+  migrateCurrentRound,
   nextDrawAt,
   parseDonationMessage,
   pickWinner,

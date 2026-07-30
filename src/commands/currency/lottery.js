@@ -71,7 +71,7 @@ module.exports = {
           inline: true
         }
       )
-      .setFooter({ text: 'Draws happen at 12 AM and 12 PM IST' })
+      .setFooter({ text: 'Draws happen daily at 12 AM IST' })
       .setTimestamp();
 
     const row = new ActionRowBuilder().addComponents(
