@@ -408,7 +408,6 @@ async function lockLotteryChannel(client, round, now = new Date()) {
     channel.guild.roles.everyone,
     {
       SendMessages: false,
-      AddReactions: false,
       CreatePublicThreads: false,
       CreatePrivateThreads: false,
       SendMessagesInThreads: false
@@ -432,7 +431,6 @@ async function unlockDueLotteryChannels(client, now = new Date()) {
       channel.guild.roles.everyone,
       {
         SendMessages: null,
-        AddReactions: null,
         CreatePublicThreads: null,
         CreatePrivateThreads: null,
         SendMessagesInThreads: null
