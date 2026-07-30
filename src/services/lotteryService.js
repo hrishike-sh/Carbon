@@ -50,6 +50,19 @@ function nextUnlockAt(now = new Date()) {
   return new Date(istUnlock.getTime() - IST_OFFSET_MS);
 }
 
+function istDayBounds(now = new Date()) {
+  const istNow = new Date(now.getTime() + IST_OFFSET_MS);
+  const istStart = new Date(
+    Date.UTC(
+      istNow.getUTCFullYear(),
+      istNow.getUTCMonth(),
+      istNow.getUTCDate()
+    )
+  );
+  const start = new Date(istStart.getTime() - IST_OFFSET_MS);
+  return { start, end: new Date(start.getTime() + 24 * 60 * 60 * 1000) };
+}
+
 function componentText(components) {
   const text = [];
 
@@ -542,6 +555,32 @@ async function finishRound(client, round) {
 
 async function forceLotteryDraw(client, pulledBy) {
   if (tickPromise) await tickPromise;
+
+  const unfinished = await LotteryRound.findOne({
+    guildId: config.ids.guildId,
+    status: { $in: ['drawing', 'announcing'] }
+  }).sort({ scheduledDrawAt: 1 });
+  if (unfinished) {
+    await finishRound(client, unfinished);
+    logger.info(
+      `Manual lottery draw resumed by ${pulledBy} for round ${unfinished.id}`
+    );
+    return { drawn: true, roundId: unfinished.id, resumed: true };
+  }
+
+  const { start, end } = istDayBounds();
+  const alreadyDrawn = await LotteryRound.exists({
+    guildId: config.ids.guildId,
+    status: 'completed',
+    drawnAt: { $gte: start, $lt: end }
+  });
+  if (alreadyDrawn) {
+    return {
+      drawn: false,
+      reason: 'A lottery winner has already been pulled today.'
+    };
+  }
+
   await ensureActiveRound();
 
   const round = await LotteryRound.findOneAndUpdate(
@@ -709,6 +748,7 @@ module.exports = {
   getCurrentRoundSnapshot,
   isMidnightIst,
   isLotteryLockWindow,
+  istDayBounds,
   lotteryTick,
   lockLotteryChannel,
   migrateCurrentRound,
