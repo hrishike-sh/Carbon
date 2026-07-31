@@ -505,25 +505,17 @@ async function announceDrawing(client, round) {
     .setColor(round.winnerId ? Theme.success : Theme.warning)
     .setTitle(round.winnerId ? 'Lottery Winner!' : 'Lottery Draw Ended')
     .setTimestamp(round.drawnAt || new Date())
-    .addFields(
-      {
-        name: 'Total Pool',
-        value: `\u23e3 ${round.totalPool.toLocaleString()}`,
-        inline: true
-      },
-      {
-        name: 'Total Tickets',
-        value: round.totalTickets.toLocaleString(),
-        inline: true
-      }
-    );
+    .addFields({
+      name: 'Total Tickets',
+      value: round.totalTickets.toLocaleString(),
+      inline: true
+    });
 
   if (round.winnerId) {
     const chance = (round.winnerTickets / round.totalTickets) * 100;
     embed
       .setDescription(
-        `Congratulations <@${round.winnerId}>! You won **\u23e3 ${round.prizeAmount.toLocaleString()}** ` +
-          `(95% of the pool).`
+        `Congratulations <@${round.winnerId}>! You won **\u23e3 ${round.prizeAmount.toLocaleString()}**.`
       )
       .addFields(
         {
