@@ -9,6 +9,7 @@ const DANK_MEMER_ID = '270904126974590976';
 const TICKET_PRICE = 100_000;
 const PRIZE_PERCENT = 0.95;
 const IST_OFFSET_MS = (5 * 60 + 30) * 60 * 1000;
+const REOPEN_ANNOUNCEMENT_GRACE_MS = 5 * 60 * 1000;
 const LOTTERY_CHANNEL_ID = config.ids.channels.lottery;
 
 let schedulerStarted = false;
@@ -424,7 +425,10 @@ async function lockLotteryChannel(client, round, now = new Date()) {
         channelLockedAt: round.channelLockedAt || now,
         channelUnlockAt: unlockAt
       },
-      $unset: { channelUnlockedAt: 1 }
+      $unset: {
+        channelUnlockedAt: 1,
+        reopenAnnouncementMessageId: 1
+      }
     }
   );
 
@@ -462,9 +466,32 @@ async function unlockDueLotteryChannels(client, now = new Date()) {
       { reason: 'Lottery channel reopened at 6 AM IST' }
     );
 
+    const lateness = now.getTime() - round.channelUnlockAt.getTime();
+    let reopenAnnouncementMessageId;
+    if (
+      lateness >= 0 &&
+      lateness <= REOPEN_ANNOUNCEMENT_GRACE_MS &&
+      !round.reopenAnnouncementMessageId
+    ) {
+      const announcement = await channel.send({
+        content:
+          `<@&${config.roles.pingRoles.lottery}> \ud83c\udf9f\ufe0f The lottery is now open! ` +
+          'Donate to the server pool before the next draw at 12 AM IST.',
+        allowedMentions: {
+          roles: [config.roles.pingRoles.lottery],
+          users: []
+        }
+      });
+      reopenAnnouncementMessageId = announcement.id;
+    }
+
+    const update = { channelUnlockedAt: now };
+    if (reopenAnnouncementMessageId) {
+      update.reopenAnnouncementMessageId = reopenAnnouncementMessageId;
+    }
     await LotteryRound.updateOne(
       { _id: round._id, channelUnlockedAt: { $exists: false } },
-      { $set: { channelUnlockedAt: now } }
+      { $set: update }
     );
     logger.info(`Lottery channel ${channel.id} reopened`);
   }

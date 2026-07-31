@@ -34,7 +34,8 @@ const LotteryRoundSchema = new Schema(
     announcementMessageId: { type: String },
     channelLockedAt: { type: Date },
     channelUnlockAt: { type: Date, index: true },
-    channelUnlockedAt: { type: Date }
+    channelUnlockedAt: { type: Date },
+    reopenAnnouncementMessageId: { type: String }
   },
   { timestamps: true }
 );
