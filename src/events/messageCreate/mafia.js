@@ -7,6 +7,30 @@ const { createHostedTranscript } = require('../../utils/transcripts');
 const Game = new Collection();
 const Messages = new Collection();
 
+const ROLE_DISTRIBUTIONS = new Map([
+  [5, { villagers: 4, mafias: 1, neutrals: 0 }],
+  [6, { villagers: 5, mafias: 1, neutrals: 0 }],
+  [7, { villagers: 5, mafias: 1, neutrals: 1 }],
+  [8, { villagers: 6, mafias: 2, neutrals: 0 }],
+  [9, { villagers: 6, mafias: 2, neutrals: 1 }],
+  [10, { villagers: 7, mafias: 2, neutrals: 1 }],
+  [11, { villagers: 7, mafias: 2, neutrals: 2 }],
+  [12, { villagers: 8, mafias: 3, neutrals: 1 }],
+  [13, { villagers: 8, mafias: 3, neutrals: 2 }],
+  [14, { villagers: 9, mafias: 3, neutrals: 2 }],
+  [15, { villagers: 9, mafias: 3, neutrals: 3 }],
+  [16, { villagers: 10, mafias: 4, neutrals: 2 }],
+  [17, { villagers: 10, mafias: 4, neutrals: 3 }],
+  [18, { villagers: 11, mafias: 4, neutrals: 3 }],
+  [19, { villagers: 11, mafias: 4, neutrals: 4 }],
+  [20, { villagers: 12, mafias: 5, neutrals: 3 }],
+  [21, { villagers: 12, mafias: 5, neutrals: 4 }],
+  [22, { villagers: 13, mafias: 5, neutrals: 4 }],
+  [23, { villagers: 13, mafias: 5, neutrals: 5 }],
+  [24, { villagers: 14, mafias: 6, neutrals: 4 }],
+  [25, { villagers: 14, mafias: 6, neutrals: 5 }]
+]);
+
 module.exports = {
   name: 'mafia',
 
@@ -135,6 +159,17 @@ async function getMafiaLogChannel(client, existingChannel, channelId = config.id
     await client.channels.fetch(channelId).catch(() => null);
 
   return channel?.isTextBased() ? channel : null;
+}
+
+async function sendRoleDistribution(channel, playerCount) {
+  const distribution = ROLE_DISTRIBUTIONS.get(playerCount);
+  const description = distribution
+    ? `**${playerCount} players** - ${distribution.villagers} Villagers | ${distribution.mafias} Mafias | ${distribution.neutrals} Neutrals`
+    : `**${playerCount} players** - No role distribution is configured for this player count.`;
+
+  await channel.send({
+    embeds: [successEmbed({ title: 'Mafia game starting', description })]
+  });
 }
 
 async function handleExistingGame(message, client, { mafiaBotIds, logChannelId, logChannel }) {
@@ -346,6 +381,8 @@ async function startNewGame(message, logChannel) {
 
   Game.set(message.channel.id, { night: 1, players });
 
+  await sendRoleDistribution(message.channel, players.size);
+
   const lc = message.client.channels.cache.get(config.ids.channels.mafiaLog);
   if (lc?.isTextBased()) {
     await lc.send({
@@ -374,6 +411,8 @@ async function startNewGameFromNight(message, nightInfo, logChannel) {
 
   Game.set(message.channel.id, { night: nightInfo.night, players });
   Messages.set(message.channel.id, []);
+
+  await sendRoleDistribution(message.channel, players.size);
 
   const lc = logChannel || message.client.channels.cache.get(config.ids.channels.mafiaLog);
   if (lc?.isTextBased()) {
