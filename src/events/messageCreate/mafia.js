@@ -50,8 +50,11 @@ module.exports = {
       }
     }
 
-    if (!Game.has(message.channel.id) && message.mentions.users.size > 0) {
-      await startNewGame(message, logChannel);
+    if (!Game.has(message.channel.id)) {
+      const playerIds = getOpeningPlayerIds(message);
+      if (ROLE_DISTRIBUTIONS.has(playerIds.length)) {
+        await startNewGame(message, playerIds, logChannel);
+      }
     }
 
     if (Game.has(message.channel.id)) {
@@ -108,6 +111,15 @@ function getMessageText(message) {
 
 function extractUserIds(text) {
   return [...String(text || '').matchAll(/<@!?(\d{17,20})>/g)].map((match) => match[1]);
+}
+
+function getOpeningPlayerIds(message) {
+  return [
+    ...new Set([
+      ...message.mentions.users.keys(),
+      ...extractUserIds(getMessageText(message))
+    ])
+  ];
 }
 
 function getSection(text, startPattern, endPattern) {
@@ -372,11 +384,10 @@ async function handleGameOver(message, client, currentGame, logChannelId, logCha
   }
 }
 
-async function startNewGame(message, logChannel) {
+async function startNewGame(message, playerIds, logChannel) {
   const players = new Collection();
-  for (const [, user] of message.mentions.users) {
-    console.log(`Adding ${user.tag} to the game`);
-    players.set(user.id, { id: user.id, alive: true, messages: new Collection() });
+  for (const userId of playerIds) {
+    players.set(userId, { id: userId, alive: true, messages: new Collection() });
   }
 
   Game.set(message.channel.id, { night: 1, players });
@@ -389,7 +400,7 @@ async function startNewGame(message, logChannel) {
       embeds: [
         successEmbed({
           title: 'New game',
-          description: message.mentions.users.map((u) => `<@${u.id}>`).join('\n')
+          description: playerIds.map((id) => `<@${id}>`).join('\n')
         })
       ]
     });
@@ -411,8 +422,6 @@ async function startNewGameFromNight(message, nightInfo, logChannel) {
 
   Game.set(message.channel.id, { night: nightInfo.night, players });
   Messages.set(message.channel.id, []);
-
-  await sendRoleDistribution(message.channel, players.size);
 
   const lc = logChannel || message.client.channels.cache.get(config.ids.channels.mafiaLog);
   if (lc?.isTextBased()) {
