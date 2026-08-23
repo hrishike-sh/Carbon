@@ -40,11 +40,12 @@ function registerEvent(client, filePath) {
       return;
     }
 
-    if (event.once) {
-      client.once(event.name, (...args) => event.execute(...args, client));
-    } else {
-      client.on(event.name, (...args) => event.execute(...args, client));
-    }
+    const execute = (...args) => Promise.resolve()
+      .then(() => event.execute(...args, client))
+      .catch((err) => logger.error(`Event "${event.name}" failed (${filePath})`, err));
+
+    if (event.once) client.once(event.name, execute);
+    else client.on(event.name, execute);
   } catch (err) {
     logger.error(`Failed to load event ${filePath}`, err);
   }

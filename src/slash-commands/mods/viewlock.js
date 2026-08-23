@@ -5,8 +5,9 @@ const {
   TextChannel,
   PermissionFlagsBits
 } = require('discord.js');
-const Database = require('../../database/timed');
+const Database = require('../../database/models/timed');
 const ms = require('ms');
+const config = require('../../config');
 const { Theme } = require('../../utils/embeds');
 module.exports = {
   data: new SlashCommandBuilder()
@@ -36,7 +37,7 @@ module.exports = {
    */
   async execute(interaction) {
     const client = interaction.client;
-    if (!interaction.member.roles.cache.has('1016728636365209631')) {
+    if (!interaction.member.roles.cache.has(config.roles.staff.cman)) {
       return interaction.reply({
         flags: 64,
         content: "You can't use this command."
@@ -45,14 +46,16 @@ module.exports = {
 
     const user = interaction.options.getUser('user');
     const channel = interaction.options.getChannel('channel');
-    const time = require('ms')(interaction.options.getString('time'));
+    const time = ms(interaction.options.getString('time'));
+    if (!Number.isFinite(time) || time < 30_000) {
+      return interaction.reply({
+        flags: 64,
+        content: 'Please provide a valid duration of at least 30 seconds, such as `30m` or `2h`.'
+      });
+    }
     const reason = `Action requested by @${interaction.user.username} (${interaction.user.id})`;
 
-    await channel.permissionOverwrites.edit(user.id, {
-      ViewChannel: false
-    });
-
-    await new Database({
+    const timedAction = await new Database({
       when: new Date().getTime() + time,
       what: 'viewlock_timeout',
       data: {
@@ -61,6 +64,15 @@ module.exports = {
         reason
       }
     }).save();
+
+    try {
+      await channel.permissionOverwrites.edit(user.id, {
+        ViewChannel: false
+      });
+    } catch (error) {
+      await timedAction.deleteOne().catch(() => {});
+      throw error;
+    }
 
     const embed = new EmbedBuilder()
       .setTitle('Viewlock')

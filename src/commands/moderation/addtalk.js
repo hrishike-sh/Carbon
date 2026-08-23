@@ -34,7 +34,7 @@ module.exports = {
     const target = await message.channel.messages.fetch(
       message.reference.messageId
     );
-    if (target?.mentions?.members <= 1) {
+    if (!target?.mentions?.members?.size) {
       return message.reply(`No mentions found in the message!`);
     }
 
@@ -79,23 +79,30 @@ module.exports = {
         embed.setColor(Theme.success);
         embed.setDescription('Adding roles...');
 
-        for await (const [_, member] of mentions) {
-          member.roles.add(talkRole);
-        }
+        await button.update({ embeds: [embed], components: [] });
 
-        message.channel.send(
-          `Added <@&${talkRole}> to ${mentions.size} members!`
+        const results = await Promise.allSettled(
+          [...mentions.values()].map((member) => member.roles.add(talkRole))
+        );
+        const successCount = results.filter((result) => result.status === 'fulfilled').length;
+
+        await message.channel.send(
+          `Added <@&${talkRole}> to ${successCount}/${mentions.size} members!`
         );
       } else {
         embed.setColor(Theme.error);
         embed.setDescription(
           `~~${embed.data.description}~~\n\n**Action cancelled**`
         );
-        confirmationMessage.edit({
+        await button.update({
           embeds: [embed],
-          components: null
+          components: []
         });
       }
+    });
+
+    collector.on('end', () => {
+      confirmationMessage.edit({ components: [] }).catch(() => {});
     });
   }
 };

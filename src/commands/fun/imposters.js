@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const builders_1 = require("@discordjs/builders");
 const discord_js_1 = require("discord.js");
+const config = require('../../config');
 const { Theme } = require('../../utils/embeds');
 module.exports = {
     name: 'imposters',

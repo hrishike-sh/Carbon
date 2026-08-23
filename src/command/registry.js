@@ -21,6 +21,7 @@ function loadPrefixCommands(state) {
   }
 
   const categories = fs.readdirSync(commandsPath);
+  let loaded = 0;
 
   for (const category of categories) {
     const categoryPath = path.join(commandsPath, category);
@@ -30,20 +31,41 @@ function loadPrefixCommands(state) {
     for (const file of files) {
       try {
         const moduleExports = require(path.join(categoryPath, file));
+        if (typeof moduleExports.name !== 'string' ||
+            !moduleExports.name.trim() ||
+            typeof moduleExports.execute !== 'function' ||
+            (moduleExports.aliases &&
+              (!Array.isArray(moduleExports.aliases) ||
+                !moduleExports.aliases.every((alias) => typeof alias === 'string' && alias)))) {
+          logger.warn(`Prefix command ${category}/${file} has an invalid export`);
+          continue;
+        }
+
         const command = new PrefixCommand(moduleExports);
         command.category = category;
 
+        if (state.commands.has(command.name)) {
+          logger.warn(`Duplicate prefix command name "${command.name}" in ${category}/${file}`);
+          continue;
+        }
         state.commands.set(command.name, command);
         for (const alias of command.aliases) {
+          const existing = state.commands.get(alias);
+          if (existing === command) continue;
+          if (existing) {
+            logger.warn(`Duplicate prefix command alias "${alias}" in ${category}/${file}`);
+            continue;
+          }
           state.commands.set(alias, command);
         }
+        loaded++;
       } catch (err) {
         logger.error(`Failed to load prefix command ${category}/${file}`, err);
       }
     }
   }
 
-  logger.info(`Loaded ${state.commands.size} prefix commands`);
+  logger.info(`Loaded ${loaded} prefix commands (${state.commands.size} names and aliases)`);
 }
 
 function loadSlashCommands(state) {

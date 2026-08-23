@@ -4,6 +4,20 @@
 
 A multipurpose bot having many cool features.
 
+## Setup
+
+Requires Node.js 20.19 or newer and MongoDB.
+
+```sh
+npm ci
+copy .EXAMPLE.env .env
+npm run start
+```
+
+Fill in the required Discord token and MongoDB connection values in `.env` before starting. Optional API keys enable the commands that use those external services.
+
+Use `npm run deploy` to register guild slash commands, and `npm run check` to validate all JavaScript source files.
+
 # Main Contributors
 
 `-` Hrishikesh

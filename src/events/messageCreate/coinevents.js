@@ -3,6 +3,8 @@ const config = require('../../config');
 const { CoinService } = require('../../database/services/coinService');
 const { sleep } = require('../../utils/helpers');
 const { warningEmbed, successEmbed, errorEmbed } = require('../../utils/embeds');
+const { generateMathQuestion, isCorrectMathAnswer } = require('../../utils/mathGame');
+const logger = require('../../utils/logger');
 
 const channelCooldowns = [];
 
@@ -133,39 +135,63 @@ async function runHeist(message) {
 }
 
 async function runMathEvent(message) {
-  const num1 = Math.floor(Math.random() * 500);
-  const num2 = Math.floor(Math.random() * 500);
+  const { expression, answer } = generateMathQuestion();
   const tokenEmoji = config.ids.emojis.token;
+  const duration = 30_000;
 
   const m = await message.channel.send({
     embeds: [
       warningEmbed({
         title: 'Math Test',
-        description: `What's **${num1}+${num2}**?`,
-        footer: 'First to answer gets a random amount of coins!'
+        description: `What's **${expression}**?`,
+        footer: 'First to answer within 30 seconds wins 101–200 coins!'
       })
     ]
   });
 
   const col = message.channel.createMessageCollector({
-    filter: (msg) => msg.content == num1 + num2
+    filter: (msg) => !msg.author.bot && isCorrectMathAnswer(msg.content, answer),
+    time: duration
   });
 
-  col.on('collect', async (msg) => {
-    const coins = Math.ceil(Math.random() * 100) + 100;
-    await Coin.findOneAndUpdate(
-      { userId: msg.author.id },
-      { $inc: { coins } },
-      { upsert: true }
-    );
-    col.stop();
+  // `once` plus stopping immediately prevents near-simultaneous answers from
+  // receiving more than one payout while the database update is in flight.
+  col.once('collect', (msg) => {
+    col.stop('answered');
 
-    const reply = await message.channel.send(
-      `${msg.author.toString()} was the first to answer! They got <:token:${tokenEmoji}> **${coins}** coins!`
-    );
-    await sleep(2500);
-    m.delete().catch(() => {});
-    reply.delete().catch(() => {});
+    (async () => {
+      const coins = Math.floor(Math.random() * 100) + 101;
+      await CoinService.addCoins(msg.author.id, coins);
+
+      const reply = await message.channel.send(
+        `${msg.author.toString()} was the first to answer! They got <:token:${tokenEmoji}> **${coins}** coins!`
+      );
+
+      setTimeout(() => {
+        m.delete().catch(() => {});
+        reply.delete().catch(() => {});
+      }, 5000);
+    })().catch((err) => {
+      logger.error('Failed to award math event winner', err);
+      message.channel.send({
+        embeds: [errorEmbed({ description: 'The answer was correct, but I could not award the coins.' })]
+      }).catch(() => {});
+    });
+  });
+
+  col.once('end', (_, reason) => {
+    if (reason !== 'time') return;
+
+    m.edit({
+      embeds: [
+        errorEmbed({
+          title: 'Math Test — Time\'s Up!',
+          description: `The answer to **${expression}** was **${answer}**.`
+        })
+      ]
+    }).catch(() => {});
+
+    setTimeout(() => m.delete().catch(() => {}), 5000);
   });
 }
 

@@ -1,4 +1,4 @@
-const { Permissions } = require('discord.js');
+const { PermissionFlagsBits } = require('discord.js');
 const config = require('../../config');
 
 module.exports = {
@@ -7,7 +7,7 @@ module.exports = {
   async execute(message, args) {
     if (
       !message.member.roles.cache.has(config.roles.staff.mod) &&
-      !message.member.permissions.has(Permissions.FLAGS.ADMINISTRATOR)
+      !message.member.permissions.has(PermissionFlagsBits.Administrator)
     ) {
       return message.reply('You do not have permission to use this command.');
     }

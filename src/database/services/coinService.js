@@ -1,5 +1,12 @@
 const Coin = require('../models/coins');
-const logger = require('../../utils/logger');
+
+function normaliseAmount(amount) {
+  const value = Math.floor(Number(amount));
+  if (!Number.isSafeInteger(value) || value <= 0) {
+    throw new RangeError('Coin amount must be a positive safe integer');
+  }
+  return value;
+}
 
 class CoinService {
   async getUser(userId) {
@@ -17,16 +24,17 @@ class CoinService {
   }
 
   async addCoins(userId, amount) {
+    amount = normaliseAmount(amount);
     const doc = await Coin.findOneAndUpdate(
       { userId },
-      { $inc: { coins: Math.floor(amount) } },
+      { $inc: { coins: amount } },
       { upsert: true, new: true }
     );
     return doc;
   }
 
   async removeCoins(userId, amount) {
-    amount = Math.floor(amount);
+    amount = normaliseAmount(amount);
     const doc = await Coin.findOneAndUpdate(
       { userId, coins: { $gte: amount } },
       { $inc: { coins: -amount } },
@@ -68,4 +76,8 @@ class InsufficientFundsError extends Error {
   }
 }
 
-module.exports = { CoinService: new CoinService(), InsufficientFundsError };
+module.exports = {
+  CoinService: new CoinService(),
+  InsufficientFundsError,
+  normaliseAmount
+};

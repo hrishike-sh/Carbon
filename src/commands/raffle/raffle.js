@@ -73,7 +73,7 @@ module.exports = {
         message.mentions.members?.first() ||
         message.guild.members.cache.get(args[0]);
 
-      if (!target.user) return message.reply('Please mention a valid user!');
+      if (!target) return message.reply('Please mention a valid user!');
 
       const amount = Number(args[1]);
 
@@ -81,12 +81,8 @@ module.exports = {
         return message.reply('Please specify an amount!');
       }
 
-      if (isNaN(amount)) {
-        return message.reply('Please specify a valid number!');
-      }
-
-      if (amount <= 0) {
-        return message.reply('Please specify a number greater than 0!');
+      if (!Number.isSafeInteger(amount) || amount <= 0) {
+        return message.reply('Please specify a positive whole number!');
       }
 
       let p;
@@ -146,7 +142,7 @@ module.exports = {
         message.mentions.members?.first() ||
         message.guild.members.cache.get(args[0]);
 
-      if (!target.user) return message.reply('Please mention a valid user!');
+      if (!target) return message.reply('Please mention a valid user!');
 
       const amount = Number(args[1]);
 
@@ -154,12 +150,8 @@ module.exports = {
         return message.reply('Please specify an amount!');
       }
 
-      if (isNaN(amount)) {
-        return message.reply('Please specify a valid number!');
-      }
-
-      if (amount <= 0) {
-        return message.reply('Please specify a number greater than 0!');
+      if (!Number.isSafeInteger(amount) || amount <= 0) {
+        return message.reply('Please specify a positive whole number!');
       }
 
       let p;
@@ -167,7 +159,8 @@ module.exports = {
       try {
         p = await Database.findOneAndUpdate(
           {
-            userId: target.user.id
+            userId: target.user.id,
+            amount: { $gte: amount }
           },
           {
             $inc: {
@@ -175,7 +168,6 @@ module.exports = {
             }
           },
           {
-            upsert: true,
             new: true
           }
         );
@@ -183,6 +175,10 @@ module.exports = {
         console.log(error);
         message.reply(`Tell hrish about this error:\n\n${error.message}`);
         return;
+      }
+
+      if (!p) {
+        return message.reply(`${target.toString()} does not have that many entries.`);
       }
 
       message.reply({
@@ -248,7 +244,7 @@ module.exports = {
         (await Database.findOne({ userId: message.author.id })) || null;
 
       if (!dbUser) {
-        await message.reply("You haven't joined this raffle!");
+        return message.reply("You haven't joined this raffle!");
       }
 
       const allEntries = await Database.aggregate([
@@ -274,7 +270,7 @@ module.exports = {
         })
         .setColor(Theme.success)
         .setDescription(
-          `**Your entries:** ${dbUser.amount}\n**Total entries:** ${allEntries[0].totalAmount}`
+          `**Your entries:** ${dbUser.amount}\n**Total entries:** ${allEntries[0]?.totalAmount || 0}`
         )
         .setTimestamp();
       await message.reply({

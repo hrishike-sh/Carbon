@@ -63,7 +63,7 @@ const EVENT_NAMES = {
 };
 
 module.exports = {
-  name: '25_events',
+  name: 'tick',
 
   async execute(client) {
     const channel = client.channels.cache.get(config.ids.channels.event2025);

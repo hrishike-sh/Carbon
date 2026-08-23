@@ -4,7 +4,5 @@ node_modules
 logs/
 settings.json
 .vscode
-package.json
-package-lock.json
 Fighthub nicknames.json
 Fighthub names.json

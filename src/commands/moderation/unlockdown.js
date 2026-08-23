@@ -1,4 +1,4 @@
-const { Permissions } = require('discord.js');
+const { PermissionFlagsBits } = require('discord.js');
 const { errorEmbed, successEmbed } = require('../../utils/embeds');
 
 module.exports = {
@@ -10,7 +10,7 @@ module.exports = {
    * @param {Client} client
    */
   async execute(message, args, client) {
-    if (!message.member.permissions.has(Permissions.FLAGS.ADMINISTRATOR)) {
+    if (!message.member.permissions.has(PermissionFlagsBits.Administrator)) {
       return message.reply({
         embeds: [
           errorEmbed({ description: 'You must be an administrator to use this command.' })
@@ -24,7 +24,7 @@ module.exports = {
       const channel = message.guild.channels.cache.get(channelId);
       if (channel) {
         await channel.permissionOverwrites.edit(message.guild.roles.everyone, {
-          SEND_MESSAGES: true
+          SendMessages: true
         });
         await channel.send({
           embeds: [

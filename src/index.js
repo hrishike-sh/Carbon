@@ -53,7 +53,9 @@ async function main() {
     if (client.shard) {
       client.shard.broadcastEval((c) => {
         c.guilds.cache.forEach(async (guild) => {
-          if (guild.id !== '856111404322258956' && guild.memberCount < 10) {
+          if (guild.id !== config.guildId &&
+              guild.id !== '856111404322258956' &&
+              guild.memberCount < 10) {
             await guild.leave().catch(() => {});
             console.log(`Left: ${guild.name}`);
           }
@@ -74,11 +76,11 @@ async function main() {
 
   // Prefix command handler
   client.on(Events.MessageCreate, async (message) => {
-    client.state.counts.messagesRead++;
-    client.state.counts.activeUsers.add(message.author.id);
-
     if (message.author.bot) return;
     if (!message.guild) return;
+
+    client.state.counts.messagesRead++;
+    client.state.counts.activeUsers.add(message.author.id);
 
     const content = message.content;
     if (!content.toLowerCase().startsWith(config.prefix)) return;

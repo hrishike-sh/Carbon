@@ -32,7 +32,7 @@ module.exports = {
       if (!dbEntry) return message.reply(`User ID: ${userId} is not AFK!`);
 
       await DATABASE.deleteOne({ userId });
-      client.db.afks = client.db.afks.filter((a) => a !== userId);
+      client.state.afks = client.state.afks.filter((a) => a !== userId);
       return message.reply(`<@${userId}> should no longer be AFK.`);
     } else if (action.toLowerCase() == 'ignore') {
       if (!message.member.permissions.has('Administrator')) {
@@ -53,10 +53,10 @@ module.exports = {
       const channel = message.channel;
       if (server.afkIgnore.includes(channel.id)) {
         server.afkIgnore = server.afkIgnore.filter((a) => a !== channel.id);
-        client.db.afkIgnore = client.db.afkIgnore.filter(
+        client.state.afkIgnore = client.state.afkIgnore.filter(
           (a) => a !== channel.id
         );
-        server.save();
+        await server.save();
         return message.reply(`${channel.toString()} is no longer AFK Ignored.`);
       } else {
         if (server.afkIgnore) {
@@ -64,8 +64,8 @@ module.exports = {
         } else {
           server.afkIgnore = [channel.id];
         }
-        client.db.afkIgnore.push(channel.id);
-        server.save();
+        client.state.afkIgnore.push(channel.id);
+        await server.save();
 
         return message.reply(`${channel.toString()} is now AFK Ignored!`);
       }

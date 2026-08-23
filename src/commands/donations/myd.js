@@ -30,7 +30,9 @@ module.exports = {
     const PrimaryDonations = await PRIMARY.findOne(filter);
     const GrinderDonations = await GRINDER.findOne(filter);
     const TicketDonations = await TICKETS.findOne({ userId: target.id });
-    if (!PrimaryDonations?.messages && !GrinderDonations?.amount) {
+    if (!PrimaryDonations?.messages &&
+        !GrinderDonations?.amount &&
+        !TicketDonations?.amount) {
       return message.reply(`${target.toString()} has no donations!`);
     }
 
