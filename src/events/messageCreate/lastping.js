@@ -43,7 +43,8 @@ module.exports = {
   async load() {
     await Database.updateMany(
       { 'pings.25': { $exists: true } },
-      [{ $set: { pings: { $slice: ['$pings', -MAX_PINGS] } } }]
+      [{ $set: { pings: { $slice: ['$pings', -MAX_PINGS] } } }],
+      { updatePipeline: true }
     );
   }
 };
