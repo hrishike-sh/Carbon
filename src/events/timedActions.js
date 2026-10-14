@@ -10,24 +10,32 @@ async function processViewlockTimeout(client, action) {
     return;
   }
 
-  const channel = await client.channels.fetch(action.data.channelId).catch((error) => {
+  const channel = await client.channels.fetch(action.data.channelId, { force: true }).catch((error) => {
     if (error.code === RESTJSONErrorCodes.UnknownChannel) return null;
     throw error;
   });
 
-  if (!channel?.permissionOverwrites) {
+  // Expiry only clears an existing restriction; it must not create a new overwrite.
+  if (!channel?.permissionOverwrites?.cache.has(action.data.userId)) {
     await action.deleteOne();
     return;
   }
 
-  await channel.permissionOverwrites.edit(
-    action.data.userId,
-    { ViewChannel: null },
-    {
-      type: OverwriteType.Member,
-      reason: action.data.reason || 'Temporary viewlock expired'
+  try {
+    await channel.permissionOverwrites.edit(
+      action.data.userId,
+      { ViewChannel: null },
+      {
+        type: OverwriteType.Member,
+        reason: action.data.reason || 'Temporary viewlock expired'
+      }
+    );
+  } catch (error) {
+    // The overwrite or channel can disappear between fetching and editing it.
+    if (![RESTJSONErrorCodes.UnknownPermissionOverwrite, RESTJSONErrorCodes.UnknownChannel].includes(error.code)) {
+      throw error;
     }
-  );
+  }
   await action.deleteOne();
 }
 

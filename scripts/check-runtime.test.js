@@ -76,10 +76,35 @@ test('failed permission updates are retried without losing the action', async (t
   const pending = action();
   const errors = stubPoll(t, [pending]);
   await timedActions.execute({ channels: { async fetch() {
-    return { permissionOverwrites: { async edit() { throw new Error('Network failure'); } } };
+    return { permissionOverwrites: {
+      cache: new Map([[pending.data.userId, {}]]),
+      async edit() { throw new Error('Network failure'); }
+    } };
   } } });
   assert.equal(pending.deleted, false);
   assert.equal(errors.mock.callCount(), 1);
+});
+
+test('missing overwrites and deletion races retire stale actions', async (t) => {
+  const missing = action();
+  const raced = action();
+  raced.data.channelId = '824294231447044199';
+  const errors = stubPoll(t, [missing, raced]);
+  let edits = 0;
+  await timedActions.execute({ channels: { async fetch(id, options) {
+    assert.equal(options.force, true);
+    return { permissionOverwrites: {
+      cache: new Map(id === raced.data.channelId ? [[raced.data.userId, {}]] : []),
+      async edit() {
+        edits++;
+        throw Object.assign(new Error('Unknown Overwrite'), { code: 10009 });
+      }
+    } };
+  } } });
+  assert.equal(edits, 1);
+  assert.equal(missing.deleted, true);
+  assert.equal(raced.deleted, true);
+  assert.equal(errors.mock.callCount(), 0);
 });
 
 test('message cleanup handles deletion races and reports other edit failures', async (t) => {
