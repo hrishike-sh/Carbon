@@ -37,7 +37,7 @@ module.exports = {
    */
   async execute(interaction) {
     const client = interaction.client;
-    if (!interaction.member.roles.cache.has(config.roles.staff.cman)) {
+    if (!interaction.member?.roles?.cache?.has(config.roles.staff.cman)) {
       return interaction.reply({
         flags: 64,
         content: "You can't use this command."
@@ -46,14 +46,19 @@ module.exports = {
 
     const user = interaction.options.getUser('user');
     const channel = interaction.options.getChannel('channel');
-    const time = ms(interaction.options.getString('time'));
-    if (!Number.isFinite(time) || time < 30_000) {
+    if (!channel?.permissionOverwrites || channel.guild?.id !== interaction.guildId) {
+      return interaction.reply({ flags: 64, content: 'Choose a server channel that supports permission overwrites.' });
+    }
+    const duration = interaction.options.getString('time');
+    const time = duration && duration.length <= 100 ? ms(duration) : undefined;
+    if (!Number.isFinite(time) || time < 30_000 || !Number.isSafeInteger(Date.now() + time)) {
       return interaction.reply({
         flags: 64,
         content: 'Please provide a valid duration of at least 30 seconds, such as `30m` or `2h`.'
       });
     }
     const reason = `Action requested by @${interaction.user.username} (${interaction.user.id})`;
+    await interaction.deferReply();
 
     const timedAction = await new Database({
       when: new Date().getTime() + time,
@@ -83,6 +88,6 @@ module.exports = {
       )
       .setColor(Theme.success);
 
-    await interaction.reply({ embeds: [embed] });
+    await interaction.editReply({ embeds: [embed] });
   }
 };

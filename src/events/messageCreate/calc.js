@@ -17,7 +17,7 @@ module.exports = {
         max: 1,
         time: 10000,
         errors: ['time'],
-        filter: (_, user) => !user.bot
+        filter: (reaction, user) => reaction.emoji.name === '➕' && !user.bot
       });
 
       const reaction = collected.first();

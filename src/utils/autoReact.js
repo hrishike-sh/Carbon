@@ -1,6 +1,8 @@
 const AutoReact = require('../database/models/autoreact');
 
 let indexesReady = false;
+let indexLoad = null;
+const pendingLoads = new WeakMap();
 
 function getKeywordFromArg(arg) {
   const raw = String(arg || '').trim();
@@ -56,7 +58,16 @@ function displayReaction(reaction) {
 
 async function ensureAutoReactIndexes() {
   if (indexesReady) return;
+  if (indexLoad) return indexLoad;
+  indexLoad = updateAutoReactIndexes();
+  try {
+    await indexLoad;
+  } finally {
+    indexLoad = null;
+  }
+}
 
+async function updateAutoReactIndexes() {
   const indexes = await AutoReact.collection.indexes().catch(() => []);
   const legacyIndex = indexes.find((index) => (
     index.unique &&
@@ -120,7 +131,7 @@ async function importApplicationEmoji(reaction, client) {
 
 async function loadAutoReacts(client, guildId) {
   await ensureAutoReactIndexes();
-  const entries = await AutoReact.find({ guildId }).sort({ keyword: 1, reaction: 1 });
+  const entries = await AutoReact.find({ guildId }).sort({ keyword: 1, reaction: 1 }).lean();
   if (!client.state.autoReacts) client.state.autoReacts = new Map();
   client.state.autoReacts.set(guildId, entries.map((entry) => ({
     keyword: entry.keyword,
@@ -132,7 +143,15 @@ async function loadAutoReacts(client, guildId) {
 
 async function getAutoReacts(client, guildId) {
   if (!client.state.autoReacts?.has(guildId)) {
-    return loadAutoReacts(client, guildId);
+    let loads = pendingLoads.get(client);
+    if (!loads) {
+      loads = new Map();
+      pendingLoads.set(client, loads);
+    }
+    if (!loads.has(guildId)) {
+      loads.set(guildId, loadAutoReacts(client, guildId).finally(() => loads.delete(guildId)));
+    }
+    return loads.get(guildId);
   }
 
   return client.state.autoReacts.get(guildId);

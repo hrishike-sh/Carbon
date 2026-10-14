@@ -1,11 +1,21 @@
 const { Events } = require('discord.js');
 const TimedAction = require('../database/models/timed');
 const logger = require('../utils/logger');
+const { startInterval } = require('../utils/asyncEvents');
 
 const POLL_INTERVAL = 30_000;
 
 async function processViewlockTimeout(client, action) {
-  const channel = await client.channels.fetch(action.data?.channelId).catch(() => null);
+  if (!action.data?.channelId || !action.data?.userId) {
+    await action.deleteOne();
+    return;
+  }
+
+  const channel = await client.channels.fetch(action.data.channelId).catch((error) => {
+    // Only a deleted channel is final. Permission/network errors must retry.
+    if (error.code === 10003) return null;
+    throw error;
+  });
 
   if (!channel?.permissionOverwrites || !action.data?.userId) {
     await action.deleteOne();
@@ -15,7 +25,7 @@ async function processViewlockTimeout(client, action) {
   await channel.permissionOverwrites.edit(
     action.data.userId,
     { ViewChannel: null },
-    { reason: action.data.reason || 'Temporary viewlock expired' }
+    { type: 1, reason: action.data.reason || 'Temporary viewlock expired' }
   );
   await action.deleteOne();
 }
@@ -40,13 +50,11 @@ module.exports = {
   once: true,
 
   async execute(client) {
-    await processDueActions(client);
-
-    const interval = setInterval(() => {
-      processDueActions(client).catch((error) => {
-        logger.error('Failed to poll timed actions', error);
-      });
-    }, POLL_INTERVAL);
-    interval.unref();
+    try {
+      await processDueActions(client);
+    } catch (error) {
+      logger.error('Failed to poll timed actions', error);
+    }
+    startInterval(client, () => processDueActions(client), POLL_INTERVAL, 'Timed action poll');
   }
 };

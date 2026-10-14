@@ -7,30 +7,24 @@ class DonationService {
       throw new Error('Please provide options (main, grinder) to get donations');
     }
 
-    const result = [];
+    const requests = [];
 
     if (main) {
-      let doc = await MainDono.findOne({ userID: userId });
-      if (!doc) {
-        doc = new MainDono({ userID: userId, messages: 0 });
-        await doc.save();
-      }
-      result.push({ type: 'main', amount: doc.messages });
+      requests.push(MainDono.findOne({ userID: userId }).select({ messages: 1 }).lean()
+        .then((doc) => ({ type: 'main', amount: doc?.messages ?? 0 })));
     }
 
     if (grinder) {
-      let doc = await GrinderDono.findOne({ userID: userId });
-      if (!doc) {
-        doc = new GrinderDono({ userID: userId, amount: 0 });
-        await doc.save();
-      }
-      result.push({ type: 'grinder', amount: doc.amount });
+      requests.push(GrinderDono.findOne({ userID: userId }).select({ amount: 1 }).lean()
+        .then((doc) => ({ type: 'grinder', amount: doc?.amount ?? 0 })));
     }
 
-    return result;
+    return Promise.all(requests);
   }
 
   async addDonation(userId, type, amount) {
+    if (!['main', 'grinder'].includes(type)) throw new RangeError('Unknown donation type');
+    if (!Number.isSafeInteger(amount) || amount === 0) throw new RangeError('Donation amount must be a non-zero safe integer');
     const Model = type === 'main' ? MainDono : GrinderDono;
 
     await Model.findOneAndUpdate(

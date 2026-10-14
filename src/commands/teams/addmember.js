@@ -42,8 +42,7 @@ module.exports = {
     if (team.users.includes(member.id))
       return message.reply({ embeds: [errorEmbed({ description: 'That member is already in this team.' })] });
 
-    team.users.push(member.id);
-    team.save();
+    await TeamDB.updateOne({ _id: team._id }, { $addToSet: { users: member.id } });
     return message.reply({
       embeds: [
         successEmbed({

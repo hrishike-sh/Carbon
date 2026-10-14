@@ -4,19 +4,25 @@ const config = require('../../config');
 class SettingsService {
   constructor() {
     this._cache = null;
+    this._loading = null;
   }
 
   async load() {
-    this._cache = await Settings.findOne({ guildID: config.guildId });
-    if (!this._cache) {
-      this._cache = new Settings({ guildID: config.guildId });
-      await this._cache.save();
+    if (this._loading) return this._loading;
+    this._loading = Settings.findOneAndUpdate(
+      { guildID: config.guildId },
+      { $setOnInsert: { guildID: config.guildId } },
+      { upsert: true, new: true }
+    ).exec();
+    try {
+      this._cache = await this._loading;
+      return this._cache;
+    } finally {
+      this._loading = null;
     }
-    return this._cache;
   }
 
   async reload() {
-    this._cache = null;
     return this.load();
   }
 

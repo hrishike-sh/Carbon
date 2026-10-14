@@ -1,3 +1,4 @@
+module.exports = { disabled: true };
 // const { Message, Client, Colors, EmbedBuilder } = require('discord.js');
 // const halloween = require('../../database/models/halloween');
 

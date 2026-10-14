@@ -4,10 +4,11 @@ const {
   ButtonStyle
 } = require('discord.js');
 const config = require('../../config');
-const { CoinService } = require('../../database/services/coinService');
+const { CoinService, InsufficientFundsError } = require('../../database/services/coinService');
 const cooldowns = require('../../command/cooldowns');
 const antiBot = require('../../client/AntiBot');
 const { successEmbed, errorEmbed } = require('../../utils/embeds');
+const logger = require('../../utils/logger');
 
 const map = [
   'Hrish gave you {coins} coins for your left kidney!',
@@ -57,7 +58,7 @@ module.exports = {
     const randomAmount = Math.ceil(Math.random() * 75) + 50;
     await CoinService.addCoins(userId, randomAmount);
 
-    message.reply({
+    await message.reply({
       embeds: [
         successEmbed({
           author: {
@@ -75,6 +76,7 @@ module.exports = {
 
     if (Math.random() < 0.05) {
       const balance = await CoinService.getBalance(userId);
+      if (balance <= 0 || !Number.isSafeInteger(balance * 2)) return;
 
       const row = new ActionRowBuilder().addComponents([
         new ButtonBuilder()
@@ -106,46 +108,47 @@ module.exports = {
         time: 5000
       });
 
-      coll.on('collect', async (button) => {
+      coll.once('collect', (button) => {
         coll.stop();
-
-        if (button.customId === 'yes') {
-          const currentBalance = await CoinService.getBalance(userId);
-          const won = Math.random() < 0.5;
-
-          if (won) {
-            await CoinService.addCoins(userId, currentBalance);
-            message.channel.send({
-              content: message.author.toString(),
-              embeds: [
-                successEmbed({
-                  title: 'Coinflip!',
-                  description: `You won **${currentBalance.toLocaleString()}** coins!`,
-                  footer: 'This is why you should gamble!'
-                })
-              ]
-            });
-          } else {
-            try {
-              await CoinService.removeCoins(userId, currentBalance);
-            } catch {}
-            message.channel.send({
-              content: message.author.toString(),
-              embeds: [
-                errorEmbed({
-                  title: 'Coinflip!',
-                  description: `You lost **${currentBalance.toLocaleString()}** coins.`,
-                  footer: "This is why you shouldn't gamble."
-                })
-              ]
-            });
+        (async () => {
+          if (button.customId !== 'yes') return button.deferUpdate();
+          if (!cooldowns.lock(userId)) {
+            return button.reply({ content: "You're already running a command!", flags: 64 });
           }
-        }
+          try {
+            await button.deferUpdate();
+            // Stake the amount displayed in the invitation before deciding
+            // the result. A concurrent debit must not yield a free gamble.
+            try {
+              await CoinService.removeCoins(userId, balance);
+            } catch (err) {
+              if (err instanceof InsufficientFundsError) {
+                await button.followUp({ content: 'You no longer have enough coins for this bet.', flags: 64 });
+                return;
+              }
+              throw err;
+            }
+            const won = Math.random() < 0.5;
+            if (won) await CoinService.addCoins(userId, balance * 2);
+            await message.channel.send({
+              content: message.author.toString(),
+              embeds: [
+                (won ? successEmbed : errorEmbed)({
+                  title: 'Coinflip!',
+                  description: `You ${won ? 'won' : 'lost'} **${balance.toLocaleString()}** coins!`,
+                  footer: won ? 'This is why you should gamble!' : "This is why you shouldn't gamble."
+                })
+              ]
+            });
+          } finally {
+            cooldowns.unlock(userId);
+          }
+        })().catch((err) => logger.error('Beg coinflip failed', err));
       });
 
-      coll.on('end', () => {
+      coll.once('end', () => {
         row.components.forEach((c) => c.setDisabled(true));
-        msg.edit({ components: [row] });
+        msg.edit({ components: [row] }).catch((err) => logger.error('Failed to close beg coinflip', err));
       });
     }
   }

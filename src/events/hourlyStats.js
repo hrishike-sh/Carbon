@@ -1,6 +1,7 @@
 const { EmbedBuilder } = require('discord.js');
 const config = require('../config');
 const { Theme } = require('../utils/embeds');
+const { startInterval } = require('../utils/asyncEvents');
 
 function snapshot(client) {
   return {
@@ -22,7 +23,7 @@ module.exports = {
 
     let last = snapshot(client);
 
-    setInterval(() => {
+    startInterval(client, async () => {
       try {
         const now = snapshot(client);
         const activeUsers = client.state.counts.activeUsers.size;
@@ -90,13 +91,14 @@ module.exports = {
           )
           .setFooter({ text: `All-time messages: ${now.messagesRead.toLocaleString()} | All-time commands: ${(now.commandsRan + now.slashCommandsRan).toLocaleString()}` });
 
-        channel.send({ embeds: [embed] }).catch(() => {});
-
+        // Rotate counters before awaiting Discord so new activity remains in
+        // the next window, even when delivery is slow.
         last = now;
         client.state.counts.activeUsers.clear();
+        await channel.send({ embeds: [embed] });
       } catch (err) {
         console.error('Hourly stats error:', err);
       }
-    }, 1000 * 60 * 60);
+    }, 1000 * 60 * 60, 'Hourly stats');
   }
 };

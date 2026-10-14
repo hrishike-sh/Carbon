@@ -1,3 +1,5 @@
+module.exports = { disabled: true };
+
 // const { Message, Client, EmbedBuilder, Colors } = require('discord.js');
 // let cd = [];
 // const Database = require('../../database/models/coins');

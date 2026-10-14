@@ -29,6 +29,7 @@ function createClient() {
     afkIgnore: [],
     highlights: null,
     lastHighlightPing: null,
+    timers: new Set(),
     counts: {
       commandsRan: 0,
       messagesRead: 0,

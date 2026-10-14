@@ -98,7 +98,7 @@ async function fetchExport(attachment) {
     throw new RangeError('The export is too large.');
   }
 
-  const response = await fetch(attachment.url);
+  const response = await fetch(attachment.url, { signal: AbortSignal.timeout(30_000) });
   if (!response.ok) throw new Error(`Carl export download failed (${response.status}).`);
 
   const text = await response.text();

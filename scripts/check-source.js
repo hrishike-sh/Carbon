@@ -2,7 +2,10 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { spawnSync } = require('node:child_process');
 
-const sourceRoot = path.join(__dirname, '..', 'src');
+const projectRoot = path.join(__dirname, '..');
+const sourceRoots = ['src', 'scripts', 'tests']
+  .map((directory) => path.join(projectRoot, directory))
+  .filter((directory) => fs.existsSync(directory));
 
 function findJavaScriptFiles(directory) {
   return fs.readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
@@ -14,14 +17,14 @@ function findJavaScriptFiles(directory) {
 
 let failed = false;
 
-for (const filePath of findJavaScriptFiles(sourceRoot)) {
+for (const filePath of sourceRoots.flatMap(findJavaScriptFiles)) {
   const result = spawnSync(process.execPath, ['--check', filePath], {
     encoding: 'utf8'
   });
 
   if (result.status !== 0) {
     failed = true;
-    process.stderr.write(result.stderr || result.stdout);
+    process.stderr.write(`${filePath}\n${result.error?.message || result.stderr || result.stdout || 'Syntax check failed'}\n`);
   }
 }
 

@@ -6,12 +6,12 @@ function isExplicitUserMention(content, userId) {
   return mentionRegex.test(content);
 }
 
-function keywordMatches(message, keyword) {
+function keywordMatches(message, keyword, lowerContent) {
   if (/^\d{17,20}$/.test(keyword)) {
     return isExplicitUserMention(message.content, keyword);
   }
 
-  return message.content.toLowerCase().includes(keyword);
+  return lowerContent.includes(keyword);
 }
 
 function pickRandom(items, count) {
@@ -38,9 +38,10 @@ module.exports = {
 
     const matchedReactions = new Set();
     const selfMatches = new Map();
+    const lowerContent = message.content.toLowerCase();
 
     for (const entry of autoReacts) {
-      if (!keywordMatches(message, entry.keyword)) continue;
+      if (!keywordMatches(message, entry.keyword, lowerContent)) continue;
 
       if (/^\d{17,20}$/.test(entry.keyword) && entry.createdBy === entry.keyword) {
         const reactions = selfMatches.get(entry.keyword) || [];

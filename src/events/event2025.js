@@ -9,40 +9,39 @@ const config = require('../config');
 const { sleep, shuffle } = require('../utils/helpers');
 const { Theme } = require('../utils/embeds');
 const Team = require('../database/models/teams');
+const { onAsync, startInterval } = require('../utils/asyncEvents');
 
 const awardPoint = async (userId) => {
   try {
-    const team = await Team.findOne({ users: userId });
-    if (team) {
-      team.points += 1;
-      await team.save();
-      return team;
-    }
-    return null;
+    return await Team.findOneAndUpdate(
+      { users: userId }, { $inc: { points: 1 } }, { new: true }
+    );
   } catch (error) {
     console.error('Error awarding point:', error);
     return null;
   }
 };
 
-const sendWinnerEmbed = async (channel, winner, eventName, team) => {
+const sendWinnerEmbed = async (channel, winner, eventName, team, showTeam = true) => {
   const embed = new EmbedBuilder()
     .setTitle('🎉 Event Winner! 🎉')
     .setDescription(`${winner} won the **${eventName}** event!`)
     .setColor(Theme.warning)
     .setThumbnail(winner.displayAvatarURL())
-    .addFields(
+    .setTimestamp();
+  if (showTeam) {
+    embed.addFields(
       { name: 'Team', value: team ? `**${team.name}**` : 'No Team', inline: true },
       { name: 'Team Points', value: team ? `**${team.points}**` : 'N/A', inline: true }
-    )
-    .setTimestamp();
+    );
+  }
 
   await channel.send({ embeds: [embed] });
 
   if (team && Math.random() < 0.05) {
     team.lastLb = new Date(Date.now() - 12 * 60 * 60 * 1000);
     await team.save();
-    channel.send(`🎉 ${winner} got lucky! Their lootbox cooldown has been reset!`);
+    await channel.send(`🎉 ${winner} got lucky! Their lootbox cooldown has been reset!`);
   }
 };
 
@@ -62,14 +61,39 @@ const EVENT_NAMES = {
   guess_the_number: 'Guess the Number'
 };
 
+async function runEvent(client, channel, index, { awardTeamPoints = false } = {}) {
+  const eventIndex = index === undefined ? Math.floor(Math.random() * EVENTS.length) : index;
+  if (!Number.isInteger(eventIndex) || eventIndex < 0 || eventIndex >= EVENTS.length) {
+    throw new RangeError('Event index must be an integer from 0 to 7');
+  }
+  const eventKey = EVENTS[eventIndex];
+  const eventName = EVENT_NAMES[eventKey];
+  const award = awardTeamPoints ? awardPoint : async () => null;
+  const announce = awardTeamPoints ? sendWinnerEmbed :
+    (target, winner, name) => sendWinnerEmbed(target, winner, name, null, false);
+
+  if (eventKey === 'crab_race') return runCrabRace(client, channel, eventName, award, announce);
+  const runners = {
+    find_the_ball: runFindTheBall,
+    emoji_memory: runEmojiMemory,
+    basketball: runBasketball,
+    higher_or_lower: runHigherOrLower,
+    unscramble: runUnscramble,
+    rock_paper_scissors: runRPS,
+    guess_the_number: runGuessTheNumber
+  };
+  return runners[eventKey](channel, null, new Set(), eventName, award, announce);
+}
+
 module.exports = {
   name: 'tick',
+  runEvent,
 
   async execute(client) {
     const channel = client.channels.cache.get(config.ids.channels.event2025);
     if (!channel) return;
 
-    setInterval(async () => {
+    startInterval(client, async () => {
       try {
         await channel.send({
           content: `<@&${config.roles.pingRoles.event2025}> an event is spawning!`,
@@ -77,32 +101,11 @@ module.exports = {
         });
         await sleep(3000);
 
-        const eventKey = EVENTS[Math.floor(Math.random() * EVENTS.length)];
-        const eventName = EVENT_NAMES[eventKey];
-        let winner = null;
-        const playedUsers = new Set();
-
-        if (eventKey === 'find_the_ball') {
-          await runFindTheBall(channel, winner, playedUsers, eventName, awardPoint, sendWinnerEmbed);
-        } else if (eventKey === 'emoji_memory') {
-          await runEmojiMemory(channel, winner, playedUsers, eventName, awardPoint, sendWinnerEmbed);
-        } else if (eventKey === 'basketball') {
-          await runBasketball(channel, winner, playedUsers, eventName, awardPoint, sendWinnerEmbed);
-        } else if (eventKey === 'crab_race') {
-          await runCrabRace(client, channel, eventName, awardPoint, sendWinnerEmbed);
-        } else if (eventKey === 'higher_or_lower') {
-          await runHigherOrLower(channel, winner, playedUsers, eventName, awardPoint, sendWinnerEmbed);
-        } else if (eventKey === 'unscramble') {
-          await runUnscramble(channel, winner, playedUsers, eventName, awardPoint, sendWinnerEmbed);
-        } else if (eventKey === 'rock_paper_scissors') {
-          await runRPS(channel, winner, playedUsers, eventName, awardPoint, sendWinnerEmbed);
-        } else if (eventKey === 'guess_the_number') {
-          await runGuessTheNumber(channel, winner, playedUsers, eventName, awardPoint, sendWinnerEmbed);
-        }
+        await runEvent(client, channel, undefined, { awardTeamPoints: true });
       } catch (err) {
         console.error('Event error:', err);
       }
-    }, 1000 * 60 * 10);
+    }, 1000 * 60 * 10, 'Seasonal event');
   }
 };
 
@@ -127,21 +130,21 @@ async function runFindTheBall(channel, winner, playedUsers, eventName, awardPoin
     components: [row]
   });
 
-  const collector = mainMessage.createMessageComponentCollector({ idle: 30_000 });
+  const collector = mainMessage.createMessageComponentCollector({ idle: 30_000, time: 60_000 });
 
-  collector.on('collect', async (button) => {
+  onAsync(collector, 'collect', async (button) => {
     if (winner) return button.reply({ content: 'Someone has already won.', flags: 64 });
     if (playedUsers.has(button.user.id)) return button.reply({ content: 'Already played.', flags: 64 });
     playedUsers.add(button.user.id);
 
     if (button.customId === 'ball') {
       winner = button.user;
+      collector.stop();
+      await button.reply({ content: 'You found the ball!', flags: 64 }).catch(() => {});
       const team = await awardPoint(winner.id);
       await sendWinnerEmbed(channel, winner, eventName, team);
-      button.reply({ content: 'You found the ball!', flags: 64 });
-      collector.stop();
     } else {
-      button.reply({ content: 'Incorrect!', flags: 64 });
+      await button.reply({ content: 'Incorrect!', flags: 64 });
     }
   });
 }
@@ -176,10 +179,10 @@ async function runEmojiMemory(channel, winner, playedUsers, eventName, awardPoin
 
   await mainMessage.edit({ content: '', embeds: [mainEmbed], components: row });
 
-  const collector = mainMessage.createMessageComponentCollector({ idle: 30_000 });
+  const collector = mainMessage.createMessageComponentCollector({ idle: 30_000, time: 60_000 });
   const gameData = new Collection();
 
-  collector.on('collect', async (button) => {
+  onAsync(collector, 'collect', async (button) => {
     if (winner) return button.reply({ content: 'Someone has already won.', flags: 64 });
     if (!gameData.has(button.user.id)) {
       if (playedUsers.has(button.user.id)) return button.reply({ content: 'Already played.', flags: 64 });
@@ -194,17 +197,17 @@ async function runEmojiMemory(channel, winner, playedUsers, eventName, awardPoin
       if (user.correct === toShow.length) {
         user.won = true;
         winner = button.user;
+        collector.stop();
+        await button.reply({ flags: 64, embeds: [{ description: 'You won!', color: Theme.success }] }).catch(() => {});
         const team = await awardPoint(winner.id);
         await sendWinnerEmbed(channel, winner, eventName, team);
-        button.reply({ flags: 64, embeds: [{ description: 'You won!', color: Theme.success }] });
-        collector.stop();
       } else {
-        button.reply({ flags: 64, embeds: [{ description: 'Correct! Next...', color: Theme.success }] });
+        await button.reply({ flags: 64, embeds: [{ description: 'Correct! Next...', color: Theme.success }] });
       }
     } else {
       user.failed = true;
       playedUsers.add(button.user.id);
-      button.reply({ flags: 64, embeds: [{ description: 'Incorrect! You lost!', color: Theme.error }] });
+      await button.reply({ flags: 64, embeds: [{ description: 'Incorrect! You lost!', color: Theme.error }] });
     }
   });
 }
@@ -222,22 +225,23 @@ async function runBasketball(channel, winner, playedUsers, eventName, awardPoint
     new ButtonBuilder().setEmoji('🏀').setCustomId('2').setStyle(ButtonStyle.Secondary)
   ]);
 
+  arr[1] = shuffle(arr[1]);
   const mainMessage = await channel.send({
-    content: arr[0].join('') + '\n' + shuffle(arr[1]).join('') + '\n' + arr[2].join(''),
+    content: arr[0].join('') + '\n' + arr[1].join('') + '\n' + arr[2].join(''),
     components: [row]
   });
 
-  const intervalId = setInterval(async () => {
+  const intervalId = startInterval(channel.client, async () => {
     const shuffledArr = shuffle(arr[1]);
     await mainMessage.edit({
       content: arr[0].join('') + '\n' + shuffledArr.join('') + '\n' + arr[2].join('')
     });
     arr[1] = shuffledArr;
-  }, 1000);
+  }, 1000, 'Basketball animation');
 
-  const collector = mainMessage.createMessageComponentCollector({ idle: 30_000 });
+  const collector = mainMessage.createMessageComponentCollector({ idle: 30_000, time: 60_000 });
 
-  collector.on('collect', async (button) => {
+  onAsync(collector, 'collect', async (button) => {
     if (winner) return button.reply({ content: 'Someone has already won.', flags: 64 });
     if (playedUsers.has(button.user.id)) return button.reply({ content: 'Already played.', flags: 64 });
     playedUsers.add(button.user.id);
@@ -245,17 +249,18 @@ async function runBasketball(channel, winner, playedUsers, eventName, awardPoint
     const ind = parseInt(button.customId);
     if (arr[1][ind] !== '<:lebron_james:1383477589670236301>') {
       winner = button.user;
+      collector.stop();
+      await button.reply({ flags: 64, embeds: [{ description: 'You won!', color: Theme.success }] }).catch(() => {});
       const team = await awardPoint(winner.id);
       await sendWinnerEmbed(channel, winner, eventName, team);
-      collector.stop();
-      button.reply({ flags: 64, embeds: [{ description: 'You won!', color: Theme.success }] });
     } else {
-      button.reply({ flags: 64, embeds: [{ description: 'You hit LeBron! Lost!', color: Theme.error }] });
+      await button.reply({ flags: 64, embeds: [{ description: 'You hit LeBron! Lost!', color: Theme.error }] });
     }
   });
 
   collector.on('end', () => {
     clearInterval(intervalId);
+    channel.client.state.timers.delete(intervalId);
     mainMessage.edit({
       components: [new ActionRowBuilder().addComponents(
         row.components.map((c) => ButtonBuilder.from(c).setDisabled(true))
@@ -279,18 +284,18 @@ async function runCrabRace(client, channel, eventName, awardPoint, sendWinnerEmb
 
   const joinCollector = joinMessage.createMessageComponentCollector({ time: 30_000 });
 
-  joinCollector.on('collect', async (button) => {
+  onAsync(joinCollector, 'collect', async (button) => {
     if (gamedata.joined.includes(button.user.id)) {
       return button.reply({ content: 'Already joined.', flags: 64 });
     }
     gamedata.joined.push(button.user.id);
     if (gamedata.joined.length === 10) joinCollector.stop();
-    button.reply({ content: 'Joined!', flags: 64 });
+    await button.reply({ content: 'Joined!', flags: 64 });
   });
 
-  joinCollector.on('end', async () => {
+  onAsync(joinCollector, 'end', async () => {
     joinEmbed.setDescription('Game starting!');
-    joinMessage.edit({ embeds: [joinEmbed], components: [] });
+    await joinMessage.edit({ embeds: [joinEmbed], components: [] });
 
     if (gamedata.joined.length < 2) {
       return channel.send('Need at least 2 players.');
@@ -315,7 +320,7 @@ async function runCrabRace(client, channel, eventName, awardPoint, sendWinnerEmb
       for (const track of gamedata.tracks) {
         const rand = Math.ceil(Math.random() * 10);
         let blocks = rand < 6 ? 2 : rand < 10 ? 3 : 5;
-        if (track.track.length < blocks) {
+        if (track.track.length <= blocks && !eventWinner) {
           blocks = track.track.length;
           end = true;
           eventWinner = track;
@@ -340,8 +345,8 @@ async function runCrabRace(client, channel, eventName, awardPoint, sendWinnerEmb
 
 async function runHigherOrLower(channel, winner, playedUsers, eventName, awardPoint, sendWinnerEmbed) {
   const randomNumber = Math.floor(Math.random() * 100) + 1;
-  let reference = Math.floor(Math.random() * 100) + 1;
-  while (reference === randomNumber) reference = Math.floor(Math.random() * 100) + 1;
+  let reference = Math.floor(Math.random() * 99) + 1;
+  if (reference >= randomNumber) reference++;
 
   const embed = new EmbedBuilder()
     .setTitle('Higher or Lower')
@@ -354,9 +359,9 @@ async function runHigherOrLower(channel, winner, playedUsers, eventName, awardPo
   ]);
 
   const mainMessage = await channel.send({ embeds: [embed], components: [row] });
-  const collector = mainMessage.createMessageComponentCollector({ idle: 30_000 });
+  const collector = mainMessage.createMessageComponentCollector({ idle: 30_000, time: 60_000 });
 
-  collector.on('collect', async (button) => {
+  onAsync(collector, 'collect', async (button) => {
     if (winner) return button.reply({ content: 'Someone already won.', flags: 64 });
     if (playedUsers.has(button.user.id)) return button.reply({ content: 'Already played.', flags: 64 });
     playedUsers.add(button.user.id);
@@ -364,21 +369,28 @@ async function runHigherOrLower(channel, winner, playedUsers, eventName, awardPo
     const isHigh = button.customId === 'hol_high';
     if ((isHigh && randomNumber > reference) || (!isHigh && randomNumber < reference)) {
       winner = button.user;
+      collector.stop();
+      await button.reply({ content: `Correct! The number was ${randomNumber}`, flags: 64 }).catch(() => {});
       const team = await awardPoint(winner.id);
       await sendWinnerEmbed(channel, winner, eventName, team);
-      button.reply({ content: `Correct! The number was ${randomNumber}`, flags: 64 });
-      collector.stop();
     } else {
-      button.reply({ content: `Wrong! The number was ${randomNumber}`, flags: 64 });
+      await button.reply({ content: `Wrong! The number was ${randomNumber}`, flags: 64 });
     }
   });
 }
 
 async function runUnscramble(channel, winner, playedUsers, eventName, awardPoint, sendWinnerEmbed) {
-  const req = await fetch('https://random-word-api.vercel.app/api?words=1&length=4');
-  const word = (await req.json())[0];
-  let scrambled = word.split('').sort(() => Math.random() - 0.5).join('');
-  while (scrambled === word) scrambled = word.split('').sort(() => Math.random() - 0.5).join('');
+  const req = await fetch('https://random-word-api.vercel.app/api?words=1&length=4', {
+    signal: AbortSignal.timeout(15_000)
+  });
+  if (!req.ok) throw new Error(`Word API failed (${req.status})`);
+  const word = (await req.json())?.[0]?.toLowerCase();
+  if (!/^[a-z]{4}$/.test(word || '') || new Set(word).size < 2) {
+    throw new Error('Word API returned an invalid word');
+  }
+  let scrambled = shuffle(word.split('')).join('');
+  // A rotation guarantees a different spelling without an unbounded RNG loop.
+  if (scrambled === word) scrambled = scrambled.slice(1) + scrambled[0];
 
   const embed = new EmbedBuilder()
     .setTitle('Guess the word!')
@@ -389,18 +401,18 @@ async function runUnscramble(channel, winner, playedUsers, eventName, awardPoint
 
   const collector = channel.createMessageCollector({ time: 30_000 });
 
-  collector.on('collect', async (msg) => {
+  onAsync(collector, 'collect', async (msg) => {
     if (winner || playedUsers.has(msg.author.id) || msg.author.bot) return;
 
     if (msg.content.toLowerCase() === word) {
       winner = msg.author;
+      collector.stop();
       const team = await awardPoint(winner.id);
       await sendWinnerEmbed(channel, winner, eventName, team);
-      msg.reply({ embeds: [{ title: 'Correct! Word: ' + word, color: Theme.success }] });
-      collector.stop();
+      await msg.reply({ embeds: [{ title: 'Correct! Word: ' + word, color: Theme.success }] });
     } else {
-      msg.react('❌');
       playedUsers.add(msg.author.id);
+      await msg.react('❌');
     }
   });
 }
@@ -415,9 +427,9 @@ async function runRPS(channel, winner, playedUsers, eventName, awardPoint, sendW
   ]);
 
   const mainMessage = await channel.send({ embeds: [embed], components: [row] });
-  const collector = mainMessage.createMessageComponentCollector({ idle: 30_000 });
+  const collector = mainMessage.createMessageComponentCollector({ idle: 30_000, time: 60_000 });
 
-  collector.on('collect', async (button) => {
+  onAsync(collector, 'collect', async (button) => {
     if (winner) return button.reply({ content: 'Someone already won.', flags: 64 });
     if (playedUsers.has(button.user.id)) return button.reply({ content: 'Already played.', flags: 64 });
     playedUsers.add(button.user.id);
@@ -432,14 +444,16 @@ async function runRPS(channel, winner, playedUsers, eventName, awardPoint, sendW
     } else if (wins[userChoice] === botChoice) {
       result = 'You win!';
       winner = button.user;
-      const team = await awardPoint(winner.id);
-      await sendWinnerEmbed(channel, winner, eventName, team);
       collector.stop();
     } else {
       result = 'You lose!';
     }
 
-    button.reply({ content: `You chose ${userChoice}, bot chose ${botChoice}. ${result}`, flags: 64 });
+    await button.reply({ content: `You chose ${userChoice}, bot chose ${botChoice}. ${result}`, flags: 64 }).catch(() => {});
+    if (winner?.id === button.user.id) {
+      const team = await awardPoint(winner.id);
+      await sendWinnerEmbed(channel, winner, eventName, team);
+    }
   });
 }
 
@@ -455,24 +469,25 @@ async function runGuessTheNumber(channel, winner, playedUsers, eventName, awardP
 
   const collector = channel.createMessageCollector({ filter: (m) => !m.author.bot, time: 30_000 });
 
-  collector.on('collect', async (msg) => {
+  onAsync(collector, 'collect', async (msg) => {
     if (winner || playedUsers.has(msg.author.id)) return;
-    const guess = parseInt(msg.content);
-    if (isNaN(guess)) return;
+    if (!/^\d+$/.test(msg.content.trim())) return;
+    const guess = Number(msg.content.trim());
+    if (guess < 1 || guess > 10) return;
 
     if (guess === randomNumber) {
       winner = msg.author;
+      collector.stop();
       const team = await awardPoint(winner.id);
       await sendWinnerEmbed(channel, winner, eventName, team);
-      collector.stop();
-      msg.reply({ content: `🎉 Correct! It was ${randomNumber}.` });
+      await msg.reply({ content: `🎉 Correct! It was ${randomNumber}.` });
     } else {
       playedUsers.add(msg.author.id);
-      msg.react('❌');
+      await msg.react('❌');
     }
   });
 
   collector.on('end', (_, reason) => {
-    if (reason === 'time') channel.send(`Game over! Number was ${randomNumber}.`);
+    if (reason === 'time') channel.send(`Game over! Number was ${randomNumber}.`).catch(() => {});
   });
 }

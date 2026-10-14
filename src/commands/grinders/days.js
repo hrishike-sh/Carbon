@@ -1,43 +1,29 @@
-const { Message, Client } = require('discord.js');
 const Database = require('../../database/models/grinder_dono');
 const config = require('../../config');
+
 module.exports = {
   name: 'grinderday',
   aliases: ['gday'],
-  /**
-   * @param {Message} message Discord Message
-   * @param {String[]} args Command Arguments
-   * @param {Client} client Discord Client
-   */
   async execute(message, args, client) {
     if (!message.member.roles.cache.has(config.roles.staff.cman)) return;
-    const user =
-      message.mentions.users.first() ||
-      message.guild.members.cache.get(args[0])?.user;
+    const user = message.mentions.users.first() ||
+      message.guild.members.cache.get(args[0])?.user ||
+      (/^\d{17,20}$/.test(args[0] || '') ? await client.users.fetch(args[0]).catch(() => null) : null);
     if (!user) return message.reply('Please mention a user!');
-
-    let db = await Database.findOne({
-      userID: user.id
-    });
-    if (!db || !db.dynamic.grinder) {
-      return message.reply(
-        'This user is not a grinder. Add them to the grinders list first!'
-      );
+    const days = Number(args[1]);
+    const delta = days * 86400000;
+    if (!Number.isSafeInteger(days) || days === 0 || !Number.isSafeInteger(delta)) {
+      return message.reply('Please specify a nonzero whole number of days!');
     }
-
-    args.shift();
-    const days = args[0];
-    if (!days) return message.reply('Please specify the amount of days!');
-
-    db.dynamic.expires += Number(days) * 86400000;
-    db.save();
-
-    message.reply(
-      `Added **${days}** days to **${
-        user.tag
-      }**\n\nTheir grinder now expires <t:${(db.dynamic.expires / 1000).toFixed(
-        0
-      )}:R>`
+    const db = await Database.findOneAndUpdate(
+      {
+        userID: user.id, guildID: message.guild.id, 'dynamic.grinder': true,
+        'dynamic.expires': { $gte: Math.max(0, -delta), $lte: Math.min(Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER - delta) }
+      },
+      { $inc: { 'dynamic.expires': delta } },
+      { new: true }
     );
+    if (!db) return message.reply('This user is not a grinder, or that change would produce an invalid expiry time.');
+    return message.reply(`Added **${days}** days to **${user.tag}**\n\nTheir grinder now expires <t:${Math.floor(db.dynamic.expires / 1000)}:R>`);
   }
 };

@@ -13,6 +13,7 @@ module.exports = {
   async execute(message, args, client) {
     if (!message.member.roles.cache.has(config.roles.staff.cman)) return;
     const list = await Database.find({
+      guildID: message.guild.id,
       'dynamic.grinder': true,
       'dynamic.expires': {
         $lt: new Date().getTime()
@@ -21,10 +22,12 @@ module.exports = {
 
     for (let i = 0; i < list.length; i++) {
       const db = list[i];
-      const user = await client.users.fetch(db.userID);
+      const user = await client.users.fetch(db.userID).catch(() => null);
       if (!user) continue;
 
-      await client.channels.cache.get('839800222677729310').send({
+      const channel = client.channels.cache.get('839800222677729310');
+      if (!channel?.isSendable()) return message.reply('The grinder reminder channel is unavailable.');
+      await channel.send({
         embeds: [
           {
             title: 'Grinder Reminder ⚠',

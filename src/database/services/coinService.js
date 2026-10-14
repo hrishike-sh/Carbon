@@ -9,28 +9,38 @@ function normaliseAmount(amount) {
 }
 
 class CoinService {
+  constructor() {
+    this._pendingUpserts = new Map();
+  }
+
   async getUser(userId) {
-    let doc = await Coin.findOne({ userId });
-    if (!doc) {
-      doc = new Coin({ userId, coins: 0 });
-      await doc.save();
-    }
-    return doc;
+    return this._upsert(userId, { $setOnInsert: { coins: 0 } });
   }
 
   async getBalance(userId) {
-    const doc = await this.getUser(userId);
-    return doc.coins;
+    const doc = await Coin.findOne({ userId }).select({ coins: 1 }).lean();
+    return doc?.coins ?? 0;
   }
 
   async addCoins(userId, amount) {
     amount = normaliseAmount(amount);
-    const doc = await Coin.findOneAndUpdate(
-      { userId },
-      { $inc: { coins: amount } },
-      { upsert: true, new: true }
-    );
-    return doc;
+    return this._upsert(userId, { $inc: { coins: amount } });
+  }
+
+  async _upsert(userId, update) {
+    // Serialize first-use upserts in this bot process. A unique index would
+    // additionally protect multiple processes, but existing duplicates need
+    // an explicit data migration before that index can safely be introduced.
+    const previous = this._pendingUpserts.get(userId) || Promise.resolve();
+    const pending = previous.catch(() => {}).then(() => Coin.findOneAndUpdate(
+      { userId }, update, { upsert: true, new: true }
+    ));
+    this._pendingUpserts.set(userId, pending);
+    try {
+      return await pending;
+    } finally {
+      if (this._pendingUpserts.get(userId) === pending) this._pendingUpserts.delete(userId);
+    }
   }
 
   async removeCoins(userId, amount) {
@@ -52,14 +62,29 @@ class CoinService {
   }
 
   async transfer(senderId, recipientId, amount) {
+    amount = normaliseAmount(amount);
+    if (senderId === recipientId) throw new RangeError('Cannot transfer coins to yourself');
     await this.removeCoins(senderId, amount);
-    await this.addCoins(recipientId, amount);
+    try {
+      await this.addCoins(recipientId, amount);
+    } catch (err) {
+      // Compensate a failed credit without requiring a replica set. This is
+      // best effort: crash-safe multi-account transfers require transactions.
+      try {
+        await this.addCoins(senderId, amount);
+      } catch (refundError) {
+        throw new AggregateError([err, refundError], 'Transfer failed and the sender could not be refunded');
+      }
+      throw err;
+    }
   }
 
   async getLeaderboard(limit = 10) {
     return Coin.find({ coins: { $gt: 0 } })
       .sort({ coins: -1 })
-      .limit(limit);
+      .limit(limit)
+      .select({ userId: 1, coins: 1 })
+      .lean();
   }
 
   async wipeUser(userId) {

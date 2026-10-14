@@ -1,7 +1,7 @@
 const { Schema, model } = require('mongoose');
 
 const AFKSchema = new Schema({
-  userId: { type: String },
+  userId: { type: String, index: true },
   reason: { type: String },
   time: { type: Number },
   dms: { type: [Object] }

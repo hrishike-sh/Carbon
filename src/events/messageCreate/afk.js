@@ -1,10 +1,9 @@
-const config = require('../../config');
-const { sleep } = require('../../utils/helpers');
-const { parseTime } = require('../../utils/formatters');
+const DATABASE = require('../../database/models/afk');
 const { successEmbed, infoEmbed } = require('../../utils/embeds');
+const MAX_STORED_PINGS = 100;
 
 const formatDiscordTime = (time, format) => {
-  return `<t:${(time / 1000).toFixed(0)}:${format || 'R'}>`;
+  return `<t:${Math.floor(time / 1000)}:${format || 'R'}>`;
 };
 
 module.exports = {
@@ -16,59 +15,69 @@ module.exports = {
     if (client.state.afkIgnore.includes(message.channel.id)) return;
 
     if (afks.includes(message.author.id)) {
-      const DATABASE = require('../../database/models/afk');
-      const dUser = await DATABASE.findOne({ userId: message.author.id });
-
-      const reply = await message.reply({
-        embeds: [
-          successEmbed({
-            title: `Welcome back ${message.author.tag}`,
-            description: `You were pinged ${dUser?.dms?.length || 0} times, check your DMs!`
-          })
-        ]
-      });
-      setTimeout(() => reply.delete().catch(() => {}), 2500);
-
+      // Claim the AFK record atomically: two messages arriving together should
+      // not both announce a return or send the same ping history.
+      const dUser = await DATABASE.findOneAndDelete({ userId: message.author.id });
       client.state.afks = client.state.afks.filter((a) => a !== message.author.id);
-      await DATABASE.deleteOne({ userId: message.author.id });
 
-      const pingList = (dUser?.dms || [])
-        .map(
-          (msg) =>
-            `[${formatDiscordTime(msg.time, 't')}] **${msg.tag}**: ${msg.content} ${
-              msg.link ? `[[Jump]](${msg.link})` : ''
-            }`
-        )
-        .join('\n');
-
-      try {
-        const dm = await message.author.createDM();
-        await dm.send({
+      if (dUser) {
+        const reply = await message.reply({
           embeds: [
             successEmbed({
-              title: 'Your pings:',
-              description: pingList || 'You have no friends LMAO',
-              timestamp: true
+              title: `Welcome back ${message.author.tag}`,
+              description: `You have ${dUser.dms?.length || 0} recent pings, check your DMs!`
             })
           ]
-        });
-      } catch {}
+        }).catch(() => null);
+        if (reply) setTimeout(() => reply.delete().catch(() => {}), 2500).unref();
+
+        const pingLines = (dUser.dms || []).slice(-MAX_STORED_PINGS)
+          .map(
+            (msg) =>
+              `[${formatDiscordTime(msg.time, 't')}] **${msg.tag}**: ${String(msg.content || '').slice(0, 700)} ${
+                msg.link ? `[[Jump]](${msg.link})` : ''
+              }`
+          );
+        const pages = [];
+        let page = '';
+        for (const line of pingLines) {
+          if (page.length + line.length + 1 > 3900) {
+            pages.push(page);
+            page = '';
+          }
+          page += `${line}\n`;
+        }
+        pages.push(page || 'You have no recorded pings.');
+
+        try {
+          const dm = await message.author.createDM();
+          for (const description of pages) await dm.send({
+            embeds: [
+              successEmbed({
+                title: 'Your recent pings:',
+                description,
+                timestamp: true
+              })
+            ]
+          });
+        } catch {}
+      }
     }
 
-    if (message.mentions.members.size > 0) {
-      const DATABASE = require('../../database/models/afk');
+    if (message.mentions.members?.size > 0) {
       for (const [, mention] of message.mentions.members) {
-        if (afks.includes(mention.user.id)) {
-          const db = await DATABASE.findOne({ userId: mention.user.id });
+        if (client.state.afks.includes(mention.user.id)) {
+          const db = await DATABASE.findOneAndUpdate(
+            { userId: mention.user.id },
+            { $push: { dms: { $each: [{
+              time: message.createdTimestamp,
+              content: message.content,
+              tag: message.author.tag,
+              link: message.url
+            }], $slice: -MAX_STORED_PINGS } } },
+            { new: true }
+          );
           if (!db) continue;
-
-          db.dms.push({
-            time: message.createdTimestamp,
-            content: message.content,
-            tag: message.author.tag,
-            link: message.url
-          });
-          await db.save();
 
           const reply = await message.reply({
             embeds: [
@@ -80,7 +89,7 @@ module.exports = {
             ],
             allowedMentions: { users: [], roles: [] }
           });
-          setTimeout(() => reply.delete().catch(() => {}), 10_000);
+          setTimeout(() => reply.delete().catch(() => {}), 10_000).unref();
         }
       }
     }

@@ -1,4 +1,3 @@
-const config = require('../../config');
 const logger = require('../../utils/logger');
 const settingsService = require('../../database/services/settingsService');
 
@@ -23,15 +22,15 @@ module.exports = {
   async execute(message, client) {
     if (!message.guild) return;
 
-    for (const handler of handlers) {
-      if (message.author?.bot && !handler.acceptsBotMessages) continue;
+    await Promise.all(handlers.map(async (handler) => {
+      if (message.author?.bot && !handler.acceptsBotMessages) return;
 
       try {
         await handler.execute(message, client);
       } catch (err) {
         logger.error(`messageCreate handler "${handler.name}" error`, err);
       }
-    }
+    }));
   },
 
   async load(client) {

@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const SettingsSchema = new mongoose.Schema({
-  guildID: { type: String, required: true },
+  guildID: { type: String, required: true, index: true },
   donationRoles: { type: [String] },
   logChannel: { type: String },
   gtnRole: { type: [String] },

@@ -1,5 +1,5 @@
 const config = require('../../config');
-const { CoinService } = require('../../database/services/coinService');
+const { CoinService, InsufficientFundsError } = require('../../database/services/coinService');
 const { parseAmount } = require('../../utils/validators');
 
 module.exports = {
@@ -32,20 +32,25 @@ module.exports = {
       case 'add':
       case '+':
         await CoinService.addCoins(user.id, amount);
-        message.react('✅');
+        await message.react('✅');
         break;
       case 'remove':
       case '-':
-        await CoinService.removeCoins(user.id, amount).catch(() => {});
-        message.react('✅');
+        try {
+          await CoinService.removeCoins(user.id, amount);
+        } catch (err) {
+          if (err instanceof InsufficientFundsError) return message.reply('That user does not have enough coins.');
+          throw err;
+        }
+        await message.react('✅');
         break;
       case 'del':
       case 'delete':
         await CoinService.wipeUser(user.id);
-        message.react('✅');
+        await message.react('✅');
         break;
       default:
-        message.reply('Invalid action');
+        await message.reply('Invalid action');
     }
   }
 };

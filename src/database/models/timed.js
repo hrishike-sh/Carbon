@@ -6,4 +6,6 @@ const TimedSchema = new Schema({
   data: { type: Object }
 });
 
+TimedSchema.index({ what: 1, when: 1 });
+
 module.exports = model('timed', TimedSchema, 'timed');

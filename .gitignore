@@ -2,6 +2,8 @@
 *.sqlite
 node_modules
 logs/
+mafia-*.jsonl
+transcripts-export/
 settings.json
 .vscode
 Fighthub nicknames.json

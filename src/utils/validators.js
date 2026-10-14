@@ -15,7 +15,8 @@ function parseAmount(input) {
 
   const suffix = match[2].toLowerCase();
 
-  return suffix ? Math.floor(num * StringValues[suffix]) : Math.floor(num);
+  const amount = Math.floor(num * (StringValues[suffix] || 1));
+  return Number.isSafeInteger(amount) && amount > 0 ? amount : null;
 }
 
 module.exports = { StringValues, parseAmount };

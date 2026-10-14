@@ -1,216 +1,86 @@
-const {
-  Message,
-  Client,
-  EmbedBuilder,
-  ButtonBuilder,
-  ButtonStyle,
-  ActionRowBuilder
-} = require('discord.js');
+const { EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder } = require('discord.js');
 const Main = require('../../database/models/main_dono');
 const Grinder = require('../../database/models/grinder_dono');
 const Karuta = require('../../database/models/tickets');
 const { Theme } = require('../../utils/embeds');
 
+async function loadLeaderboard(model, filter, userField, amountField, userId) {
+  const [leaders, own] = await Promise.all([
+    model.find(filter).sort({ [amountField]: -1, _id: 1 }).limit(10).select(`${userField} ${amountField}`).lean(),
+    model.findOne({ ...filter, [userField]: userId }).select(`${userField} ${amountField}`).lean()
+  ]);
+  const rank = own ? 1 + await model.countDocuments({
+    ...filter,
+    $or: [
+      { [amountField]: { $gt: own[amountField] } },
+      { [amountField]: own[amountField], _id: { $lt: own._id } }
+    ]
+  }) : null;
+  return { leaders, own, rank, userField, amountField };
+}
+
 module.exports = {
   name: 'leaderboard',
   aliases: ['lb'],
   cooldown: 60,
-  /**
-   *
-   * @param {Message} message
-   * @param {String[]} args
-   * @param {Client} client
-   */
   async execute(message, args, client) {
-    const waitMessage = await message.reply('Fetching databases...');
-    const MainRawLB = await Main.find({}).sort({
-      messages: -1
-    });
-    const GrinderRawLB = await Grinder.find({}).sort({
-      amount: -1
-    });
-    const KarutaRawLB = await Karuta.find({}).sort({
-      amount: -1
-    });
-
-    await waitMessage.edit('Making fancy leaderboards...');
-    const LBs = {
-      main: [],
-      grinder: [],
-      karuta: []
-    };
-
-    for (const Profile of MainRawLB) {
-      if (LBs.main.length > 9) break;
-      const user =
-        (await client.users.fetch(Profile.userID).catch(() => null)) ||
-        'Unknown#00000';
-
-      LBs.main.push(
-        `${MainRawLB.indexOf(Profile) + 1}. **${user.tag}**: ⏣ ${
-          Profile?.messages?.toLocaleString() || '0'
-        }`
-      );
-    }
-    for (const Profile of GrinderRawLB) {
-      if (LBs.grinder.length > 9) break;
-      const user =
-        (await client.users.fetch(Profile.userID).catch(() => null)) ||
-        'Unknown#00000';
-
-      LBs.grinder.push(
-        `${GrinderRawLB.indexOf(Profile) + 1}. **${user.tag}**: ⏣ ${
-          Profile?.amount?.toLocaleString() || '0'
-        }`
-      );
-    }
-    for (const Profile of KarutaRawLB) {
-      if (LBs.karuta.length > 9) break;
-      const user =
-        (await client.users.fetch(Profile.userId).catch(() => null)) ||
-        'Unknown#00000';
-
-      LBs.karuta.push(
-        `${KarutaRawLB.indexOf(Profile) + 1}. **${user.tag}**: :tickets: ${
-          Profile.amount.toLocaleString() || '0'
-        }`
-      );
-    }
-    const him = {
-      main: MainRawLB.find((user) => user.userID == message.author.id) || null,
-      grinder:
-        GrinderRawLB.find((user) => user.userID == message.author.id) || null,
-      karuta:
-        KarutaRawLB.find((user) => user.userId == message.author.id) || null
-    };
-    waitMessage.delete();
-
-    const MainEmbed = new EmbedBuilder()
-      .setColor(Theme.info)
-      .setTitle('Main Donations Leaderboard')
-      .setTimestamp()
-      .setDescription(
-        LBs.main.join('\n') +
-          `\n\n${
-            him.main
-              ? `**${
-                  MainRawLB.indexOf(him.main) + 1 > 49
-                    ? '50+'
-                    : MainRawLB.indexOf(him.main) + 1
-                }. ${message.author.tag}: ⏣ ${
-                  him?.main?.messages?.toLocaleString() || 'None'
-                }**`
-              : ''
-          }`
-      );
-    const GrinderEmbed = new EmbedBuilder()
-      .setColor(Theme.success)
-      .setTitle('Grinder Donations Leaderboard')
-      .setTimestamp()
-      .setDescription(
-        LBs.grinder.join('\n') +
-          `\n\n${
-            him.grinder
-              ? `**${
-                  GrinderRawLB.indexOf(him.grinder) + 1 > 49
-                    ? '50+'
-                    : GrinderRawLB.indexOf(him.grinder) + 1
-                }. ${message.author.tag}: ⏣ ${
-                  him?.grinder?.amount?.toLocaleString() || 'None'
-                }**`
-              : ''
-          }`
-      );
-    const KarutaEmbed = new EmbedBuilder()
-      .setColor(Theme.info)
-      .setTitle('Karuta Donations Leaderboard')
-      .setTimestamp()
-      .setDescription(
-        LBs.karuta.join('\n') +
-          `\n\n${
-            him.karuta
-              ? `**${
-                  KarutaRawLB.indexOf(him.karuta) + 1 > 49
-                    ? '50+'
-                    : KarutaRawLB.indexOf(him.karuta) + 1
-                }. ${message.author.tag}: :tickets: ${
-                  him?.karuta?.amount?.toLocaleString() || 'None'
-                }**`
-              : ''
-          }`
-      );
-    const mainButton = new ButtonBuilder()
-      .setLabel('Main')
-      .setStyle(ButtonStyle.Success)
-      .setDisabled()
-      .setCustomId('main;lb');
-    const grinderButton = new ButtonBuilder()
-      .setLabel('Grinder')
-      .setStyle(ButtonStyle.Primary)
-      .setCustomId('grinder;lb');
-    const karutaButton = new ButtonBuilder()
-      .setLabel('Karuta')
-      .setStyle(ButtonStyle.Primary)
-      .setCustomId('karuta;lb');
-    const row = new ActionRowBuilder().addComponents([
-      mainButton,
-      grinderButton,
-      karutaButton
+    const mainMessage = await message.reply('Fetching leaderboards...');
+    const guildFilter = { guildID: message.guild.id };
+    const boards = await Promise.all([
+      loadLeaderboard(Main, guildFilter, 'userID', 'messages', message.author.id),
+      loadLeaderboard(Grinder, guildFilter, 'userID', 'amount', message.author.id),
+      loadLeaderboard(Karuta, {}, 'userId', 'amount', message.author.id)
     ]);
-    const mainMessage = await message.channel.send({
-      embeds: [MainEmbed],
-      components: [row]
-    });
-    const collector = mainMessage.createMessageComponentCollector({
-      idle: 30_000
-    });
-
+    const users = new Map();
+    for (const board of boards) {
+      for (const profile of board.leaders) {
+        const id = profile[board.userField];
+        if (!users.has(id)) users.set(id, client.users.fetch(id).catch(() => null));
+      }
+    }
+    await Promise.all(users.values());
+    const names = ['Main', 'Grinder', 'Karuta'];
+    const embeds = await Promise.all(boards.map(async (board, index) => {
+      const currency = index === 2 ? ':tickets:' : '⏣';
+      const lines = await Promise.all(board.leaders.map(async (profile, position) => {
+        const user = await users.get(profile[board.userField]);
+        return `${position + 1}. **${user?.tag || `Unknown user (${profile[board.userField]})`}**: ${currency} ${(profile[board.amountField] || 0).toLocaleString()}`;
+      }));
+      if (board.own) {
+        lines.push(`\n**${board.rank > 49 ? '50+' : board.rank}. ${message.author.tag}: ${currency} ${(board.own[board.amountField] || 0).toLocaleString()}**`);
+      }
+      return new EmbedBuilder()
+        .setTitle(`${names[index]} Donations Leaderboard`)
+        .setColor(index === 1 ? Theme.success : Theme.info)
+        .setTimestamp()
+        .setDescription(lines.join('\n') || 'No donations recorded yet.');
+    }));
+    const buttons = names.map((name, index) => new ButtonBuilder()
+      .setCustomId(`donations_lb_${index}`)
+      .setLabel(name)
+      .setStyle(index === 0 ? ButtonStyle.Success : ButtonStyle.Primary)
+      .setDisabled(index === 0));
+    const row = new ActionRowBuilder().addComponents(buttons);
+    await mainMessage.edit({ content: null, embeds: [embeds[0]], components: [row] });
+    const collector = mainMessage.createMessageComponentCollector({ idle: 30_000, time: 300_000 });
     collector.on('collect', async (button) => {
-      if (button.user.id != message.author.id) {
-        return button.reply({
-          content: 'Not your command.',
-          flags: 64
-        });
-      }
-      await button.deferUpdate();
-      if (button.customId == 'main;lb') {
-        mainButton.setDisabled(true).setStyle(ButtonStyle.Success);
-        grinderButton.setDisabled(false).setStyle(ButtonStyle.Primary);
-        karutaButton.setDisabled(false).setStyle(ButtonStyle.Primary);
-
-        return mainMessage.edit({
-          embeds: [MainEmbed],
-          components: [row]
-        });
-      } else if (button.customId == 'grinder;lb') {
-        mainButton.setDisabled(false).setStyle(ButtonStyle.Primary);
-        grinderButton.setDisabled(true).setStyle(ButtonStyle.Success);
-        karutaButton.setDisabled(false).setStyle(ButtonStyle.Primary);
-
-        return mainMessage.edit({
-          embeds: [GrinderEmbed],
-          components: [row]
-        });
-      } else {
-        mainButton.setDisabled(false).setStyle(ButtonStyle.Primary);
-        grinderButton.setDisabled(false).setStyle(ButtonStyle.Primary);
-        karutaButton.setDisabled(true).setStyle(ButtonStyle.Success);
-
-        return mainMessage.edit({
-          embeds: [KarutaEmbed],
-          components: [row]
-        });
+      try {
+        if (button.user.id !== message.author.id) {
+          await button.reply({ content: 'Not your command.', flags: 64 });
+          return;
+        }
+        const selected = Number(button.customId.split('_').at(-1));
+        if (!Number.isInteger(selected) || !embeds[selected]) return;
+        buttons.forEach((item, index) => item.setDisabled(index === selected)
+          .setStyle(index === selected ? ButtonStyle.Success : ButtonStyle.Primary));
+        await button.update({ embeds: [embeds[selected]], components: [row] });
+      } catch (error) {
+        console.error('Donation leaderboard interaction failed:', error);
       }
     });
-
     collector.on('end', () => {
-      mainButton.setDisabled(true);
-      grinderButton.setDisabled(true);
-      karutaButton.setDisabled(true);
-
-      return mainMessage.edit({
-        components: [row]
-      });
+      buttons.forEach((button) => button.setDisabled(true));
+      mainMessage.edit({ components: [row] }).catch(() => {});
     });
   }
 };

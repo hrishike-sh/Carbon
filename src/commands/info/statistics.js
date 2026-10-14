@@ -96,7 +96,7 @@ module.exports = {
         interaction.reply({
           content: 'Run `fh stats` to use your own stats buttons.',
           flags: 64
-        });
+        }).catch(() => {});
         return false;
       },
       idle: 120000
@@ -106,7 +106,8 @@ module.exports = {
       const period = interaction.customId.replace('stats_', '');
       if (!PERIODS.includes(period)) return interaction.deferUpdate();
       activePeriod = period;
-      return interaction.update(await buildStatsPayload(message, period));
+      await interaction.deferUpdate();
+      return interaction.editReply(await buildStatsPayload(message, period));
     });
 
     collector.on('end', () => {

@@ -1,7 +1,7 @@
 const LOG_LEVELS = { debug: 0, info: 1, warn: 2, error: 3 };
-const currentLevel = LOG_LEVELS[process.env.LOG_LEVEL] ?? LOG_LEVELS.info;
 
 function log(level, message, meta) {
+  const currentLevel = LOG_LEVELS[process.env.LOG_LEVEL] ?? LOG_LEVELS.info;
   if (LOG_LEVELS[level] < currentLevel) return;
   const timestamp = new Date().toISOString();
   const prefix = `[${timestamp}] [${level.toUpperCase()}]`;

@@ -11,6 +11,7 @@ module.exports = {
     }
 
     if (!newMessage.author || newMessage.author.bot) return;
+    if (!newMessage.guild || oldMessage.partial || oldMessage.content === newMessage.content) return;
 
     const client = newMessage.client;
     let snipes = client.state.snipes.esnipes.get(oldMessage.channel.id) || [];
@@ -18,7 +19,7 @@ module.exports = {
     snipes.unshift({
       oldContent: oldMessage.content || '*[no content]*',
       newContent: newMessage.content || '*[no content]*',
-      editedIn: newMessage.createdAt - oldMessage.editedAt,
+      editedIn: Math.max(0, newMessage.editedTimestamp - oldMessage.createdTimestamp),
       member: newMessage.member,
       author: newMessage.author,
       msg: newMessage

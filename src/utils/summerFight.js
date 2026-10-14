@@ -1,5 +1,6 @@
 const TeamDB = require('../database/models/teams');
 const { successEmbed } = require('./embeds');
+const logger = require('./logger');
 
 const MIN_TEAM_MEMBERS = 3;
 const ATTACKS_PER_WINDOW = 4;
@@ -304,13 +305,22 @@ async function blockPendingAttack(targetTeam, type) {
 }
 
 function scheduleAttackResolution(client, targetTeamId, channelId) {
-  setTimeout(async () => {
-    const targetTeam = await TeamDB.findById(targetTeamId).catch(() => null);
-    if (!targetTeam) return;
-
-    const channel = client.channels.cache.get(channelId);
-    await resolveExpiredAttack(targetTeam, channel);
+  if (client.state.shuttingDown) return;
+  const timer = setTimeout(async () => {
+    client.state.timers.delete(timer);
+    if (client.state.shuttingDown) return;
+    try {
+      const targetTeam = await TeamDB.findById(targetTeamId);
+      if (!targetTeam) return;
+      const channel = client.channels.cache.get(channelId);
+      await resolveExpiredAttack(targetTeam, channel);
+    } catch (error) {
+      logger.error('Failed to resolve scheduled team attack', error);
+    }
   }, BLOCK_WINDOW_MS + 1000);
+  timer.unref();
+  client.state.timers ??= new Set();
+  client.state.timers.add(timer);
 }
 
 module.exports = {

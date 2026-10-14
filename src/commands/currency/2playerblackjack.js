@@ -2,10 +2,11 @@ const {
   EmbedBuilder,
   ActionRowBuilder,
   ButtonBuilder,
-  ButtonStyle,
-  ComponentType
+  ButtonStyle
 } = require('discord.js');
 const { Theme } = require('../../utils/embeds');
+const { createDeck, shuffleDeck, drawCard, calculateScore, formatHand } = require('./lib/blackjack');
+const { onAsync } = require('../../utils/asyncEvents');
 
 module.exports = {
   name: '2playerblackjack',
@@ -59,7 +60,13 @@ module.exports = {
       max: 1
     });
 
-    collector.on('collect', async (interaction) => {
+    onAsync(collector, 'end', async (collected) => {
+      if (collected.size === 0) {
+        await acceptMessage.edit({ content: 'The challenge has expired.', embeds: [], components: [] });
+      }
+    }, 'Two-player blackjack invitation');
+
+    onAsync(collector, 'collect', async (interaction) => {
       if (interaction.customId === 'decline_bj') {
         return interaction.update({
           content: 'The challenge has been declined.',
@@ -121,11 +128,26 @@ module.exports = {
         filter: (i) => [message.author.id, target.id].includes(i.user.id),
         time: 180000
       });
+      let gameOver = false;
+      let pendingEdit = Promise.resolve();
+      const handCollectors = new Set();
+      const editGame = (payload) => {
+        pendingEdit = pendingEdit.catch(() => {}).then(() => acceptMessage.edit(payload));
+        return pendingEdit;
+      };
 
-      gameCollector.on('collect', async (i) => {
+      onAsync(gameCollector, 'end', async (_, reason) => {
+        gameOver = true;
+        for (const handCollector of handCollectors) handCollector.stop();
+        if (reason !== 'completed') {
+          await editGame({ content: 'The game has expired.', components: [] });
+        }
+      }, 'Two-player blackjack expiry');
+
+      onAsync(gameCollector, 'collect', async (i) => {
         if (i.customId === 'show_hand_bj') {
           const userState = hands[i.user.id];
-          if (userState.stood || userState.busted) {
+          if (gameOver || userState.stood || userState.busted) {
             return i.reply({
               content: 'You have already finished your turn.',
               flags: 64
@@ -158,6 +180,10 @@ module.exports = {
             flags: 64,
             fetchReply: true
           });
+          if (gameOver) {
+            await ephemeralMessage.edit({ components: [] });
+            return;
+          }
 
           const ephemeralCollector =
             ephemeralMessage.createMessageComponentCollector({
@@ -165,9 +191,14 @@ module.exports = {
                 buttonInteraction.user.id === i.user.id,
               time: 60000
             });
+          handCollectors.add(ephemeralCollector);
+          onAsync(ephemeralCollector, 'end', async () => {
+            handCollectors.delete(ephemeralCollector);
+            await ephemeralMessage.edit({ components: [] });
+          }, 'Two-player blackjack hand expiry');
 
-          ephemeralCollector.on('collect', async (buttonInteraction) => {
-            if (userState.stood || userState.busted) {
+          onAsync(ephemeralCollector, 'collect', async (buttonInteraction) => {
+            if (gameOver || userState.stood || userState.busted) {
               await buttonInteraction.update({ components: [] });
               return;
             }
@@ -202,12 +233,13 @@ module.exports = {
             }
 
             await updateMainEmbed();
-            checkWinCondition();
-          });
+            await checkWinCondition();
+          }, 'Two-player blackjack hand');
         }
-      });
+      }, 'Two-player blackjack game');
 
       async function updateMainEmbed() {
+        if (gameOver) return;
         const fields = Object.values(hands).map((playerState) => {
           let status = 'Playing';
           if (playerState.busted) status = 'Busted!';
@@ -225,15 +257,17 @@ module.exports = {
           .setDescription('The game is in progress...')
           .setFields(fields);
 
-        await acceptMessage.edit({ embeds: [updatedGameEmbed] });
+        await editGame({ embeds: [updatedGameEmbed] });
       }
 
-      function checkWinCondition() {
+      async function checkWinCondition() {
+        if (gameOver) return;
         const player1State = hands[message.author.id];
         const player2State = hands[target.id];
 
         if (player1State.stood && player2State.stood) {
-          gameCollector.stop();
+          gameOver = true;
+          gameCollector.stop('completed');
           const score1 = calculateScore(player1State.hand);
           const score2 = calculateScore(player2State.hand);
 
@@ -287,90 +321,13 @@ module.exports = {
             });
           }
 
-          acceptMessage.edit({
+          await editGame({
             embeds: [resultEmbed],
             components: []
           });
         }
       }
 
-      collector.on('end', (collected) => {
-        if (collected.size === 0) {
-          acceptMessage.edit({
-            content: 'The challenge has expired.',
-            embeds: [],
-            components: []
-          });
-        }
-      });
-    });
+    }, 'Two-player blackjack challenge');
   }
 };
-
-const createDeck = () => {
-  const deck = [];
-  const suits = ['♥', '♦', '♣', '♠'];
-  const values = [
-    '2',
-    '3',
-    '4',
-    '5',
-    '6',
-    '7',
-    '8',
-    '9',
-    '10',
-    'J',
-    'Q',
-    'K',
-    'A'
-  ];
-  for (const suit of suits) {
-    for (const value of values) {
-      deck.push({ suit, value });
-    }
-  }
-  return deck;
-};
-
-function shuffleDeck(deck) {
-  for (let i = deck.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [deck[i], deck[j]] = [deck[j], deck[i]];
-  }
-}
-
-function drawCard(deck) {
-  return deck.pop();
-}
-
-function calculateScore(cards) {
-  let score = 0;
-  let aceCount = 0;
-  for (const card of cards) {
-    if (card.value === 'A') {
-      aceCount++;
-      score += 11;
-    } else if (['J', 'Q', 'K'].includes(card.value)) {
-      score += 10;
-    } else {
-      score += parseInt(card.value);
-    }
-  }
-  while (score > 21 && aceCount > 0) {
-    score -= 10;
-    aceCount--;
-  }
-  return score;
-}
-
-function formatHand(hand) {
-  return hand
-    .map(
-      (card) =>
-        `[` +
-        `\`${card.suit}${card.value}\`` +
-        `](https://discord.com/invite/fight "nuh uh")`
-    )
-    .join(' ');
-}

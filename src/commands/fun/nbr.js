@@ -19,11 +19,11 @@ const WEAPON_BONUS_DAMAGE = 8;
 const BANDAID_HEAL_AMOUNT = 25;
 const ROUND_TIME_MS = 10 * 1000;
 
-let LASTUPDATE = 0;
+const lastUpdates = new WeakMap();
 function updateMessage(msg, components, emb) {
   const NOW = Date.now();
-  if (NOW - LASTUPDATE > 1000) {
-    LASTUPDATE = NOW;
+  if (NOW - (lastUpdates.get(msg) || 0) > 1000) {
+    lastUpdates.set(msg, NOW);
     msg.edit({ components, embeds: [emb] }).catch(() => {});
   }
 }
@@ -149,6 +149,7 @@ module.exports = {
       let roundTimer = null;
 
       const mainCollector = gameMessage.createMessageComponentCollector({
+        time: 15 * 60 * 1000,
         componentType: ComponentType.Button,
         filter: (interaction) => {
           const player = players.find((p) => p.id === interaction.user.id);
@@ -198,6 +199,7 @@ module.exports = {
       }
 
       function updateGameMessage() {
+        if (mainCollector.ended) return;
         const alivePlayers = players.filter((p) => p.health > 0);
 
         if (alivePlayers.length === 1) {
@@ -256,6 +258,7 @@ module.exports = {
       }
 
       function startNewRound() {
+        if (mainCollector.ended) return;
         if (roundTimer) clearTimeout(roundTimer);
 
         roundNumber++;

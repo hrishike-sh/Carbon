@@ -4,10 +4,11 @@ class CooldownManager {
   constructor() {
     this._cooldowns = new Collection();
     this._activeLocks = new Set();
+    this._sweepTimer = null;
   }
 
   check(userId, commandName, cooldownSeconds) {
-    if (!cooldownSeconds || cooldownSeconds <= 0) return { allowed: true };
+    if (!Number.isFinite(cooldownSeconds) || cooldownSeconds <= 0) return { allowed: true };
 
     if (!this._cooldowns.has(commandName)) {
       this._cooldowns.set(commandName, new Collection());
@@ -22,8 +23,31 @@ class CooldownManager {
     }
 
     timestamps.set(userId, now + cooldownSeconds * 1000);
-    setTimeout(() => timestamps.delete(userId), cooldownSeconds * 1000);
+    if (!this._sweepTimer) {
+      this._sweepTimer = setInterval(() => this._sweep(), 60_000);
+      this._sweepTimer.unref();
+    }
     return { allowed: true };
+  }
+
+  _sweep(now = Date.now()) {
+    for (const [commandName, timestamps] of this._cooldowns) {
+      for (const [userId, expiration] of timestamps) {
+        if (expiration <= now) timestamps.delete(userId);
+      }
+      if (timestamps.size === 0) this._cooldowns.delete(commandName);
+    }
+    if (this._cooldowns.size === 0) {
+      clearInterval(this._sweepTimer);
+      this._sweepTimer = null;
+    }
+  }
+
+  clear() {
+    clearInterval(this._sweepTimer);
+    this._sweepTimer = null;
+    this._cooldowns.clear();
+    this._activeLocks.clear();
   }
 
   lock(userId) {
@@ -42,3 +66,4 @@ class CooldownManager {
 }
 
 module.exports = new CooldownManager();
+module.exports.CooldownManager = CooldownManager;

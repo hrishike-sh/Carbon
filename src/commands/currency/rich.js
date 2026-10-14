@@ -10,9 +10,12 @@ module.exports = {
       embeds: [infoEmbed({ description: 'Loading...' })]
     });
 
+    const users = await Promise.all(all.map((entry) =>
+      client.users.fetch(entry.userId).catch(() => ({ tag: 'Unknown User' }))
+    ));
     let description = '';
     for (let i = 0; i < all.length; i++) {
-      let user = (await client.users.fetch(all[i].userId).catch(() => ({ tag: 'Unknown User' }))).tag;
+      let user = users[i].tag;
 
       if (user.includes('_')) {
         user = user.replace(/_/g, '\\_');
@@ -23,11 +26,11 @@ module.exports = {
       }\n`;
     }
 
-    msg.edit({
+    return msg.edit({
       embeds: [
         infoEmbed({
           title: '<:token:1003272629286883450> Coins Leaderboard',
-          description,
+          description: description || 'No coins have been earned yet.',
           footer: 'Gamble your way to the top!'
         })
       ]

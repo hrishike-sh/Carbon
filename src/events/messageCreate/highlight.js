@@ -5,6 +5,8 @@ const { warningEmbed } = require('../../utils/embeds');
 const NOTIFICATION_COOLDOWN = 5 * 60 * 1000;
 const CONTEXT_MESSAGE_LIMIT = 2;
 const CONTEXT_CONTENT_LIMIT = 600;
+const keywordPatterns = new Map();
+const notificationsInFlight = new WeakMap();
 
 function normalizeHighlight(value) {
   return value.trim().replace(/\s+/g, ' ').toLowerCase();
@@ -29,18 +31,40 @@ function truncate(content, maxLength) {
   return `${content.slice(0, maxLength - 1)}…`;
 }
 
+function matchesKeyword(keyword, content) {
+  let pattern = keywordPatterns.get(keyword);
+  if (!pattern) {
+    pattern = highlightRegex([keyword], 'iu');
+    if (keywordPatterns.size >= 1000) keywordPatterns.delete(keywordPatterns.keys().next().value);
+    keywordPatterns.set(keyword, pattern);
+  }
+  return pattern.test(content);
+}
+
 async function onMessage(message, client) {
   const highlightMap = client.state.highlights;
   if (!message.content || !highlightMap || highlightMap.size === 0) return;
 
   const usersToNotify = new Map();
+  const now = Date.now();
+  let pending = notificationsInFlight.get(client);
+  if (!pending) {
+    pending = new Set();
+    notificationsInFlight.set(client, pending);
+  }
+  client.state.lastHighlightPing ??= new Map();
 
   for (const [keyword, subscribers] of highlightMap) {
-    if (!highlightRegex([keyword]).test(message.content)) continue;
+    if (!matchesKeyword(keyword, message.content)) continue;
 
     for (const userId of subscribers) {
       if (userId === message.author.id) continue;
-      if (!message.channel.permissionsFor(userId)?.has(PermissionFlagsBits.ViewChannel)) continue;
+      if (pending.has(userId)) continue;
+      const lastPing = client.state.lastHighlightPing.get(userId);
+      if (lastPing !== undefined && now - lastPing < NOTIFICATION_COOLDOWN) continue;
+      if (!message.channel.permissionsFor(userId)?.has([
+        PermissionFlagsBits.ViewChannel, PermissionFlagsBits.ReadMessageHistory
+      ])) continue;
 
       const matchedKeywords = usersToNotify.get(userId) || new Set();
       matchedKeywords.add(keyword);
@@ -50,44 +74,52 @@ async function onMessage(message, client) {
 
   if (usersToNotify.size === 0) return;
 
-  const previousMessages = await message.channel.messages.fetch({
-    before: message.id,
-    limit: CONTEXT_MESSAGE_LIMIT
-  });
-  const contextMessages = [...previousMessages.values()].reverse().concat(message);
+  // Reserve recipients before the first await so simultaneous messages cannot
+  // each pass the cooldown check and send duplicate notifications.
+  for (const userId of usersToNotify.keys()) pending.add(userId);
 
-  for (const [userId, keywordSet] of usersToNotify) {
-    const lastPing = client.state.lastHighlightPing?.get(userId) || 0;
-    if (Date.now() - lastPing < NOTIFICATION_COOLDOWN) continue;
+  try {
+    const previousMessages = await message.channel.messages.fetch({
+      before: message.id,
+      limit: CONTEXT_MESSAGE_LIMIT
+    }).catch(() => new Map());
+    const contextMessages = [...previousMessages.values()].reverse().concat(message);
 
-    const user = await client.users.fetch(userId).catch(() => null);
-    if (!user) continue;
+    for (const [userId, keywordSet] of usersToNotify) {
+      const user = await client.users.fetch(userId).catch(() => null);
+      if (!user) continue;
 
-    const keywords = [...keywordSet];
-    const matchRegex = highlightRegex(keywords);
-    const contextLog = contextMessages
-      .map((contextMessage) => {
-        const unixTime = Math.floor(contextMessage.createdTimestamp / 1000);
-        const rawContent = contextMessage.content || (contextMessage.attachments.size ? '[attachment]' : '[no text]');
-        const content = truncate(rawContent, CONTEXT_CONTENT_LIMIT).replace(matchRegex, '**$1**');
-        return `<t:${unixTime}:T> **${contextMessage.author.username}:** ${content}`;
-      })
-      .join('\n');
+      const keywords = [...keywordSet];
+      const matchRegex = highlightRegex(keywords);
+      const contextLog = contextMessages
+        .map((contextMessage) => {
+          const unixTime = Math.floor(contextMessage.createdTimestamp / 1000);
+          const rawContent = contextMessage.content || (contextMessage.attachments?.size ? '[attachment]' : '[no text]');
+          const content = truncate(rawContent, CONTEXT_CONTENT_LIMIT).replace(matchRegex, '**$1**');
+          return `<t:${unixTime}:T> **${contextMessage.author.username}:** ${content}`;
+        })
+        .join('\n');
 
-    const matched = keywords.map((keyword) => `\`${keyword.replace(/`/g, '\u02cb')}\``).join(', ');
-    const embed = warningEmbed({
-      description:
-        `**${message.guild.name} · ${message.channel}**\n` +
-        `Matched ${matched} · [Jump to message](${message.url})\n\n${contextLog}`
-    });
+      const matched = keywords.map((keyword) => `\`${keyword.replace(/`/g, '\u02cb')}\``).join(', ');
+      const embed = warningEmbed({
+        description: truncate(
+          `**${message.guild.name} · ${message.channel}**\n` +
+          `Matched ${matched} · [Jump to message](${message.url})\n\n${contextLog}`, 4096)
+      });
 
-    try {
-      await user.send({ embeds: [embed] });
-      if (!client.state.lastHighlightPing) client.state.lastHighlightPing = new Map();
-      client.state.lastHighlightPing.set(userId, Date.now());
-    } catch (error) {
-      if (error.code !== 50007) console.error('Highlight notification error:', error);
+      try {
+        await user.send({ embeds: [embed] });
+        client.state.lastHighlightPing.set(userId, Date.now());
+      } catch (error) {
+        if (error.code === 50007) {
+          client.state.lastHighlightPing.set(userId, Date.now());
+        } else {
+          console.error('Highlight notification error:', error);
+        }
+      }
     }
+  } finally {
+    for (const userId of usersToNotify.keys()) pending.delete(userId);
   }
 }
 

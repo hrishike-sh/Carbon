@@ -1,106 +1,100 @@
-const fs = require('fs');
-const path = require('path');
+const fs = require('node:fs');
+const path = require('node:path');
 const { Collection } = require('discord.js');
 const PrefixCommand = require('./PrefixCommand');
 const SlashCommand = require('./SlashCommand');
 const logger = require('../utils/logger');
 
+function commandFiles(directory) {
+  return fs.readdirSync(directory, { withFileTypes: true })
+    .filter((entry) => entry.isDirectory())
+    .flatMap((category) => fs.readdirSync(path.join(directory, category.name), { withFileTypes: true })
+      .filter((entry) => entry.isFile() && entry.name.endsWith('.js'))
+      .map((entry) => ({
+        category: category.name,
+        filePath: path.join(directory, category.name, entry.name)
+      })));
+}
+
+function isCommandName(value) {
+  return typeof value === 'string' && value.length > 0 &&
+    value === value.toLowerCase() && !/\s/.test(value);
+}
+
+function loadPrefixCommands(directory = path.join(__dirname, '..', 'commands')) {
+  const commands = new Collection();
+  const loaded = [];
+  const errors = [];
+
+  for (const { category, filePath } of commandFiles(directory)) {
+    try {
+      const definition = require(filePath);
+      if (definition.disabled === true) continue;
+      if (!isCommandName(definition.name) || typeof definition.execute !== 'function' ||
+          (definition.aliases !== undefined && (!Array.isArray(definition.aliases) ||
+            !definition.aliases.every(isCommandName))) ||
+          (definition.cooldown !== undefined &&
+            (!Number.isFinite(definition.cooldown) || definition.cooldown < 0)) ||
+          (definition.roles !== undefined && (!Array.isArray(definition.roles) ||
+            !definition.roles.every((role) => typeof role === 'string' && role.length > 0)))) {
+        throw new TypeError('Invalid prefix command export');
+      }
+      if (commands.has(definition.name)) {
+        throw new Error(`Duplicate command name "${definition.name}"`);
+      }
+      const command = new PrefixCommand(definition);
+      command.category = category;
+      commands.set(command.name, command);
+      loaded.push(command);
+    } catch (cause) {
+      errors.push(new Error(`Failed to load ${filePath}: ${cause.message}`, { cause }));
+    }
+  }
+
+  // Register names first so an alias can never silently replace a real command.
+  for (const command of loaded) {
+    for (const alias of command.aliases) {
+      const existing = commands.get(alias);
+      if (existing && existing !== command) {
+        errors.push(new Error(`Alias "${alias}" for "${command.name}" conflicts with "${existing.name}"`));
+      } else {
+        commands.set(alias, command);
+      }
+    }
+  }
+  if (errors.length) throw new AggregateError(errors, 'Prefix command loading failed');
+  return commands;
+}
+
+function loadSlashCommands(directory = path.join(__dirname, '..', 'slash-commands')) {
+  const commands = new Collection();
+  const errors = [];
+  for (const { filePath } of commandFiles(directory)) {
+    try {
+      const definition = require(filePath);
+      if (definition.disabled === true) continue;
+      if (typeof definition.data?.toJSON !== 'function' || typeof definition.execute !== 'function') {
+        throw new TypeError('Invalid slash command export');
+      }
+      const data = definition.data.toJSON();
+      if (!isCommandName(data.name)) throw new TypeError('Invalid slash command name');
+      if (commands.has(data.name)) throw new Error(`Duplicate slash command name "${data.name}"`);
+      commands.set(data.name, new SlashCommand(definition));
+    } catch (cause) {
+      errors.push(new Error(`Failed to load ${filePath}: ${cause.message}`, { cause }));
+    }
+  }
+  if (errors.length) throw new AggregateError(errors, 'Slash command loading failed');
+  return commands;
+}
+
 function loadCommands(client) {
-  const state = client.state;
-
-  loadPrefixCommands(state);
-  loadSlashCommands(state);
+  const commands = loadPrefixCommands();
+  const slashCommands = loadSlashCommands();
+  client.state.commands = commands;
+  client.state.slashCommands = slashCommands;
+  logger.info(`Loaded ${new Set(commands.values()).size} prefix commands (${commands.size} names and aliases)`);
+  logger.info(`Loaded ${slashCommands.size} slash commands`);
 }
 
-function loadPrefixCommands(state) {
-  const commandsPath = path.join(__dirname, '..', 'commands');
-
-  if (!fs.existsSync(commandsPath)) {
-    logger.warn('Commands directory not found, skipping prefix commands');
-    return;
-  }
-
-  const categories = fs.readdirSync(commandsPath);
-  let loaded = 0;
-
-  for (const category of categories) {
-    const categoryPath = path.join(commandsPath, category);
-    if (!fs.statSync(categoryPath).isDirectory()) continue;
-
-    const files = fs.readdirSync(categoryPath).filter((f) => f.endsWith('.js'));
-    for (const file of files) {
-      try {
-        const moduleExports = require(path.join(categoryPath, file));
-        if (typeof moduleExports.name !== 'string' ||
-            !moduleExports.name.trim() ||
-            typeof moduleExports.execute !== 'function' ||
-            (moduleExports.aliases &&
-              (!Array.isArray(moduleExports.aliases) ||
-                !moduleExports.aliases.every((alias) => typeof alias === 'string' && alias)))) {
-          logger.warn(`Prefix command ${category}/${file} has an invalid export`);
-          continue;
-        }
-
-        const command = new PrefixCommand(moduleExports);
-        command.category = category;
-
-        if (state.commands.has(command.name)) {
-          logger.warn(`Duplicate prefix command name "${command.name}" in ${category}/${file}`);
-          continue;
-        }
-        state.commands.set(command.name, command);
-        for (const alias of command.aliases) {
-          const existing = state.commands.get(alias);
-          if (existing === command) continue;
-          if (existing) {
-            logger.warn(`Duplicate prefix command alias "${alias}" in ${category}/${file}`);
-            continue;
-          }
-          state.commands.set(alias, command);
-        }
-        loaded++;
-      } catch (err) {
-        logger.error(`Failed to load prefix command ${category}/${file}`, err);
-      }
-    }
-  }
-
-  logger.info(`Loaded ${loaded} prefix commands (${state.commands.size} names and aliases)`);
-}
-
-function loadSlashCommands(state) {
-  const slashPath = path.join(__dirname, '..', 'slash-commands');
-
-  if (!fs.existsSync(slashPath)) {
-    logger.warn('Slash commands directory not found, skipping');
-    return;
-  }
-
-  const folders = fs.readdirSync(slashPath);
-
-  for (const folder of folders) {
-    const folderPath = path.join(slashPath, folder);
-    if (!fs.statSync(folderPath).isDirectory()) continue;
-
-    const files = fs.readdirSync(folderPath).filter((f) => f.endsWith('.js'));
-    for (const file of files) {
-      try {
-        const moduleExports = require(path.join(folderPath, file));
-
-        if (!moduleExports.data || !moduleExports.execute) {
-          logger.warn(`Slash command ${folder}/${file} missing data or execute`);
-          continue;
-        }
-
-        const command = new SlashCommand(moduleExports);
-        state.slashCommands.set(command.data.name, command);
-      } catch (err) {
-        logger.error(`Failed to load slash command ${folder}/${file}`, err);
-      }
-    }
-  }
-
-  logger.info(`Loaded ${state.slashCommands.size} slash commands`);
-}
-
-module.exports = { loadCommands };
+module.exports = { loadCommands, loadPrefixCommands, loadSlashCommands };

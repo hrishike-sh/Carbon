@@ -1,4 +1,4 @@
-const { CoinService } = require('../../database/services/coinService');
+const { CoinService, InsufficientFundsError } = require('../../database/services/coinService');
 const config = require('../../config');
 const { parseAmount } = require('../../utils/validators');
 const cooldowns = require('../../command/cooldowns');
@@ -22,11 +22,14 @@ module.exports = {
       return message.react('❌');
     }
 
-    const balance = await CoinService.getBalance(message.author.id);
-    if (balance < amount)
-      return message.reply('You dont have that many coins!');
-
-    await CoinService.transfer(message.author.id, target.id, amount);
+    try {
+      await CoinService.transfer(message.author.id, target.id, amount);
+    } catch (err) {
+      if (err instanceof InsufficientFundsError) {
+        return message.reply('You dont have that many coins!');
+      }
+      throw err;
+    }
 
     await message.reply(
       `You gave ${target.toString()} ${amount.toLocaleString()} coins!`

@@ -1,6 +1,5 @@
 const config = require('../../config');
 const { CoinService } = require('../../database/services/coinService');
-const cooldowns = require('../../command/cooldowns');
 const antiBot = require('../../client/AntiBot');
 const { successEmbed } = require('../../utils/embeds');
 
@@ -141,7 +140,7 @@ module.exports = {
     const random = Math.floor(Math.random() * 75) + 50;
     await CoinService.addCoins(userId, random);
     const randomAnimal = animalEmojis[Math.floor(Math.random() * animalEmojis.length)];
-    message.reply({
+    return message.reply({
       embeds: [
         successEmbed({
           author: {

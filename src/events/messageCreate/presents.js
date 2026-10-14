@@ -13,7 +13,7 @@ module.exports = {
     if (CooldownSet.has(userId)) return;
 
     CooldownSet.add(userId);
-    setTimeout(() => CooldownSet.delete(userId), 60_000);
+    setTimeout(() => CooldownSet.delete(userId), 60_000).unref();
 
     let amount = Math.floor(Math.random() * 15) + 5;
     if (message.channel.id === config.ids.channels.bonusCoin) {
