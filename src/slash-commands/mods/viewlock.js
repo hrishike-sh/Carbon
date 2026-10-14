@@ -3,7 +3,8 @@ const {
   EmbedBuilder,
   CommandInteraction,
   TextChannel,
-  PermissionFlagsBits
+  PermissionFlagsBits,
+  OverwriteType
 } = require('discord.js');
 const Database = require('../../database/models/timed');
 const ms = require('ms');
@@ -68,7 +69,7 @@ module.exports = {
     try {
       await channel.permissionOverwrites.edit(user.id, {
         ViewChannel: false
-      });
+      }, { type: OverwriteType.Member, reason });
     } catch (error) {
       await timedAction.deleteOne().catch(() => {});
       throw error;

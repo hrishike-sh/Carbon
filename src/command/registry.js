@@ -31,6 +31,7 @@ function loadPrefixCommands(state) {
     for (const file of files) {
       try {
         const moduleExports = require(path.join(categoryPath, file));
+        if (moduleExports.disabled === true) continue;
         if (typeof moduleExports.name !== 'string' ||
             !moduleExports.name.trim() ||
             typeof moduleExports.execute !== 'function' ||

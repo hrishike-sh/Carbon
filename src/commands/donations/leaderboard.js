@@ -1,3 +1,4 @@
+const { editMessageSafely } = require('../../utils/messages');
 const {
   Message,
   Client,
@@ -208,7 +209,7 @@ module.exports = {
       grinderButton.setDisabled(true);
       karutaButton.setDisabled(true);
 
-      return mainMessage.edit({
+      return editMessageSafely(mainMessage, {
         components: [row]
       });
     });

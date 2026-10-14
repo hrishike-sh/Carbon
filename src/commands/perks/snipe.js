@@ -5,6 +5,7 @@ const {
 } = require('discord.js');
 const config = require('../../config');
 const { createEmbed } = require('../../utils/embeds');
+const { editMessageSafely } = require('../../utils/messages');
 
 const ALLOWED_ROLES = [
   '999911166673428521',
@@ -93,13 +94,12 @@ module.exports = {
       }
     });
 
-    collector.on('end', () => {
-      try {
-        prevBut.setDisabled();
-        delBut.setDisabled();
-        nextBut.setDisabled();
-        mainMessage.edit({ components: [row] });
-      } catch {}
+    collector.on('end', (_, reason) => {
+      if (['messageDelete', 'channelDelete', 'guildDelete'].includes(reason)) return;
+      prevBut.setDisabled();
+      delBut.setDisabled();
+      nextBut.setDisabled();
+      void editMessageSafely(mainMessage, { components: [row] });
     });
   }
 };

@@ -1,3 +1,5 @@
+module.exports = { disabled: true };
+
 // const { Message, Client } = require('discord.js');
 // const Database = require('../../database/models/presents-dec-24');
 // module.exports = {

@@ -28,7 +28,7 @@ class CoinService {
     const doc = await Coin.findOneAndUpdate(
       { userId },
       { $inc: { coins: amount } },
-      { upsert: true, new: true }
+      { upsert: true, returnDocument: 'after' }
     );
     return doc;
   }
@@ -38,7 +38,7 @@ class CoinService {
     const doc = await Coin.findOneAndUpdate(
       { userId, coins: { $gte: amount } },
       { $inc: { coins: -amount } },
-      { new: true }
+      { returnDocument: 'after' }
     );
     if (!doc) {
       throw new InsufficientFundsError(userId, amount);

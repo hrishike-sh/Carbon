@@ -1,3 +1,4 @@
+const { editMessageSafely } = require('../../utils/messages');
 const {
   ActionRowBuilder,
   ButtonBuilder,
@@ -145,7 +146,7 @@ module.exports = {
 
       coll.on('end', () => {
         row.components.forEach((c) => c.setDisabled(true));
-        msg.edit({ components: [row] });
+        editMessageSafely(msg, { components: [row] });
       });
     }
   }

@@ -1,13 +1,21 @@
-const { Events } = require('discord.js');
+const { Events, OverwriteType, RESTJSONErrorCodes } = require('discord.js');
 const TimedAction = require('../database/models/timed');
 const logger = require('../utils/logger');
 
 const POLL_INTERVAL = 30_000;
 
 async function processViewlockTimeout(client, action) {
-  const channel = await client.channels.fetch(action.data?.channelId).catch(() => null);
+  if (!action.data?.channelId || !action.data?.userId) {
+    await action.deleteOne();
+    return;
+  }
 
-  if (!channel?.permissionOverwrites || !action.data?.userId) {
+  const channel = await client.channels.fetch(action.data.channelId).catch((error) => {
+    if (error.code === RESTJSONErrorCodes.UnknownChannel) return null;
+    throw error;
+  });
+
+  if (!channel?.permissionOverwrites) {
     await action.deleteOne();
     return;
   }
@@ -15,7 +23,10 @@ async function processViewlockTimeout(client, action) {
   await channel.permissionOverwrites.edit(
     action.data.userId,
     { ViewChannel: null },
-    { reason: action.data.reason || 'Temporary viewlock expired' }
+    {
+      type: OverwriteType.Member,
+      reason: action.data.reason || 'Temporary viewlock expired'
+    }
   );
   await action.deleteOne();
 }

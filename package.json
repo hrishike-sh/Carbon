@@ -7,7 +7,7 @@
   "scripts": {
     "start": "node src/index.js",
     "deploy": "node src/deploy-commands.js",
-    "check": "node scripts/check-source.js && node scripts/check-modules.js"
+    "check": "node scripts/check-source.js && node scripts/check-modules.js && node --test scripts/check-runtime.test.js"
   },
   "engines": {
     "node": ">=20.19.0"

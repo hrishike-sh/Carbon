@@ -1,3 +1,4 @@
+const { editMessageSafely } = require('../../utils/messages');
 const {
   Message,
   Client,
@@ -116,7 +117,7 @@ module.exports = {
         acceptButton.setDisabled();
         denyButton.setDisabled();
 
-        return mainMessage.edit({
+        return editMessageSafely(mainMessage, {
           components: [row]
         });
       });
@@ -206,7 +207,7 @@ module.exports = {
         acceptButton.setDisabled();
         denyButton.setDisabled();
 
-        return mainMessage.edit({
+        return editMessageSafely(mainMessage, {
           components: [row]
         });
       });

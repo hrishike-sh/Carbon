@@ -1,3 +1,4 @@
+const { editMessageSafely } = require('../../utils/messages');
 const {
   ActionRowBuilder,
   ButtonBuilder,
@@ -190,7 +191,7 @@ module.exports = {
           });
         }
         fightRow.components.forEach((c) => c.setDisabled());
-        fightMessage.edit({ components: [fightRow] });
+        editMessageSafely(fightMessage, { components: [fightRow] });
         cooldowns.unlock(message.author.id);
         cooldowns.unlock(target.id);
       });
@@ -200,7 +201,7 @@ module.exports = {
       cooldowns.unlock(message.author.id);
       cooldowns.unlock(target.id);
       row.components.forEach((c) => c.setDisabled(true));
-      confirmationMessage.edit({ components: [row] });
+      editMessageSafely(confirmationMessage, { components: [row] });
     });
   }
 };

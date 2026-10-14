@@ -36,7 +36,7 @@ class DonationService {
     await Model.findOneAndUpdate(
       { userID: userId },
       { $inc: type === 'main' ? { messages: amount } : { amount } },
-      { upsert: true, new: true }
+      { upsert: true, returnDocument: 'after' }
     );
   }
 }

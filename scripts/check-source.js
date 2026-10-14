@@ -6,6 +6,7 @@ const sourceRoot = path.join(__dirname, '..', 'src');
 
 function findJavaScriptFiles(directory) {
   return fs.readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
+    if (entry.isDirectory() && /^node_modules(?:\.|$)/.test(entry.name)) return [];
     const entryPath = path.join(directory, entry.name);
     return entry.isDirectory() ? findJavaScriptFiles(entryPath) :
       (entry.name.endsWith('.js') ? [entryPath] : []);

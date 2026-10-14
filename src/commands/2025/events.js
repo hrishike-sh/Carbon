@@ -1,3 +1,4 @@
+const { editMessageSafely } = require('../../utils/messages');
 const {
   EmbedBuilder,
   ActionRowBuilder,
@@ -354,7 +355,7 @@ module.exports = {
 
       collector.on('end', () => {
         clearInterval(intervalId);
-        mainMessage.edit({
+        editMessageSafely(mainMessage, {
           components: [
             new ActionRowBuilder().addComponents([
               new ButtonBuilder()
@@ -420,7 +421,7 @@ module.exports = {
       });
       joinCollector.on('end', async () => {
         joinButton.setDisabled();
-        joinMessage.edit({
+        editMessageSafely(joinMessage, {
           components: [joinRow]
         });
 
@@ -735,7 +736,7 @@ module.exports = {
       });
 
       collector.on('end', () => {
-        mainMessage.edit({
+        editMessageSafely(mainMessage, {
           components: []
         });
       });
