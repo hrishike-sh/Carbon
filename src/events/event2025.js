@@ -64,6 +64,7 @@ const EVENT_NAMES = {
 
 module.exports = {
   name: 'tick',
+  disabled: true, // Stop automatic seasonal games and team rewards.
 
   async execute(client) {
     const channel = client.channels.cache.get(config.ids.channels.event2025);

@@ -24,7 +24,7 @@ function loadEvents(client) {
       }
     } else if (entry.name.endsWith('.js')) {
       registerEvent(client, fullPath);
-      count++;
+      count += countHandlers(fullPath);
     }
   }
 
@@ -34,6 +34,7 @@ function loadEvents(client) {
 function registerEvent(client, filePath) {
   try {
     const event = require(filePath);
+    if (event.disabled === true) return;
 
     if (!event.name || !event.execute) {
       logger.warn(`Event at ${filePath} missing name or execute`);
@@ -54,6 +55,7 @@ function registerEvent(client, filePath) {
 function countHandlers(indexPath) {
   try {
     const mod = require(indexPath);
+    if (mod.disabled === true) return 0;
     if (mod.handlers) return mod.handlers.length;
   } catch {}
   return 1;

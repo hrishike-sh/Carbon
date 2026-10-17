@@ -1,14 +1,6 @@
 const TeamDB = require('../../database/models/teams');
 const { infoEmbed, errorEmbed } = require('../../utils/embeds');
-const {
-  ATTACKS_PER_WINDOW,
-  SHIELDS_PER_DAY,
-  ensureSummerFight,
-  findTeamByName,
-  resetAttackWindow,
-  resetShieldUses,
-  resetLives
-} = require('../../utils/summerFight');
+const { findTeamByName } = require('../../utils/summerFight');
 
 module.exports = {
   name: 'myteam',
@@ -32,25 +24,6 @@ module.exports = {
       });
     }
 
-    ensureSummerFight(team);
-    const livesReset = resetLives(team);
-    resetAttackWindow(team);
-    resetShieldUses(team);
-    if (livesReset) await team.save();
-
-    const lootboxes = userId && team.lootboxes
-      ? (typeof team.lootboxes.get === 'function'
-          ? team.lootboxes.get(userId)
-          : team.lootboxes[userId]) || 0
-      : null;
-    const scoreLines = [
-      `Points: ${team.points}`,
-      `Lives: ${team.lives}`,
-      `Attacks remaining: ${Math.max(0, ATTACKS_PER_WINDOW - team.summerFight.attacksUsed)}/${ATTACKS_PER_WINDOW}`,
-      `Shields remaining: ${Math.max(0, SHIELDS_PER_DAY - team.summerFight.shieldUses)}/${SHIELDS_PER_DAY}`
-    ];
-    if (lootboxes !== null) scoreLines.push(`Loot Boxes: ${lootboxes}`);
-
     return message.reply({
       embeds: [
         infoEmbed({
@@ -58,12 +31,12 @@ module.exports = {
           fields: [
             {
               name: 'Score',
-              value: scoreLines.join('\n'),
+              value: `Points: ${team.points}`,
               inline: true
             },
             {
               name: 'Members',
-              value: team.users.map((a) => `<@${a}>`).join(' '),
+              value: team.users.map((a) => `<@${a}>`).join(' ') || 'No members.',
               inline: true
             }
           ],

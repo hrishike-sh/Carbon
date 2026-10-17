@@ -315,6 +315,7 @@ async function sendTeamSelect(message, client) {
 
 module.exports = {
   name: 'attack',
+  disabled: true, // Retired seasonal event.
   aliases: ['surpriseattack'],
   cooldown: 5,
 

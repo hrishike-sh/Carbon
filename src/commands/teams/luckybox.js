@@ -246,6 +246,7 @@ async function showPointStealReward(boxMessage, team, userId) {
 
 module.exports = {
   name: 'luckybox',
+  disabled: true, // Retired seasonal event.
   aliases: ['lootbox', 'lotobox'],
   cooldown: 3,
   description: 'Open a lucky box.',

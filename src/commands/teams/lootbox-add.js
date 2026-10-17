@@ -30,6 +30,7 @@ function getLootboxCount(team, userId) {
 
 module.exports = {
   name: 'lootbox-add',
+  disabled: true, // Retired seasonal event.
   aliases: ['addlootbox', 'lbadd'],
 
   async execute(message, args) {

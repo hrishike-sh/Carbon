@@ -97,7 +97,6 @@ module.exports = {
           description:
             `Name: ${teamName}\n` +
             `Members: ${memberIds.map((id) => `<@${id}>`).join(' ')}\n` +
-            `Lives: ${team.lives}\n` +
             `DB ID: ${team._id}`
         })
       ],

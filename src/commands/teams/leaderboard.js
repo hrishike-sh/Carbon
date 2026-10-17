@@ -21,7 +21,7 @@ module.exports = {
     return message.reply({
       embeds: [
         infoEmbed({
-          title: 'Summer Fight Leaderboard',
+          title: 'Team Leaderboard',
           description: map.join('\n') || 'No teams yet.',
           timestamp: true
         })

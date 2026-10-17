@@ -11,6 +11,7 @@ const { successEmbed, errorEmbed } = require('../../utils/embeds');
 
 module.exports = {
   name: 'block',
+  disabled: true, // Retired seasonal event.
   aliases: ['defend'],
   cooldown: 3,
 
