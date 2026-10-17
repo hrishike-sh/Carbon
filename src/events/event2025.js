@@ -87,6 +87,7 @@ async function runEvent(client, channel, index, { awardTeamPoints = false } = {}
 
 module.exports = {
   name: 'tick',
+  disabled: true, // Stop automatic seasonal games and team rewards.
   runEvent,
 
   async execute(client) {

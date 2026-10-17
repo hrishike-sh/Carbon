@@ -32,7 +32,20 @@ Commands intentionally kept inactive export `{ disabled: true }`. This includes 
 
 Startup validates `token` and `mongopath`, loads feature caches before connecting to Discord, and closes managed timers, Discord, and MongoDB on SIGINT/SIGTERM. Interactive games remain in memory and do not resume after a restart.
 
-Coin balance reads do not create accounts. Account creation is serialized within one process, and failed transfer credits attempt to refund the sender. Transfers are still not crash-atomic: multi-process economy writers need a duplicate-account migration, unique user indexes, and transactions or a durable ledger. Existing records are not merged automatically. Multi-team SummerFight updates also remain a separate consistency improvement.
+Coin balance reads do not create accounts. Account creation is serialized within one process, and failed transfer credits attempt to refund the sender. Transfers are still not crash-atomic: multi-process economy writers need a duplicate-account migration, unique user indexes, and transactions or a durable ledger. Existing records are not merged automatically.
+
+## Retired team event
+
+The old attack, block, shield, lootbox, and lootbox-grant commands (including aliases) and automatic seasonal games are disabled. Manual `fh events` games remain available without team rewards. `fh tlb` now shows a general Team Leaderboard, and team displays show points and membership.
+
+To clear old teams, use the live deployment's `mongopath` environment variable or root `.env`. First preview, then stop the bot and apply:
+
+```sh
+node scripts/reset-teams.js
+node scripts/reset-teams.js --apply
+```
+
+The script backs up complete team documents as BSON Extended JSON under the Git-ignored `logs/team-backups/` directory before deleting the captured IDs. It clears memberships, scores, and event inventories with those teams; it does not modify coin balances or other collections. Keep the backup private. Deploy this code and restart the bot to disable the old commands and scheduler. The reset is explicit and never runs automatically on startup.
 
 ## Recover Mafia transcripts from raw logs
 

@@ -1,42 +1,13 @@
 const TeamDB = require('../../database/models/teams');
 const { infoEmbed } = require('../../utils/embeds');
-const {
-  ATTACKS_PER_WINDOW,
-  SHIELDS_PER_DAY,
-  cleanTeamName,
-  ensureSummerFight,
-  resetAttackWindow,
-  resetShieldUses,
-  resetLives,
-  hasPendingAttack
-} = require('../../utils/summerFight');
+const { cleanTeamName } = require('../../utils/summerFight');
 
 const MAX_DESCRIPTION_LENGTH = 3800;
 
-function teamBlock(team, now) {
-  ensureSummerFight(team);
-  resetLives(team, new Date(now));
-  resetAttackWindow(team, now);
-  resetShieldUses(team, new Date(now));
-
-  const attacksRemaining = Math.max(
-    0,
-    ATTACKS_PER_WINDOW - team.summerFight.attacksUsed
-  );
-  const shieldsRemaining = Math.max(
-    0,
-    SHIELDS_PER_DAY - team.summerFight.shieldUses
-  );
-  const attacks = '⚔️'.repeat(attacksRemaining) || '0';
-  const shields = '🛡️'.repeat(shieldsRemaining) || '0';
-  const pending = hasPendingAttack(team) &&
-    new Date(team.summerFight.pendingAttack.expiresAt).getTime() > now
-    ? ' · UNDER ATTACK'
-    : '';
-
+function teamBlock(team) {
   return (
     `**${cleanTeamName(team.name) || 'Unnamed Team'}**: ` +
-    `${attacks} | ${shields}${pending}`
+    `${team.points} points · ${team.users.length} members`
   );
 }
 
@@ -70,10 +41,7 @@ module.exports = {
       });
     }
 
-    const now = Date.now();
-    const resetTeams = teams.filter((team) => resetLives(team, new Date(now)));
-    await Promise.all(resetTeams.map((team) => team.save()));
-    const pages = makePages(teams.map((team) => teamBlock(team, now)));
+    const pages = makePages(teams.map(teamBlock));
 
     for (let index = 0; index < pages.length; index += 1) {
       const payload = {
@@ -83,7 +51,6 @@ module.exports = {
               ? `Team Status (${index + 1}/${pages.length})`
               : 'Team Status',
             description: pages[index],
-            footer: 'Swords: attacks | Shields: daily shields',
             timestamp: true
           })
         ],
