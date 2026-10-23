@@ -43,9 +43,6 @@ async function main() {
       client.state.afks.push(afkUser.userId);
     }
 
-    // Trigger 2025 event scheduler
-    client.emit('tick');
-
     // Start hourly stats reporter
     client.emit('hourlyStats');
 

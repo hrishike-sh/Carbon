@@ -548,9 +548,6 @@ module.exports = {
         .setDescription(
           `I have chosen a number, is it Higher or Lower than **${reference}**?`
         )
-        .setFooter({
-          text: 'Summer Event'
-        })
         .setColor(Theme.warning);
       const row = new ActionRowBuilder().addComponents([
         new ButtonBuilder()
