@@ -5,19 +5,30 @@ const { neutralEmbed } = require('../../utils/embeds');
 module.exports = {
   name: 'grinderslist',
   aliases: ['glist'],
-  async execute(message) {
+  /**
+   * @param {Message} message Discord Message
+   * @param {String[]} args Command Arguments
+   * @param {Client} client Discord Client
+   */
+  async execute(message, args, client) {
     if (!message.member.roles.cache.has(config.roles.staff.cman)) return;
-    const list = await Database.find({ guildID: message.guild.id, 'dynamic.grinder': true })
-      .sort({ 'dynamic.expires': 1 }).select('userID dynamic.expires').lean();
-    if (!list.length) return message.reply('There are no active grinders.');
-    // Mentions display cached names without a separate Discord request for every row.
-    for (let start = 0; start < list.length; start += 25) {
-      const lines = list.slice(start, start + 25).map((entry, index) =>
-        `**${String(start + index + 1).padStart(2, '0')}.** <@${entry.userID}> - <t:${Math.floor(entry.dynamic.expires / 1000)}:R>`);
-      await message.reply({
-        embeds: [neutralEmbed({ description: lines.join('\n') })],
-        allowedMentions: { parse: [], repliedUser: false }
-      });
+    const all = await Database.find({
+      'dynamic.grinder': true
+    });
+    const list = all.sort((a, b) => a.dynamic.expires - b.dynamic.expires);
+    const map = [];
+    for (let i = 0; i < list.length; i++) {
+      const user =
+        (await client.users.fetch(list[i].userID).catch(() => null)) ||
+        list[i].userID;
+      const time = `<t:${(list[i].dynamic.expires / 1000).toFixed(0)}:R>`;
+
+      map.push(`**${(i + 1).toString().padStart(2, 0)}.** ${user} - ${time}`);
     }
+    return message.reply({
+      embeds: [
+        neutralEmbed({ description: map.join('\n') })
+      ]
+    });
   }
 };

@@ -1,3 +1,4 @@
+const { editMessageSafely } = require('../../utils/messages');
 const apikey = process.env.CATAPITOKEN;
 const {
   ButtonBuilder,
@@ -58,7 +59,7 @@ module.exports = {
     });
     collector.on('end', () => {
       generateButton.setDisabled();
-      mainMessage.edit({
+      editMessageSafely(mainMessage, {
         components: [row]
       });
     });

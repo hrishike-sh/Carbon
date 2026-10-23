@@ -13,9 +13,8 @@ module.exports = {
     if (!mentions || mentions.filter((a) => !a.user.bot).size < 1) return;
 
     for (const [, member] of mentions) {
-      if (member.user.bot) continue;
       if (!member.roles.cache.hasAny(...config.roles.lastPingAllowed)) continue;
-      if (!message.channel.permissionsFor(member.id)?.has('ViewChannel')) continue;
+      if (!message.channel.permissionsFor(member.id).has('ViewChannel')) continue;
 
       await Database.findOneAndUpdate(
         { userId: member.id },
@@ -36,7 +35,7 @@ module.exports = {
             }
           }
         },
-        { upsert: true, new: true }
+        { upsert: true, returnDocument: 'after' }
       );
     }
   },

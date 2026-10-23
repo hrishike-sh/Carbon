@@ -1,5 +1,7 @@
 const config = require('../../config');
 const { CoinService } = require('../../database/services/coinService');
+const Coin = require('../../database/models/coins');
+const { sleep } = require('../../utils/helpers');
 
 const cooldowns = new Set();
 
@@ -13,13 +15,17 @@ module.exports = {
     if (cooldowns.has(userId)) return;
 
     cooldowns.add(userId);
-    setTimeout(() => cooldowns.delete(userId), 20_000).unref();
+    setTimeout(() => cooldowns.delete(userId), 20_000);
 
     let amount = Math.ceil(Math.random() * 13) + 12;
     if (message.channel.id === config.ids.channels.bonusCoin) {
       amount = Math.floor(amount * 1.5);
     }
 
-    await CoinService.addCoins(userId, amount);
+    await Coin.findOneAndUpdate(
+      { userId },
+      { $inc: { coins: amount } },
+      { upsert: true }
+    );
   }
 };

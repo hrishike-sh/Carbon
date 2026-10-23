@@ -5,8 +5,6 @@ const discord_js_1 = require("discord.js");
 const config = require('../../config');
 const { Theme } = require('../../utils/embeds');
 module.exports = {
-    // The unfinished round loop busy-spins and blocks all bot events.
-    disabled: true,
     name: 'imposters',
     execute: async (message, args, client) => {
         const EVENT_MANAGER = config.roles.giveawayManager;

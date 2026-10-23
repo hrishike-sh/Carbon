@@ -1,7 +1,6 @@
 const fs = require('fs/promises');
 const os = require('os');
 const path = require('path');
-const { randomUUID } = require('crypto');
 const discordTranscripts = require('discord-html-transcripts-v2');
 
 const DEFAULT_PUBLIC_DIR = path.join(os.homedir(), 'transcripts', 'public');
@@ -31,7 +30,7 @@ async function createHostedTranscript(channel, messages, options = {}) {
   const { publicDir, baseUrl } = getTranscriptConfig();
   const prefix = sanitizeNamePart(options.prefix || 'transcript');
   const channelPart = sanitizeNamePart(channel.id || channel.name || 'channel');
-  const fileName = `${prefix}-${channelPart}-${Date.now()}-${randomUUID()}.html`;
+  const fileName = `${prefix}-${channelPart}-${Date.now()}.html`;
   const filePath = path.join(publicDir, fileName);
   const messageList = Array.isArray(messages) ? messages : [...messages.values()];
 

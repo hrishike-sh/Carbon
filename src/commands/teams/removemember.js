@@ -28,7 +28,8 @@ module.exports = {
     const team = await TeamDB.findOne({ users: member.id });
     if (!team) return message.reply({ embeds: [errorEmbed({ description: 'That member is not in a team.' })] });
 
-    await TeamDB.updateOne({ _id: team._id }, { $pull: { users: member.id } });
+    team.users = team.users.filter((a) => a !== member.id);
+    team.save();
     return message.reply({
       embeds: [
         successEmbed({

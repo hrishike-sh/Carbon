@@ -8,21 +8,18 @@ module.exports = {
   cooldown: 3,
 
   async execute(message, args) {
-    if (!API_KEY) return message.reply('Score lookup is not configured.');
     const msg = await message.channel.send({
       embeds: [infoEmbed({ title: 'Fetching data...' })]
     });
 
     try {
       const req = await fetch(
-        `https://api.cricapi.com/v1/currentMatches?apikey=${encodeURIComponent(API_KEY)}&offset=0`,
-        { signal: AbortSignal.timeout(10_000) }
+        `https://api.cricapi.com/v1/currentMatches?apikey=${API_KEY}&offset=0`
       );
       if (!req.ok) throw new Error(req.status);
 
       const data = await req.json();
-      const match = data.data?.[0];
-      if (!match) return msg.edit({ embeds: [infoEmbed({ title: 'No current matches found.' })] });
+      const match = data.data[0];
       const embed = infoEmbed({
         title: match.name,
         description: match.status,
@@ -31,17 +28,17 @@ module.exports = {
         timestamp: true
       });
 
-      for (const inning of (match.score || []).slice(0, 25)) {
+      for (let i = 0; i < 2; i++) {
         embed.addFields({
-          name: inning.inning?.split('Inning')[0] || 'Innings',
-          value: `**Score:** ${inning.r}/${inning.w}\n**Overs:** ${inning.o}`,
+          name: match.score[i].inning.split('Inning')[0],
+          value: `**Score:** ${match.score[i].r}/${match.score[i].w}\n**Overs:** ${match.score[i].o}`,
           inline: true
         });
       }
 
       await msg.edit({ embeds: [embed] });
     } catch (error) {
-      await msg.edit({ embeds: [infoEmbed({ title: 'Failed to fetch score data.' })] });
+      msg.edit({ embeds: [infoEmbed({ title: 'Failed to fetch score data.' })] });
     }
   }
 };

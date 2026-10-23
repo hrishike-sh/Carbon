@@ -11,8 +11,4 @@ const GrinderDonoSchema = new Schema({
   }
 });
 
-GrinderDonoSchema.index({ userID: 1, guildID: 1 });
-GrinderDonoSchema.index({ guildID: 1, amount: -1, _id: 1 });
-GrinderDonoSchema.index({ guildID: 1, 'dynamic.grinder': 1, 'dynamic.expires': 1 });
-
 module.exports = model('grinderschema', GrinderDonoSchema);

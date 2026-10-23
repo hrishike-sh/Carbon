@@ -1,86 +1,216 @@
-const { EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder } = require('discord.js');
+const { editMessageSafely } = require('../../utils/messages');
+const {
+  Message,
+  Client,
+  EmbedBuilder,
+  ButtonBuilder,
+  ButtonStyle,
+  ActionRowBuilder
+} = require('discord.js');
 const config = require('../../config');
 const { Theme } = require('../../utils/embeds');
-
-const DESTINATIONS = {
-  '857223712193511434': {
-    type: 'Event', roleId: config.roles.giveawayManager,
-    fields: ['Prize', 'Requirement', 'Type of Event', 'Message'],
-    usage: 'fh donate <prize>, <requirement>, <event type>, <optional message>'
-  },
-  '824319140763795457': {
-    type: 'Giveaway', roleId: '825783847622934549',
-    fields: ['Time', 'Winners', 'Requirement', 'Prize', 'Message'],
-    usage: 'fh donate <time>, <winners>, <requirement>, <prize>, <optional message>'
-  }
-};
 
 module.exports = {
   name: 'donate',
   cooldown: 30,
-  async execute(message, args) {
-    const destination = DESTINATIONS[message.channel.id];
-    if (!destination) return message.reply("You can't run this command here.");
-    const values = args.join(' ').split(',').map((value) => value.trim());
-    const required = destination.fields.length - 1;
-    if (values.length < required || values.slice(0, required).some((value) => !value)) {
-      return message.reply(`**Usage:** \`${destination.usage}\`\nSeparate the arguments with commas.`);
+  /**
+   *
+   * @param {Message} message
+   * @param {String[]} args
+   * @param {Client} client
+   */
+  async execute(message, args, client) {
+    const consts = {
+      eventChannelId: '857223712193511434',
+      giveawayChannelId: '824319140763795457',
+      eventManagerRoleId: config.roles.giveawayManager,
+      giveawayManagerRoleId: '825783847622934549'
+    };
+    if (
+      ![consts.eventChannelId, consts.giveawayChannelId].includes(
+        message.channel.id
+      )
+    ) {
+      return message.reply("You can't run this command here.");
     }
-    values[required] = values.slice(required).join(', ') || 'None';
-    if (values.slice(0, required + 1).some((value) => value.length > 1024)) {
-      return message.reply('Each donation field must contain at most 1,024 characters.');
+    const commandArgs = args.join(' ').split(',');
+
+    if (message.channel.id == consts.eventChannelId) {
+      // fh donate <prize>, <requirement>, <event type>, <message>
+      const EExample = `**How to use this command. [Events]**\n\n> fh donate <prize>, <requirement>, <event type>, <message>\n  <prize>: Prize for the event winner\n  <requirement>: Pre-requisite for a member to join the event, mention "none" if no requirement.\n  <event type>: Type of event. (example: guessthenumber, tea. rumble etc.)\n  <message>: Optional message you'd like to have.\n\n**Note:** Seperate the arguments using commas.\nExample: fh donate 2 pepetrophies, level 50 & voter, tea, enjoy!`;
+
+      const prize = commandArgs.shift();
+      if (!prize) return message.reply(EExample);
+      const requirement = commandArgs.shift();
+      if (!requirement) return message.reply(EExample);
+      const eventType = commandArgs.shift();
+      if (!eventType) return message.reply(EExample);
+      const msg = commandArgs.shift() || 'None!';
+
+      const EventDonateEmbed = new EmbedBuilder()
+        .setTitle('Event Donation')
+        .setColor(Theme.info)
+        .setTimestamp()
+        .setFooter({
+          text: 'Please be patient, you will receive a DM when an event manager accepts your donation.'
+        })
+        .setAuthor({
+          name: message.author.tag,
+          iconURL: message.author.displayAvatarURL()
+        })
+        .addFields([
+          { name: 'Prize', value: prize, inline: true },
+          { name: 'Requirement', value: requirement, inline: true },
+          { name: 'Type of Event', value: eventType, inline: true },
+          { name: 'Message', value: msg, inline: true }
+        ]);
+      const acceptButton = new ButtonBuilder()
+        .setLabel('Accept')
+        .setStyle(ButtonStyle.Success)
+        .setCustomId('accept;e_dono');
+      const denyButton = new ButtonBuilder()
+        .setLabel('Deny')
+        .setStyle(ButtonStyle.Danger)
+        .setCustomId('deny;e_dono');
+      const row = new ActionRowBuilder().addComponents([
+        acceptButton,
+        denyButton
+      ]);
+      const mainMessage = await message.channel.send({
+        content: `<@&${
+          consts.eventManagerRoleId
+        }>, ${message.author.toString()} would like to make a donation!`,
+        embeds: [EventDonateEmbed],
+        components: [row]
+      });
+      const collector = mainMessage.createMessageComponentCollector({});
+      collector.on('collect', async (button) => {
+        if (!button.member.roles.cache.has(consts.eventManagerRoleId)) {
+          return button.reply({
+            content: `You need to have the <@&${consts.eventManagerRoleId}> role to accept/deny donations!`,
+            flags: 64
+          });
+        }
+        collector.stop();
+
+        if (button.customId == 'accept;e_dono') {
+          (await message.author.createDM()).send({
+            content: `${button.user.toString()} has accepted your Event Donation! Please check <#${
+              consts.eventChannelId
+            }>`
+          });
+
+          return button.reply(
+            'The donator has been notified! Please wait for them.'
+          );
+        } else {
+          (await message.author.createDM()).send({
+            content: `Your event donation has been denied! Please check <#${consts.eventChannelId}>`
+          });
+
+          return button.reply(
+            'The donator has been notified! Please wait for them.'
+          );
+        }
+      });
+      collector.on('end', () => {
+        acceptButton.setDisabled();
+        denyButton.setDisabled();
+
+        return editMessageSafely(mainMessage, {
+          components: [row]
+        });
+      });
+    } else {
+      // fh donate <time>, <winners>, <requirement>, <prize>, <message>
+      const GExample = `**How to use this command. [Giveaways]**\n\n> fh donate <time>, <winners>, <requirement>, <prize>, <message>\n  <time>: How long this giveaway should be hosted for.\n  <winners>: Number of winners.\n  <requirement>: Pre-requisite to join the giveaway.\n  <prize>: Prize for the giveaway.\n  <message>: Any message you want, goes below the giveaway.\n\n**Note:** Seperate the arguments using commas.\nExample: fh donate 1 hour, 2 winners, no requirement, 10 Pepe Medals, It's no longer june, yay!`;
+
+      const time = commandArgs.shift();
+      if (!time) return message.reply(GExample);
+      const winners = commandArgs.shift();
+      if (!winners) return message.reply(GExample);
+      const requirement = commandArgs.shift();
+      if (!requirement) return message.reply(GExample);
+      const prize = commandArgs.shift();
+      if (!prize) return message.reply(GExample);
+      const msgg = commandArgs.shift() || 'None';
+
+      const GiveawayDonateEmbed = new EmbedBuilder()
+        .setTitle('Giveaway Donation')
+        .setAuthor({
+          name: message.author.tag,
+          iconURL: message.author.displayAvatarURL()
+        })
+        .setColor(Theme.info)
+        .setTimestamp()
+        .setFooter({
+          text: 'You will receive a DM when a manager accepts your donation. Please be patient!'
+        })
+        .addFields([
+          { name: 'Time', value: time, inline: true },
+          { name: 'Winners', value: winners, inline: true },
+          { name: 'Requirement', value: requirement, inline: true },
+          { name: 'Prize', value: prize, inline: true },
+          { name: 'Message', value: msgg, inline: true }
+        ]);
+      const acceptButton = new ButtonBuilder()
+        .setLabel('Accept')
+        .setStyle(ButtonStyle.Success)
+        .setCustomId('accept;g_dono');
+      const denyButton = new ButtonBuilder()
+        .setLabel('Deny')
+        .setStyle(ButtonStyle.Danger)
+        .setCustomId('deny;g_dono');
+      const row = new ActionRowBuilder().addComponents([
+        acceptButton,
+        denyButton
+      ]);
+
+      const mainMessage = await message.channel.send({
+        content: `<@&${
+          consts.giveawayManagerRoleId
+        }>, ${message.author.toString()} would like to make a donation!`,
+        embeds: [GiveawayDonateEmbed],
+        components: [row]
+      });
+      const collector = mainMessage.createMessageComponentCollector({});
+      collector.on('collect', async (button) => {
+        if (!button.member.roles.cache.has(consts.giveawayManagerRoleId)) {
+          return button.reply({
+            content: `You need to have the <@&${consts.giveawayManagerRoleId}> role to accept/deny donations!`,
+            flags: 64
+          });
+        }
+        collector.stop();
+
+        if (button.customId == 'accept;g_dono') {
+          (await message.author.createDM()).send({
+            content: `${button.user.toString()} has accepted your Giveaway Donation! Please check <#${
+              consts.giveawayChannelId
+            }>`
+          });
+
+          return button.reply(
+            'The donator has been notified! Please wait for them.'
+          );
+        } else {
+          (await message.author.createDM()).send({
+            content: `Your event donation has been denied! Please check <#${consts.giveawayChannelId}>`
+          });
+
+          return button.reply(
+            'The donator has been notified! Please wait for them.'
+          );
+        }
+      });
+      collector.on('end', () => {
+        acceptButton.setDisabled();
+        denyButton.setDisabled();
+
+        return editMessageSafely(mainMessage, {
+          components: [row]
+        });
+      });
     }
-    const embed = new EmbedBuilder()
-      .setTitle(`${destination.type} Donation`)
-      .setColor(Theme.info)
-      .setTimestamp()
-      .setAuthor({ name: message.author.tag, iconURL: message.author.displayAvatarURL() })
-      .setFooter({ text: 'You will receive a DM when a manager accepts your donation. Requests expire after 24 hours.' })
-      .addFields(destination.fields.map((name, index) => ({ name, value: values[index], inline: true })));
-    const row = new ActionRowBuilder().addComponents(
-      new ButtonBuilder().setLabel('Accept').setStyle(ButtonStyle.Success).setCustomId('donate_accept'),
-      new ButtonBuilder().setLabel('Deny').setStyle(ButtonStyle.Danger).setCustomId('donate_deny')
-    );
-    const mainMessage = await message.channel.send({
-      content: `<@&${destination.roleId}>, ${message.author} would like to make a donation!`,
-      allowedMentions: { roles: [destination.roleId], users: [message.author.id] },
-      embeds: [embed], components: [row]
-    });
-    const collector = mainMessage.createMessageComponentCollector({ time: 24 * 60 * 60 * 1000 });
-    let handled = false;
-    collector.on('collect', async (button) => {
-      let reserved = false;
-      let acknowledged = false;
-      try {
-        if (!button.member?.roles?.cache?.has(destination.roleId)) {
-          await button.reply({ content: `You need the <@&${destination.roleId}> role to accept or deny donations.`, flags: 64 });
-          return;
-        }
-        if (handled) {
-          await button.reply({ content: 'This request has already been handled.', flags: 64 });
-          return;
-        }
-        handled = true;
-        reserved = true;
-        await button.deferReply();
-        acknowledged = true;
-        collector.stop('handled');
-        const accepted = button.customId === 'donate_accept';
-        const dmContent = accepted
-          ? `${button.user} has accepted your ${destination.type} Donation! Please check <#${message.channel.id}>.`
-          : `Your ${destination.type.toLowerCase()} donation has been denied. Please check <#${message.channel.id}>.`;
-        const notified = await message.author.send({ content: dmContent }).then(() => true, () => false);
-        await button.editReply({ content: notified
-          ? 'The donor has been notified. Please wait for them.'
-          : 'The request was handled, but I could not DM the donor. Please contact them in this channel.' });
-      } catch (error) {
-        if (reserved && !acknowledged) handled = false;
-        console.error('Donation request interaction failed:', error);
-      }
-    });
-    collector.on('end', () => {
-      row.components.forEach((button) => button.setDisabled(true));
-      mainMessage.edit({ components: [row] }).catch(() => {});
-    });
   }
 };

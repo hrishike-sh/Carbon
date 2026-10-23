@@ -1,5 +1,4 @@
 const handlers = [require('./proleRoles')];
-const logger = require('../../utils/logger');
 
 module.exports = {
   name: 'interactionCreate',
@@ -10,7 +9,7 @@ module.exports = {
       try {
         await handler.execute(interaction, client);
       } catch (err) {
-        logger.error(`Interaction handler "${handler.name}" failed`, err);
+        // silently continue
       }
     }
   }

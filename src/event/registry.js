@@ -1,42 +1,64 @@
-const fs = require('node:fs');
-const path = require('node:path');
+const fs = require('fs');
+const path = require('path');
 const logger = require('../utils/logger');
 
-function loadEvents(client, directory = path.join(__dirname, '..', 'events')) {
-  const events = [];
-  const errors = [];
+function loadEvents(client) {
+  const eventsPath = path.join(__dirname, '..', 'events');
 
-  for (const entry of fs.readdirSync(directory, { withFileTypes: true })) {
-    const filePath = entry.isDirectory()
-      ? path.join(directory, entry.name, 'index.js')
-      : path.join(directory, entry.name);
-    if (entry.isDirectory() && !fs.existsSync(filePath)) continue;
-    if (!entry.isDirectory() && (!entry.isFile() || !entry.name.endsWith('.js'))) continue;
+  if (!fs.existsSync(eventsPath)) {
+    logger.warn('Events directory not found');
+    return;
+  }
 
-    try {
-      const event = require(filePath);
-      if (event.disabled === true) continue;
-      if (typeof event.name !== 'string' || !event.name || typeof event.execute !== 'function') {
-        throw new TypeError('Event must export a name and an execute function');
+  const entries = fs.readdirSync(eventsPath, { withFileTypes: true });
+  let count = 0;
+
+  for (const entry of entries) {
+    const fullPath = path.join(eventsPath, entry.name);
+
+    if (entry.isDirectory()) {
+      const indexPath = path.join(fullPath, 'index.js');
+      if (fs.existsSync(indexPath)) {
+        registerEvent(client, indexPath);
+        count += countHandlers(indexPath);
       }
-      events.push({ event, filePath });
-    } catch (cause) {
-      errors.push(new Error(`Failed to load ${filePath}: ${cause.message}`, { cause }));
+    } else if (entry.name.endsWith('.js')) {
+      registerEvent(client, fullPath);
+      count += countHandlers(fullPath);
     }
   }
 
-  // Do not leave a partially registered bot running when one module is broken.
-  if (errors.length) throw new AggregateError(errors, 'Event loading failed');
-  for (const { event, filePath } of events) {
+  logger.info(`Loaded ${count} event handlers`);
+}
+
+function registerEvent(client, filePath) {
+  try {
+    const event = require(filePath);
+    if (event.disabled === true) return;
+
+    if (!event.name || !event.execute) {
+      logger.warn(`Event at ${filePath} missing name or execute`);
+      return;
+    }
+
     const execute = (...args) => Promise.resolve()
       .then(() => event.execute(...args, client))
       .catch((err) => logger.error(`Event "${event.name}" failed (${filePath})`, err));
+
     if (event.once) client.once(event.name, execute);
     else client.on(event.name, execute);
+  } catch (err) {
+    logger.error(`Failed to load event ${filePath}`, err);
   }
-  const count = events.reduce((total, { event }) => total + (event.handlers?.length || 1), 0);
-  logger.info(`Loaded ${count} event handlers`);
-  return count;
+}
+
+function countHandlers(indexPath) {
+  try {
+    const mod = require(indexPath);
+    if (mod.disabled === true) return 0;
+    if (mod.handlers) return mod.handlers.length;
+  } catch {}
+  return 1;
 }
 
 module.exports = { loadEvents };

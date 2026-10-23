@@ -1,192 +1,207 @@
-const { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder } = require('discord.js');
+const { editMessageSafely } = require('../../utils/messages');
+const {
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle,
+  EmbedBuilder
+} = require('discord.js');
 const config = require('../../config');
-const { CoinService, InsufficientFundsError } = require('../../database/services/coinService');
+const { CoinService } = require('../../database/services/coinService');
 const cooldowns = require('../../command/cooldowns');
 const { parseAmount } = require('../../utils/validators');
 const { Theme } = require('../../utils/embeds');
-const logger = require('../../utils/logger');
 
 module.exports = {
   name: 'fight',
 
-  async execute(message, args) {
+  async execute(message, args, client) {
     if (message.guild.id !== config.ids.guildId) return;
     const target = message.mentions.members.first();
     if (!target) return message.reply('You have to mention someone!');
-    if (target.id === message.author.id) return message.reply("You can't fight yourself!");
-    if (target.user.bot) return message.reply("You can't fight a bot!");
-    const amount = parseAmount(args[1]);
-    if (!amount || !Number.isSafeInteger(amount * 2)) return message.reply('Mention a valid bet!');
+    if (target.user.id === message.author.id)
+      return message.reply("You can't fight yourself!");
+    args.shift();
+    const amount = parseAmount(args[0]);
+    if (!amount) return message.reply('Mention the bet!');
 
-    const userId = message.author.id;
-    if (!cooldowns.lock(userId)) return message.reply('Either you or your opponent is already in a game..');
-    if (!cooldowns.lock(target.id)) {
-      cooldowns.unlock(userId);
+    const userBal = await CoinService.getBalance(message.author.id);
+    const targetBal = await CoinService.getBalance(target.id);
+    if (amount > userBal) return message.reply('You dont have that many coins!');
+    if (amount > targetBal)
+      return message.reply(`${target.toString()} does not have enough coins!`);
+
+    if (cooldowns.isLocked(message.author.id) || cooldowns.isLocked(target.id)) {
       return message.reply('Either you or your opponent is already in a game..');
     }
-    let released = false;
-    const unlock = () => {
-      if (released) return;
-      released = true;
-      cooldowns.unlock(userId);
-      cooldowns.unlock(target.id);
-    };
+    cooldowns.lock(message.author.id);
+    cooldowns.lock(target.id);
 
-    try {
-      const [userBalance, targetBalance] = await Promise.all([
-        CoinService.getBalance(userId), CoinService.getBalance(target.id)
-      ]);
-      if (amount > userBalance || amount > targetBalance) {
-        unlock();
-        return message.reply('Someone does not have enough coins!');
+    const row = new ActionRowBuilder().addComponents([
+      new ButtonBuilder().setStyle(ButtonStyle.Success).setCustomId('confirm').setLabel('Confirm'),
+      new ButtonBuilder().setStyle(ButtonStyle.Danger).setCustomId('cancel').setLabel('Cancel')
+    ]);
+
+    const confirmationMessage = await message.channel.send({
+      content: `${target.toString()} do you want to fight ${message.author.toString()} for ${amount.toLocaleString()} coins?`,
+      components: [row]
+    });
+
+    const confirmationCollector = confirmationMessage.createMessageComponentCollector({
+      filter: (m) => m.user.id === target.id,
+      idle: 25_000
+    });
+
+    confirmationCollector.on('collect', async (m) => {
+      if (m.customId === 'cancel') {
+        confirmationCollector.stop();
+        cooldowns.unlock(message.author.id);
+        cooldowns.unlock(target.id);
+        return message.reply(`${target.user.username} does not want to fight you.`);
       }
-      const row = new ActionRowBuilder().addComponents(
-        new ButtonBuilder().setStyle(ButtonStyle.Success).setCustomId('confirm').setLabel('Confirm'),
-        new ButtonBuilder().setStyle(ButtonStyle.Danger).setCustomId('cancel').setLabel('Cancel')
-      );
-      const confirmation = await message.channel.send({
-        content: `${target.toString()} do you want to fight ${message.author.toString()} for ${amount.toLocaleString()} coins?`,
-        components: [row]
-      });
-      const collector = confirmation.createMessageComponentCollector({
-        filter: (button) => button.user.id === target.id,
-        idle: 25_000
-      });
-      collector.once('collect', (button) => {
-        const accepted = button.customId === 'confirm';
-        collector.stop(accepted ? 'accepted' : 'declined');
-        (async () => {
-          await button.deferUpdate();
-          if (!accepted) {
-            await message.reply(`${target.user.username} does not want to fight you.`);
-            return;
-          }
-          const debited = [];
-          try {
-            await CoinService.removeCoins(userId, amount);
-            debited.push(userId);
-            await CoinService.removeCoins(target.id, amount);
-            debited.push(target.id);
-            await startFight(message, target, amount, unlock);
-          } catch (err) {
-            // A declined second debit or failed game message must not strand
-            // the first player's stake.
-            const refunds = await Promise.allSettled(debited.map((id) => CoinService.addCoins(id, amount)));
-            refunds.forEach((result) => {
-              if (result.status === 'rejected') logger.error('Failed to refund fight stake', result.reason);
-            });
-            unlock();
-            if (err instanceof InsufficientFundsError) {
-              await message.reply('Someone no longer has enough coins!');
-              return;
-            }
-            throw err;
-          }
-        })().catch((err) => {
-          logger.error('Failed to start fight', err);
-          if (accepted) unlock();
-        });
-      });
-      collector.once('end', (_, reason) => {
-        // The active fight owns these locks after acceptance.
-        if (reason !== 'accepted') unlock();
-        row.components.forEach((button) => button.setDisabled(true));
-        confirmation.edit({ components: [row] }).catch((err) => logger.error('Failed to close fight invitation', err));
-      });
-    } catch (err) {
-      unlock();
-      throw err;
-    }
-  }
-};
 
-async function startFight(message, target, amount, unlock) {
-  const players = [message.author, target.user];
-  const health = [100, 100];
-  const heals = [5, 5];
-  let turn = Math.floor(Math.random() * 2);
-  let winner = null;
-  let busy = false;
-  let ended = false;
-  const embed = new EmbedBuilder()
-    .setTitle(`${message.author.username} vs ${target.user.username}`)
-    .setColor(Theme.warning)
-    .setFooter({ text: `Carbon • Winner gets: ${(amount * 2).toLocaleString()} coins` });
-  const describe = () => embed.setDescription(
-    `**${players[0].tag}** (__${Math.max(0, health[0])}__) vs (__${Math.max(0, health[1])}__) **${players[1].tag}**`
-  );
-  describe();
-  const row = new ActionRowBuilder().addComponents(
-    new ButtonBuilder().setStyle(ButtonStyle.Danger).setCustomId('fight_attack').setLabel('Attack'),
-    new ButtonBuilder().setStyle(ButtonStyle.Success).setCustomId('fight_heal').setLabel('Heal')
-  );
-  const gameMessage = await message.channel.send({
-    embeds: [embed], components: [row], content: `${players[turn].toString()} your turn!`
-  });
-  const collector = gameMessage.createMessageComponentCollector({
-    filter: (button) => players.some((player) => player.id === button.user.id),
-    idle: 10000
-  });
+      const freshUserBal = await CoinService.getBalance(message.author.id);
+      const freshTargetBal = await CoinService.getBalance(target.id);
+      if (amount > freshUserBal || amount > freshTargetBal) {
+        confirmationCollector.stop();
+        cooldowns.unlock(message.author.id);
+        cooldowns.unlock(target.id);
+        return message.reply('Someone no longer has enough coins!');
+      }
 
-  collector.on('collect', (button) => {
-    if (busy || ended) {
-      button.deferUpdate().catch((err) => logger.error('Failed to acknowledge fight button', err));
-      return;
-    }
-    if (button.user.id !== players[turn].id) {
-      button.reply({ content: 'This is not your turn!', flags: 64 }).catch((err) => logger.error('Failed to reply to fight button', err));
-      return;
-    }
-    busy = true;
-    (async () => {
-      await button.deferUpdate();
-      if (ended) return;
-      if (button.customId === 'fight_attack') {
-        health[1 - turn] -= Math.floor(Math.random() * 20) + 5;
-        if (health[1 - turn] <= 0) winner = players[turn];
-      } else if (button.customId === 'fight_heal') {
-        if (heals[turn] < 1) {
-          await button.followUp({ content: 'You have used all your 5 heals.', flags: 64 });
+      await CoinService.removeCoins(message.author.id, amount);
+      await CoinService.removeCoins(target.id, amount);
+      confirmationCollector.stop();
+
+      const hp = { user: 100, userT: 5, target: 100, targetT: 5 };
+      const users = [message.author, target.user];
+      let turn = users[Math.floor(Math.random() * 2)];
+
+      const embed = new EmbedBuilder()
+        .setTitle(`${message.author.username} vs ${target.user.username}`)
+        .setColor(Theme.warning)
+        .setFooter({ text: `Carbon • Winner gets: ${amount.toLocaleString()} coins` })
+        .setDescription(
+          `**${message.author.tag}** (__100__) vs (__100__) **${target.user.tag}**`
+        );
+
+      const fightRow = new ActionRowBuilder().addComponents([
+        new ButtonBuilder().setStyle(ButtonStyle.Danger).setCustomId('fight_attack').setLabel('Attack'),
+        new ButtonBuilder().setStyle(ButtonStyle.Success).setCustomId('fight_heal').setLabel('Heal')
+      ]);
+
+      const fightMessage = await message.channel.send({
+        embeds: [embed],
+        components: [fightRow],
+        content: `${turn.toString()} your turn!`
+      });
+
+      const fightCollector = fightMessage.createMessageComponentCollector({
+        filter: (btn) => {
+          if (!users.map((a) => a.id).includes(btn.user.id)) {
+            btn.reply({ content: 'This is not your fight!', flags: 64 });
+            return false;
+          }
+          return true;
+        },
+        idle: 10000
+      });
+
+      let winner = null;
+
+      fightCollector.on('collect', async (btn) => {
+        if (hp.target < 1 || hp.user < 1) {
+          btn.deferUpdate();
           return;
         }
-        heals[turn]--;
-        health[turn] += 20;
-      } else {
-        return;
-      }
-      turn = 1 - turn;
-      describe();
-      if (winner) {
-        collector.stop('won');
-        return;
-      }
-      await gameMessage.edit({ embeds: [embed], content: `${players[turn].toString()} your turn!` });
-    })().catch((err) => {
-      // A transient Discord edit failure does not change the recorded turn or
-      // pay out a second time; the collector's timeout still settles the game.
-      logger.error('Failed to update fight', err);
-    }).finally(() => { busy = false; });
-  });
 
-  collector.once('end', () => {
-    ended = true;
-    const abandoned = !winner;
-    winner ||= players[1 - turn];
-    (async () => {
-      try {
-        await CoinService.addCoins(winner.id, amount * 2);
-        describe();
-        embed.setDescription(`~~${embed.data.description}~~\n\n${winner.toString()} has won the fight!`);
-        row.components.forEach((button) => button.setDisabled(true));
-        await gameMessage.edit({
-          embeds: [embed], components: [row],
-          content: abandoned
-            ? `${winner.toString()} has won the fight because their opponent abandoned the game.`
-            : `**${winner.toString()} has won the fight!**`
+        if (btn.user.id !== turn.id) {
+          return btn.reply({ content: 'This is not your turn!', flags: 64 });
+        }
+
+        if (btn.customId === 'fight_attack') {
+          const damage = Math.floor(Math.random() * 20) + 5;
+          if (turn.id === message.author.id) {
+            hp.target -= damage;
+          } else {
+            hp.user -= damage;
+          }
+          turn = turn === users[0] ? users[1] : users[0];
+          embed.setDescription(
+            `**${message.author.tag}** (__${Math.max(0, hp.user)}__) vs (__${Math.max(0, hp.target)}__) **${target.user.tag}**`
+          );
+          await btn.deferUpdate();
+
+          if (hp.user <= 0) {
+            winner = target.user;
+            fightCollector.stop();
+            embed.setDescription(
+              `~~${embed.data.description}~~\n\n${target.user.toString()} has won the fight!`
+            );
+            await CoinService.addCoins(target.user.id, amount * 2);
+          } else if (hp.target <= 0) {
+            winner = message.author;
+            fightCollector.stop();
+            embed.setDescription(
+              `~~${embed.data.description}~~\n\n${message.author.toString()} has won the fight!`
+            );
+            await CoinService.addCoins(message.author.id, amount * 2);
+          }
+        } else {
+          const heal = 20;
+          if (turn.id === message.author.id) {
+            if (hp.userT < 1) {
+              return btn.reply({ content: 'You have used all your 5 heals.', flags: 64 });
+            }
+            hp.userT--;
+            hp.user += heal;
+          } else {
+            if (hp.targetT < 1) {
+              return btn.reply({ content: 'You have used all your 5 heals.', flags: 64 });
+            }
+            hp.targetT--;
+            hp.target += heal;
+          }
+          turn = turn === users[0] ? users[1] : users[0];
+          embed.setDescription(
+            `**${message.author.tag}** (__${Math.max(0, hp.user)}__) vs (__${Math.max(0, hp.target)}__) **${target.user.tag}**`
+          );
+          await btn.deferUpdate();
+        }
+
+        fightMessage.edit({
+          embeds: [embed],
+          content: `${turn.toString()} its your turn!`
         });
-      } finally {
-        unlock();
-      }
-    })().catch((err) => logger.error('Failed to settle fight', err));
-  });
-}
+      });
+
+      fightCollector.on('end', async () => {
+        if (!winner) {
+          const other = turn === users[0] ? users[1] : users[0];
+          embed.setDescription(
+            `~~**${message.author.tag}** (__${Math.max(0, hp.user)}__) vs (__${Math.max(0, hp.target)}__) **${target.user.tag}**~~`
+          );
+          fightMessage.edit({ embeds: [embed] });
+          message.channel.send({
+            content: `${other.toString()} has won the fight because their opponent abandoned the game.`
+          });
+          await CoinService.addCoins(other.id, amount * 2);
+        } else {
+          message.channel.send({
+            content: `**${winner.toString()} has won the fight!**`
+          });
+        }
+        fightRow.components.forEach((c) => c.setDisabled());
+        editMessageSafely(fightMessage, { components: [fightRow] });
+        cooldowns.unlock(message.author.id);
+        cooldowns.unlock(target.id);
+      });
+    });
+
+    confirmationCollector.on('end', () => {
+      cooldowns.unlock(message.author.id);
+      cooldowns.unlock(target.id);
+      row.components.forEach((c) => c.setDisabled(true));
+      editMessageSafely(confirmationMessage, { components: [row] });
+    });
+  }
+};

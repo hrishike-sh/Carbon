@@ -1,10 +1,7 @@
-const { randomUUID } = require('node:crypto');
-const { ActionRowBuilder, ButtonBuilder, ButtonStyle, ComponentType, EmbedBuilder } = require('discord.js');
+const { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder } = require('discord.js');
 const Coin = require('../database/models/coins');
 const config = require('../config');
 const { Theme } = require('../utils/embeds');
-const { shuffle } = require('../utils/helpers');
-const logger = require('../utils/logger');
 
 class AntiBot {
   constructor() {
@@ -16,83 +13,109 @@ class AntiBot {
 
   async check(message) {
     if (!message.guild) return true;
+
     const userId = message.author.id;
+
+    if (!this.messageCounts.has(userId)) {
+      this.messageCounts.set(userId, 0);
+    }
+
     if (this.processing.has(userId)) {
-      await message.react('❌').catch(() => {});
+      await message.react('❌');
       return false;
     }
 
-    const count = (this.messageCounts.get(userId) || 0) + 1;
-    this.messageCounts.set(userId, count);
+    const count = this.messageCounts.get(userId);
+    this.messageCounts.set(userId, count + 1);
+
     if (count < this.THRESHOLD) return true;
+
     return this.runCaptcha(message, userId);
   }
 
   async runCaptcha(message, userId) {
     this.processing.add(userId);
-    let prompt;
-    try {
-      const correctId = randomUUID();
-      const buttons = Array.from({ length: 5 }, (_, index) => new ButtonBuilder()
-        .setCustomId(index === 0 ? correctId : randomUUID())
-        .setStyle(index === 0 ? ButtonStyle.Danger : ButtonStyle.Success)
-        .setLabel('Click'));
-      prompt = await message.channel.send({
-        content: message.author.toString(),
-        embeds: [
-          new EmbedBuilder()
-            .setTitle('Anti-Bot')
-            .setColor(Theme.error)
-            .setDescription('Click the **RED** button to continue!')
-            .setFooter({ text: 'Failing the captcha wipes your coins. You have 10 seconds.' })
-        ],
-        components: [new ActionRowBuilder().addComponents(shuffle(buttons))]
-      });
 
-      const collector = prompt.createMessageComponentCollector({
-        componentType: ComponentType.Button,
-        filter: (interaction) => interaction.user.id === userId,
-        time: this.CAPTCHA_TIMEOUT,
-        max: 1
-      });
-      const { button, reason } = await new Promise((resolve) => {
-        collector.once('end', (collected, endReason) => {
-          resolve({ button: collected.first(), reason: endReason });
-        });
-      });
+    const msg = await message.channel.send({
+      content: message.author.toString(),
+      embeds: [
+        new EmbedBuilder()
+          .setTitle('Anti-Bot')
+          .setColor(Theme.error)
+          .setDescription('Click the **RED** button to continue!')
+          .setFooter({ text: 'Failing the captcha will get you banned. You have 10 seconds.' })
+      ],
+      components: [
+        new ActionRowBuilder().addComponents(
+          [
+            new ButtonBuilder()
+              .setCustomId(`${Math.random()}`)
+              .setStyle(ButtonStyle.Danger)
+              .setLabel('Click'),
+            new ButtonBuilder()
+              .setCustomId(`${Math.random()}`)
+              .setStyle(ButtonStyle.Success)
+              .setLabel('Click'),
+            new ButtonBuilder()
+              .setCustomId(`${Math.random()}`)
+              .setStyle(ButtonStyle.Success)
+              .setLabel('Click'),
+            new ButtonBuilder()
+              .setCustomId(`${Math.random()}`)
+              .setStyle(ButtonStyle.Success)
+              .setLabel('Click'),
+            new ButtonBuilder()
+              .setCustomId(`${Math.random()}`)
+              .setStyle(ButtonStyle.Success)
+              .setLabel('Click')
+          ].sort(() => Math.random() - 0.5)
+        )
+      ]
+    });
 
-      // A deleted message/channel or stopped collector is not a failed captcha.
-      if (!button && reason !== 'time') return false;
-      const passed = button?.customId === correctId;
-      // Determine the result before any awaited Discord request. Collector end
-      // can run before deferUpdate settles when max: 1 is reached.
-      if (button) await button.deferUpdate().catch((error) => logger.warn('Captcha acknowledgement failed', error));
+    const collector = msg.createMessageComponentCollector({
+      filter: (m) => m.user.id === userId,
+      time: this.CAPTCHA_TIMEOUT,
+      max: 1
+    });
 
-      if (passed) {
-        await message.channel.send({ content: `${message.author} you can continue using the bot!` });
-      } else {
-        const previous = await Coin.findOneAndDelete({ userId });
-        const owner = await message.client.users.fetch(config.roles.staff.owner).catch(() => null);
-        if (owner) {
-          await owner.send({
-            content: `${message.author} failed the captcha [Jump](${message.url})`,
-            embeds: [{ description: `Coins: ${previous?.coins || 0}` }]
-          }).catch((error) => logger.warn('Could not notify the owner about a captcha failure', error));
+    let captchaPassed = false;
+    collector.on('collect', async (button) => {
+      await button.deferUpdate();
+      if (button.component.style === ButtonStyle.Danger) {
+        captchaPassed = true;
+      }
+    });
+
+    collector.on('end', async () => {
+      if (!captchaPassed) {
+        const temp = await Coin.findOne({ userId });
+        await Coin.deleteOne({ userId });
+
+        const owner = config.roles.staff.owner;
+        const ownerUser = message.client.users.cache.get(owner);
+        if (ownerUser) {
+          await ownerUser.send({
+            content: `${message.author.toString()} failed the captcha [Jump](${message.url})`,
+            embeds: [{ description: `Coins: ${temp?.coins || 0}` }]
+          });
         }
+
         await message.channel.send({
-          content: `${message.author} you failed the captcha! All your coins are wiped.`
+          content: `${message.author.toString()} you failed the captcha! All your coins are wiped.`
+        });
+      } else {
+        await message.channel.send({
+          content: `${message.author.toString()} you can continue using the bot!`
         });
       }
-    } catch (error) {
-      logger.error('Captcha failed to complete', error);
-    } finally {
-      this.messageCounts.delete(userId);
+
+      this.messageCounts.set(userId, 0);
       this.processing.delete(userId);
-      if (prompt) await prompt.edit({ components: [] }).catch(() => {});
-    }
+    });
+
     return false;
   }
 }
 
 module.exports = new AntiBot();
-module.exports.AntiBot = AntiBot;

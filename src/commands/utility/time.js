@@ -282,7 +282,7 @@ async function saveTimezone(userId, timezone) {
   return Timezone.findOneAndUpdate(
     { userId },
     { userId, timezone, updatedAt: Date.now() },
-    { upsert: true, new: true, setDefaultsOnInsert: true }
+    { upsert: true, returnDocument: 'after', setDefaultsOnInsert: true }
   );
 }
 

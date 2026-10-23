@@ -1,7 +1,7 @@
 const { Schema, model } = require('mongoose');
 
 const HighlightSchema = new Schema({
-  userId: { type: String, index: true },
+  userId: String,
   highlights: [
     {
       type: String,

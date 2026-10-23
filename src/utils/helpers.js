@@ -12,9 +12,6 @@ function shuffle(array) {
 }
 
 function breakArray(array, chunkSize) {
-  if (!Number.isSafeInteger(chunkSize) || chunkSize < 1) {
-    throw new RangeError('Chunk size must be a positive safe integer');
-  }
   const chunks = [];
   for (let i = 0; i < array.length; i += chunkSize) {
     chunks.push(array.slice(i, i + chunkSize));

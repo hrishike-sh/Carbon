@@ -13,25 +13,26 @@ module.exports = {
     const target = args.shift();
     if (!target) return message.reply(eg);
 
-    const userId = /^(?:<@!?)?(\d{17,20})>?$/.exec(target)?.[1];
-    if (!userId) return message.reply(eg);
+    const userId = target.replace(/[^0-9]/g, '');
     const user = await message.guild.members.fetch({ user: userId }).catch(() => null);
     if (!user)
       return message.reply({ content: `Could not find any user in this server with the ID '${userId}'!` });
 
-    const action = args.shift()?.toLowerCase();
-    if (!['add', 'remove', '+', '-'].includes(action))
+    const action = args.shift();
+    if (!action || !['add', 'remove', '+', '-'].includes(action.toLowerCase()))
       return message.reply(eg);
 
-    const amount = parseAmount(args.shift());
-    if (!Number.isSafeInteger(amount) || amount <= 0) return message.reply(eg);
+    let amount = args.shift();
+    if (!amount || !parseAmount(amount)) return message.reply(eg);
 
-    const dbUser = await DATABASE.findOneAndUpdate(
-      { userID: userId, guildID: message.guild.id },
-      { $inc: { messages: ['add', '+'].includes(action) ? amount : -amount }, $set: { lastUpdated: new Date() } },
-      { upsert: true, new: true }
-    );
+    amount = parseAmount(amount);
+    let dbUser = await DATABASE.findOne({ userID: userId, guildID: message.guild.id });
+    if (!dbUser) {
+      dbUser = new DATABASE({ userID: userId, guildID: message.guild.id });
+    }
     if (['add', '+'].includes(action)) {
+      dbUser.messages += amount;
+      await dbUser.save();
       return message.reply({
         embeds: [
           {
@@ -43,6 +44,8 @@ module.exports = {
         ]
       });
     } else {
+      dbUser.messages -= amount;
+      await dbUser.save();
       return message.reply({
         embeds: [
           {

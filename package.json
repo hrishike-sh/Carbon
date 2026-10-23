@@ -7,15 +7,14 @@
   "scripts": {
     "start": "node src/index.js",
     "deploy": "node src/deploy-commands.js",
-    "check": "node scripts/check-source.js && node scripts/check-modules.js",
-    "test": "node --test"
+    "check": "node scripts/check-source.js && node scripts/check-modules.js && node --test scripts/check-runtime.test.js"
   },
   "engines": {
     "node": ">=20.19.0"
   },
   "dependencies": {
     "@discordjs/builders": "^1.14.1",
-    "axios": "^1.20.0",
+    "axios": "^1.16.1",
     "decancer": "^3.3.3",
     "discord-html-transcripts-v2": "^4.5.0",
     "discord.js": "^14.26.4",

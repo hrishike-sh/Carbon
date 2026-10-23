@@ -1,7 +1,6 @@
-const { Events } = require('discord.js');
+const { Events, OverwriteType, RESTJSONErrorCodes } = require('discord.js');
 const TimedAction = require('../database/models/timed');
 const logger = require('../utils/logger');
-const { startInterval } = require('../utils/asyncEvents');
 
 const POLL_INTERVAL = 30_000;
 
@@ -11,22 +10,32 @@ async function processViewlockTimeout(client, action) {
     return;
   }
 
-  const channel = await client.channels.fetch(action.data.channelId).catch((error) => {
-    // Only a deleted channel is final. Permission/network errors must retry.
-    if (error.code === 10003) return null;
+  const channel = await client.channels.fetch(action.data.channelId, { force: true }).catch((error) => {
+    if (error.code === RESTJSONErrorCodes.UnknownChannel) return null;
     throw error;
   });
 
-  if (!channel?.permissionOverwrites || !action.data?.userId) {
+  // Expiry only clears an existing restriction; it must not create a new overwrite.
+  if (!channel?.permissionOverwrites?.cache.has(action.data.userId)) {
     await action.deleteOne();
     return;
   }
 
-  await channel.permissionOverwrites.edit(
-    action.data.userId,
-    { ViewChannel: null },
-    { type: 1, reason: action.data.reason || 'Temporary viewlock expired' }
-  );
+  try {
+    await channel.permissionOverwrites.edit(
+      action.data.userId,
+      { ViewChannel: null },
+      {
+        type: OverwriteType.Member,
+        reason: action.data.reason || 'Temporary viewlock expired'
+      }
+    );
+  } catch (error) {
+    // The overwrite or channel can disappear between fetching and editing it.
+    if (![RESTJSONErrorCodes.UnknownPermissionOverwrite, RESTJSONErrorCodes.UnknownChannel].includes(error.code)) {
+      throw error;
+    }
+  }
   await action.deleteOne();
 }
 
@@ -50,11 +59,13 @@ module.exports = {
   once: true,
 
   async execute(client) {
-    try {
-      await processDueActions(client);
-    } catch (error) {
-      logger.error('Failed to poll timed actions', error);
-    }
-    startInterval(client, () => processDueActions(client), POLL_INTERVAL, 'Timed action poll');
+    await processDueActions(client);
+
+    const interval = setInterval(() => {
+      processDueActions(client).catch((error) => {
+        logger.error('Failed to poll timed actions', error);
+      });
+    }, POLL_INTERVAL);
+    interval.unref();
   }
 };

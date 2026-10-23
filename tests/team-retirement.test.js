@@ -1,12 +1,15 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const { EventEmitter } = require('node:events');
-const { loadPrefixCommands } = require('../src/command/registry');
+const { Collection } = require('discord.js');
+const { loadCommands } = require('../src/command/registry');
 const { loadEvents } = require('../src/event/registry');
 const { resetTeams } = require('../scripts/reset-teams');
 
 test('retired commands and every alias are absent, while general team commands remain', () => {
-  const commands = loadPrefixCommands();
+  const client = { state: { commands: new Collection(), slashCommands: new Collection() } };
+  loadCommands(client);
+  const commands = client.state.commands;
   for (const file of ['attack', 'block', 'shield', 'luckybox', 'lootbox-add']) {
     const command = require(`../src/commands/teams/${file}`);
     for (const name of [command.name, ...command.aliases]) assert.equal(commands.has(name), false, name);

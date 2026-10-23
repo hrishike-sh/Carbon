@@ -14,7 +14,7 @@ module.exports = {
    */
   async execute(message, args, client) {
     if (message.guild.id !== fh) {
-      return;
+      return message.reply('');
     }
     if (!message.member.roles.cache.has(config.roles.staff.cman)) {
       return message.reply('Only CMs+ L bozo');
@@ -45,12 +45,12 @@ module.exports = {
     }
 
     try {
-      await user.send({
+      (await user.createDM()).send({
         embeds: [embed]
       });
-      await message.react('✅');
+      message.react('✅');
     } catch (error) {
-      return message.reply('Could not send the message. The user may have direct messages disabled.');
+      message.reply('Error: ' + error);
     }
   }
 };

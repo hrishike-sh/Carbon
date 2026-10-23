@@ -7,7 +7,6 @@ const {
 const config = require('../../config');
 const { sleep, breakArray } = require('../../utils/helpers');
 const { Theme } = require('../../utils/embeds');
-const { onAsync } = require('../../utils/asyncEvents');
 
 const randomActions = [
   '**{user}** absolutely DESTROYED **{target}**!',
@@ -22,10 +21,10 @@ const randomActions = [
   '**{target}** tried to counterattack, but **{user}**\'s dagger was too fast and they fell to the ground, defeated.'
 ];
 
-const lastUpdates = new WeakMap();
+let LASTUPDATE = 0;
 function updateMessage(msg, components, emb) {
-  if ((lastUpdates.get(msg) || 0) + 1000 < Date.now()) {
-    lastUpdates.set(msg, Date.now());
+  if (LASTUPDATE + 1000 < Date.now()) {
+    LASTUPDATE = Date.now();
     msg.edit({ components, embeds: [emb] }).catch(() => {});
   }
 }
@@ -56,7 +55,7 @@ module.exports = {
     const joinCollector = joinMessage.createMessageComponentCollector({
       filter: (m) => {
         if (data.joined.map((a) => a.id).includes(m.user.id)) {
-          m.reply({ flags: 64, content: 'You have already joined the game.' }).catch(() => {});
+          m.reply({ flags: 64, content: 'You have already joined the game.' });
           return false;
         }
         return true;
@@ -64,10 +63,7 @@ module.exports = {
       time: 10 * 1000
     });
 
-    onAsync(joinCollector, 'collect', async (m) => {
-      if (data.joined.some((player) => player.id === m.user.id)) {
-        return m.reply({ flags: 64, content: 'You have already joined the game.' });
-      }
+    joinCollector.on('collect', async (m) => {
       if (data.joined.length > 24) {
         joinCollector.stop();
         return;
@@ -76,9 +72,8 @@ module.exports = {
       await m.reply({ flags: 64, content: 'You have joined the game.' });
     });
 
-    onAsync(joinCollector, 'end', async () => {
-      await joinMessage.edit({ components: [] });
-      if (data.joined.length < 3) {
+    joinCollector.on('end', async () => {
+      if (data.joined.length < 2) {
         return message.reply('You need atleast 3 players to play.');
       }
       const mainRow = [];
@@ -107,12 +102,12 @@ module.exports = {
       const upgradeCollector = upgradesMessage.createMessageComponentCollector({
         filter: (m) => {
           if (!data.joined.map((a) => a.id).includes(m.user.id)) {
-            m.reply({ flags: 64, content: "You're not in this game!" }).catch(() => {});
+            m.reply({ flags: 64, content: "You're not in this game!" });
             return false;
           }
           const player = data.joined.find((a) => a.id === m.user.id);
           if (player.weapon || player.health > 100) {
-            m.reply({ flags: 64, content: "You can't upgrade more than once!" }).catch(() => {});
+            m.reply({ flags: 64, content: "You can't upgrade more than once!" });
             return false;
           }
           return true;
@@ -120,7 +115,7 @@ module.exports = {
         time: 5_000
       });
 
-      onAsync(upgradeCollector, 'collect', async (button) => {
+      upgradeCollector.on('collect', async (button) => {
         const player = data.joined.find((a) => a.id === button.user.id);
         if (button.customId.includes('sh')) {
           if (player.health > 100 || player.weapon) {
@@ -139,9 +134,9 @@ module.exports = {
         }
       });
 
-      onAsync(upgradeCollector, 'end', async () => {
+      upgradeCollector.on('end', async () => {
         upgradesRow.components.forEach((a) => a.setDisabled());
-        await upgradesMessage.edit({ components: [upgradesRow] });
+        upgradesMessage.edit({ components: [upgradesRow] });
 
         for (let i = 0; i < data.joined.length; i++) {
           const player = data.joined[i];
@@ -179,35 +174,26 @@ module.exports = {
         ).createMessageComponentCollector({
           filter: (m) => {
             if (!data.joined.map((a) => a.id).includes(m.user.id)) {
-              m.reply({ flags: 64, content: "You're not in this game!" }).catch(() => {});
+              m.reply({ flags: 64, content: "You're not in this game!" });
               return false;
             }
             if (data.joined.find((a) => a.id === m.user.id).health < 1) {
-              m.reply({ flags: 64, content: "You're already dead!" }).catch(() => {});
+              m.reply({ flags: 64, content: "You're already dead!" });
               return false;
             }
             return true;
-          },
-          time: 15 * 60 * 1000
+          }
         });
 
-        onAsync(mainCollector, 'collect', async (m) => {
-          if (mainCollector.ended) return m.deferUpdate();
-          const actor = data.joined.find((player) => player.id === m.user.id);
-          if (!actor || actor.health <= 0) {
-            return m.reply({ flags: 64, content: 'You are not an active player in this game.' });
-          }
+        mainCollector.on('collect', async (m) => {
           const victim = data.joined.find((a) => a.id === m.customId.split('_')[1]);
-          if (!victim || victim.health <= 0) {
-            await m.reply({ flags: 64, content: 'That player has already been eliminated.' });
-            return;
-          }
           if (victim.id === m.user.id) {
-            return m.reply({ flags: 64, content: "You can't attack yourself!" });
+            m.reply({ flags: 64, content: "You can't attack yourself!" });
+            return;
           }
 
           let dmg = Math.ceil(Math.random() * 10) + 5;
-          if (actor.weapon) dmg += 10;
+          if (data.joined.find((a) => a.id === m.user.id).weapon) dmg += 10;
           victim.health -= dmg;
 
           const rowIdx = Number(m.customId.split('_')[2]) - 1;
@@ -222,16 +208,7 @@ module.exports = {
             vBut.setDisabled().setEmoji('☠').setStyle(ButtonStyle.Secondary);
           }
           vBut.setLabel(`${victim.name} (${victim.health})`);
-          const survivors = data.joined.filter((player) => player.health > 0);
-          if (survivors.length === 1) {
-            mainCollector.stop('winner');
-            game_embed.setDescription(`<@${survivors[0].id}> has won the Battle Royale!`);
-            await m.deferUpdate().catch(() => {});
-            await gameMessage.edit({ embeds: [game_embed], components: [] });
-            return;
-          }
-          await m.deferUpdate();
-          if (mainCollector.ended) return;
+          m.deferUpdate();
 
           const shuffledRows = mainRow
             .map((a) => ({ sort: Math.random(), value: a }))
@@ -244,12 +221,8 @@ module.exports = {
               .map((a) => a.value);
           });
 
-          game_embed.setDescription(description.map((a) => `- ${a}`).join('\n') || 'The battle is underway!');
+          game_embed.setDescription(description.map((a) => `- ${a}`).join('\n'));
           updateMessage(gameMessage, shuffledRows, game_embed);
-        });
-        mainCollector.on('end', (_, reason) => {
-          if (reason === 'winner') return;
-          gameMessage.edit({ components: [], content: 'The Battle Royale has ended.' }).catch(() => {});
         });
       });
     });

@@ -27,11 +27,9 @@ module.exports = {
       userID: target.id,
       guildID: message.guild.id
     };
-    const [PrimaryDonations, GrinderDonations, TicketDonations] = await Promise.all([
-      PRIMARY.findOne(filter).lean(),
-      GRINDER.findOne(filter).lean(),
-      TICKETS.findOne({ userId: target.id }).lean()
-    ]);
+    const PrimaryDonations = await PRIMARY.findOne(filter);
+    const GrinderDonations = await GRINDER.findOne(filter);
+    const TicketDonations = await TICKETS.findOne({ userId: target.id });
     if (!PrimaryDonations?.messages &&
         !GrinderDonations?.amount &&
         !TicketDonations?.amount) {

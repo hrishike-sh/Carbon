@@ -2267,17 +2267,11 @@ async function runReviewedEval(context, args) {
     timeout: 1000,
     displayErrors: true
   });
-  let timeoutId;
   const timeout = new Promise((_, reject) => {
-    timeoutId = setTimeout(() => reject(new Error('Reviewed eval timed out after 15 seconds.')), 15000);
+    setTimeout(() => reject(new Error('Reviewed eval timed out after 15 seconds.')), 15000);
   });
 
-  let result;
-  try {
-    result = await Promise.race([Promise.resolve(resultPromise), timeout]);
-  } finally {
-    clearTimeout(timeoutId);
-  }
+  const result = await Promise.race([Promise.resolve(resultPromise), timeout]);
   const output = inspectForEval(result);
   const logOutput = logs.join('\n');
 

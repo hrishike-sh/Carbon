@@ -1,14 +1,12 @@
 const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 const config = require('../../config');
 const { CoinService } = require('../../database/services/coinService');
-const Coin = require('../../database/models/coins');
 const { sleep } = require('../../utils/helpers');
 const { warningEmbed, successEmbed, errorEmbed } = require('../../utils/embeds');
 const { generateMathQuestion, isCorrectMathAnswer } = require('../../utils/mathGame');
 const logger = require('../../utils/logger');
-const { onAsync } = require('../../utils/asyncEvents');
 
-const channelCooldowns = new Set();
+const channelCooldowns = [];
 
 module.exports = {
   name: 'coinevents',
@@ -19,12 +17,15 @@ module.exports = {
 
     const restrictedChannels = [config.ids.channels.modChat, config.ids.channels.fightAds];
     if (restrictedChannels.includes(message.channel.id)) return;
-    if (channelCooldowns.has(message.channel.id)) return;
+    if (channelCooldowns.includes(message.channel.id)) return;
     if (Math.random() > 0.03) return;
 
     const channelId = message.channel.id;
-    channelCooldowns.add(channelId);
-    setTimeout(() => channelCooldowns.delete(channelId), 1000 * 60 * 10).unref();
+    channelCooldowns.push(channelId);
+    setTimeout(() => {
+      const index = channelCooldowns.indexOf(channelId);
+      if (index !== -1) channelCooldowns.splice(index, 1);
+    }, 1000 * 60 * 10);
 
     client.state.counts.coinEventsTriggered++;
 
@@ -41,7 +42,7 @@ module.exports = {
 };
 
 async function runHeist(message) {
-  const joined = new Set();
+  const joined = [];
   const row = new ActionRowBuilder().addComponents([
     new ButtonBuilder()
       .setLabel('JOIN HEIST')
@@ -60,23 +61,18 @@ async function runHeist(message) {
     components: [row]
   });
 
-  const collector = mm.createMessageComponentCollector({
-    filter: (button) => button.customId === 'ce_jh',
-    idle: 10_000,
-    time: 60_000
-  });
+  const collector = mm.createMessageComponentCollector({ idle: 10_000 });
 
-  onAsync(collector, 'collect', async (button) => {
-    if (joined.has(button.user.id)) {
+  collector.on('collect', async (button) => {
+    if (joined.includes(button.user.id)) {
       return button.reply({ flags: 64, content: "You've already joined the heist." });
     }
-    joined.add(button.user.id);
+    joined.push(button.user.id);
     return button.reply({ flags: 64, content: "You've joined the heist, good luck!" });
   });
 
-  collector.once('end', () => mm.edit({ components: [] }).catch(() => {}));
-  onAsync(collector, 'end', async () => {
-    if (joined.size < 1) {
+  collector.on('end', async () => {
+    if (joined.length < 1) {
       const msg = await message.channel.send('The heist failed!');
       await sleep(2500);
       msg.delete().catch(() => {});
@@ -84,22 +80,19 @@ async function runHeist(message) {
       return;
     }
 
-    const pool = joined.size * (Math.floor(Math.random() * 100) + 300);
+    const pool = joined.length * (Math.floor(Math.random() * 100) + 300);
     const failed = [];
     const won = [];
 
     for (const userId of joined) {
       if (Math.random() < 0.25) {
         failed.push(userId);
-        // Compute the percentage in MongoDB against the current balance so
-        // concurrent spending cannot turn a stale loss into a negative balance.
-        await Coin.updateOne(
+        const user = await CoinService.getUser(userId);
+        const loss = Math.floor((user.coins || 0) / 10);
+        await Coin.findOneAndUpdate(
           { userId },
-          [{ $set: { coins: { $subtract: [
-            { $max: [{ $ifNull: ['$coins', 0] }, 0] },
-            { $floor: { $divide: [{ $max: [{ $ifNull: ['$coins', 0] }, 0] }, 10] } }
-          ] } } }],
-          { updatePipeline: true }
+          { $inc: { coins: -loss } },
+          { upsert: true }
         );
       } else {
         won.push(userId);
@@ -108,7 +101,11 @@ async function runHeist(message) {
 
     const winAmount = won.length > 0 ? Math.floor(pool / won.length) : 0;
     for (const userId of won) {
-      await CoinService.addCoins(userId, winAmount);
+      await Coin.findOneAndUpdate(
+        { userId },
+        { $inc: { coins: winAmount } },
+        { upsert: true }
+      );
     }
 
     const tokenEmoji = config.ids.emojis.token;
@@ -118,13 +115,13 @@ async function runHeist(message) {
         successEmbed({
           title: 'Heist Winners',
           description:
-            (won.map((a) => `<@${a}>`).join(' ').slice(0, 3500) || 'Nobody') +
+            won.map((a) => `<@${a}>`).join(' ') +
             ` have won <:token:${tokenEmoji}> **${winAmount.toLocaleString()}** coins each!`
         }),
         errorEmbed({
           title: 'Heist Losers',
           description:
-            (failed.map((a) => `<@${a}>`).join(' ').slice(0, 1500) || 'Nobody') +
+            failed.map((a) => `<@${a}>`).join(' ') +
             ' have lost **10% of their coins**',
           timestamp: true
         })
@@ -173,7 +170,7 @@ async function runMathEvent(message) {
       setTimeout(() => {
         m.delete().catch(() => {});
         reply.delete().catch(() => {});
-      }, 5000).unref();
+      }, 5000);
     })().catch((err) => {
       logger.error('Failed to award math event winner', err);
       message.channel.send({
@@ -194,6 +191,8 @@ async function runMathEvent(message) {
       ]
     }).catch(() => {});
 
-    setTimeout(() => m.delete().catch(() => {}), 5000).unref();
+    setTimeout(() => m.delete().catch(() => {}), 5000);
   });
 }
+
+const Coin = require('../../database/models/coins');

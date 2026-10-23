@@ -99,7 +99,7 @@ module.exports = {
           },
           {
             upsert: true,
-            new: true
+            returnDocument: 'after'
           }
         );
       } catch (error) {
@@ -168,7 +168,7 @@ module.exports = {
             }
           },
           {
-            new: true
+            returnDocument: 'after'
           }
         );
       } catch (error) {

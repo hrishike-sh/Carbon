@@ -1,7 +1,7 @@
 const { Schema, model } = require('mongoose');
 
 const CoinSchema = new Schema({
-  userId: { type: String, index: true },
+  userId: { type: String },
   name: { type: String }
 });
 

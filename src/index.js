@@ -1,119 +1,204 @@
+require('dotenv').config();
+
 const config = require('./config');
 const { createClient } = require('./client/Client');
-const { connectDatabase, disconnectDatabase } = require('./database');
+const { connectDatabase } = require('./database');
 const { loadCommands } = require('./command/registry');
 const { loadEvents } = require('./event/registry');
-const { createPrefixHandler, createSlashHandler } = require('./command/dispatch');
 const highlightModule = require('./events/messageCreate/highlight');
 const lastPingModule = require('./events/messageCreate/lastping');
 const settingsService = require('./database/services/settingsService');
+const { CommandStatsService } = require('./database/services/commandStatsService');
 const afkModel = require('./database/models/afk');
 const cooldowns = require('./command/cooldowns');
+const antiBot = require('./client/AntiBot');
 const logger = require('./utils/logger');
 const { cleanupTeamNames } = require('./utils/summerFight');
-const { Events } = require('discord.js');
-
-function validateEnvironment(env) {
-  const missing = ['token', 'mongopath'].filter((name) => !env[name]?.trim());
-  if (missing.length) throw new Error(`Missing required environment variables: ${missing.join(', ')}`);
-}
-
-function createShutdown(client) {
-  let shutdownPromise;
-  return () => {
-    if (!shutdownPromise) {
-      shutdownPromise = (async () => {
-        client.state.shuttingDown = true;
-        for (const timer of client.state.timers) clearTimeout(timer);
-        client.state.timers.clear();
-        cooldowns.clear();
-        try {
-          await client.destroy();
-        } finally {
-          await disconnectDatabase();
-        }
-      })();
-    }
-    return shutdownPromise;
-  };
-}
+const {
+  warningEmbed,
+  neutralEmbed,
+  errorEmbed,
+  replyError
+} = require('./utils/embeds');
+const { Events, Collection } = require('discord.js');
 
 async function main() {
-  require('dotenv').config();
-  validateEnvironment(process.env);
   const client = createClient();
-  const shutdown = createShutdown(client);
 
-  const exit = (code) => {
-    // A broken network connection must not hang process termination forever.
-    const deadline = setTimeout(() => process.exit(1), 10_000);
-    deadline.unref();
-    shutdown().then(() => process.exit(code), (error) => {
-      logger.error('Shutdown failed', error);
-      process.exit(1);
-    });
-  };
-  process.once('SIGINT', () => exit(0));
-  process.once('SIGTERM', () => exit(0));
-  process.once('uncaughtException', (error) => {
-    logger.error('Uncaught exception; shutting down', error);
-    exit(1);
-  });
-  process.on('unhandledRejection', (reason) => logger.error('Unhandled rejection', reason));
+  client.once(Events.ClientReady, async () => {
+    console.log(`[BOT]: Client is online!\n  Server Count: ${client.guilds.cache.size}`);
 
-  try {
-    // Validate all modules before opening network connections.
-    loadCommands(client);
-    loadEvents(client);
-    client.on(Events.MessageCreate, createPrefixHandler(client));
-    client.on(Events.InteractionCreate, createSlashHandler(client));
+    client.user.setPresence({ status: 'dnd' });
 
-    client.once(Events.ClientReady, () => {
-      logger.info(`Client is online! Server count: ${client.guilds.cache.size}`);
-      client.user.setPresence({ status: 'dnd' });
-      client.emit('tick');
-      client.emit('hourlyStats');
-
-      if (client.shard) {
-        void client.shard.broadcastEval(async (shardClient, { allowedGuildIds }) => {
-          for (const guild of shardClient.guilds.cache.values()) {
-            if (!allowedGuildIds.includes(guild.id) && guild.memberCount < 10) {
-              await guild.leave();
-            }
-          }
-        }, { context: { allowedGuildIds: [config.guildId, '856111404322258956'] } })
-          .catch((error) => logger.error('Could not leave small guilds', error));
-      }
-    });
-
-    await connectDatabase(process.env.mongopath);
-    // Populate feature caches before login, so the first gateway message cannot
-    // race the asynchronous ClientReady initialization.
-    const [settings, afkUsers, cleanedTeamNames] = await Promise.all([
-      settingsService.load(),
-      afkModel.find().select('userId').lean(),
-      cleanupTeamNames(),
-      highlightModule.load(client),
-      lastPingModule.load()
-    ]);
+    // Load settings cache
+    const settings = await settingsService.load();
     client.state.afkIgnore = settings.afkIgnore || [];
-    client.state.afks = [...new Set(afkUsers.map((user) => user.userId))];
-    if (cleanedTeamNames > 0) {
-      logger.info(`Removed user mentions from ${cleanedTeamNames} team name(s)`);
+
+    // Load highlights into memory
+    await highlightModule.load(client);
+
+    // Load AFK users into memory
+    const afkUsers = await afkModel.find();
+    for (const afkUser of afkUsers) {
+      client.state.afks.push(afkUser.userId);
     }
-    await client.login(process.env.token);
-    return client;
-  } catch (error) {
-    await shutdown().catch((shutdownError) => logger.error('Startup cleanup failed', shutdownError));
-    throw error;
-  }
-}
 
-if (require.main === module) {
-  main().catch((error) => {
-    logger.error('Fatal startup error', error);
-    process.exit(1);
+    // Trigger 2025 event scheduler
+    client.emit('tick');
+
+    // Start hourly stats reporter
+    client.emit('hourlyStats');
+
+    // Leave small guilds (keep Carbon server and main guild)
+    if (client.shard) {
+      client.shard.broadcastEval((c) => {
+        c.guilds.cache.forEach(async (guild) => {
+          if (guild.id !== config.guildId &&
+              guild.id !== '856111404322258956' &&
+              guild.memberCount < 10) {
+            await guild.leave().catch(() => {});
+            console.log(`Left: ${guild.name}`);
+          }
+        });
+      });
+    }
   });
+
+  await connectDatabase(process.env.mongopath);
+  const cleanedTeamNames = await cleanupTeamNames();
+  if (cleanedTeamNames > 0) {
+    logger.info(`Removed user mentions from ${cleanedTeamNames} team name(s)`);
+  }
+  await lastPingModule.load();
+
+  loadCommands(client);
+  loadEvents(client);
+
+  // Prefix command handler
+  client.on(Events.MessageCreate, async (message) => {
+    if (message.author.bot) return;
+    if (!message.guild) return;
+
+    client.state.counts.messagesRead++;
+    client.state.counts.activeUsers.add(message.author.id);
+
+    const content = message.content;
+    if (!content.toLowerCase().startsWith(config.prefix)) return;
+
+    const args = content.slice(config.prefix.length).trim().split(/ +/g);
+    const commandName = args.shift().toLowerCase();
+
+    const command = client.state.commands.get(commandName);
+    if (!command) return;
+
+    // Cooldown check
+    const cooldownResult = cooldowns.check(message.author.id, command.name, command.cooldown);
+    if (!cooldownResult.allowed) {
+      return message.reply({
+        embeds: [
+          warningEmbed({
+            description: `Please wait ${cooldownResult.remaining}s before using that command again.`
+          })
+        ]
+      });
+    }
+
+    // Role check
+    if (command.requiredRoles?.length &&
+        !message.member.roles.cache.hasAny(...command.requiredRoles)) {
+      return message.reply({
+        content: `You need one of these roles:\n${command.requiredRoles.map((r) => `<@&${r}>`).join(' ')}`,
+        allowedMentions: { roles: [], users: [] }
+      });
+    }
+
+    try {
+      await command.execute(message, args, client);
+      client.state.counts.commandsRan++;
+      CommandStatsService.track({
+        guildId: message.guild.id,
+        commandName: command.name,
+        commandType: 'prefix'
+      });
+
+      const logChannel = client.channels.cache.get(config.ids.channels.commandLog);
+      if (logChannel) {
+        logChannel.send({
+          embeds: [
+            neutralEmbed({
+              author: {
+                name: message.author.tag,
+                iconURL: message.author.displayAvatarURL()
+              },
+              title: command.name,
+              fields: [
+                { name: 'Commands Ran', value: client.state.counts.commandsRan.toLocaleString(), inline: true },
+                { name: 'Server', value: message.guild.name, inline: true }
+              ]
+            })
+          ]
+        }).catch(() => {});
+      }
+    } catch (err) {
+      logger.error(`Command "${command.name}" error`, err);
+      replyError(message, 'There was an error running this command.');
+    }
+  });
+
+  // Slash command handler
+  client.on(Events.InteractionCreate, async (interaction) => {
+    if (!interaction.isChatInputCommand()) return;
+
+    const command = client.state.slashCommands.get(interaction.commandName);
+    if (!command) {
+      logger.warn(`No matching slash command: ${interaction.commandName}`);
+      return;
+    }
+
+    try {
+      await command.execute(interaction, client);
+      client.state.counts.slashCommandsRan++;
+      CommandStatsService.track({
+        guildId: interaction.guildId,
+        commandName: command.data.name,
+        commandType: 'slash'
+      });
+    } catch (err) {
+      logger.error(`Slash command "${interaction.commandName}" error`, err);
+      const embed = errorEmbed({ description: 'There was an error while executing this command!' });
+      const reply = interaction.replied || interaction.deferred ? 'followUp' : 'reply';
+      interaction[reply]({ embeds: [embed], flags: 64 }).catch(() => {});
+    }
+  });
+
+  // Global error handlers
+  process.on('uncaughtException', (err) => {
+    logger.error('Uncaught exception', err);
+    const errorChannel = client.channels.cache.get(config.ids.channels.errorLog);
+    if (errorChannel) {
+      errorChannel.send({
+        embeds: [
+          errorEmbed({
+            title: 'Uncaught Exception',
+            description: `\`${err.message}\``
+          })
+        ]
+      }).catch(() => {});
+    }
+  });
+
+  process.on('unhandledRejection', (reason) => {
+    logger.error('Unhandled rejection', reason);
+  });
+
+  client.on(Events.Error, (err) => {
+    logger.error('Discord client error', err);
+  });
+
+  await client.login(process.env.token);
 }
 
-module.exports = { main, validateEnvironment, createShutdown };
+main().catch((err) => {
+  console.error('Fatal startup error:', err);
+  process.exit(1);
+});

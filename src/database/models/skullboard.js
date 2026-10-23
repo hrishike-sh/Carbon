@@ -13,6 +13,4 @@ const SkullSchema = new Schema({
   }
 });
 
-SkullSchema.index({ 'originalMessage.id': 1 });
-
 module.exports = model('skullboard', SkullSchema, 'skullboard');
