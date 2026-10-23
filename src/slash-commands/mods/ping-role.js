@@ -137,11 +137,15 @@ module.exports = {
           data.role.value
         }>: Make sure to thank ${data.sponsor.user.toString()} in <#870240187198885888>!`
       });
-    } else if (data.role.value == '858088201451995137') {
-      // event ping
+    } else if (
+      data.role.value == '858088201451995137' ||
+      data.role.value == '1154432845318721607'
+    ) {
+      // Event and mafia pings share the announcement format, but not cooldowns.
+      const cooldownKey = data.role.value;
 
-      if (cooldowns.get('event')) {
-        const date = cooldowns.get('event');
+      if (cooldowns.get(cooldownKey)) {
+        const date = cooldowns.get(cooldownKey);
         if (Date.now() < date) {
           return interaction.reply({
             flags: 64,
@@ -151,14 +155,14 @@ module.exports = {
           });
         }
       }
-      cooldowns.set('event', Date.now() + 1800000);
+      cooldowns.set(cooldownKey, Date.now() + 1800000);
 
       const embed = new EmbedBuilder()
         .setTitle('Fighthub Event')
         .setDescription(
           `\n\n⦿ **Event**: ${
             data.eventType?.value || 'Not mentioned'
-          }\n⦿ **Sponsor:** ${data.sponsor.member.toString()}\n⦿ **Requirement:** ${
+          }\n⦿ **Sponsor:** ${data.sponsor.user.toString()}\n⦿ **Requirement:** ${
             data.requirement?.value || 'No requirement'
           }\n⦿ **Prize:** ${data.prize?.value}\n`
         )
@@ -177,7 +181,7 @@ module.exports = {
         embed.data.description +
           `\nMake sure to thank ${data.sponsor.user.toString()} in <#870240187198885888>`
       );
-      interaction.reply({
+      await interaction.reply({
         content: 'Pinged!',
         flags: 64
       });
@@ -246,8 +250,6 @@ module.exports = {
           }>: Make sure to thank ${data.sponsor.user.toString()} in <#870240187198885888>!`
         });
       }
-    } else if (data.role.value == '1154432845318721607') {
-      // mafia ping
     }
   }
 };

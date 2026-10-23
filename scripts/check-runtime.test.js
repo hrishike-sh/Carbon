@@ -7,6 +7,66 @@ const TimedAction = require('../src/database/models/timed');
 const timedActions = require('../src/events/timedActions');
 const logger = require('../src/utils/logger');
 const { editMessageSafely } = require('../src/utils/messages');
+const pingRole = require('../src/slash-commands/mods/ping-role');
+
+test('mafia ping acknowledges the command, announces the event, and has its own cooldown', async (t) => {
+  let now = Date.now();
+  t.mock.method(Date, 'now', () => now);
+  function interaction(role) {
+    const options = {
+      role: { value: role },
+      event: { value: true },
+      'event-type': { value: 'mafia' },
+      sponsor: { user: { toString: () => '<@123456789012345678>' } },
+      prize: { value: '100 coins' }
+    };
+    const replies = [];
+    const messages = [];
+    return {
+      replies, messages,
+      member: { roles: { cache: { hasAny: () => true } } },
+      options: { get: (name) => options[name] ?? null },
+      async reply(payload) {
+        await Promise.resolve();
+        replies.push(payload);
+      },
+      channel: {
+        id: '853280287777882142',
+        async send(payload) {
+          assert.equal(replies.length, 1, 'acknowledge before sending the announcement');
+          messages.push(payload);
+        }
+      }
+    };
+  }
+
+  const mafia = interaction('1154432845318721607');
+  await pingRole.execute(mafia);
+  assert.deepEqual(mafia.replies, [{ content: 'Pinged!', flags: 64 }]);
+  assert.equal(mafia.messages.length, 1);
+  assert.equal(mafia.messages[0].content, '<@&1154432845318721607>: New event!');
+  const embed = mafia.messages[0].embeds[0].toJSON();
+  assert.match(embed.description, /\*\*Event\*\*: mafia/);
+  assert.match(embed.description, /<@123456789012345678>/);
+  assert.match(embed.description, /100 coins/);
+  assert.match(embed.description, /No requirement/);
+
+  const duplicate = interaction('1154432845318721607');
+  await pingRole.execute(duplicate);
+  assert.equal(duplicate.messages.length, 0);
+  assert.equal(duplicate.replies[0].flags, 64);
+  assert.match(duplicate.replies[0].content, /on cooldown/);
+
+  const event = interaction('858088201451995137');
+  await pingRole.execute(event);
+  assert.equal(event.messages.length, 1, 'mafia cooldown must not block the event role');
+  assert.equal(event.messages[0].content, '<@&858088201451995137>: New event!');
+
+  now += 30 * 60 * 1000;
+  const expired = interaction('1154432845318721607');
+  await pingRole.execute(expired);
+  assert.equal(expired.messages.length, 1, 'mafia ping becomes available after 30 minutes');
+});
 
 function action() {
   return {
