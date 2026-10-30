@@ -18,6 +18,20 @@ Fill in the required Discord token and MongoDB connection values in `.env` befor
 
 Use `npm run deploy` to register guild slash commands, and `npm run check` to validate all JavaScript source files.
 
+Mafia transcripts use five-digit IDs, numbered oldest to newest. Before starting this
+version for the first time, run `node scripts/import-mafia-transcripts.js` with the
+bot stopped and the production `token` and `mongopath` environment variables. The
+one-time import reads all Mafia log history, records transcript links in MongoDB,
+and sets the next game ID to the historical count plus one. Subsequent runs do not
+renumber transcripts or reset the counter. Recovered games use their original
+game time when sorting. Deleted transcripts absent from the logs cannot be recovered
+by this import.
+
+Use `fh mafiatranscript <number>` in category `824986592653213717` to retrieve a
+transcript. Both `1` and `00001` are accepted. The reply warns users not to share
+the transcript or its link anywhere. New transcript announcements include the same
+ID in the Mafia logs and channel `858295915428315136`.
+
 ## Retired team event
 
 The old attack, block, shield, lootbox, and lootbox-grant commands (including aliases) and automatic seasonal games are disabled. Manual `fh events` games remain available without team rewards. `fh tlb` now shows a general Team Leaderboard, and team displays show points and membership.

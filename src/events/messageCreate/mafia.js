@@ -3,6 +3,7 @@ const config = require('../../config');
 const logger = require('../../utils/logger');
 const { warningEmbed, errorEmbed, successEmbed } = require('../../utils/embeds');
 const { createHostedTranscript } = require('../../utils/transcripts');
+const transcripts = require('../../database/services/mafiaTranscriptService');
 
 const Game = new Collection();
 const Messages = new Collection();
@@ -186,6 +187,7 @@ async function sendRoleDistribution(channel, playerCount) {
 
 async function handleExistingGame(message, client, { mafiaBotIds, logChannelId, logChannel }) {
   const currentGame = Game.get(message.channel.id);
+  await currentGame.ready;
 
   if (Messages.has(message.channel.id)) {
     Messages.get(message.channel.id).push(message);
@@ -312,6 +314,9 @@ async function handleNightMessage(message, embed, currentGame, logChannel) {
 }
 
 async function handleGameOver(message, client, currentGame, logChannelId, logChannel) {
+  if (currentGame.ending) return;
+  currentGame.ending = true;
+  const endedAt = Math.floor(message.createdTimestamp / 1000);
   const channel = message.channel;
   currentGame.night++;
 
@@ -363,24 +368,32 @@ async function handleGameOver(message, client, currentGame, logChannelId, logCha
     logger.error('Error sending mafia game-over embeds', err);
   }
 
+  const channelMessages = Messages.get(message.channel.id);
   Game.delete(message.channel.id);
+  Messages.delete(message.channel.id);
 
   try {
-    const channelMessages = Messages.get(message.channel.id);
     if (channelMessages?.length) {
       const transcript = await createHostedTranscript(channel, channelMessages, {
-        prefix: 'mafia'
+        prefix: `mafia-${currentGame.id}`
       });
+      await transcripts.record(currentGame.id, transcript.url, message.createdTimestamp);
 
       const lc = await getMafiaLogChannel(message.client, logCh, logChannelId);
       if (lc) {
-        await lc.send(`Transcript: ${transcript.url}`);
+        await lc.send(`Mafia ID "${currentGame.id}" — Transcript: ${transcript.url}`);
       }
+
+      const noticeChannel = await getMafiaLogChannel(
+        client, null, config.ids.channels.mafiaTranscriptNotice
+      );
+      if (!noticeChannel) throw new Error('Mafia transcript notice channel is unavailable.');
+      await noticeChannel.send(
+        `Mafia transcript recorded for mafia <t:${endedAt}:F> with id "${currentGame.id}" thanks`
+      );
     }
   } catch (err) {
     logger.error('Error generating mafia transcript', err);
-  } finally {
-    Messages.delete(message.channel.id);
   }
 }
 
@@ -390,7 +403,7 @@ async function startNewGame(message, playerIds, logChannel) {
     players.set(userId, { id: userId, alive: true, messages: new Collection() });
   }
 
-  Game.set(message.channel.id, { night: 1, players });
+  await registerGame(message.channel.id, { night: 1, players });
 
   await sendRoleDistribution(message.channel, players.size);
 
@@ -420,7 +433,7 @@ async function startNewGameFromNight(message, nightInfo, logChannel) {
     });
   }
 
-  Game.set(message.channel.id, { night: nightInfo.night, players });
+  await registerGame(message.channel.id, { night: nightInfo.night, players });
   Messages.set(message.channel.id, []);
 
   const lc = logChannel || message.client.channels.cache.get(config.ids.channels.mafiaLog);
@@ -433,5 +446,17 @@ async function startNewGameFromNight(message, nightInfo, logChannel) {
         })
       ]
     });
+  }
+}
+
+async function registerGame(channelId, game) {
+  // Reserve the channel synchronously while MongoDB allocates the ID.
+  Game.set(channelId, game);
+  game.ready = transcripts.nextId().then((id) => { game.id = id; });
+  try {
+    await game.ready;
+  } catch (error) {
+    if (Game.get(channelId) === game) Game.delete(channelId);
+    throw error;
   }
 }

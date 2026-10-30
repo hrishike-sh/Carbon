@@ -1,5 +1,6 @@
 module.exports = {
   guildId: '824294231447044197',
+  mafiaTranscriptCategory: '824986592653213717',
 
   devUserIds: [
     '598918643727990784',
@@ -13,6 +14,7 @@ module.exports = {
     commandLog: '913359587317522432',
     errorLog: '1176219409149341817',
     mafiaLog: '1340975244122259506',
+    mafiaTranscriptNotice: '858295915428315136',
     skullboard: '1036564782481940510',
     bonusCoin: '1256504358615519284',
     modChat: '881128829131841596',
