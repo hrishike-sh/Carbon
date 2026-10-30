@@ -9,7 +9,8 @@ const { extractEntries } = require('../scripts/import-mafia-transcripts');
 
 test('history migration deduplicates links and numbers oldest first; retries do not reset counter', async (t) => {
   t.mock.method(Transcript, 'init', async () => {});
-  t.mock.method(counter.model, 'findById', () => ({ lean: async () => null }));
+  let imported = false;
+  t.mock.method(counter.model, 'findById', () => ({ lean: async () => imported ? { value: 2 } : null }));
   const writes = [];
   t.mock.method(Transcript, 'bulkWrite', async (operations) => writes.push(...operations));
   const counters = [];
@@ -21,19 +22,21 @@ test('history migration deduplicates links and numbers oldest first; retries do 
   assert.equal(writes[0].updateOne.update.$setOnInsert.url, old.url);
   assert.equal(writes[1].updateOne.update.$setOnInsert._id, 2);
   assert.equal(counters[0][1].$set.value, 2);
-  t.mock.method(counter.model, 'findById', () => ({ lean: async () => ({ value: 2 }) }));
+  imported = true;
   assert.deepEqual(await service.importHistory([old]), { count: 2, imported: false });
   assert.equal(counters.length, 1);
 });
 
 test('next ID requires completed migration, pads numbers, and refuses overflow', async (t) => {
-  t.mock.method(counter.model, 'findById', () => ({ lean: async () => null }));
-  await assert.rejects(service.nextId(), /import-mafia/);
-  t.mock.method(counter.model, 'findById', () => ({ lean: async () => ({ value: 2 }) }));
+  let initialized = false;
+  t.mock.method(counter.model, 'findById', () => ({ lean: async () => initialized ? { value: 2 } : null }));
+  await assert.rejects(service.nextId(), /Discord client/);
+  initialized = true;
   t.mock.method(counter.model, 'updateOne', async () => {});
-  t.mock.method(counter.model, 'findOneAndUpdate', async () => ({ value: 3 }));
+  let allocated = { value: 3 };
+  t.mock.method(counter.model, 'findOneAndUpdate', async () => allocated);
   assert.equal(await service.nextId(), '00003');
-  t.mock.method(counter.model, 'findOneAndUpdate', async () => null);
+  allocated = null;
   await assert.rejects(service.nextId(), /five-digit/);
 });
 
@@ -41,7 +44,8 @@ test('lookup refuses other categories and invalid IDs before querying; warns wit
   const replies = [];
   const message = { guild: { id: config.ids.guildId }, channel: { parentId: 'wrong' }, reply: async (value) => replies.push(value) };
   let queries = 0;
-  t.mock.method(service, 'lookup', async () => { queries++; return { _id: 3, url: 'https://example.com/mafia.html' }; });
+  let found = true;
+  t.mock.method(service, 'lookup', async () => { queries++; return found ? { _id: 3, url: 'https://example.com/mafia.html' } : null; });
   await command.execute(message, ['3'], {});
   assert.equal(queries, 0);
   message.channel.parentId = config.ids.mafiaTranscriptCategory;
@@ -51,7 +55,7 @@ test('lookup refuses other categories and invalid IDs before querying; warns wit
   assert.equal(queries, 1);
   assert.match(replies.at(-1).content, /00003.*https:\/\/example.com\/mafia.html/);
   assert.match(replies.at(-1).content, /Do not share.*ANYWHERE/);
-  t.mock.method(service, 'lookup', async () => null);
+  found = false;
   await command.execute(message, ['4'], {});
   assert.match(replies.at(-1), /No Mafia transcript/);
 });
@@ -99,4 +103,34 @@ test('completed games persist their transcript and announce the same ID in both 
   assert.deepEqual(saved, ['00263', 'https://example.com/mafia-00263.html', opening.createdTimestamp]);
   assert.ok(logs.some((entry) => typeof entry === 'string' && entry.includes('00263') && entry.includes('https://example.com/')));
   assert.match(notices[0], /mafia <t:1793343462:F> with id "00263" thanks/);
+});
+
+test('lookup normalizes plain and padded numbers to the same database ID', async (t) => {
+  t.mock.method(counter.model, 'findById', () => ({ lean: async () => ({ value: 262 }) }));
+  const ids = [];
+  t.mock.method(Transcript, 'findById', (id) => {
+    ids.push(id);
+    return { lean: async () => ({ _id: id, url: `https://example.com/${id}.html` }) };
+  });
+  assert.deepEqual(await service.lookup('1', {}), await service.lookup('00001', {}));
+  assert.deepEqual(await service.lookup('2', {}), await service.lookup('00002', {}));
+  assert.deepEqual(ids, [1, 1, 2, 2]);
+});
+
+test('a live database without the import initializes from Discord history once for concurrent requests', async (t) => {
+  const history = require('../scripts/import-mafia-transcripts');
+  let scans = 0;
+  let initialized = false;
+  t.mock.method(history, 'collectHistory', async () => {
+    scans++;
+    return [{ url: 'https://example.com/old.html', recordedAt: '2026-01-01' }];
+  });
+  t.mock.method(counter.model, 'findById', () => ({ lean: async () => initialized ? { value: 1 } : null }));
+  t.mock.method(Transcript, 'init', async () => {});
+  t.mock.method(Transcript, 'bulkWrite', async () => {});
+  t.mock.method(counter.model, 'updateOne', async () => {});
+  t.mock.method(counter.model, 'create', async () => { initialized = true; });
+  await Promise.all([service.ensureHistory({ rest: {} }), service.ensureHistory({ rest: {} })]);
+  assert.equal(scans, 1);
+  assert.equal(initialized, true);
 });

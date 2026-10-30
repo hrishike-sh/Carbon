@@ -2,6 +2,25 @@ const Transcript = require('../models/mafiaTranscript');
 const nextMafiaId = require('../mafiaCounter');
 
 const formatId = (value) => String(value).padStart(5, '0');
+let initialization;
+
+async function ensureHistory(client) {
+  const state = await nextMafiaId.model.findById('mafia-history-v1').lean();
+  if (state) return;
+  if (!initialization) {
+    initialization = (async () => {
+      if (!client?.rest) throw new Error('Discord client is required to import Mafia history.');
+      const { collectHistory } = require('../../../scripts/import-mafia-transcripts');
+      const entries = await collectHistory(client.rest);
+      if (!entries.length) throw new Error('No Mafia transcript history was found; import was not applied.');
+      await importHistory(entries);
+    })().catch((error) => {
+      initialization = undefined;
+      throw error;
+    });
+  }
+  await initialization;
+}
 
 function normalizeEntry(entry) {
   const url = new URL(entry.url);
@@ -16,9 +35,8 @@ function normalizeEntry(entry) {
   return { ...entry, url: url.href, recordedAt };
 }
 
-async function nextId() {
-  const state = await nextMafiaId.model.findById('mafia-history-v1').lean();
-  if (!state) throw new Error('Run scripts/import-mafia-transcripts.js before starting new Mafia games.');
+async function nextId(client) {
+  await ensureHistory(client);
   return nextMafiaId();
 }
 
@@ -27,6 +45,7 @@ async function record(id, url, recordedAt) {
 }
 
 async function lookup(id, client) {
+  await ensureHistory(client);
   const transcript = await Transcript.findById(Number(id)).lean();
   if (!transcript) return null;
   // Discord attachment URLs expire; fetching their message refreshes the URL.
@@ -63,4 +82,4 @@ async function importHistory(entries) {
   return { count: unique.length, imported: true };
 }
 
-module.exports = { nextId, record, lookup, importHistory, formatId, normalizeEntry };
+module.exports = { nextId, record, lookup, importHistory, formatId, normalizeEntry, ensureHistory };

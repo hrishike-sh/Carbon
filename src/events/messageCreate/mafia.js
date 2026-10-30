@@ -403,7 +403,7 @@ async function startNewGame(message, playerIds, logChannel) {
     players.set(userId, { id: userId, alive: true, messages: new Collection() });
   }
 
-  await registerGame(message.channel.id, { night: 1, players });
+  await registerGame(message.channel.id, { night: 1, players }, message.client);
 
   await sendRoleDistribution(message.channel, players.size);
 
@@ -433,7 +433,7 @@ async function startNewGameFromNight(message, nightInfo, logChannel) {
     });
   }
 
-  await registerGame(message.channel.id, { night: nightInfo.night, players });
+  await registerGame(message.channel.id, { night: nightInfo.night, players }, message.client);
   Messages.set(message.channel.id, []);
 
   const lc = logChannel || message.client.channels.cache.get(config.ids.channels.mafiaLog);
@@ -449,10 +449,10 @@ async function startNewGameFromNight(message, nightInfo, logChannel) {
   }
 }
 
-async function registerGame(channelId, game) {
+async function registerGame(channelId, game, client) {
   // Reserve the channel synchronously while MongoDB allocates the ID.
   Game.set(channelId, game);
-  game.ready = transcripts.nextId().then((id) => { game.id = id; });
+  game.ready = transcripts.nextId(client).then((id) => { game.id = id; });
   try {
     await game.ready;
   } catch (error) {
