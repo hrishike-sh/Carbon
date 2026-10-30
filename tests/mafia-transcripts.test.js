@@ -53,11 +53,17 @@ test('lookup refuses other categories and invalid IDs before querying; warns wit
   assert.equal(queries, 0);
   await command.execute(message, ['00003'], {});
   assert.equal(queries, 1);
-  assert.match(replies.at(-1).content, /00003.*https:\/\/example.com\/mafia.html/);
-  assert.match(replies.at(-1).content, /Do not share.*ANYWHERE/);
+  const payload = replies.at(-1);
+  const embed = payload.embeds[0].toJSON();
+  assert.match(embed.title, /00003/);
+  assert.match(embed.fields.find((field) => field.name.includes('Private')).value, /Do not share.*ANYWHERE/);
+  const button = payload.components[0].toJSON().components[0];
+  assert.equal(button.style, 5);
+  assert.equal(button.label, 'View transcript');
+  assert.equal(button.url, 'https://example.com/mafia.html');
   found = false;
   await command.execute(message, ['4'], {});
-  assert.match(replies.at(-1), /No Mafia transcript/);
+  assert.match(replies.at(-1).embeds[0].toJSON().description, /No Mafia transcript/);
 });
 
 test('history collector accepts hosted transcripts and HTML attachments without treating other links as transcripts', () => {
