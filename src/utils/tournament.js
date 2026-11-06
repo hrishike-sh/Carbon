@@ -116,7 +116,8 @@ async function sendBracket(channel, rounds, matchWinner) {
   const color = champion ? 0xf6cc78 : matchWinner ? 'success' : 'info';
   const payload = tournamentNotice(title, description, color);
 
-  if (channel.permissionsFor(channel.guild.members.me).has(AttachFiles)) {
+  const canAttach = channel.permissionsFor(channel.guild.members.me).has(AttachFiles);
+  if (canAttach) {
     try {
       await channel.send({
         ...payload,
@@ -129,7 +130,7 @@ async function sendBracket(channel, rounds, matchWinner) {
       });
       return;
     } catch (error) {
-      logger.warn('Could not post tournament bracket image', error);
+      logger.warn('Could not post tournament bracket image in ' + channel.id, error);
     }
   }
 
@@ -143,19 +144,23 @@ async function sendBracket(channel, rounds, matchWinner) {
     for (const match of matches) {
       const names = match.players.map((player) => {
         if (!player) return round === 0 ? 'Bye' : 'Awaiting winner';
-        return player === match.winner ? '**' + mention(player) + '**' : mention(player);
+        return player === match.winner ? '✓ ' + mention(player) : mention(player);
       });
       lines.push(names.join(' vs ') + (match === next?.match ? ' · **Up next**' : ''));
     }
   }
-  await channel.send(tournamentNotice(title, lines.join('\n'), color));
+  const fallback = tournamentNotice(title, lines.join('\n'), color);
+  fallback.embeds[0].setFooter({
+    text: canAttach ? 'FightHub • Bracket image unavailable' : 'FightHub • Carbon needs Attach Files to show the bracket image'
+  });
+  await channel.send(fallback);
 }
 
 async function openFight(channel, session) {
   const { round, index, match } = session.current;
   await setFightPermissions(channel, session, match.players);
   const [first, second] = match.players;
-  await channel.send({
+  session.announcement = channel.send({
     ...tournamentNotice(
       'Round ' + (round + 1) + (round === session.rounds.length - 1 ? ' · Championship' : ' · Match ' + (index + 1)),
       'Fight is live. The host reports the result with `win @user`.'
@@ -163,7 +168,12 @@ async function openFight(channel, session) {
     content: mention(first) + ' **vs** ' + mention(second),
     allowedMentions: { users: [first.id, second.id] }
   });
-  session.phase = 'fighting';
+  try {
+    await session.announcement;
+    session.phase = 'fighting';
+  } finally {
+    delete session.announcement;
+  }
 }
 
 async function abort(channel, session, error) {
@@ -304,32 +314,50 @@ async function start(message) {
     if (!session.lock) throw error;
     await abort(originalChannel, session, error);
   } finally {
-    if (sessions.get(id) === session && session.phase !== 'fighting') sessions.delete(id);
+    if (sessions.get(id) === session && session.phase === 'pending') sessions.delete(id);
   }
 }
 
 async function reportWinner(message) {
   const session = sessions.get(message.channel.id);
-  if (session?.phase !== 'fighting' || session.hostId !== message.author.id ||
+  if (!session || session.hostId !== message.author.id ||
       !message.member?.roles.cache.has(hostRole)) return;
 
   const result = /^win\s+<@!?(\d{17,20})>$/i.exec(message.content.trim());
   if (!result) return;
 
-  const { round, index, match } = session.current;
+  const current = session.current;
+  if (session.announcement) await session.announcement.catch(() => {});
+  if (session.phase !== 'fighting' || session.current !== current) return;
+
+  const { round, index, match } = current;
   const winner = match.players.find(({ id }) => id === result[1]);
   if (!winner) return message.reply(tournamentNotice('Invalid winner', 'Pick one of the two fighters in the current match.', 'warning'));
 
   session.phase = 'scoring';
-  const channel = message.channel;
+  let channel = message.channel;
   try {
-    await setFightPermissions(await fetchChannel(message.client, channel.id), session);
+    channel = await fetchChannel(message.client, channel.id) ?? channel;
+    if (round < session.rounds.length - 1) await setFightPermissions(channel, session);
     recordWinner(session.rounds, round, index, winner);
     session.current = nextMatch(session.rounds);
     if (!session.current) {
-      await restore(message.client, session.lock);
-      sessions.delete(channel.id);
-      await sendBracket(channel, session.rounds);
+      let restored = false;
+      try {
+        await restore(message.client, session.lock);
+        restored = true;
+      } catch (error) {
+        logger.error('Could not restore tournament permissions in ' + channel.id, error);
+      }
+      try {
+        await sendBracket(channel, session.rounds);
+        if (!restored) {
+          await channel.send(tournamentNotice('Channel recovery needed',
+            'Use `' + cancelCommand + '` to retry restoring channel permissions.', 'warning'));
+        }
+      } finally {
+        sessions.delete(channel.id);
+      }
       return;
     }
 
