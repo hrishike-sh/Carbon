@@ -86,12 +86,12 @@ function drawPlayer(ctx, player, x, y, width, color, placeholder) {
 
 function renderBracket(rounds) {
   const { createCanvas } = require('@napi-rs/canvas');
-  const card = 220;
-  const column = 258;
-  const row = 76;
   const left = 30;
+  const card = rounds.length === 1 ? 390 : 220;
+  const column = card + 38;
+  const row = 76;
   const top = 144;
-  const width = Math.max(460, left * 2 + (rounds.length - 1) * column + card);
+  const width = left * 2 + (rounds.length - 1) * column + card;
   const height = top + rounds[0].length * row + 50;
   const canvas = createCanvas(width, height);
   const ctx = canvas.getContext('2d');
@@ -106,6 +106,10 @@ function renderBracket(rounds) {
   ctx.fillStyle = '#aabaff';
   ctx.font = 'bold 13px sans-serif';
   ctx.fillText('FIGHTHUB  /  SINGLE ELIMINATION', left, 28);
+  const entrants = rounds[0].reduce((count, { players }) => count + (players[1] ? 2 : 1), 0);
+  ctx.textAlign = 'right';
+  ctx.fillText(entrants + ' FIGHTERS', width - left, 28);
+  ctx.textAlign = 'left';
   ctx.fillStyle = '#f7f8ff';
   ctx.font = 'bold 34px sans-serif';
   ctx.fillText(final.winner ? 'Championship results' : 'Tournament bracket', left, 65);
