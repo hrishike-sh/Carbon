@@ -105,13 +105,16 @@ async function recover(client) {
   }
 }
 
-async function sendBracket(channel, rounds) {
+async function sendBracket(channel, rounds, matchWinner) {
   const champion = rounds.at(-1)[0].winner;
-  const title = champion ? '🏆 Tournament champion' : 'Tournament bracket';
+  const title = champion ? '🏆 Tournament champion' : matchWinner ? 'Match result' : 'Tournament bracket';
   const description = champion
     ? mention(champion) + ' wins the FightHub tournament!'
-    : 'Randomized single elimination. The highlighted matchup is up first.';
-  const payload = tournamentNotice(title, description, champion ? 0xf6cc78 : 'info');
+    : matchWinner
+      ? mention(matchWinner) + ' wins and advances. The highlighted matchup is up next.'
+      : 'Randomized single elimination. The highlighted matchup is up first.';
+  const color = champion ? 0xf6cc78 : matchWinner ? 'success' : 'info';
+  const payload = tournamentNotice(title, description, color);
 
   if (channel.permissionsFor(channel.guild.members.me).has(AttachFiles)) {
     try {
@@ -130,17 +133,22 @@ async function sendBracket(channel, rounds) {
     }
   }
 
-  const lines = [champion ? description : 'Randomized single elimination.', ''];
-  for (const [round, matches] of (champion ? rounds : rounds.slice(0, 1)).entries()) {
+  const next = nextMatch(rounds);
+  const lines = [
+    champion ? description : matchWinner ? mention(matchWinner) + ' wins and advances.' : 'Randomized single elimination.',
+    ''
+  ];
+  for (const [round, matches] of rounds.entries()) {
     lines.push('**Round ' + (round + 1) + '**');
-    for (const { players, winner } of matches) {
-      const names = players.filter(Boolean).map((player) =>
-        player === winner ? '**' + mention(player) + '**' : mention(player)
-      );
-      lines.push(names.length === 2 ? names.join(' vs ') : names[0] + ' (bye)');
+    for (const match of matches) {
+      const names = match.players.map((player) => {
+        if (!player) return round === 0 ? 'Bye' : 'Awaiting winner';
+        return player === match.winner ? '**' + mention(player) + '**' : mention(player);
+      });
+      lines.push(names.join(' vs ') + (match === next?.match ? ' · **Up next**' : ''));
     }
   }
-  await channel.send(tournamentNotice(title, lines.join('\n'), champion ? 0xf6cc78 : 'info'));
+  await channel.send(tournamentNotice(title, lines.join('\n'), color));
 }
 
 async function openFight(channel, session) {
@@ -325,7 +333,7 @@ async function reportWinner(message) {
       return;
     }
 
-    await channel.send(tournamentNotice('Match result', mention(winner) + ' wins and advances.\nNext fight in 3 seconds.', 'success'));
+    await sendBracket(channel, session.rounds, winner);
     session.phase = 'between';
     session.timer = setTimeout(async () => {
       session.phase = 'opening';
