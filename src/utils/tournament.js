@@ -5,17 +5,25 @@ const {
 const config = require('../config');
 const TournamentLock = require('../database/models/tournamentLock');
 const logger = require('./logger');
-const { createBracket, nextMatch, recordWinner, renderBracket } = require('./tournamentBracket');
+const { createEmbed } = require('./embeds');
+const { createBracket, nextMatch, recordWinner, loadBracketAvatars, renderBracket } = require('./tournamentBracket');
 
 const sessions = new Map();
 const {
-  AttachFiles, CreatePrivateThreads, CreatePublicThreads, ManageChannels, ManageRoles,
+  AttachFiles, CreatePrivateThreads, CreatePublicThreads, EmbedLinks, ManageChannels, ManageRoles,
   ReadMessageHistory, SendMessages, SendMessagesInThreads, ViewChannel
 } = PermissionFlagsBits;
 const posting = SendMessages | SendMessagesInThreads | CreatePublicThreads | CreatePrivateThreads;
 const noPings = { parse: [], repliedUser: false };
 const hostRole = config.roles.staff.mod;
 const cancelCommand = config.prefix + 'tournament cancel';
+
+function tournamentNotice(title, description, color = 'info') {
+  return {
+    embeds: [createEmbed({ title, description, color, footer: 'FightHub tournaments' })],
+    allowedMentions: noPings
+  };
+}
 
 function mention(player) {
   return '<@' + player.id + '>';
@@ -97,13 +105,24 @@ async function recover(client) {
   }
 }
 
-async function sendBracket(channel, rounds, heading) {
+async function sendBracket(channel, rounds) {
+  const champion = rounds.at(-1)[0].winner;
+  const title = champion ? '🏆 Tournament champion' : 'Tournament bracket';
+  const description = champion
+    ? mention(champion) + ' wins the FightHub tournament!'
+    : 'Randomized single elimination. The highlighted matchup is up first.';
+  const payload = tournamentNotice(title, description, champion ? 0xf6cc78 : 'info');
+
   if (channel.permissionsFor(channel.guild.members.me).has(AttachFiles)) {
     try {
       await channel.send({
-        content: heading,
-        files: [{ attachment: renderBracket(rounds), name: 'tournament-bracket.png' }],
-        allowedMentions: noPings
+        ...payload,
+        embeds: [payload.embeds[0].setImage('attachment://tournament-bracket.png')],
+        files: [{
+          attachment: renderBracket(rounds),
+          name: 'tournament-bracket.png',
+          description: champion ? 'Completed FightHub tournament bracket' : 'FightHub tournament matchups'
+        }]
       });
       return;
     } catch (error) {
@@ -111,9 +130,8 @@ async function sendBracket(channel, rounds, heading) {
     }
   }
 
-  const finished = Boolean(rounds.at(-1)[0].winner);
-  const lines = [heading];
-  for (const [round, matches] of (finished ? rounds : rounds.slice(0, 1)).entries()) {
+  const lines = [champion ? description : 'Randomized single elimination.', ''];
+  for (const [round, matches] of (champion ? rounds : rounds.slice(0, 1)).entries()) {
     lines.push('**Round ' + (round + 1) + '**');
     for (const { players, winner } of matches) {
       const names = players.filter(Boolean).map((player) =>
@@ -122,7 +140,7 @@ async function sendBracket(channel, rounds, heading) {
       lines.push(names.length === 2 ? names.join(' vs ') : names[0] + ' (bye)');
     }
   }
-  await channel.send({ content: lines.join('\n'), allowedMentions: noPings });
+  await channel.send(tournamentNotice(title, lines.join('\n'), champion ? 0xf6cc78 : 'info'));
 }
 
 async function openFight(channel, session) {
@@ -130,8 +148,11 @@ async function openFight(channel, session) {
   await setFightPermissions(channel, session, match.players);
   const [first, second] = match.players;
   await channel.send({
-    content: '**ROUND ' + (round + 1) + ' · MATCH ' + (index + 1) + '**\n\n' +
-      mention(first) + ' vs ' + mention(second),
+    ...tournamentNotice(
+      'Round ' + (round + 1) + (round === session.rounds.length - 1 ? ' · Championship' : ' · Match ' + (index + 1)),
+      'Fight is live. The host reports the result with `win @user`.'
+    ),
+    content: mention(first) + ' **vs** ' + mention(second),
     allowedMentions: { users: [first.id, second.id] }
   });
   session.phase = 'fighting';
@@ -149,26 +170,26 @@ async function abort(channel, session, error) {
   } finally {
     sessions.delete(channel.id);
   }
-  await channel.send(notice).catch(() => {});
+  await channel.send(tournamentNotice('Tournament stopped', notice, 'error')).catch(() => {});
 }
 
 async function cancel(message) {
   const id = message.channel.id;
   const session = sessions.get(id);
   if (session && !['fighting', 'between'].includes(session.phase)) {
-    return message.reply('The tournament is changing state. Try again in a moment.');
+    return message.reply(tournamentNotice('Tournament busy', 'Try again in a moment.', 'warning'));
   }
   if (session && session.hostId !== message.author.id) {
-    return message.reply('Only the host can cancel an active tournament.');
+    return message.reply(tournamentNotice('Host only', 'Only the host can cancel an active tournament.', 'warning'));
   }
 
   clearTimeout(session?.timer);
   sessions.set(id, { phase: 'restoring' });
   try {
     const lock = session?.lock ?? await TournamentLock.findById(id);
-    if (!lock) return await message.reply('There is no tournament to cancel in this channel.');
+    if (!lock) return await message.reply(tournamentNotice('No active tournament', 'There is no tournament to cancel in this channel.', 'warning'));
     await restore(message.client, lock);
-    await message.reply('Tournament canceled. Channel permissions restored.');
+    await message.reply(tournamentNotice('Tournament canceled', 'Channel permissions restored.'));
   } finally {
     sessions.delete(id);
   }
@@ -177,13 +198,16 @@ async function cancel(message) {
 async function start(message) {
   const { guild, client, channel: originalChannel } = message;
   const id = originalChannel.id;
-  if (sessions.has(id)) return message.reply('There is already a tournament or confirmation in this channel.');
+  if (!originalChannel.permissionsFor(guild.members.me).has(EmbedLinks)) {
+    return message.reply('Carbon needs the Embed Links permission to host tournaments here.');
+  }
+  if (sessions.has(id)) return message.reply(tournamentNotice('Tournament already in progress', 'This channel already has a tournament or a pending confirmation.', 'warning'));
 
   const session = { phase: 'pending', hostId: message.author.id };
   sessions.set(id, session);
   try {
     if (await TournamentLock.exists({ _id: id })) {
-      return await message.reply('A previous tournament still needs cleanup. Use `' + cancelCommand + '` first.');
+      return await message.reply(tournamentNotice('Channel recovery needed', 'Use `' + cancelCommand + '` to restore channel permissions first.', 'warning'));
     }
 
     const reference = message.reference?.messageId ? await message.fetchReference().catch(() => null) : null;
@@ -192,18 +216,20 @@ async function start(message) {
       (match) => match[1]
     ))];
     if (ids.length < 2 || ids.length > 32) {
-      return await message.reply('Mention 2–32 distinct entrants in your command or in the message you reply to.');
+      return await message.reply(tournamentNotice('Check the roster', 'Mention 2–32 distinct entrants in your command or in the message you reply to.', 'warning'));
     }
 
     const members = await guild.members.fetch({ user: ids, time: 10_000 });
     if (ids.some((userId) => !members.has(userId) || members.get(userId).user.bot)) {
-      return await message.reply('Every entrant must be a human member of FightHub.');
+      return await message.reply(tournamentNotice('Check the roster', 'Every entrant must be a human member of FightHub.', 'warning'));
     }
 
     const prompt = await message.reply({
-      content: 'Start a single-elimination tournament with **' + ids.length +
-        '** entrants? During the tournament, only the host and active fighters can chat.',
-      allowedMentions: noPings,
+      ...tournamentNotice(
+        'Host a FightHub tournament',
+        '**' + ids.length + ' entrants** · Single elimination\n\n' +
+          'Confirm within one minute. During the tournament, chat is reserved for the host and active fighters.'
+      ),
       components: [new ActionRowBuilder().addComponents(
         new ButtonBuilder().setCustomId('tournament-start').setLabel('Start tournament').setStyle(ButtonStyle.Success),
         new ButtonBuilder().setCustomId('tournament-cancel').setLabel('Cancel').setStyle(ButtonStyle.Secondary)
@@ -215,10 +241,20 @@ async function start(message) {
       filter: (interaction) => interaction.user.id === session.hostId,
       time: 60_000
     }).catch(() => null);
-    if (!click) return await prompt.edit({ content: 'Tournament confirmation expired.', components: [] });
+    if (!click) return await prompt.edit({
+      ...tournamentNotice('Confirmation expired', 'Run the tournament command again when you are ready.', 'warning'),
+      components: []
+    });
 
     const confirmed = click.customId === 'tournament-start' && click.member.roles.cache.has(hostRole);
-    await click.update({ content: confirmed ? 'Tournament confirmed.' : 'Tournament setup canceled.', components: [] });
+    await click.update({
+      ...tournamentNotice(
+        confirmed ? 'Tournament confirmed' : 'Setup canceled',
+        confirmed ? 'Preparing the bracket and opening matchup.' : 'The channel is ready for another setup.',
+        confirmed ? 'success' : 'neutral'
+      ),
+      components: []
+    });
     if (!confirmed) return;
 
     const channel = await fetchChannel(client, id);
@@ -226,13 +262,25 @@ async function start(message) {
     if (!channel.permissionsFor(guild.members.me).has(
       ViewChannel | ReadMessageHistory | ManageChannels | ManageRoles | posting
     )) {
-      return await prompt.edit('Carbon needs to manage the channel and its permissions, read messages, and manage the posting permissions it will change.');
+      return await prompt.edit(tournamentNotice('Missing channel permissions',
+        'Carbon needs access to read messages, manage the channel and its permissions, and change posting permissions.', 'error'));
     }
     if (ids.some((userId) => !channel.permissionsFor(members.get(userId)).has(ViewChannel))) {
-      return await prompt.edit('Every entrant needs access to view this channel.');
+      return await prompt.edit(tournamentNotice('Entrant access required', 'Every entrant needs access to view this channel.', 'warning'));
     }
 
-    session.rounds = createBracket(ids.map((userId) => ({ id: userId, name: members.get(userId).displayName })));
+    const entrants = ids.map((userId) => {
+      const member = members.get(userId);
+      return {
+        id: userId,
+        name: member.displayName,
+        avatarUrl: member.displayAvatarURL({ extension: 'png', forceStatic: true, size: 64 })
+      };
+    });
+    if (channel.permissionsFor(guild.members.me).has(AttachFiles)) {
+      await loadBracketAvatars(entrants).catch((error) => logger.warn('Could not load tournament avatars', error));
+    }
+    session.rounds = createBracket(entrants);
     session.current = nextMatch(session.rounds);
     session.lock = await TournamentLock.create({
       _id: id,
@@ -242,7 +290,7 @@ async function start(message) {
     });
 
     await setFightPermissions(channel, session);
-    await sendBracket(channel, session.rounds, '**Tournament bracket**');
+    await sendBracket(channel, session.rounds);
     await openFight(await fetchChannel(client, id), session);
   } catch (error) {
     if (!session.lock) throw error;
@@ -262,7 +310,7 @@ async function reportWinner(message) {
 
   const { round, index, match } = session.current;
   const winner = match.players.find(({ id }) => id === result[1]);
-  if (!winner) return message.reply({ content: 'Pick one of the two fighters in the current match.', allowedMentions: noPings });
+  if (!winner) return message.reply(tournamentNotice('Invalid winner', 'Pick one of the two fighters in the current match.', 'warning'));
 
   session.phase = 'scoring';
   const channel = message.channel;
@@ -273,11 +321,11 @@ async function reportWinner(message) {
     if (!session.current) {
       await restore(message.client, session.lock);
       sessions.delete(channel.id);
-      await sendBracket(channel, session.rounds, '🏆 ' + mention(winner) + ' wins the tournament!');
+      await sendBracket(channel, session.rounds);
       return;
     }
 
-    await channel.send({ content: mention(winner) + ' wins and advances.', allowedMentions: noPings });
+    await channel.send(tournamentNotice('Match result', mention(winner) + ' wins and advances.\nNext fight in 3 seconds.', 'success'));
     session.phase = 'between';
     session.timer = setTimeout(async () => {
       session.phase = 'opening';
