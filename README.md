@@ -4,6 +4,8 @@
 
 A multipurpose bot having many cool features.
 
+[Privacy Policy](PRIVACY.md) · Privacy and deletion requests: **@hrishikesh on Discord**.
+
 ## Setup
 
 Requires Node.js 20.19 or newer and MongoDB.
@@ -34,6 +36,30 @@ Use `fh mafiatranscript <number>` in category `824986592653213717` to retrieve a
 transcript. Both `1` and `00001` are accepted. The reply warns users not to share
 the transcript or its link anywhere. New transcript announcements include the same
 ID in the Mafia logs and channel `858295915428315136`.
+
+## Message privacy
+
+Use `fh privacy optout` to stop optional message tracking across Carbon,
+`fh privacy optin` to enable it again, and `fh privacy status` to check your choice.
+The preference persists across restarts. Startup stops if preferences cannot be loaded.
+
+Opted-out authors are excluded from keyword highlights (including context), automatic
+keyword reactions, AFK/last-ping capture, deleted/edited-message capture, skullboard
+reposts, and new Mafia raw logs and HTML transcripts. Incoming AFK/last-ping capture
+and highlight notifications are also disabled for opted-out recipients. Ordinary
+message activity statistics exclude these users; explicit commands and game replies
+are still processed, and economy/moderation records remain.
+
+Opting out also clears active snipe and Mafia message caches and identifiable stored AFK/last-ping
+history associated with the user. Previously delivered notifications, Discord reposts,
+exported files, and published transcripts are not automatically removed. Contact the
+bot operator to request removal of those copies. Quoted text manually copied into
+another user's message cannot be attributed reliably to its original author.
+Older AFK entries contain only the author's tag; entries under a previous tag may
+require operator-assisted removal.
+
+Deploy and restart the bot before advertising this control or selecting “Yes” for
+the message-tracking opt-out question in Discord's intents review.
 
 ## Retired team event
 

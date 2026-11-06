@@ -3,6 +3,7 @@ const fs = require('fs/promises');
 const path = require('path');
 const config = require('../config');
 const logger = require('../utils/logger');
+const privacy = require('../database/services/privacyService');
 
 const logDir = path.join(process.cwd(), 'logs', 'mafia-raw');
 const mafiaChannelIds = new Set();
@@ -75,15 +76,17 @@ module.exports = {
       if (packet?.t !== 'MESSAGE_CREATE') return;
       if (packet.d?.guild_id !== config.ids.guildId) return;
       if (!packet.d?.channel_id) return;
+      if (privacy.isOptedOut(packet.d.author?.id)) return;
 
       const client = args.find((arg) => arg?.channels);
       const isMafia = await isMafiaChannel(client, packet.d.channel_id);
       if (!isMafia) return;
+      if (privacy.isOptedOut(packet.d.author?.id)) return;
 
       const filePath = getLogPath();
-      const entry = buildLogEntry(packet);
-
       await fs.mkdir(logDir, { recursive: true });
+      if (privacy.isOptedOut(packet.d.author?.id)) return;
+      const entry = buildLogEntry(privacy.filterPacket(packet));
       await fs.appendFile(filePath, `${safeStringify(entry)}\n`, 'utf8');
 
       if (announcedPath !== filePath) {

@@ -13,6 +13,7 @@ const afkModel = require('./database/models/afk');
 const cooldowns = require('./command/cooldowns');
 const antiBot = require('./client/AntiBot');
 const logger = require('./utils/logger');
+const privacy = require('./database/services/privacyService');
 const { cleanupTeamNames } = require('./utils/summerFight');
 const {
   warningEmbed,
@@ -62,6 +63,7 @@ async function main() {
   });
 
   await connectDatabase(process.env.mongopath);
+  await privacy.load();
   const cleanedTeamNames = await cleanupTeamNames();
   if (cleanedTeamNames > 0) {
     logger.info(`Removed user mentions from ${cleanedTeamNames} team name(s)`);
@@ -76,8 +78,10 @@ async function main() {
     if (message.author.bot) return;
     if (!message.guild) return;
 
-    client.state.counts.messagesRead++;
-    client.state.counts.activeUsers.add(message.author.id);
+    if (!privacy.isOptedOut(message.author.id)) {
+      client.state.counts.messagesRead++;
+      client.state.counts.activeUsers.add(message.author.id);
+    }
 
     const content = message.content;
     if (!content.toLowerCase().startsWith(config.prefix)) return;

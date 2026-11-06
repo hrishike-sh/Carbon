@@ -36,7 +36,7 @@ module.exports = {
   async execute(message, args, client) {
     const sniped = client.state.snipes.esnipes.get(message.channel.id);
 
-    if (!sniped) {
+    if (!sniped?.length) {
       return message.channel.send('There is nothing to snipe!');
     }
 
@@ -70,6 +70,11 @@ module.exports = {
         return button.reply({ flags: 64, content: 'This is not for you' });
       }
       const id = button.customId;
+      if (!sniped.length) {
+        collector.stop('privacy');
+        return button.update({ content: 'There is nothing to snipe!', embeds: [], components: [] });
+      }
+      snipe = Math.min(snipe, sniped.length - 1);
       button.deferUpdate();
       if (id === 'prev-snipe') {
         snipe--;
@@ -91,9 +96,10 @@ module.exports = {
       prevBut.setDisabled();
       nextBut.setDisabled();
       deleteBut.setDisabled();
+      snipe = Math.min(snipe, sniped.length - 1);
       void editMessageSafely(mainMessage, {
         content: 'Use the buttons to navigate.',
-        embeds: [snipeBed],
+        embeds: sniped.length ? [buildESnipeEmbed(sniped[snipe], snipe, sniped.length)] : [],
         components: [row]
       });
     });

@@ -8,6 +8,7 @@ const {
 const config = require('../config');
 const Database = require('../database/models/skullboard');
 const { Theme } = require('../utils/embeds');
+const privacy = require('../database/services/privacyService');
 
 const processing = new Set();
 
@@ -24,6 +25,7 @@ module.exports = {
 
     try {
       const fetched = await reaction.fetch();
+      if (!privacy.canTrack(message)) return;
       if (fetched.count < 10) {
         processing.delete(message.id);
         return;
@@ -35,6 +37,7 @@ module.exports = {
       if (!skullboardChannel) return;
 
       let DBENTRY = await Database.findOne({ 'originalMessage.id': message.id });
+      if (!privacy.canTrack(message)) return;
 
       const embedData = {
         author: { name: message.author.tag, iconURL: message.author.displayAvatarURL() },
@@ -69,7 +72,7 @@ module.exports = {
           .fetch(DBENTRY.skullboardMessage.id)
           .catch(() => null);
 
-        if (existingMsg) {
+        if (existingMsg && privacy.canTrack(message)) {
           await existingMsg.edit({ embeds: [embedData], components: [linkRow] });
         }
       }

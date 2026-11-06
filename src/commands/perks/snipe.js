@@ -46,7 +46,7 @@ module.exports = {
     const channelId = message.mentions.channels?.first()?.id || message.channel.id;
     const snipes = client.state.snipes.snipes.get(channelId);
 
-    if (!snipes) {
+    if (!snipes?.length) {
       return message.reply('There is nothing to be sniped!');
     }
 
@@ -76,6 +76,11 @@ module.exports = {
       }
 
       const id = button.customId;
+      if (!snipes.length) {
+        collector.stop('privacy');
+        return button.update({ content: 'There is nothing to be sniped!', embeds: [], components: [] });
+      }
+      index = Math.min(index, snipes.length - 1);
       if (id === 'prev-snipe') {
         index--;
         if (index < 0) index = snipes.length - 1;

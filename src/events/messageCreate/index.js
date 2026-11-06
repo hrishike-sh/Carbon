@@ -1,6 +1,8 @@
 const config = require('../../config');
 const logger = require('../../utils/logger');
 const settingsService = require('../../database/services/settingsService');
+const privacy = require('../../database/services/privacyService');
+const trackedHandlers = new Set(['highlight', 'autoreact', 'afk', 'lastping', 'mafia']);
 
 const handlers = [
   { name: 'highlight', execute: require('./highlight').execute },
@@ -24,6 +26,7 @@ module.exports = {
     if (!message.guild) return;
 
     for (const handler of handlers) {
+      if (trackedHandlers.has(handler.name) && !privacy.canTrack(message)) continue;
       if (message.author?.bot && !handler.acceptsBotMessages) continue;
 
       try {

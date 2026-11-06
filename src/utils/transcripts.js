@@ -2,6 +2,7 @@ const fs = require('fs/promises');
 const os = require('os');
 const path = require('path');
 const discordTranscripts = require('discord-html-transcripts-v2');
+const privacy = require('../database/services/privacyService');
 
 const DEFAULT_PUBLIC_DIR = path.join(os.homedir(), 'transcripts', 'public');
 const DEFAULT_BASE_URL = 'https://hrish.site/transcripts';
@@ -32,7 +33,7 @@ async function createHostedTranscript(channel, messages, options = {}) {
   const channelPart = sanitizeNamePart(channel.id || channel.name || 'channel');
   const fileName = `${prefix}-${channelPart}-${Date.now()}.html`;
   const filePath = path.join(publicDir, fileName);
-  const messageList = Array.isArray(messages) ? messages : [...messages.values()];
+  const messageList = (Array.isArray(messages) ? messages : [...messages.values()]).filter(privacy.canTrack);
 
   const html = await discordTranscripts.generateFromMessages(messageList, channel, {
     returnType: 'buffer',

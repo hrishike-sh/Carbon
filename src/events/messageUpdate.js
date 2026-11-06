@@ -1,3 +1,5 @@
+const privacy = require('../database/services/privacyService');
+
 module.exports = {
   name: 'messageUpdate',
 
@@ -11,6 +13,7 @@ module.exports = {
     }
 
     if (!newMessage.author || newMessage.author.bot) return;
+    if (!privacy.canTrack(newMessage)) return;
 
     const client = newMessage.client;
     let snipes = client.state.snipes.esnipes.get(oldMessage.channel.id) || [];

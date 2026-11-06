@@ -338,6 +338,7 @@ async function runSession(baseMessage, thread, initialPrompt, client) {
 }
 
 module.exports = {
+  disabled: true,
   name: 'carbon',
   aliases: ['ai', 'assistant'],
   cooldown: 5,

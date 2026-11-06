@@ -2,6 +2,7 @@ const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 const config = require('../config');
 const Database = require('../database/models/skullboard');
 const { Theme } = require('../utils/embeds');
+const privacy = require('../database/services/privacyService');
 
 module.exports = {
   name: 'messageReactionRemove',
@@ -12,7 +13,9 @@ module.exports = {
     if (!reaction.emoji || reaction.emoji.name !== '💀') return;
 
     const fetched = await reaction.fetch();
+    if (!privacy.canTrack(message)) return;
     const DBENTRY = await Database.findOne({ 'originalMessage.id': message.id });
+    if (!privacy.canTrack(message)) return;
     if (!DBENTRY) return;
 
     const skullboardChannel = message.guild.channels.cache.get(config.ids.channels.skullboard);
@@ -34,7 +37,7 @@ module.exports = {
       const existingMsg = await skullboardChannel.messages
         .fetch(DBENTRY.skullboardMessage.id)
         .catch(() => null);
-      if (existingMsg) {
+      if (existingMsg && privacy.canTrack(message)) {
         await existingMsg.edit({ embeds: [embedData], components: [linkRow] });
       }
     } else {

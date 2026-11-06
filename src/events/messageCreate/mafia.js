@@ -3,6 +3,7 @@ const config = require('../../config');
 const logger = require('../../utils/logger');
 const { warningEmbed, errorEmbed, successEmbed } = require('../../utils/embeds');
 const { createHostedTranscript } = require('../../utils/transcripts');
+const privacy = require('../../database/services/privacyService');
 const transcripts = require('../../database/services/mafiaTranscriptService');
 
 const Game = new Collection();
@@ -35,7 +36,14 @@ const ROLE_DISTRIBUTIONS = new Map([
 module.exports = {
   name: 'mafia',
 
+  clearUserMessages(userId) {
+    for (const [channelId, messages] of Messages) {
+      Messages.set(channelId, messages.filter((message) => message.author?.id !== userId));
+    }
+  },
+
   async execute(message, client) {
+    if (!privacy.canTrack(message)) return;
     if (!message.guild || message.channel.type !== ChannelType.GuildText) return;
     if (message.guild.id !== config.ids.guildId) return;
     if (message.channel.name !== 'mafia') return;

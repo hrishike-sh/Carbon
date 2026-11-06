@@ -7,6 +7,7 @@ const Database = require('../../database/models/lastping');
 const config = require('../../config');
 const { sleep } = require('../../utils/helpers');
 const { errorEmbed, infoEmbed } = require('../../utils/embeds');
+const privacy = require('../../database/services/privacyService');
 
 const PAGE_SIZE = 5;
 const MAX_PINGS = 25;
@@ -82,6 +83,8 @@ async function trimStoredPings(user, pings) {
 }
 
 async function createLastPingPayload(message, pings, page, disabled = false) {
+  pings = privacy.isOptedOut(message.author.id) ? [] : pings.filter((ping) => !privacy.isOptedOut(ping.pingerId));
+  page = Math.min(page, Math.max(0, Math.ceil(pings.length / PAGE_SIZE) - 1));
   const totalPages = Math.max(1, Math.ceil(pings.length / PAGE_SIZE));
 
   return {

@@ -1,6 +1,7 @@
 const { PermissionFlagsBits } = require('discord.js');
 const db = require('../../database/models/highlight');
 const { warningEmbed } = require('../../utils/embeds');
+const privacy = require('../../database/services/privacyService');
 
 const NOTIFICATION_COOLDOWN = 5 * 60 * 1000;
 const CONTEXT_MESSAGE_LIMIT = 2;
@@ -30,6 +31,7 @@ function truncate(content, maxLength) {
 }
 
 async function onMessage(message, client) {
+  if (!privacy.canTrack(message)) return;
   const highlightMap = client.state.highlights;
   if (!message.content || !highlightMap || highlightMap.size === 0) return;
 
@@ -39,6 +41,7 @@ async function onMessage(message, client) {
     if (!highlightRegex([keyword]).test(message.content)) continue;
 
     for (const userId of subscribers) {
+      if (privacy.isOptedOut(userId)) continue;
       if (userId === message.author.id) continue;
       if (!message.channel.permissionsFor(userId)?.has(PermissionFlagsBits.ViewChannel)) continue;
 
@@ -57,15 +60,18 @@ async function onMessage(message, client) {
   const contextMessages = [...previousMessages.values()].reverse().concat(message);
 
   for (const [userId, keywordSet] of usersToNotify) {
+    if (!privacy.canTrack(message) || privacy.isOptedOut(userId)) continue;
     const lastPing = client.state.lastHighlightPing?.get(userId) || 0;
     if (Date.now() - lastPing < NOTIFICATION_COOLDOWN) continue;
 
     const user = await client.users.fetch(userId).catch(() => null);
     if (!user) continue;
+    if (!privacy.canTrack(message) || privacy.isOptedOut(userId)) continue;
 
     const keywords = [...keywordSet];
     const matchRegex = highlightRegex(keywords);
     const contextLog = contextMessages
+      .filter(privacy.canTrack)
       .map((contextMessage) => {
         const unixTime = Math.floor(contextMessage.createdTimestamp / 1000);
         const rawContent = contextMessage.content || (contextMessage.attachments.size ? '[attachment]' : '[no text]');

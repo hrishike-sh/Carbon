@@ -1,3 +1,5 @@
+const privacy = require('../database/services/privacyService');
+
 module.exports = {
   name: 'messageDelete',
 
@@ -11,6 +13,7 @@ module.exports = {
     }
 
     if (!message.author || message.author.bot) return;
+    if (!privacy.canTrack(message)) return;
 
     const client = message.client;
     let snipes = client.state.snipes.snipes.get(message.channel.id) || [];

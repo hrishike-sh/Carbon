@@ -1,5 +1,6 @@
 const config = require('../../config');
 const Database = require('../../database/models/lastping');
+const privacy = require('../../database/services/privacyService');
 
 const MAX_PINGS = 25;
 
@@ -7,12 +8,14 @@ module.exports = {
   name: 'lastping',
 
   async execute(message) {
+    if (!privacy.canTrack(message)) return;
     if (message.guild.id !== config.ids.guildId) return;
 
     const mentions = message.mentions?.members;
     if (!mentions || mentions.filter((a) => !a.user.bot).size < 1) return;
 
     for (const [, member] of mentions) {
+      if (privacy.isOptedOut(member.id)) continue;
       if (!member.roles.cache.hasAny(...config.roles.lastPingAllowed)) continue;
       if (!message.channel.permissionsFor(member.id).has('ViewChannel')) continue;
 

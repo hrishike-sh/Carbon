@@ -1,5 +1,6 @@
 const config = require('../../config');
 const { getAutoReacts } = require('../../utils/autoReact');
+const privacy = require('../../database/services/privacyService');
 
 function isExplicitUserMention(content, userId) {
   const mentionRegex = new RegExp(`<@!?${userId}>`);
@@ -30,10 +31,12 @@ module.exports = {
   name: 'autoreact',
 
   async execute(message, client) {
+    if (!privacy.canTrack(message)) return;
     if (message.guild?.id !== config.ids.guildId) return;
     if (!message.content) return;
 
     const autoReacts = await getAutoReacts(client, config.ids.guildId);
+    if (!privacy.canTrack(message)) return;
     if (!autoReacts?.length) return;
 
     const matchedReactions = new Set();

@@ -2,6 +2,7 @@ const config = require('../../config');
 const { sleep } = require('../../utils/helpers');
 const { parseTime } = require('../../utils/formatters');
 const { successEmbed, infoEmbed } = require('../../utils/embeds');
+const privacy = require('../../database/services/privacyService');
 
 const formatDiscordTime = (time, format) => {
   return `<t:${(time / 1000).toFixed(0)}:${format || 'R'}>`;
@@ -11,6 +12,7 @@ module.exports = {
   name: 'afk',
 
   async execute(message, client) {
+    if (!privacy.canTrack(message)) return;
     const afks = client.state.afks;
 
     if (client.state.afkIgnore.includes(message.channel.id)) return;
@@ -33,6 +35,7 @@ module.exports = {
       await DATABASE.deleteOne({ userId: message.author.id });
 
       const pingList = (dUser?.dms || [])
+        .filter((msg) => !privacy.isOptedOut(msg.authorId))
         .map(
           (msg) =>
             `[${formatDiscordTime(msg.time, 't')}] **${msg.tag}**: ${msg.content} ${
@@ -58,11 +61,14 @@ module.exports = {
     if (message.mentions.members.size > 0) {
       const DATABASE = require('../../database/models/afk');
       for (const [, mention] of message.mentions.members) {
+        if (privacy.isOptedOut(mention.user.id)) continue;
         if (afks.includes(mention.user.id)) {
           const db = await DATABASE.findOne({ userId: mention.user.id });
           if (!db) continue;
+          if (!privacy.canTrack(message) || privacy.isOptedOut(mention.user.id)) continue;
 
           db.dms.push({
+            authorId: message.author.id,
             time: message.createdTimestamp,
             content: message.content,
             tag: message.author.tag,
