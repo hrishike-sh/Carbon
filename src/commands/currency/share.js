@@ -1,5 +1,4 @@
 const { CoinService } = require('../../database/services/coinService');
-const config = require('../../config');
 const { parseAmount } = require('../../utils/validators');
 const cooldowns = require('../../command/cooldowns');
 
@@ -17,10 +16,6 @@ module.exports = {
     if (!amount) return message.reply('Invalid amount!');
     if (cooldowns.isLocked(message.author.id))
       return message.reply('Youre already running a command');
-
-    if (config.ids.restrictedCurrencyChannels.includes(message.channel.id)) {
-      return message.react('❌');
-    }
 
     const balance = await CoinService.getBalance(message.author.id);
     if (balance < amount)
